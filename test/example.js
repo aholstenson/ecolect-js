@@ -27,7 +27,7 @@ intents.match('show me my todos')
 		console.log('1', results);
 	});
 
-intents.match('show me todos for Friday')
+intents.match('show me todo for Friday')
 	.then(results => {
 		console.log('2', results);
 	});

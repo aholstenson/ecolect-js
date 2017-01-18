@@ -1,6 +1,7 @@
 'use strict';
 
 const Node = require('./node');
+const utils = require('../language/utils');
 
 class Value extends Node {
 	constructor(id, value) {
@@ -76,7 +77,7 @@ class ValueEncounter {
 	}
 
 	text() {
-		return this.tokens.map(t => t.raw).join(' ');
+		return utils.raw(this.tokens);
 	}
 }
 module.exports = Value;

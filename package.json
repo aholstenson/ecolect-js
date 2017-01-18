@@ -16,7 +16,8 @@
     "parsing"
   ],
   "dependencies": {
-    "chrono-node": "^1.2.5"
+    "chrono-node": "^1.2.5",
+    "talisman": "^0.15.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",

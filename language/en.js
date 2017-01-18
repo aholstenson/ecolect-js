@@ -1,24 +1,54 @@
 'use strict';
 
+const utils = require('./utils');
+
+const stemmer = require('talisman/stemmers/porter');
+const similarity = require('talisman/metrics/distance/jaro-winkler').similarity;
+const treebank = require('talisman/tokenizers/words/treebank');
+
+function normalize(word) {
+	word = word.toLowerCase();
+
+	switch(word) {
+		case 'n\'t':
+			return 'not';
+		case '\'m':
+			return 'am';
+		case '\'re':
+			return 'are';
+		default:
+			return word;
+	}
+}
+
 /*
- * Implementation of English.
+ * Implementation of English. Uses stemming and a distance metric to determine
+ * if a token matches or not.
  */
 module.exports = {
 	id: 'en',
 
 	tokenize(string) {
-		return string.split(/\s+/)
-			.filter(t => t.length > 0)
-			.map(t => {
-				return {
-					raw: t,
-					normalized: t.toLowerCase(),
-				}
-			});
+		return utils.tokenize(string, raw => {
+			return treebank(raw)
+				.map(word => {
+					const normalized = normalize(word);
+
+					return {
+						normalized: normalized,
+						stemmed: stemmer(normalized)
+					}
+				})
+
+		});
 	},
 
 	compareTokens(a, b) {
 		if(a.normalized === b.normalized) return 1.0;
+		if(a.stemmed === b.stemmed) return 0.95;
+
+		const d = similarity(a.normalized, b.normalized);
+		if(d > 0.8) return d * 0.9;
 
 		return 0;
 	},
