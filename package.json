@@ -6,8 +6,15 @@
   "scripts": {
     "test": "node_modules/.bin/mocha test/*.test.js && node_modules/.bin/eslint *.js language/*.js resolver/*.js values/*.js"
   },
-  "author": "",
   "license": "MIT",
+  "repository": "aholstenson/ecolect-js",
+  "keywords": [
+    "natural language processing",
+    "nlp",
+    "intents",
+    "commands",
+    "parsing"
+  ],
   "dependencies": {
     "chrono-node": "^1.2.5"
   },
