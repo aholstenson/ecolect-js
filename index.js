@@ -1,11 +1,14 @@
 'use strict';
 
-const naiveLanguage = require('./language/naive');
 const ResolverBuilder = require('./resolver/builder');
 
 class Builder {
 	constructor(lang) {
-		this._lang = lang || naiveLanguage;
+		if(! lang || ! lang.tokenize || ! lang.compareTokens) {
+			throw new Error('Language instance must be provided');
+		}
+
+		this._lang = lang;
 
 		this._resolver = new ResolverBuilder(this._lang);
 	}

@@ -1,10 +1,11 @@
 'use strict';
 
 const ecolect = require('../');
+const en = require('../language/en');
 const any = require('../values/any');
 const date = require('../values/date');
 
-const intents = ecolect.builder()
+const intents = ecolect.builder(en)
 	.intent('todo:list')
 		.add('show me my todos')
 		.done()

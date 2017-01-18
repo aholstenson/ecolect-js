@@ -22,7 +22,12 @@ class Builder {
 	}
 
 	value(id, type) {
-		this.values[id] = type;
+		let factory = type;
+		if(typeof factory === 'function') {
+			factory = type(this.language);
+		}
+
+		this.values[id] = factory;
 		return this;
 	}
 

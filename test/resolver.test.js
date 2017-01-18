@@ -3,7 +3,7 @@
 const chai = require('chai');
 const expect = chai.expect;
 
-const lang = require('../language/naive');
+const lang = require('../language/en');
 const Builder = require('../resolver/builder');
 
 const any = require('../values/any');
@@ -79,7 +79,7 @@ describe('Resolver', function() {
 
 	describe('Graph with date', function() {
 		const resolver = new Builder(lang)
-			.value('date', date)
+			.value('date', date())
 			.add('stuff {date}')
 			.add('{date} stuff')
 			.add('stuff {date} cookie')

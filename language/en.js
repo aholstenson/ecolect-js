@@ -1,10 +1,11 @@
 'use strict';
 
-const any = require('../values/any');
-const date = require('../values/date');
-
-
+/*
+ * Implementation of English.
+ */
 module.exports = {
+	id: 'en',
+
 	tokenize(string) {
 		return string.split(/\s+/)
 			.filter(t => t.length > 0)
@@ -24,9 +25,5 @@ module.exports = {
 
 	comparePartialTokens(a, b) {
 		return a.normalized.indexOf(b.normalized) === 0;
-	},
-
-	any: any,
-
-	date: date
+	}
 };
