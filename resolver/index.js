@@ -64,6 +64,14 @@ class Encounter {
 		return this.tokens[index];
 	}
 
+	get hasMoreTokens() {
+		return this.currentIndex < this.tokens.length - 1;
+	}
+
+	get isLastToken() {
+		return this.currentIndex === this.tokens.length - 1;
+	}
+
 	/**
 	 * Add an extracted value to this encounter.
 	 */
@@ -158,14 +166,22 @@ class Encounter {
 	 * Push the current match onto the result.
 	 */
 	match(data) {
-		const score = this.currentScore / (this.partial ? this.maxDepth : this.tokens.length);
+		const score = this.partial
+			? this.currentScore
+			: this.currentScore / this.tokens.length;
 
-		// Check if we already have this intent with a better score
+		// Check if we already have a result for this intent
+		let idx;
 		for(let i=0; i<this.results.length; i++) {
 			const r = this.results[i];
-			if(r.intent === data && r.score > score) {
-				// We have a matching result with better score, skip this match
-				return;
+			if(r.intent === data) {
+				if(r.score >= score) {
+					// We have a matching result with better score, skip this match
+					return;
+				} else {
+					idx = i;
+					break;
+				}
 			}
 		}
 
@@ -179,7 +195,11 @@ class Encounter {
 			result.expression = this.describeExpression();
 		}
 
-		this.results.push(result);
+		if(idx >= 0) {
+			this.results[idx] = result;
+		} else {
+			this.results.push(result);
+		}
 	}
 
 	describeExpression() {

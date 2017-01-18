@@ -18,7 +18,7 @@ class Token extends Node {
 			 * Consume a token in the input, score it and evaluate outgoing
 			 * nodes for both full and partial matches.
 			 */
-			const score = encounter.partial
+			const score = encounter.partial && encounter.isLastToken
 				? this.language.comparePartialTokens(this.token, token)
 				: this.language.compareTokens(this.token, token);
 
@@ -31,7 +31,7 @@ class Token extends Node {
 			 * always match as this node is a potential continuation of the
 			 * current expression.
 			 */
-			return encounter.next(1.0, 1);
+			return encounter.next(0.0, 1);
 		}
 
 		return false;

@@ -52,9 +52,9 @@ class Value extends Node {
 			});
 		}
 
-		if(encounter.partial && stop == idx) {
-			// There are no tokens available for this value, assume it will match
-			return encounter.next(0, 0);
+		if(encounter.partial && idx >= stop) {
+			// There are no tokens available for this value, assume it will match in the future
+			return encounter.next(0.0, 0);
 		}
 
 		return promise.then(() => matched);

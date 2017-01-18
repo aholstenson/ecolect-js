@@ -48,12 +48,17 @@ module.exports = {
 		if(a.stemmed === b.stemmed) return 0.95;
 
 		const d = similarity(a.normalized, b.normalized);
-		if(d > 0.8) return d * 0.9;
+		if(d > 0.9) return d * 0.9;
 
 		return 0;
 	},
 
 	comparePartialTokens(a, b) {
-		return a.normalized.indexOf(b.normalized) === 0;
+		if(a.normalized.indexOf(b.normalized) === 0) return 1.0;
+
+		const d = similarity(a.normalized.substring(0, b.normalized.length), b.normalized);
+		if(d > 0.9) return d * 0.9;
+
+		return 0;
 	}
 };

@@ -54,7 +54,7 @@ describe('Resolver', function() {
 				.then(r => {
 					expect(r.best).to.not.be.null;
 					expect(r.best.values.a).to.equal('test');
-					expect(r.matches.length).to.equal(2);
+					expect(r.matches.length).to.equal(1);
 				});
 		});
 
@@ -63,7 +63,7 @@ describe('Resolver', function() {
 			.then(r => {
 				expect(r.best).to.not.be.null;
 				expect(r.best.values.a).to.equal('test');
-				expect(r.matches.length).to.equal(2);
+				expect(r.matches.length).to.equal(1);
 			});
 		});
 
@@ -72,7 +72,7 @@ describe('Resolver', function() {
 			.then(r => {
 				expect(r.best).to.not.be.null;
 				expect(r.best.values.a).to.equal('one');
-				expect(r.matches.length).to.equal(3);
+				expect(r.matches.length).to.equal(1);
 			});
 		});
 	});
