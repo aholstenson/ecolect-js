@@ -20,5 +20,9 @@ module.exports = {
 		if(a.normalized === b.normalized) return 1.0;
 
 		return 0;
+	},
+
+	comparePartialTokens(a, b) {
+		return a.normalized.indexOf(b.normalized) === 0;
 	}
 }

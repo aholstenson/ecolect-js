@@ -139,4 +139,68 @@ describe('Resolver', function() {
 			});
 		});
 	});
+
+	describe('Partial matching', function() {
+		const resolver = new Builder(lang)
+			.add('hello world')
+			.build();
+
+		it('Full token', function() {
+
+			return resolver.match('hello', {
+				partial: true
+			}).then(r => {
+				expect(r.matches.length).to.equal(1);
+			})
+		});
+
+		it('Partial token', function() {
+
+			return resolver.match('he', {
+				partial: true
+			}).then(r => {
+				expect(r.matches.length).to.equal(1);
+			})
+		})
+	});
+
+	describe('Partial matching with value', function() {
+		const resolver = new Builder(lang)
+			.value('test', {
+				match(encounter) {
+					if(encounter.text() === 'world') {
+						return true;
+					}
+
+					return null;
+				}
+			})
+			.add('hello {test}')
+			.build();
+
+		it('No value', function() {
+
+			return resolver.match('hello', {
+				partial: true
+			}).then(r => {
+				expect(r.matches.length).to.equal(1);
+			})
+		});
+
+		it('Value - valid', function() {
+			return resolver.match('hello world', {
+				partial: true
+			}).then(r => {
+				expect(r.matches.length).to.equal(1);
+			})
+		});
+
+		it('Value - invalid', function() {
+			return resolver.match('hello cookie', {
+				partial: true
+			}).then(r => {
+				expect(r.matches.length).to.equal(0);
+			})
+		})
+	});
 })

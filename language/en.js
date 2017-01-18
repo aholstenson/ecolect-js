@@ -22,6 +22,10 @@ module.exports = {
 		return 0;
 	},
 
+	comparePartialTokens(a, b) {
+		return a.normalized.indexOf(b.normalized) === 0;
+	},
+
 	any: any,
 
 	date: date

@@ -12,11 +12,26 @@ class Token extends Node {
 
 	match(encounter) {
 		const token = encounter.token();
-		if(! token) return false;
 
-		const score = this.language.compareTokens(this.token, token);
-		if(score > 0) {
-			return encounter.next(score, 1);
+		if(token) {
+			/*
+			 * Consume a token in the input, score it and evaluate outgoing
+			 * nodes for both full and partial matches.
+			 */
+			const score = encounter.partial
+				? this.language.comparePartialTokens(this.token, token)
+				: this.language.compareTokens(this.token, token);
+
+			if(score > 0) {
+				return encounter.next(score, 1);
+			}
+		} else if(encounter.partial) {
+			/*
+			 * We are matching partial intents and have no token so we should
+			 * always match as this node is a potential continuation of the
+			 * current expression.
+			 */
+			return encounter.next(1.0, 1);
 		}
 
 		return false;

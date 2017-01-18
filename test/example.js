@@ -32,9 +32,10 @@ intents.match('show me todos for Friday')
 	});
 
 // Perform partial matching
-intents.match('add ', {
+intents.match('add', {
 	partial: true
 })
 	.then(results => {
-		console.log('3', results);
-	});
+		console.log('3', results.best);
+	})
+	.catch(console.err);

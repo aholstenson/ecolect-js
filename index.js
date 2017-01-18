@@ -41,8 +41,8 @@ class Matcher {
 		this._resolver = resolver;
 	}
 
-	match(expression) {
-		return this._resolver.match(expression);
+	match(expression, options) {
+		return this._resolver.match(expression, options);
 	}
 }
 

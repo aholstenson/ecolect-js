@@ -10,7 +10,7 @@ class Collector extends Node {
 	}
 
 	match(encounter) {
-		if(encounter.tokens.length == encounter.currentIndex) {
+		if(encounter.tokens.length == encounter.currentIndex || encounter.partial) {
 			encounter.match(this.data);
 			return true;
 		}

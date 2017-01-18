@@ -17,6 +17,10 @@ class Value extends Node {
 
 		let promise = Promise.resolve(false);
 
+		/**
+		 * Values always try to match as much as they can so we loop backwards
+		 * from the largest amount of tokens we could consume to only 1.
+		 */
 		let valueEncounter = new ValueEncounter(encounter);
 		let matched = false;
 		for(let i=stop; i>idx; i--) {
@@ -47,6 +51,11 @@ class Value extends Node {
 			});
 		}
 
+		if(encounter.partial && stop == idx) {
+			// There are no tokens available for this value, assume it will match
+			return encounter.next(0, 0);
+		}
+
 		return promise.then(() => matched);
 	}
 
@@ -59,6 +68,7 @@ class Value extends Node {
 class ValueEncounter {
 	constructor(encounter) {
 		this._encounter = encounter;
+		this.partial = encounter.partial;
 	}
 
 	_adjust(from, end) {

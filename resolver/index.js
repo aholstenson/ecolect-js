@@ -1,5 +1,8 @@
 'use strict';
 
+const Token = require('./token');
+const Value = require('./value');
+
 function copy(values) {
 	const result = {};
 	Object.keys(values).forEach(key => {
@@ -14,9 +17,9 @@ class Resolver {
 		this.roots = roots;
 	}
 
-	match(encounter) {
+	match(encounter, options) {
 		if(typeof encounter === 'string') {
-			encounter = new Encounter(this.lang, encounter);
+			encounter = new Encounter(this.lang, encounter, options || {});
 		}
 
 		encounter.outgoing = this.roots;
@@ -38,17 +41,18 @@ class Resolver {
  * score.
  */
 class Encounter {
-	constructor(lang, text, reject, resolve) {
+	constructor(lang, text, options) {
 		this.tokens = lang.tokenize(text);
 
 		this.currentIndex = 0;
 		this.currentScore = 0;
+		this.currentNodes = [];
+		this.maxDepth = 0;
 
 		this.results = [];
 		this.data = {};
 
-		this._reject = reject;
-		this._resolve = resolve;
+		this.partial = options.partial || false;
 	}
 
 	/**
@@ -112,6 +116,9 @@ class Encounter {
 		const resultIndex = this.results.length;
 		const outgoing = this.outgoing;
 
+		this.currentNodes.push(node);
+		this.maxDepth = Math.max(this.maxDepth, this.currentNodes.length);
+
 		const restore = (result) => {
 			this.currentIndex = currentIndex;
 			this.currentScore = currentScore;
@@ -121,13 +128,16 @@ class Encounter {
 			} else if(this.pushedValue) {
 				// Finalize the results by copying the appended results
 				for(let i=resultIndex; i<this.results.length; i++) {
-					this.results[i].values = copy(this.results[i].values);
+					const r = this.results[i];
+					r.values = copy(r.values);
+					r.expression = this.enhanceExpression(r.expression, r.values);
 				}
 
 				this.pushedValue = false;
 			}
 
 			this.outgoing = outgoing;
+			this.currentNodes.pop();
 
 			return result;
 		};
@@ -148,11 +158,73 @@ class Encounter {
 	 * Push the current match onto the result.
 	 */
 	match(data) {
-		this.results.push({
+		const score = this.currentScore / (this.partial ? this.maxDepth : this.tokens.length);
+
+		// Check if we already have this intent with a better score
+		for(let i=0; i<this.results.length; i++) {
+			const r = this.results[i];
+			if(r.intent === data && r.score > score) {
+				// We have a matching result with better score, skip this match
+				return;
+			}
+		}
+
+		const result = {
 			intent: data,
 			values: this.data,
-			score: this.currentScore / this.tokens.length
+			score: score,
+		};
+
+		if(this.partial) {
+			result.expression = this.describeExpression();
+		}
+
+		this.results.push(result);
+	}
+
+	describeExpression() {
+		// Partial matching so expose the full expression that would match
+		let path = [];
+		let text = [];
+		this.currentNodes.forEach(node => {
+			if(node instanceof Token) {
+				text.push(node.token.raw);
+			} else if(node instanceof Value) {
+				if(text.length > 0) {
+					path.push({
+						type: 'text',
+						value: text.join(' ')
+					});
+					text.length = 0;
+				}
+
+				path.push({
+					type: 'value',
+					id: node.id
+				});
+			}
 		});
+
+		if(text.length > 0) {
+			path.push({
+				type: 'text',
+				value: text.join(' ')
+			});
+		}
+
+		return path;
+	}
+
+	enhanceExpression(expression, values) {
+		if(! expression) return;
+
+		expression.forEach(p => {
+			if(p.type === 'value') {
+				p.value = values[p.id];
+			}
+		});
+
+		return expression;
 	}
 }
 
