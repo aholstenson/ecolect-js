@@ -6,16 +6,27 @@ const stemmer = require('talisman/stemmers/porter');
 const similarity = require('talisman/metrics/distance/jaro-winkler').similarity;
 const treebank = require('talisman/tokenizers/words/treebank');
 
-function normalize(word) {
+function normalize(word, next) {
 	word = word.toLowerCase();
 
 	switch(word) {
+		case 'ca':
+			if(next == 'n\'t') {
+				return 'can';
+			}
+			break;
 		case 'n\'t':
 			return 'not';
 		case '\'m':
 			return 'am';
 		case '\'re':
 			return 'are';
+		case '\'ll':
+			return 'will';
+		case '\'s':
+			return 'is';
+		case '&':
+			return 'and';
 		default:
 			return word;
 	}
@@ -29,17 +40,19 @@ module.exports = {
 	id: 'en',
 
 	tokenize(string) {
-		return utils.tokenize(string, raw => {
-			return treebank(raw)
-				.map(word => {
-					const normalized = normalize(word);
+		return utils.tokenize(string, input => {
+			const tokens = treebank(input.raw);
+			for(let i=0; i<tokens.length; i++) {
+				const word = tokens[i];
+				const normalized = normalize(word, tokens[i+1]);
 
-					return {
-						normalized: normalized,
-						stemmed: stemmer(normalized)
-					}
-				})
-
+				tokens[i] = {
+					raw: word,
+					normalized: normalized,
+					stemmed: stemmer(normalized)
+				};
+			}
+			return tokens;
 		});
 	},
 
