@@ -2,6 +2,8 @@
 
 const utils = require('./utils');
 
+const number = require('./en/number');
+
 const stemmer = require('talisman/stemmers/porter');
 const similarity = require('talisman/metrics/distance/jaro-winkler').similarity;
 const treebank = require('talisman/tokenizers/words/treebank');
@@ -75,3 +77,5 @@ module.exports = {
 		return 0;
 	}
 };
+
+module.exports.number = number(module.exports);
