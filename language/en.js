@@ -3,6 +3,7 @@
 const utils = require('./utils');
 
 const number = require('./en/number');
+const ordinal = require('./en/ordinal');
 
 const stemmer = require('talisman/stemmers/porter');
 const similarity = require('talisman/metrics/distance/jaro-winkler').similarity;
@@ -79,3 +80,4 @@ module.exports = {
 };
 
 module.exports.number = number(module.exports);
+module.exports.ordinal = ordinal(module.exports);
