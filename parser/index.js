@@ -6,6 +6,7 @@ const TokenNode = require('./token');
 const SubNode = require('./sub');
 const FilteredSubNode = require('./filtered-sub');
 const CollectorNode = require('./collector');
+const CustomNode = require('./custom');
 
 const Encounter = require('./encounter');
 
@@ -23,27 +24,53 @@ class Parser extends Node {
 
 		let last = this;
 		const push = node => {
+			if(! (node instanceof Node)) {
+				throw new Error('Not a node: ' + node);
+			}
+
 			last.outgoing.push(node);
 			last = node;
 		};
 
-		nodes.forEach(n => {
+		const createNode = n => {
 			if(typeof n === 'function') {
-				push(new FilteredSubNode(this.outgoing, n));
+				const result = n(this);
+				push(result);
 			} else if(n instanceof RegExp) {
 				push(new RegExpNode(n));
-			} else if(n instanceof Node) {
+			} else if(n instanceof Parser) {
 				push(new SubNode(n));
-			} else {
+			} else if(n instanceof Node) {
+				push(n);
+			} else if(typeof n === 'string') {
 				this.language.tokenize(n).forEach(t => {
 					push(new TokenNode(this.language, t));
 				});
+			} else {
+				throw new Error('Invalid node');
 			}
-		});
+		};
 
-		push(new CollectorNode(value));
+		nodes.forEach(createNode);
+
+		push(new CollectorNode(nodes.length, value));
 
 		return this;
+	}
+
+	parse(text) {
+		let first;
+		let last;
+		this.language.tokenize(text).forEach(t => {
+			const node = new TokenNode(this.language, t);
+			if(last) {
+				last.outgoing.push(node);
+			} else {
+				first = node;
+			}
+			last = node;
+		});
+		return first;
 	}
 
 	map(values, func) {
@@ -73,6 +100,18 @@ class Parser extends Node {
 
 	toString() {
 		return 'Parser[]';
+	}
+
+	static result(validator) {
+		return function(parser) {
+			return new FilteredSubNode(parser.outgoing, validator);
+		};
+	}
+
+	static custom(validator) {
+		return function() {
+			return new CustomNode(validator);
+		};
 	}
 }
 

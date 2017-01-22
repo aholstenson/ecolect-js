@@ -13,6 +13,7 @@ class RegExpNode extends Node {
 		const token = encounter.token();
 		if(! token) return null;
 
+		this.regexp.previousIndex = 0;
 		const match = this.regexp.exec(token.raw);
 		if(! match) return null;
 

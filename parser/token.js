@@ -13,7 +13,6 @@ class Token extends Node {
 	match(encounter) {
 		const token = encounter.token();
 
-		console.log('token', token && token.raw, '@', encounter.currentIndex);
 		if(token) {
 			/*
 			 * Consume a token in the input, score it and evaluate outgoing

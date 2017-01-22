@@ -58,7 +58,7 @@ class Encounter {
 			this.data.push(data);
 		}
 
-		console.log(this.currentNodes.map(() => '  ').join('') + 'next', nodes.map(n => n.toString()));
+		//console.log(this.currentNodes.map(() => '  ').join('') + 'next', nodes.map(n => n.toString()));
 
 		let results = [];
 		let promise = Promise.resolve();
@@ -92,42 +92,12 @@ class Encounter {
 		});
 	}
 
-	chain(nodes, func) {
-		let results = [];
-		let promise = Promise.resolve();
-		nodes.forEach(node => promise = promise.then(() => {
-			let result = this.branch(node, () => {
-				const match = node.match(this);
-				return Promise.resolve(match)
-					.then(func);
-			});
-
-			let handleResult = r => {
-				if(Array.isArray(r)) {
-					results.push(...r);
-				} else if(r != null && typeof r !== 'undefined') {
-					results.push(r);
-				}
-			};
-
-			if(result && result.then) {
-				return result.then(handleResult);
-			} else {
-				handleResult(result);
-			}
-		}));
-
-		return promise.then(() => {
-			return results;
-		});
-	}
-
 	branch(node, func) {
 		const currentIndex = this.currentIndex;
 		const currentScore = this.currentScore;
 		const outgoing = this.outgoing;
 
-		console.log(this.currentNodes.map(() => '  ').join('') + node.toString());
+		//console.log(this.currentNodes.map(() => '  ').join('') + node.toString());
 		this.currentNodes.push(node);
 
 		this.maxDepth = Math.max(this.maxDepth, this.currentNodes.length);

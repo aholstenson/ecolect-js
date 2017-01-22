@@ -85,11 +85,31 @@ describe('Parser', function() {
 			});
 		});
 
-		describe('Function', function() {
+		describe('Node factory', function() {
+			const parser = new Parser(en)
+				.add(Parser.custom(t => t.raw === 'one' ? true : null), 1);
+
+			it('Single token', function() {
+				return parser.match('one')
+					.then(results => {
+						expect(results).to.deep.equal([ 1 ])
+					});
+			});
+
+			it('Invalid first token', function() {
+				return parser.match('three')
+					.then(results => {
+						expect(results).to.deep.equal([ ])
+					});
+			});
+		});
+
+		describe('Previous match', function() {
 			const parser = new Parser(en)
 				.add('one', 1)
 				.add('three', 3)
-				.add([ v => v == 1, 'two' ], 2);
+				.add([ Parser.result(v => v == 1), 'two' ], 2)
+				.add([ Parser.result(v => v == 1), 'two', Parser.result(v => v == 3) ], 2);
 
 			it('Single token', function() {
 				return parser.match('one')
@@ -109,6 +129,57 @@ describe('Parser', function() {
 				return parser.match('three two')
 					.then(results => {
 						expect(results).to.deep.equal([ 3 ])
+					});
+			});
+		});
+
+		describe('Recursive match', function() {
+			const parser = new Parser(en)
+				.add(/^[a-z]$/, v => v[0])
+				.add([ Parser.result(v => true), Parser.result(v => true) ], v => v[0] + v[1])
+				.add([ Parser.result(v => true), '-', Parser.result(v => true) ], v => {
+					return v[0] + v[1];
+				});
+
+			it('a', function() {
+				return parser.match('a')
+					.then(results => {
+						expect(results).to.deep.equal([ 'a' ])
+					});
+			});
+
+			it('a b', function() {
+				return parser.match('a b')
+					.then(results => {
+						expect(results).to.deep.equal([ 'a', 'ab' ])
+					});
+			});
+
+			it('a b c', function() {
+				return parser.match('a b c')
+					.then(results => {
+						expect(results).to.deep.equal([ 'a', 'ab', 'abc' ])
+					});
+			});
+
+			it('a b c d', function() {
+				return parser.match('a b c d')
+					.then(results => {
+						expect(results).to.deep.equal([ 'a', 'ab', 'abc', 'abcd' ])
+					});
+			});
+
+			it('a - b c', function() {
+				return parser.match('a - b c')
+					.then(results => {
+						expect(results).to.deep.equal([ 'a', 'abc', 'ab', 'abc' ])
+					});
+			});
+
+			it('abc', function() {
+				return parser.match('abc')
+					.then(results => {
+						expect(results).to.deep.equal([ ])
 					});
 			});
 		});

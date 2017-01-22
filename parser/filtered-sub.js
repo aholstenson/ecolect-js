@@ -7,13 +7,16 @@ class FilteredSubNode extends Node {
 		super();
 
 		this.roots = roots;
-		this.filteredRoots = null;
 		this.filter = filter;
 	}
 
 	match(encounter) {
-		if(! this.filteredRoots) {
-			this.filteredRoots = this.roots.filter(n => ! (n instanceof FilteredSubNode));
+		if(this.currentIndex === encounter.currentIndex) {
+			/*
+			 * If this node is called with the same index again we skip
+			 * evaulating.
+			 */
+			return null;
 		}
 
 		const variants = [];
@@ -27,8 +30,12 @@ class FilteredSubNode extends Node {
 			});
 		};
 
+		// Set the index we were called at
+		let previousIndex = this.currentIndex;
+		this.currentIndex = encounter.currentIndex;
+
 		return encounter.branchWithOnMatch(onMatch, () => {
-			return encounter.next(this.filteredRoots);
+			return encounter.next(this.roots);
 		}).then(() => {
 			let result = [];
 			let promise = Promise.resolve();
@@ -41,7 +48,7 @@ class FilteredSubNode extends Node {
 			}));
 
 			return promise.then(() => {
-				console.log(result);
+				this.currentIndex = previousIndex;
 				return result;
 			});
 		})
