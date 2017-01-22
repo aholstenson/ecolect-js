@@ -1,8 +1,24 @@
 # Ecolect
 
-Ecolect helps with mapping natural language to intents and values.
+Ecolect helps with parsing natural language to intents and values. This can be
+used as a part in building a natural language interface for things such as bots,
+voice or search interfaces.
+
+## Installation
 
 ```
+$ npm install --save ecolect
+```
+
+## Matching intents
+
+The main function of Ecolect is to match natural language expressions to
+intents. This is done by matching one or more expressions to the intent.
+While matching the library will fuzzy
+
+## Example
+
+```javascript
 const ecolect = require('ecolect');
 const en = require('ecolect/language/en');
 const any = require('ecolect/values/any');
