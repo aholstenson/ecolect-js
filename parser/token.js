@@ -37,6 +37,10 @@ class Token extends Node {
 		return null;
 	}
 
+	equals(other) {
+		return other instanceof Token && this.token.raw === other.token.raw;
+	}
+
 	toString() {
 		return 'Token[' + this.token.raw + ']';
 	}

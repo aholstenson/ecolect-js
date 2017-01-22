@@ -4,7 +4,6 @@ const Node = require('./node');
 const RegExpNode = require('./regexp');
 const TokenNode = require('./token');
 const SubNode = require('./sub');
-const FilteredSubNode = require('./filtered-sub');
 const CollectorNode = require('./collector');
 const CustomNode = require('./custom');
 
@@ -26,6 +25,17 @@ class Parser extends Node {
 		const push = node => {
 			if(! (node instanceof Node)) {
 				throw new Error('Not a node: ' + node);
+			}
+
+			/**
+			 * Check if we can attach to an existing node or if we need to
+			 * create a new branch.
+			 */
+			for(let i=0; i<last.outgoing.length; i++) {
+				if(last.outgoing[i].equals(node)) {
+					last = last.outgoing[i];
+					return;
+				}
 			}
 
 			last.outgoing.push(node);
@@ -79,6 +89,16 @@ class Parser extends Node {
 		return this;
 	}
 
+	mapResults(mapper) {
+		this._mapper = mapper;
+
+		return this;
+	}
+
+	optimize() {
+
+	}
+
 	finalizer(func) {
 		if(this._finalizer) {
 			const previous = this._finalizer;
@@ -100,7 +120,12 @@ class Parser extends Node {
 					best = result;
 				}
 			}
-			return best ? best.data : null;
+
+			let data = best ? best.data : null;
+			if(data && this._mapper) {
+				data = this._mapper(data);
+			}
+			return data;
 		});
 	}
 
@@ -113,7 +138,12 @@ class Parser extends Node {
 					best = result;
 				}
 			}
-			return best ? best.data : null;
+
+			let data = best ? best.data : null;
+			if(data && this._mapper) {
+				data = this._mapper(data);
+			}
+			return data;
 		});
 	}
 
@@ -137,7 +167,7 @@ class Parser extends Node {
 
 	static result(validator) {
 		return function(parser) {
-			return new FilteredSubNode(parser.outgoing, validator);
+			return new SubNode(parser.outgoing, validator);
 		};
 	}
 

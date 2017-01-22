@@ -20,6 +20,10 @@ class CustomNode extends Node {
 				}
 			});
 	}
+
+	equals(other) {
+		return other instanceof CustomNode && this.validator === other.validator;
+	}
 }
 
 module.exports = CustomNode;

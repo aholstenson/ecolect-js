@@ -68,15 +68,19 @@ class Encounter {
 				return node.match(this);
 			}, data);
 
+			let push = item => {
+				if(item instanceof Match) {
+					results.push(item);
+				} else {
+					results.push(new Match(nextIndex, nextScore, item));
+				}
+			};
+
 			let handleResult = r => {
 				if(Array.isArray(r)) {
-					results.push(...r);
+					r.forEach(push);
 				} else if(r != null && typeof r !== 'undefined') {
-					results.push({
-						index: nextIndex,
-						score: nextScore / this.tokens.length,
-						data: r
-					});
+					push(r);
 				}
 			};
 
@@ -146,6 +150,14 @@ class Encounter {
 		if(this.onMatch) {
 			return this.onMatch(data);
 		}
+	}
+}
+
+class Match {
+	constructor(index, score, data) {
+		this.index = index;
+		this.score = score;
+		this.data = data;
 	}
 }
 

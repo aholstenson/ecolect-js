@@ -20,6 +20,10 @@ class RegExpNode extends Node {
 		return encounter.next(1, 1, match[0]);
 	}
 
+	equals(other) {
+		return other instanceof RegExpNode && this.regexp.source === other.regexp.source;
+	}
+
 	toString() {
 		return 'RegExp[' + this.regexp + ']';
 	}
