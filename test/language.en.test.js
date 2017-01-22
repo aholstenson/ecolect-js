@@ -156,6 +156,20 @@ describe('English', function() {
 					expect(v).to.deep.equal({ value: 1000000 })
 				);
 		});
+
+		it('1e3', function() {
+			return number('1e3')
+				.then(v =>
+					expect(v).to.deep.equal({ value: 1000 })
+				);
+		});
+
+		it('1e-3', function() {
+			return number('1e-3')
+				.then(v =>
+					expect(v).to.deep.equal({ value: 0.001 })
+				);
+		});
 	});
 					expect(v).to.deep.equal([
 						{ value: 1 },

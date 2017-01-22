@@ -67,6 +67,14 @@ module.exports = function(language) {
 		.add([ Parser.result(integer), '.', Parser.result(v => v.integer && ! v.suffix && ! v.suffixed) ], v => float(v[0], v[1]))
 
 		.add([ Parser.result(number), Parser.result(integer) ], v => combine(v[0], v[1]))
+		.add([ Parser.result(number), 'e', /^[0-9]$/], v => combine(v[0], {
+			value: Math.pow(10, parseInt(v[1])),
+			suffix: true
+		}))
+		.add([ Parser.result(number), 'e', '-', /^[0-9]$/], v => combine(v[0], {
+			value: Math.pow(10, -parseInt(v[1])),
+			suffix: true
+		}))
 
 		.add([ '-', Parser.result(number) ], v => negative(v[0]))
 		.add([ 'minus', Parser.result(number) ], v => negative(v[0]))
@@ -118,11 +126,11 @@ module.exports = function(language) {
 			l => { return { value: l, raw: l, integer: true, suffix: true }}
 		)
 
-		.onlyBest()
-		.finalizer(r => {
+		.mapResults(r => {
 			const mapped = {
 				value: r.value
 			};
 			return mapped;
-		});
+		})
+		.onlyBest();
 }
