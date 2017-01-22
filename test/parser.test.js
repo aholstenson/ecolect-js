@@ -5,6 +5,7 @@ const expect = chai.expect;
 
 const en = require('../language/en');
 const Parser = require('../parser');
+const map = results => results.map(r => r.data);
 
 describe('Parser', function() {
 	describe('Linear', function() {
@@ -13,6 +14,7 @@ describe('Parser', function() {
 
 		it('All tokens', function() {
 			return parser.match('hello world')
+				.then(map)
 				.then(results => {
 					expect(results).to.deep.equal([ true ]);
 				});
@@ -20,6 +22,7 @@ describe('Parser', function() {
 
 		it('Single token', function() {
 			return parser.match('hello')
+				.then(map)
 				.then(results => {
 					expect(results).to.deep.equal([ ]);
 				});
@@ -27,6 +30,7 @@ describe('Parser', function() {
 
 		it('Extra tokens', function() {
 			return parser.match('hello world and more')
+				.then(map)
 				.then(results => {
 					expect(results).to.deep.equal([ true ]);
 				});
@@ -42,6 +46,7 @@ describe('Parser', function() {
 
 		it('Match longest', function() {
 			return parser.match('hello world')
+				.then(map)
 				.then(results => {
 					expect(results).to.deep.equal([ 1, 3 ]);
 				});
@@ -49,6 +54,7 @@ describe('Parser', function() {
 
 		it('Match standalone', function() {
 			return parser.match('cookies')
+				.then(map)
 				.then(results => {
 					expect(results).to.deep.equal([ 2 ]);
 				});
@@ -56,6 +62,7 @@ describe('Parser', function() {
 
 		it('Match shortest', function() {
 			return parser.match('hello')
+				.then(map)
 				.then(results => {
 					expect(results).to.deep.equal([ 3 ]);
 				});
@@ -72,6 +79,7 @@ describe('Parser', function() {
 
 			it('All tokens', function() {
 				return parser.match('hello world')
+					.then(map)
 					.then(results => {
 						expect(results).to.deep.equal([ 2 ])
 					});
@@ -79,6 +87,7 @@ describe('Parser', function() {
 
 			it('First token', function() {
 				return parser.match('hello')
+					.then(map)
 					.then(results => {
 						expect(results).to.deep.equal([ ])
 					});
@@ -91,6 +100,7 @@ describe('Parser', function() {
 
 			it('Single token', function() {
 				return parser.match('one')
+					.then(map)
 					.then(results => {
 						expect(results).to.deep.equal([ 1 ])
 					});
@@ -98,6 +108,7 @@ describe('Parser', function() {
 
 			it('Invalid first token', function() {
 				return parser.match('three')
+					.then(map)
 					.then(results => {
 						expect(results).to.deep.equal([ ])
 					});
@@ -113,6 +124,7 @@ describe('Parser', function() {
 
 			it('Single token', function() {
 				return parser.match('one')
+					.then(map)
 					.then(results => {
 						expect(results).to.deep.equal([ 1 ])
 					});
@@ -120,6 +132,7 @@ describe('Parser', function() {
 
 			it('All tokens', function() {
 				return parser.match('one two')
+					.then(map)
 					.then(results => {
 						expect(results).to.deep.equal([ 1, 2 ])
 					});
@@ -127,6 +140,7 @@ describe('Parser', function() {
 
 			it('Invalid first token', function() {
 				return parser.match('three two')
+					.then(map)
 					.then(results => {
 						expect(results).to.deep.equal([ 3 ])
 					});
@@ -143,6 +157,7 @@ describe('Parser', function() {
 
 			it('a', function() {
 				return parser.match('a')
+					.then(map)
 					.then(results => {
 						expect(results).to.deep.equal([ 'a' ])
 					});
@@ -150,6 +165,7 @@ describe('Parser', function() {
 
 			it('a b', function() {
 				return parser.match('a b')
+					.then(map)
 					.then(results => {
 						expect(results).to.deep.equal([ 'a', 'ab' ])
 					});
@@ -157,6 +173,7 @@ describe('Parser', function() {
 
 			it('a b c', function() {
 				return parser.match('a b c')
+					.then(map)
 					.then(results => {
 						expect(results).to.deep.equal([ 'a', 'ab', 'abc' ])
 					});
@@ -164,6 +181,7 @@ describe('Parser', function() {
 
 			it('a b c d', function() {
 				return parser.match('a b c d')
+					.then(map)
 					.then(results => {
 						expect(results).to.deep.equal([ 'a', 'ab', 'abc', 'abcd' ])
 					});
@@ -171,6 +189,7 @@ describe('Parser', function() {
 
 			it('a - b c', function() {
 				return parser.match('a - b c')
+					.then(map)
 					.then(results => {
 						expect(results).to.deep.equal([ 'a', 'abc', 'ab', 'abc' ])
 					});
@@ -178,6 +197,7 @@ describe('Parser', function() {
 
 			it('abc', function() {
 				return parser.match('abc')
+					.then(map)
 					.then(results => {
 						expect(results).to.deep.equal([ ])
 					});

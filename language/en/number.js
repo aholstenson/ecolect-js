@@ -8,7 +8,8 @@ function combine(a, b) {
 		return {
 			value: value,
 			raw: value,
-			integer: a.integer && b.integer
+			integer: (a.integer && b.integer) || false,
+			suffixed: true
 		};
 	} else {
 		const raw = a.raw + b.raw;
@@ -17,7 +18,7 @@ function combine(a, b) {
 		return {
 			value: value,
 			raw: raw,
-			integer: a.integer && b.integer
+			integer: (a.integer && b.integer) || false
 		};
 	}
 }
@@ -26,7 +27,8 @@ function float(a, b) {
 	const raw = a.raw + '.' + b.raw;
 	return {
 		value: parseFloat(raw),
-		raw: raw
+		raw: raw,
+		integer: false
 	};
 }
 
@@ -38,17 +40,29 @@ function number(o) {
 	return typeof o.value !== 'undefined';
 }
 
+function negative(o) {
+	return {
+		value: - o.value,
+		raw: '-' + o.raw,
+		integer: o.integer
+	};
+}
+
 module.exports = function(language) {
 	return new Parser(language)
 
-		.add(/[0-9]+/, v => {
-			const raw = v[v.length - 1];
+		.add(/^[0-9]+$/, v => {
+			const raw = v[0];
 			return { value: parseInt(raw), raw: raw, integer: true };
 		})
 
-		.add([ integer, '.', integer ], v => float(v[0], v[1]))
+		.add([ Parser.result(integer), '.', Parser.result(v => v.integer && ! v.suffix && ! v.suffixed) ], v => float(v[0], v[1]))
 
-		.add([ number, integer ], v => combine(v[v.length - 2], v[v.length - 1]))
+		.add([ Parser.result(number), Parser.result(integer) ], v => combine(v[0], v[1]))
+
+		.add([ '-', Parser.result(number) ], v => negative(v[0]))
+		.add([ 'minus', Parser.result(number) ], v => negative(v[0]))
+		.add([ 'negative', Parser.result(number) ], v => negative(v[0]))
 
 		.map(
 			{
@@ -56,7 +70,9 @@ module.exports = function(language) {
 				'none': 0,
 				'nought': 0,
 				'nil': 0,
+				'zilch': 0,
 				'one': 1,
+				'single': 1,
 				'two': 2,
 				'three': 3,
 				'four': 4,
@@ -67,7 +83,14 @@ module.exports = function(language) {
 				'nine': 9,
 				'ten': 10,
 				'eleven': 11,
-				'twelve': 12
+				'twelve': 12,
+				'thirteen': 13,
+				'fourteen': 14,
+				'fifteen': 15,
+				'sixteen': 16,
+				'seventeen': 17,
+				'eighteen': 18,
+				'nineteen': 19
 			},
 			l => { return { value: l, raw: l, integer: true } }
 		)
@@ -77,9 +100,9 @@ module.exports = function(language) {
 				'dozen': 12,
 
 				'hundred': 100,
-				'thousands': 1000,
-				'millions': 1000000,
-				'billions': 1000000000,
+				'thousand': 1000,
+				'million': 1000000,
+				'billion': 1000000000,
 
 				'K': 1000,
 				'M': 1000000
@@ -87,15 +110,11 @@ module.exports = function(language) {
 			l => { return { value: l, raw: l, integer: true, suffix: true }}
 		)
 
+		.onlyBest()
 		.finalizer(r => {
-			r = r.map(m => {
-				delete m.integer;
-				delete m.suffix;
-				delete m.raw;
-
-				return m;
-			});
-			r.sort((a, b) => a.value - b.value);
-			return r;
+			const mapped = {
+				value: r.value
+			};
+			return mapped;
 		});
 }

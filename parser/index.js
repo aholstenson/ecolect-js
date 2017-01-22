@@ -80,8 +80,41 @@ class Parser extends Node {
 	}
 
 	finalizer(func) {
-		this._finalizer = func;
+		if(this._finalizer) {
+			const previous = this._finalizer;
+			this._finalizer = function(results) {
+				return func(previous(results));
+			}
+		} else {
+			this._finalizer = func;
+		}
 		return this;
+	}
+
+	onlyBest() {
+		return this.finalizer(results => {
+			let best;
+			for(let i=0; i<results.length; i++) {
+				const result = results[i];
+				if(! best || result.score > best.score) {
+					best = result;
+				}
+			}
+			return best ? best.data : null;
+		});
+	}
+
+	onlyLongest() {
+		return this.finalizer(results => {
+			let best;
+			for(let i=0; i<results.length; i++) {
+				const result = results[i];
+				if(! best || result.index > best.index) {
+					best = result;
+				}
+			}
+			return best ? best.data : null;
+		});
 	}
 
 	match(encounter, options) {

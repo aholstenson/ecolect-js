@@ -58,8 +58,6 @@ class Encounter {
 			this.data.push(data);
 		}
 
-		//console.log(this.currentNodes.map(() => '  ').join('') + 'next', nodes.map(n => n.toString()));
-
 		let results = [];
 		let promise = Promise.resolve();
 		nodes.forEach(node => promise = promise.then(() => {
@@ -74,7 +72,11 @@ class Encounter {
 				if(Array.isArray(r)) {
 					results.push(...r);
 				} else if(r != null && typeof r !== 'undefined') {
-					results.push(r);
+					results.push({
+						index: nextIndex,
+						score: nextScore / this.tokens.length,
+						data: r
+					});
 				}
 			};
 
@@ -97,7 +99,6 @@ class Encounter {
 		const currentScore = this.currentScore;
 		const outgoing = this.outgoing;
 
-		//console.log(this.currentNodes.map(() => '  ').join('') + node.toString());
 		this.currentNodes.push(node);
 
 		this.maxDepth = Math.max(this.maxDepth, this.currentNodes.length);
