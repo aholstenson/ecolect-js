@@ -13,8 +13,15 @@ $ npm install --save ecolect
 ## Matching intents
 
 The main function of Ecolect is to match natural language expressions to
-intents. This is done by matching one or more expressions to the intent.
-While matching the library will fuzzy
+intents. Every expression is parsed into tokens that are matched and scored
+using a language specific comparison function. This allows the library to
+match for example `cookies` even if the user skipped the last `s` and entered
+`cookie` instead.
+
+Matching can also be run in two modes:
+
+* Normal mode - Match a full expression to an intent, which is best used when building a bot or a voice interface.
+* Partial mode - Match most of the expression, for example when building an action launcher or a auto-complete for a search engine
 
 ## Example
 
