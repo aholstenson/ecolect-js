@@ -3,12 +3,20 @@
 const Parser = require('../../parser');
 
 function combine(a, b) {
-	if(b.suffix) {
+	if(a.suffix && b.suffix) {
 		const value = a.value * b.value;
 		return {
 			value: value,
 			raw: value,
-			integer: (a.integer && b.integer) || false,
+			integer: a.integer && b.integer,
+			suffix: true
+		};
+	} else if(b.suffix) {
+		const value = a.value * b.value;
+		return {
+			value: value,
+			raw: value,
+			integer: a.integer && b.integer,
 			suffixed: true
 		};
 	} else {
@@ -18,7 +26,7 @@ function combine(a, b) {
 		return {
 			value: value,
 			raw: raw,
-			integer: (a.integer && b.integer) || false
+			integer: a.integer && b.integer
 		};
 	}
 }

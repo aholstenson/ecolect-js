@@ -149,6 +149,13 @@ describe('English', function() {
 					expect(v).to.deep.equal({ value: -1000000 })
 				);
 		});
+
+		it('1 thousand thousand', function() {
+			return number('1 thousand thousand')
+				.then(v =>
+					expect(v).to.deep.equal({ value: 1000000 })
+				);
+		});
 	});
 					expect(v).to.deep.equal([
 						{ value: 1 },
