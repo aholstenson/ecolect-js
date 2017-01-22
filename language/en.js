@@ -28,6 +28,8 @@ function normalize(word, next) {
 			return 'will';
 		case '\'s':
 			return 'is';
+		case '\'ve':
+			return 'have';
 		case '&':
 			return 'and';
 		default:
