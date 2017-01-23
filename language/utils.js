@@ -105,4 +105,10 @@ class Tokens extends Array {
 		return result.join('');
 	}
 
+	slice() {
+		const array = Array.prototype.slice.apply(this, arguments);
+		const result = new Tokens();
+		result.push(...array);
+		return result;
+	}
 }
