@@ -50,6 +50,6 @@ class Matcher {
 	}
 }
 
-module.exports.builder = function(lang) {
+module.exports.intents = function(lang) {
 	return new Builder(lang);
 }

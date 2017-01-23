@@ -9,7 +9,7 @@ const any = require('../values/any');
 
 describe('Combined Intents', function() {
 	describe('Orders', function() {
-		const intents = ecolect.builder(en)
+		const intents = ecolect.intents(en)
 			.intent('orders')
 				.add('Orders')
 				.add('Show orders')
@@ -62,6 +62,14 @@ describe('Combined Intents', function() {
 			return intents.match('orders for', { partial: true })
 				.then(results => {
 					expect(results.matches.length).to.equal(1);
+				});
+		});
+
+		it('Partial: orders for Test', function() {
+			return intents.match('orders for Test', { partial: true })
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.values.customer).to.equal('Test');
 				});
 		});
 

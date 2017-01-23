@@ -5,7 +5,7 @@ const en = require('../language/en');
 const any = require('../values/any');
 const date = require('../values/date');
 
-const intents = ecolect.builder(en)
+const intents = ecolect.intents(en)
 	.intent('todo:list')
 		.add('show me my todos')
 		.done()
