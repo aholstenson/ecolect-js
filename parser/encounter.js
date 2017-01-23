@@ -2,11 +2,21 @@
 
 const cloneDeep = require('lodash.clonedeep');
 
-function scorePartial(tokens, maxDepth, score) {
-	const distance = Math.abs(score - tokens);
+function scorePartial(tokens, depth, maxDepth, score) {
+	const diff = Math.abs(score - tokens);
 
-	const v = maxDepth > 0 ? distance / maxDepth : distance;
-	return 1 - Math.max(Math.min(1, v), 0);
+	if(tokens === 0) {
+		// Special case for no tokens, low effort first
+		return 1 / score;
+	} else if(score > tokens) {
+		let result = 0.95;
+		if(diff > 0) {
+			result += (diff / Math.max(diff, depth - tokens)) * 0.05;
+		}
+		return result;
+	} else {
+		return (score / tokens) * 0.95;
+	}
 }
 
 /**
@@ -84,7 +94,7 @@ class Encounter {
 					results.push(item);
 				} else {
 					const score = this.partial
-						? scorePartial(this.tokens.length, this.maxDepth, nextScore)
+						? scorePartial(this.tokens.length, nextIndex, this.maxDepth, nextScore)
 						: nextScore / this.tokens.length;
 					results.push(new Match(nextIndex, score, item));
 				}
