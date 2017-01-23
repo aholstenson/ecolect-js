@@ -15,6 +15,13 @@ class Parser extends Node {
 
 		this.language = language;
 		this.needsAll = (options && options.needsAll) || false;
+
+		this.supportsPartial = false;
+	}
+
+	allowPartial() {
+		this.supportsPartial = true;
+		return this;
 	}
 
 	add(nodes, value) {

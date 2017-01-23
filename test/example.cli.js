@@ -7,6 +7,7 @@ const ecolect = require('../');
 const en = require('../language/en');
 const any = require('../values/any');
 const date = require('../values/date');
+const number = require('../values/number');
 const enumeration = require('../values/enum');
 
 const intents = ecolect.intents(en)
@@ -22,8 +23,10 @@ const intents = ecolect.intents(en)
 		.done()
 	.intent('todo:deadline')
 		.value('date', date())
+		.value('count', number())
 		.add('todos for {date}')
 		.add('show me todos for {date}')
+		.add('top {count} for {date}')
 		.done()
 	.intent('tods:for')
 		.value('tags', enumeration([ 'Cookie Co', 'Do Later' ]))
@@ -32,6 +35,12 @@ const intents = ecolect.intents(en)
 		.done()
 	.build();
 
+function formatValue(value) {
+	if(value && value.value) {
+		return value.value;
+	}
+	return value;
+}
 
 function run() {
 	autocompletePrompt('', query => {
@@ -42,7 +51,7 @@ function run() {
 				const title = item.expression.map(e => {
 					switch(e.type) {
 						case 'value':
-							return chalk.green(e.value || e.id);
+							return chalk.green(formatValue(e.value) || e.id);
 						default:
 							return e.value;
 					}
@@ -51,7 +60,7 @@ function run() {
 					title: chalk.gray(item.score.toFixed(2)) + '  ' + title
 				}
 			})
-		);
+		).catch(err => console.log(err));
 	}).on('submit', query => {
 		if(! query) {
 			run();

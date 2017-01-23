@@ -10,11 +10,14 @@ module.exports = function(values, textMapper) {
 		textMapper = DEFAULT_MAPPER;
 	}
 	return new LanguageSpecificValue(language => {
-		const parser = new Parser(language);
+		const parser = new Parser(language)
+			.allowPartial();
 		values.forEach(value => {
 			parser.add(textMapper(value), value);
 		});
 
-		return new ParsingValue(parser);
+		return new ParsingValue(parser, {
+			supportsPartial: true
+		});
 	});
 };

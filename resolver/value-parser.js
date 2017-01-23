@@ -22,12 +22,7 @@ class ValueParser extends Node {
 	}
 
 	match(encounter) {
-		let options = this.options;
-		if(encounter.partial) {
-			options = Object.assign({}, this.options);
-			options.partial = encounter.partial;
-		}
-		return this.node.match(encounter, options);
+		return this.node.match(encounter, this.options);
 	}
 
 	toString() {

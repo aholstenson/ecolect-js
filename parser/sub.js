@@ -10,6 +10,7 @@ class SubNode extends Node {
 		this.roots = roots instanceof Node ? roots.outgoing : roots;
 		this.filter = filter || ALWAYS_TRUE;
 		this.mapper = roots instanceof Node ? roots._mapper : null;
+		this.supportsPartial = roots instanceof Node && typeof roots.supportsPartial !== 'undefined' ? roots.supportsPartial : true;
 	}
 
 	match(encounter) {
@@ -19,6 +20,21 @@ class SubNode extends Node {
 			 * evaulating.
 			 */
 			return null;
+		}
+
+		if(! encounter.token()) {
+			if(encounter.partial) {
+				/**
+				 * Partial match for nothing. Assume we will match in the
+				 * future.
+				 */
+				return encounter.next(1.0, 0);
+			} else {
+				/**
+				 * No tokens means we can't match.
+				 */
+				return null;
+			}
 		}
 
 		const variants = [];
@@ -40,9 +56,19 @@ class SubNode extends Node {
 		let previousIndex = this.currentIndex;
 		this.currentIndex = encounter.currentIndex;
 
+		// Memorize if we are running a partial match
+		const partial = encounter.partial;
+
 		return encounter.branchWithOnMatch(onMatch, () => {
+			if(partial && ! this.supportsPartial) {
+				// If we do not support partial matching
+				encounter.partial = false;
+			}
 			return encounter.next(this.roots);
 		}).then(() => {
+			// Restore partial flag
+			encounter.partial = partial;
+
 			let result = [];
 			let promise = Promise.resolve();
 			variants.forEach(v => promise = promise.then(() => {
