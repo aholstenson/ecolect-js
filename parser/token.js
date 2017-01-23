@@ -31,7 +31,7 @@ class Token extends Node {
 			 * always match as this node is a potential continuation of the
 			 * current expression.
 			 */
-			return encounter.next(0.0, 1);
+			return encounter.next(1.0, 1);
 		}
 
 		return null;

@@ -1,5 +1,12 @@
 'use strict';
 
+function scorePartial(tokens, maxDepth, score) {
+	const distance = Math.abs(score - tokens);
+
+	const v = maxDepth > 0 ? distance / maxDepth : distance;
+	return 1 - Math.max(Math.min(1, v), 0);
+}
+
 /**
  * Encounter used when trying to match an expression. Contains all the tokens
  * and functions for accessinng tokens, the current index and the current
@@ -74,7 +81,10 @@ class Encounter {
 				if(item instanceof Match) {
 					results.push(item);
 				} else {
-					results.push(new Match(nextIndex, nextScore, item));
+					const score = this.partial
+						? scorePartial(this.tokens.length, this.maxDepth, nextScore)
+						: nextScore / this.tokens.length;
+					results.push(new Match(nextIndex, score, item));
 				}
 			};
 

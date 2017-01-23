@@ -11,6 +11,7 @@ const enumeration = require('../values/enum');
 
 const intents = ecolect.intents(en)
 	.intent('todo:list')
+		.add('all todos')
 		.add('show me my todos')
 		.done()
 	.intent('todo:create')
@@ -21,13 +22,13 @@ const intents = ecolect.intents(en)
 		.done()
 	.intent('todo:deadline')
 		.value('date', date())
-		.add('show me todos for {date}')
 		.add('todos for {date}')
+		.add('show me todos for {date}')
 		.done()
 	.intent('tods:for')
 		.value('tags', enumeration([ 'Cookie Co', 'Do Later' ]))
-		.add('show me todos for {tags}')
-		.add('todos for {tags}')
+		.add('todos marked {tags}')
+		.add('show me todos marked {tags}')
 		.done()
 	.build();
 
@@ -47,7 +48,7 @@ function run() {
 					}
 				}).join(' ');
 				return {
-					title: title
+					title: chalk.gray(item.score.toFixed(2)) + '  ' + title
 				}
 			})
 		);
