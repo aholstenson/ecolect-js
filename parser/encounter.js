@@ -18,6 +18,8 @@ class Encounter {
 		this.partial = options.partial || false;
 		this.onMatch = options.onMatch;
 		this.verbose = options.verbose;
+
+		this.options = options;
 	}
 
 	/**

@@ -110,8 +110,8 @@ class Parser extends Node {
 	finalizer(func) {
 		if(this._finalizer) {
 			const previous = this._finalizer;
-			this._finalizer = function(results) {
-				return func(previous(results));
+			this._finalizer = function(results, encounter) {
+				return func(previous(results, encounter));
 			}
 		} else {
 			this._finalizer = func;
@@ -120,7 +120,7 @@ class Parser extends Node {
 	}
 
 	onlyBest() {
-		return this.finalizer(results => {
+		return this.finalizer((results, encounter) => {
 			let best;
 			for(let i=0; i<results.length; i++) {
 				const result = results[i];
@@ -131,14 +131,14 @@ class Parser extends Node {
 
 			let data = best ? best.data : null;
 			if(data && this._mapper) {
-				data = this._mapper(data);
+				data = this._mapper(data, encounter);
 			}
 			return data;
 		});
 	}
 
 	onlyLongest() {
-		return this.finalizer(results => {
+		return this.finalizer((results, encounter) => {
 			let best;
 			for(let i=0; i<results.length; i++) {
 				const result = results[i];
@@ -149,7 +149,7 @@ class Parser extends Node {
 
 			let data = best ? best.data : null;
 			if(data && this._mapper) {
-				data = this._mapper(data);
+				data = this._mapper(data, encounter);
 			}
 			return data;
 		});
@@ -163,7 +163,9 @@ class Parser extends Node {
 
 		let promise = encounter.next(0, 0);
 		if(this._finalizer) {
-			promise = promise.then(this._finalizer);
+			promise = promise.then(results => {
+				return this._finalizer(results, encounter);
+			});
 		}
 
 		return promise;
