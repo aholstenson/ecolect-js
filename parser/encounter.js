@@ -1,5 +1,7 @@
 'use strict';
 
+const cloneDeep = require('lodash.clonedeep');
+
 function scorePartial(tokens, maxDepth, score) {
 	const distance = Math.abs(score - tokens);
 
@@ -170,6 +172,14 @@ class Match {
 		this.index = index;
 		this.score = score;
 		this.data = data;
+	}
+
+	copy() {
+		const r = new Match(this.index, this.score, cloneDeep(this.data));
+		if(this.expression) {
+			r.expression = cloneDeep(r.expression);
+		}
+		return r;
 	}
 }
 

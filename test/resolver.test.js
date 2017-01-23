@@ -303,4 +303,51 @@ describe('Resolver', function() {
 				});
 		});
 	});
+
+	describe('Graph with custom value', function() {
+		const values = [
+			'one',
+			'two',
+			'three'
+		];
+		const resolver = new Builder(lang)
+			.value('name', function(encounter) {
+				let text = encounter.text();
+				if(encounter.partial) {
+					return values.filter(f => {
+						return f.indexOf(text) === 0;
+					});
+				} else {
+					if(values.indexOf(text) >= 0) {
+						return text;
+					}
+				}
+			})
+			.add('do {name}')
+			.build();
+
+		it('Match', function() {
+			return resolver.match('do one')
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.values.name).to.equal('one');
+				});
+		});
+
+		it('No match', function() {
+			return resolver.match('do four')
+				.then(results => {
+					expect(results.matches.length).to.equal(0);
+				});
+		});
+
+		it('Partial', function() {
+			return resolver.match('do t', {
+				partial: true
+			})
+				.then(results => {
+					expect(results.matches.length).to.equal(2);
+				});
+		});
+	})
 })

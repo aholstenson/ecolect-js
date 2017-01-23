@@ -38,9 +38,17 @@ class Value extends Node {
 							).then(value => {
 								if(typeof value !== 'undefined' && value !== null) {
 									nextMatched.forEach(match => {
-										match.data.values[this.id] = value;
+										if(encounter.partial && Array.isArray(value)) {
+											value.forEach(v => {
+												match = match.copy();
+												match.data.values[this.id] = v;
+												results.push(match);
+											});
+										} else {
+											match.data.values[this.id] = value;
+											results.push(match);
+										}
 									});
-									results.push(...nextMatched);
 									return nextMatched;
 								}
 
@@ -58,7 +66,9 @@ class Value extends Node {
 			return encounter.next(1.0, 0);
 		}
 
-		return promise.then(() => results.length > 0 ? results : null);
+		return promise.then(() => {
+			return results.length > 0 ? results : null;
+		});
 	}
 
 	toString() {
