@@ -23,6 +23,21 @@ Matching can also be run in two modes:
 * Normal mode - Match a full expression to an intent, which is best used when building a bot or a voice interface.
 * Partial mode - Match most of the expression, for example when building an action launcher or a auto-complete for a search engine
 
+## Values
+
+Intents in Ecolect can also contain values, there are several built in types and
+it's easy to provide custom value validation. Values are used to capture
+information, such as dates, numbers, names and freeform text.
+
+Currently supported types:
+
+Type           |  Examples
+---------------|----------------
+any            | `any string here`
+number         | `2`, `one`, `1.5`, `one thousand`, `1 dozen`, `100k`
+boolean        | `true`, `false`, `on`, `off`, `yes`, `no`
+temperature    | `40`, `40 degrees`, `78 C`, `20 C`
+
 ## Example
 
 ```javascript
