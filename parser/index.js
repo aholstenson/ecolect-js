@@ -161,6 +161,10 @@ class Parser extends Node {
 			encounter.outgoing = this.outgoing;
 		}
 
+		if(! encounter) {
+			throw new Error('Nothing to match on');
+		}
+
 		let promise = encounter.next(0, 0);
 		if(this._finalizer) {
 			promise = promise.then(results => {

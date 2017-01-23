@@ -7,6 +7,7 @@ const ecolect = require('../');
 const en = require('../language/en');
 const any = require('../values/any');
 const date = require('../values/date');
+const enumeration = require('../values/enum');
 
 const intents = ecolect.intents(en)
 	.intent('todo:list')
@@ -21,6 +22,12 @@ const intents = ecolect.intents(en)
 	.intent('todo:deadline')
 		.value('date', date())
 		.add('show me todos for {date}')
+		.add('todos for {date}')
+		.done()
+	.intent('tods:for')
+		.value('tags', enumeration([ 'Cookie Co', 'Do Later' ]))
+		.add('show me todos for {tags}')
+		.add('todos for {tags}')
 		.done()
 	.build();
 
@@ -44,15 +51,22 @@ function run() {
 				}
 			})
 		);
-	}).on('submit', query => intents.match(query).then(r => {
-		if(r.best) {
-			console.log('Matched ' + r.best.intent);
-		} else {
-			console.log('Did not match');
+	}).on('submit', query => {
+		if(! query) {
+			run();
+			return;
 		}
 
-		run();
-	}));
+		intents.match(query).then(r => {
+			if(r.best) {
+				console.log('Matched ' + r.best.intent);
+			} else {
+				console.log('Did not match');
+			}
+
+			run();
+		});
+	});
 }
 
 console.log('Type to test matching');

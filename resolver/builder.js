@@ -1,9 +1,11 @@
 'use strict';
 
+const isEqual = require('lodash.isequal');
 const ResolverParser = require('./parser');
 
 const TokenNode = require('../parser/token');
 const ValueNode = require('./value');
+const ValueParserNode = require('./value-parser');
 
 /**
  * This is a basic naive builder for instances of Resolver on top of the
@@ -68,7 +70,7 @@ class Builder {
 		encounter.currentNodes.forEach(node => {
 			if(node instanceof TokenNode) {
 				text.push(node.token.raw);
-			} else if(node instanceof ValueNode) {
+			} else if(node instanceof ValueNode || node instanceof ValueParserNode) {
 				if(text.length > 0) {
 					path.push({
 						type: 'text',
@@ -100,27 +102,26 @@ class Builder {
 			return result.data;
 		}
 
-		this.parser.finalizer(results => {
+		this.parser.finalizer((results, encounter) => {
 			results = results.map(makePrettyResult);
 			results.sort((a, b) => b.score - a.score);
 
 			// Filter results so only one result of each intent is available
-			const added = {};
-			results = results.filter(match => {
-				if(added[match.intent]) return false;
-				added[match.intent] = true;
-				return true;
-			}).map(r => {
-				// Ensure that partial matching exposes the values in the expression
-				if(r.expression) {
-					r.expression.forEach(part => {
-						if(part.type === 'value') {
-							part.value = r.values[part.id] || null;
-						}
-					});
-				}
-				return r;
-			})
+			const filter = encounter.partial
+				? partialIntentFilter()
+				: uniqueIntentFilter();
+			results = results.filter(filter)
+				.map(r => {
+					// Ensure that partial matching exposes the values in the expression
+					if(r.expression) {
+						r.expression.forEach(part => {
+							if(part.type === 'value') {
+								part.value = r.values[part.id] || null;
+							}
+						});
+					}
+					return r;
+				})
 
 			return {
 				best: results[0] || null,
@@ -130,6 +131,30 @@ class Builder {
 
 		return this.parser;
 	}
+}
+
+function uniqueIntentFilter() {
+	const added = {};
+	return function(match) {
+		if(added[match.intent]) return false;
+		return added[match.intent] = true;
+	};
+}
+
+function partialIntentFilter() {
+	const added = {};
+	return function(match) {
+		let matches = added[match.intent] || (added[match.intent] = []);
+		for(let i=0; i<matches.length; i++) {
+			if(isEqual(matches[i], match.values)) {
+				matches.push(match.values);
+				return false;
+			}
+		}
+
+		matches.push(match.values);
+		return true;
+	};
 }
 
 module.exports = Builder;

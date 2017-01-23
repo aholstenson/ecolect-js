@@ -78,4 +78,47 @@ describe('Value: Enum', function() {
 				});
 		});
 	});
+
+	describe('Partial matching', function() {
+		const resolver = new Builder(lang)
+			.value('company', enumeration([ 'Balloons', 'Cookie Co', 'Banana Inc' ]))
+			.add('{company} orders')
+			.add('orders for {company}')
+			.build();
+
+		it('Invalid company', function() {
+			return resolver.match('orders for A', {
+				partial: true
+			})
+				.then(results => {
+					expect(results.matches.length).to.equal(0);
+				});
+		});
+
+		it('One match', function() {
+			return resolver.match('orders for C', {
+				partial: true
+			})
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.values.company).to.equal('Cookie Co');
+
+					const expr = results.best.expression;
+					expect(expr[expr.length - 1]).to.deep.equal({
+						type: 'value',
+						id: 'company',
+						value: 'Cookie Co'
+					});
+				});
+		});
+
+		it('Multiple matches', function() {
+			return resolver.match('orders for B', {
+				partial: true
+			})
+				.then(results => {
+					expect(results.matches.length).to.equal(2);
+				});
+		});
+	});
 })

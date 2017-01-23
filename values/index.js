@@ -17,7 +17,7 @@ module.exports.LanguageSpecificValue = LanguageSpecificValue;
 module.exports.ParsingValue = class ParsingValue {
 	constructor(parser, options) {
 		this.parser = parser;
-		this.options = options;
+		this.options = options || {};
 	}
 
 	toNode(id) {
