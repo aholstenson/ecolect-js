@@ -110,7 +110,17 @@ class Builder {
 				if(added[match.intent]) return false;
 				added[match.intent] = true;
 				return true;
-			});
+			}).map(r => {
+				// Ensure that partial matching exposes the values in the expression
+				if(r.expression) {
+					r.expression.forEach(part => {
+						if(part.type === 'value') {
+							part.value = r.values[part.id] || null;
+						}
+					});
+				}
+				return r;
+			})
 
 			return {
 				best: results[0] || null,
