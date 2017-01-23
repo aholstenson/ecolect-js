@@ -53,7 +53,7 @@ class Encounter {
 		const nextScore = this.currentScore + (score || 0);
 
 		let pushedData = false;
-		if(data) {
+		if(data !== null && typeof data !== 'undefined') {
 			pushedData = true;
 			this.data.push(data);
 		}
@@ -66,7 +66,7 @@ class Encounter {
 				this.currentScore = nextScore;
 
 				return node.match(this);
-			}, data);
+			});
 
 			let push = item => {
 				if(item instanceof Match) {

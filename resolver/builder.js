@@ -1,98 +1,124 @@
 'use strict';
 
-const Resolver = require('./index');
-const Token = require('./token');
-const Value = require('./value');
-const Collector = require('./collector');
+const ResolverParser = require('./parser');
 
-const VALUE = /{([a-zA-Z0-9]+)}/g;
+const TokenNode = require('../parser/token');
+const ValueNode = require('./value');
 
 /**
- * This is a basic naive builder for instances of Resolver. It adds all
- * expressions as individual roots.
+ * This is a basic naive builder for instances of Resolver on top of the
+ * parser.
  */
 class Builder {
 	constructor(language, data) {
 		this.language = language;
 
 		this.values = {};
-		this.roots = [];
 
-		this.collector = new Collector(data);
+		this.parser = new ResolverParser(language);
+		this.data = data || 'unknown';
+
+		this.resultHandler = (values, encounter) => {
+			const result = {
+				intent: this.data,
+				values: {}
+			};
+
+			// Transfer any values that have been pushed by other parsers
+			values.forEach(value => {
+				if(value.id && typeof value.value !== 'undefined') {
+					result.values[value.id] = value.value;
+				}
+			});
+
+			if(encounter.partial) {
+				result.expression = this.describeExpression(encounter);
+			}
+
+			return result;
+		};
 	}
 
 	value(id, type) {
-		let factory = type;
-		if(typeof factory === 'function') {
-			factory = type(this.language);
-		}
-
-		this.values[id] = factory;
+		this.parser.value(id, type);
 		return this;
 	}
 
-	add(text) {
-		if(text instanceof Resolver) {
-			text.roots.forEach(r => this.roots.push(r));
+	add(firstArg) {
+		if(firstArg instanceof ResolverParser) {
+			/**
+			 * If adding another parser for resolving intent just copy all
+			 * of its nodes as they should work just fine with our own parser.
+			 *
+			 * TODO: Maybe use add instead to use optimization?
+			 */
+			firstArg.outgoing.forEach(r => this.parser.outgoing.push(r));
 			return this;
 		}
 
-		let firstNode;
-		let node;
-		let parse = (from, to) => {
-			let sub = text.substring(from, to);
-			this.language.tokenize(sub).forEach(t => {
-				if(t.length == 0) return;
-
-				let nextNode = new Token(this.language, t);
-
-				if(node) {
-					node.outgoing.push(nextNode);
-				} else {
-					firstNode = nextNode;
-				}
-				node = nextNode;
-			});
-		};
-
-		let previousIndex = 0;
-		VALUE.lastIndex = 0;
-		let match;
-		while((match = VALUE.exec(text))) {
-			if(match.index != 0) {
-				parse(previousIndex, match.index);
-			}
-			previousIndex = VALUE.lastIndex;
-
-			const id = match[1];
-			const value = this.values[id];
-			if(! value) {
-				throw new Error('No type registered for ' + id);
-			}
-
-			let nextNode = new Value(id, value);
-			if(node) {
-				node.outgoing.push(nextNode);
-			} else {
-				firstNode = nextNode;
-			}
-			node = nextNode;
-		}
-
-		// Parse the remaining text
-		parse(previousIndex, text.length);
-
-		// Push the collector and register the new root
-		node.outgoing.push(this.collector);
-		this.roots.push(firstNode);
+		this.parser.add(Array.prototype.slice.call(arguments), this.resultHandler);
 
 		return this;
 	}
 
-	build() {
-		// TODO: Simplify the roots to make the algorithm run faster
+	describeExpression(encounter) {
+		// Partial matching so expose the full expression that would match
+		let path = [];
+		let text = [];
+		encounter.currentNodes.forEach(node => {
+			if(node instanceof TokenNode) {
+				text.push(node.token.raw);
+			} else if(node instanceof ValueNode) {
+				if(text.length > 0) {
+					path.push({
+						type: 'text',
+						value: text.join(' ')
+					});
+					text.length = 0;
+				}
 
-		return new Resolver(this.language, this.roots);
+				path.push({
+					type: 'value',
+					id: node.id
+				});
+			}
+		});
+
+		if(text.length > 0) {
+			path.push({
+				type: 'text',
+				value: text.join(' ')
+			});
+		}
+
+		return path;
+	}
+
+	build() {
+		function makePrettyResult(result) {
+			result.data.score = result.score;
+			return result.data;
+		}
+
+		this.parser.finalizer(results => {
+			results = results.map(makePrettyResult);
+			results.sort((a, b) => b.score - a.score);
+
+			// Filter results so only one result of each intent is available
+			const added = {};
+			results = results.filter(match => {
+				if(added[match.intent]) return false;
+				added[match.intent] = true;
+				return true;
+			});
+
+			return {
+				best: results[0] || null,
+				matches: results
+			};
+		});
+
+		return this.parser;
 	}
 }
 

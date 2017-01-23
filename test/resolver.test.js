@@ -34,7 +34,7 @@ describe('Resolver', function() {
 
 	describe('Graph with value of type any', function() {
 		const resolver = new Builder(lang)
-			.value('a', any)
+			.value('a', any())
 			.add('{a}')
 			.add('one {a}')
 			.add('{a} one')

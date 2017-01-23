@@ -25,7 +25,7 @@ class SubNode extends Node {
 		const onMatch = result => {
 			if(! this.filter(result)) return;
 
-			if(result && this.mapper) {
+			if(this.mapper && result !== null && typeof result !== 'undefined') {
 				result = this.mapper(result);
 			}
 

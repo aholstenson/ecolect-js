@@ -3,19 +3,19 @@
 const ResolverBuilder = require('./resolver/builder');
 
 class Builder {
-	constructor(lang) {
-		if(! lang || ! lang.tokenize || ! lang.compareTokens) {
+	constructor(language) {
+		if(! language || ! language.tokenize || ! language.compareTokens) {
 			throw new Error('Language instance must be provided');
 		}
 
-		this._lang = lang;
+		this.language = language;
 
-		this._resolver = new ResolverBuilder(this._lang);
+		this.builder = new ResolverBuilder(this.language);
 	}
 
 	intent(id) {
 		const self = this;
-		const instance = new ResolverBuilder(this._lang, id);
+		const instance = new ResolverBuilder(this.language, id);
 		return {
 			value(id, type) {
 				instance.value(id, type);
@@ -28,24 +28,25 @@ class Builder {
 			},
 
 			done() {
-				self._resolver.add(instance.build());
+				self.builder.add(instance.build());
 				return self;
 			}
 		};
 	}
 
 	build() {
-		return new Matcher(this._resolver.build());
+		return new Matcher(this.builder.build());
 	}
 }
 
 class Matcher {
-	constructor(resolver) {
-		this._resolver = resolver;
+	constructor(parser) {
+		this.parser = parser;
+		this.language = parser.language;
 	}
 
 	match(expression, options) {
-		return this._resolver.match(expression, options);
+		return this.parser.match(expression, options);
 	}
 }
 

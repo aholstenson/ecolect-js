@@ -2,6 +2,8 @@
 
 const chrono = require('chrono-node');
 
+const { LanguageSpecificValue } = require('./index');
+
 /*
  * Date handling via Chrono.
  */
@@ -29,7 +31,7 @@ function createMatcher(options) {
 }
 
 module.exports = function(options) {
-	return function(language) {
+	return new LanguageSpecificValue(function(language) {
 		return createMatcher(options || {}, language);
-	};
+	});
 };

@@ -10,10 +10,11 @@ const CustomNode = require('./custom');
 const Encounter = require('./encounter');
 
 class Parser extends Node {
-	constructor(language) {
+	constructor(language, options) {
 		super();
 
 		this.language = language;
+		this.needsAll = (options && options.needsAll) || false;
 	}
 
 	add(nodes, value) {
@@ -34,12 +35,25 @@ class Parser extends Node {
 			for(let i=0; i<last.outgoing.length; i++) {
 				if(last.outgoing[i].equals(node)) {
 					last = last.outgoing[i];
+					mergeOutgoing(node);
 					return;
 				}
 			}
 
 			last.outgoing.push(node);
 			last = node;
+
+			// TODO: This needs to handle multiple nodes and multiple outgoing
+			mergeOutgoing(last);
+		};
+
+		const mergeOutgoing = node => {
+			// TODO: This needs to handle multiple nodes and multiple outgoing
+			if(node.outgoing.length === 1) {
+				push(node.outgoing[0]);
+			} else if(node.outgoing.length > 1) {
+				throw new Error('Too many outgoing nodes, branching is not supported yet');
+			}
 		};
 
 		const createNode = n => {
@@ -53,9 +67,7 @@ class Parser extends Node {
 			} else if(n instanceof Node) {
 				push(n);
 			} else if(typeof n === 'string') {
-				this.language.tokenize(n).forEach(t => {
-					push(new TokenNode(this.language, t));
-				});
+				push(this.parse(n));
 			} else {
 				throw new Error('Invalid node');
 			}
@@ -63,7 +75,7 @@ class Parser extends Node {
 
 		nodes.forEach(createNode);
 
-		push(new CollectorNode(nodes.length, value));
+		push(new CollectorNode(nodes.length, value, this.needsAll));
 
 		return this;
 	}
@@ -93,10 +105,6 @@ class Parser extends Node {
 		this._mapper = mapper;
 
 		return this;
-	}
-
-	optimize() {
-
 	}
 
 	finalizer(func) {
