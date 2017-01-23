@@ -24,12 +24,14 @@ class SubNode extends Node {
 
 		if(! encounter.token()) {
 			if(encounter.partial) {
-				/**
-				 * Partial match for nothing. Assume we will match in the
-				 * future.
-				 */
-				return encounter.next(1.0, 0);
-			} else {
+				if(! this.supportsPartial) {
+					/**
+					* Partial match for nothing without support for it. Assume
+					* we will match in the future.
+					*/
+					return encounter.next(1.0, 0);
+				}
+			} else if(this.supports) {
 				/**
 				 * No tokens means we can't match.
 				 */
