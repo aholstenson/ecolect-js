@@ -8,6 +8,8 @@ const Builder = require('../resolver/builder');
 
 const any = require('../values/any');
 const date = require('../values/date');
+const number = require('../values/number');
+const boolean = require('../values/boolean');
 
 describe('Resolver', function() {
 	describe('Graph without value', function() {
@@ -202,5 +204,103 @@ describe('Resolver', function() {
 				expect(r.matches.length).to.equal(0);
 			})
 		})
+	});
+
+	describe('Graph with number', function() {
+		const resolver = new Builder(lang)
+			.value('number', number())
+			.add('stuff {number}')
+			.add('a {number} c')
+			.build();
+
+		it('With a number', function() {
+			return resolver.match('stuff 2')
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.values.number).to.deep.equal({
+						value: 2
+					});
+				});
+		});
+
+		it('Without a number', function() {
+			return resolver.match('stuff abc')
+				.then(results => {
+					expect(results.matches.length).to.equal(0);
+				});
+		});
+
+		it('With a number followed by garbage', function() {
+			return resolver.match('stuff 2 abc')
+				.then(results => {
+					expect(results.matches.length).to.equal(0);
+				});
+		});
+
+		it('With a more complex number', function() {
+			return resolver.match('stuff 2 thousand')
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.values.number).to.deep.equal({
+						value: 2000
+					});
+				});
+		});
+
+		it('With a number and trailing valid token', function() {
+			return resolver.match('a two hundred c')
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.values.number).to.deep.equal({
+						value: 200
+					});
+				});
+		});
+	});
+
+	describe('Graph with boolean', function() {
+		const resolver = new Builder(lang)
+			.value('boolean', boolean())
+			.add('stuff {boolean}')
+			.add('a {boolean} c')
+			.build();
+
+		it('With a boolean', function() {
+			return resolver.match('stuff off')
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.values.boolean).to.equal(false);
+				});
+		});
+
+		it('Without a boolean', function() {
+			return resolver.match('stuff abc')
+				.then(results => {
+					expect(results.matches.length).to.equal(0);
+				});
+		});
+
+		it('With a boolean followed by garbage', function() {
+			return resolver.match('stuff off abc')
+				.then(results => {
+					expect(results.matches.length).to.equal(0);
+				});
+		});
+
+		it('With yes', function() {
+			return resolver.match('stuff yes')
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.values.boolean).to.equal(true);
+				});
+		});
+
+		it('With a boolean and trailing valid token', function() {
+			return resolver.match('a false c')
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.values.boolean).to.equal(false);
+				});
+		});
 	});
 })
