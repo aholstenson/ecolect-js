@@ -40,6 +40,7 @@ class Parser extends Node {
 			nodes = [ nodes ];
 		}
 
+		let values = 0;
 		let last = this;
 		const push = node => {
 			if(! (node instanceof Node)) {
@@ -54,7 +55,7 @@ class Parser extends Node {
 				if(last.outgoing[i].equals(node)) {
 					last = last.outgoing[i];
 					mergeOutgoing(node);
-					return;
+					return node;
 				}
 			}
 
@@ -63,6 +64,8 @@ class Parser extends Node {
 
 			// TODO: This needs to handle multiple nodes and multiple outgoing
 			mergeOutgoing(last);
+
+			return node;
 		};
 
 		const mergeOutgoing = node => {
@@ -77,23 +80,28 @@ class Parser extends Node {
 		const createNode = n => {
 			if(typeof n === 'function') {
 				const result = n(this);
-				push(result);
+				return push(result);
 			} else if(n instanceof RegExp) {
-				push(new RegExpNode(n));
+				return push(new RegExpNode(n));
 			} else if(n instanceof Parser) {
-				push(new SubNode(n));
+				return push(new SubNode(n));
 			} else if(n instanceof Node) {
-				push(n);
+				return push(n);
 			} else if(typeof n === 'string') {
-				push(this.parse(n));
+				return push(this.parse(n));
 			} else {
 				throw new Error('Invalid node');
 			}
 		};
 
-		nodes.forEach(createNode);
+		nodes.forEach(n => {
+			let r = createNode(n);
+			if(r && ! (r instanceof TokenNode)) {
+				values++;
+			}
+		});
 
-		push(new CollectorNode(nodes.length, value, this.needsAll));
+		push(new CollectorNode(values, value, this.needsAll));
 
 		return this;
 	}
@@ -205,9 +213,18 @@ class Parser extends Node {
 		return 'Parser[]';
 	}
 
-	static result(validator) {
+	static result(node, validator) {
+		if(typeof validator === 'undefined') {
+			validator = node;
+			node = null;
+		}
+
 		return function(parser) {
-			return new SubNode(parser.outgoing, validator);
+			const sub = new SubNode(node ? node : parser.outgoing, validator);
+			if(validator) {
+				sub.name = (node ? node.name + ':' : '') + validator.name;
+			}
+			return sub;
 		};
 	}
 
