@@ -6,6 +6,7 @@ const number = require('./en/number');
 const ordinal = require('./en/ordinal');
 const boolean = require('./en/boolean');
 const temperature = require('./en/temperature');
+const date = require('./en/date');
 
 const stemmer = require('talisman/stemmers/porter');
 const similarity = require('talisman/metrics/distance/jaro-winkler').similarity;
@@ -56,6 +57,7 @@ module.exports = {
 				tokens[i] = {
 					raw: word,
 					normalized: normalized,
+					short: word.length <= 4,
 					stemmed: stemmer(normalized)
 				};
 			}
@@ -65,6 +67,9 @@ module.exports = {
 
 	compareTokens(a, b) {
 		if(a.normalized === b.normalized) return 1.0;
+
+		if(a.short || b.short) return 0;
+
 		if(a.stemmed === b.stemmed) return 0.95;
 
 		const d = similarity(a.normalized, b.normalized);
@@ -87,3 +92,4 @@ module.exports.number = number(module.exports);
 module.exports.ordinal = ordinal(module.exports);
 module.exports.boolean = boolean(module.exports);
 module.exports.temperature = temperature(module.exports);
+module.exports.date = date(module.exports);

@@ -58,15 +58,16 @@ function negative(o) {
 
 module.exports = function(language) {
 	return new Parser(language)
+		.name('number')
 
 		.add(/^[0-9]+$/, v => {
 			const raw = v[0];
 			return { value: parseInt(raw), raw: raw, integer: true };
 		})
 
+		.add([ Parser.result(number), Parser.result(integer) ], v => combine(v[0], v[1]))
 		.add([ Parser.result(integer), '.', Parser.result(v => v.integer && ! v.suffix && ! v.suffixed) ], v => float(v[0], v[1]))
 
-		.add([ Parser.result(number), Parser.result(integer) ], v => combine(v[0], v[1]))
 		.add([ Parser.result(number), 'e', /^[0-9]$/], v => combine(v[0], {
 			value: Math.pow(10, parseInt(v[1])),
 			suffix: true

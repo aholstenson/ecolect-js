@@ -7,6 +7,7 @@ const en = require('../language/en');
 const number = text => en.number.match(text);
 const ordinal = text => en.ordinal.match(text);
 const temperature = (text, options) => en.temperature.match(text, options);
+const date = (text, options) => en.date.match(text, options);
 
 describe('English', function() {
 	describe('Tokenization', function() {
@@ -255,5 +256,300 @@ describe('English', function() {
 					expect(v).to.deep.equal({ value: 40, unit: 'celsius' })
 				);
 		});
+	});
+
+	describe('Date', function() {
+		describe('Weekdays', function() {
+			it('Friday', function() {
+				return date('Friday')
+					.then(v =>
+						expect(v).to.deep.equal({ dayOfWeek: 5 })
+					);
+			});
+
+			it('Tue', function() {
+				return date('Tue')
+					.then(v =>
+						expect(v).to.deep.equal({ dayOfWeek: 2 })
+					);
+			});
+
+			it('this tuesday', function() {
+				const now = new Date(2017, 0, 24);
+				return date('this tuesday', { now: now })
+					.then(v =>
+						expect(v).to.deep.equal({
+							year: 2017,
+							month: 0,
+							day: 31
+						})
+					);
+			});
+
+			it('this Fri', function() {
+				const now = new Date(2017, 0, 24);
+				return date('this Fri', { now: now })
+					.then(v =>
+						expect(v).to.deep.equal({
+							year: 2017,
+							month: 0,
+							day: 27
+						})
+					);
+			});
+
+			it('this Monday', function() {
+				const now = new Date(2017, 0, 24);
+				return date('this Monday', { now: now })
+					.then(v =>
+						expect(v).to.deep.equal({
+							year: 2017,
+							month: 0,
+							day: 30
+						})
+					);
+			});
+
+			it('on Monday', function() {
+				const now = new Date(2017, 0, 24);
+				return date('this Monday', { now: now })
+					.then(v =>
+						expect(v).to.deep.equal({
+							year: 2017,
+							month: 0,
+							day: 30
+						})
+					);
+			});
+		});
+
+		describe('Months', function() {
+			it('jan', function() {
+				return date('jan')
+					.then(v =>
+						expect(v).to.deep.equal({ month: 0 })
+					);
+			});
+
+			it('this month', function() {
+				const now = new Date(2010, 0, 1);
+				return date('this month', { now: now })
+					.then(v =>
+						expect(v).to.deep.equal({
+							year: 2010,
+							month: 0
+						})
+					);
+			});
+
+			it('next month', function() {
+				const now = new Date(2010, 0, 1);
+				return date('next month', { now: now })
+					.then(v =>
+						expect(v).to.deep.equal({
+							year: 2010,
+							month: 1
+						})
+					);
+			});
+
+			it('last month', function() {
+				const now = new Date(2010, 0, 1);
+				return date('last month', { now: now })
+					.then(v =>
+						expect(v).to.deep.equal({
+							year: 2009,
+							month: 11
+						})
+					);
+			});
+		});
+
+		describe('Month + day', function() {
+			it('jan 12', function() {
+				return date('jan 12')
+				.then(v =>
+					expect(v).to.deep.equal({ month: 0, day: 12 })
+				);
+			});
+
+			it('12 jan', function() {
+				return date('12 jan')
+				.then(v =>
+					expect(v).to.deep.equal({ month: 0, day: 12 })
+				);
+			});
+
+			it('12th november', function() {
+				return date('12th november')
+				.then(v =>
+					expect(v).to.deep.equal({ month: 10, day: 12 })
+				);
+			});
+
+			it('12th of november', function() {
+				return date('12th of november')
+				.then(v =>
+					expect(v).to.deep.equal({ month: 10, day: 12 })
+				);
+			});
+		});
+
+		describe('Relative day of week in month', function() {
+			it('first Friday May', function() {
+				return date('first Friday May', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2010, month: 4, day: 7 })
+				);
+			});
+
+			it('first Friday in May', function() {
+				return date('first Friday in May', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2010, month: 4, day: 7 })
+				);
+			});
+
+			it('3rd Friday in May', function() {
+				return date('3rd Friday in May', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2010, month: 4, day: 21 })
+				);
+			});
+		});
+
+		describe('Year', function() {
+			it('2018', function() {
+				return date('2018')
+					.then(v =>
+						expect(v).to.deep.equal({ year: 2018 })
+					);
+			});
+
+			it('this year', function() {
+				return date('this year')
+					.then(v =>
+						expect(v).to.deep.equal({ year: new Date().getFullYear() })
+					);
+			});
+
+			it('in 4 years', function() {
+				return date('in 4 years', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({ year: 2014 })
+					);
+			});
+		});
+
+		describe('Month + Year', function() {
+			it('may 2018', function() {
+				return date('may 2018')
+					.then(v =>
+						expect(v).to.deep.equal({
+							year: 2018,
+							month: 4
+						})
+					);
+			});
+		});
+
+		describe('Full dates', function() {
+			it('12 jan 2018', function() {
+				return date('12 jan 2018')
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2018, month: 0, day: 12 })
+				);
+			});
+
+			it('12 jan, 2018', function() {
+				return date('12 jan, 2018')
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2018, month: 0, day: 12 })
+				);
+			});
+
+			it('12 jan in 2018', function() {
+				return date('12 jan in 2018')
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2018, month: 0, day: 12 })
+				);
+			});
+
+			it('12 jan in 4 years', function() {
+				return date('12 jan in 4 years', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2014, month: 0, day: 12 })
+				);
+			});
+
+			it('2010 01 01', function() {
+				return date('2010 01 01')
+				.then(v => {
+					expect(v).to.deep.equal({
+						year: 2010,
+						month: 0,
+						day: 1
+					})
+				});
+			})
+
+			it('2010-01-01', function() {
+				return date('2010-01-01')
+				.then(v => {
+					expect(v).to.deep.equal({
+						year: 2010,
+						month: 0,
+						day: 1
+					})
+				});
+			});
+		});
+
+		describe('Relative dates within year', function() {
+			it('12 jan next year', function() {
+				return date('12 jan next year')
+				.then(v =>
+					expect(v).to.deep.equal({
+						year: new Date().getFullYear() + 1,
+						month: 0,
+						day: 12
+					})
+				);
+			});
+
+			it('this month 2018', function() {
+				const now = new Date(2010, 0, 1);
+				return date('this month 2018', { now: now })
+				.then(v =>
+					expect(v).to.deep.equal({
+						year: 2018,
+						month: 0
+					})
+				);
+			});
+
+			it('first friday in 2018', function() {
+				return date('first friday in 2018')
+				.then(v =>
+					expect(v).to.deep.equal({
+						year: 2018,
+						month: 0,
+						day: 5
+					})
+				);
+			});
+
+			it('first friday in 4 years', function() {
+				return date('first friday in 4 years', { now: new Date(2014, 2, 22) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						year: 2018,
+						month: 0,
+						day: 5
+					})
+				);
+			});
+		});
+
 	});
 });

@@ -17,6 +17,7 @@
   ],
   "dependencies": {
     "chrono-node": "^1.2.5",
+    "date-fns": "^1.27.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
     "talisman": "^0.15.0"

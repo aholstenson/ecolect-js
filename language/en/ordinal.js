@@ -5,11 +5,11 @@ const Parser = require('../../parser');
 module.exports = function(language) {
 	return new Parser(language)
 
-		.add(language.number, v => v)
-		.add([ language.number, 'st' ], v => v)
-		.add([ language.number, 'nd' ], v => v)
-		.add([ language.number, 'rd' ], v => v)
-		.add([ language.number, 'th' ], v => v)
+		.add(language.number, v => v[0])
+		.add([ language.number, 'st' ], v => v[0])
+		.add([ language.number, 'nd' ], v => v[0])
+		.add([ language.number, 'rd' ], v => v[0])
+		.add([ language.number, 'th' ], v => v[0])
 
 		.map(
 			{
