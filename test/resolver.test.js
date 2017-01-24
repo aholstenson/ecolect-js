@@ -201,9 +201,15 @@ describe('Resolver', function() {
 			return resolver.match('hello cookie', {
 				partial: true
 			}).then(r => {
-				expect(r.matches.length).to.equal(0);
+				expect(r.matches.length).to.equal(1);
+				expect(r.best.values.test).to.equal(undefined);
+				expect(r.best.expression[1]).to.deep.equal({
+					type: 'value',
+					id: 'test',
+					value: null
+				});
 			})
-		})
+		});
 	});
 
 	describe('Graph with number', function() {
