@@ -70,8 +70,18 @@ class Encounter {
 			return this.next(this.outgoing, nodes, score, consumedTokens);
 		}
 
-		const nextIndex = this.currentIndex + (consumedTokens || 0);
+		let nextIndex = this.currentIndex + (consumedTokens || 0);
 		const nextScore = this.currentScore + (score || 0);
+
+		if(this.skipPunctuation) {
+			/*
+			 * Switch to the new index and read all of the punctuation tokens
+			 * and then update index next matching starts at.
+			 */
+			this.currentIndex = nextIndex;
+			this.readPunctuation();
+			nextIndex = this.currentIndex;
+		}
 
 		let pushedData = false;
 		if(data !== null && typeof data !== 'undefined') {
@@ -165,6 +175,16 @@ class Encounter {
 		}
 
 		return r;
+	}
+
+	/**
+	 * Read any punctuation we can.
+	 */
+	readPunctuation() {
+		let token = this.tokens[this.currentIndex];
+		while(token && token.punctuation) {
+			token = this.tokens[++this.currentIndex];
+		}
 	}
 
 	/**

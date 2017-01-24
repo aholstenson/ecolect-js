@@ -33,6 +33,10 @@ matchers['numeric'] = regenerate()
 	.add(require('unicode-9.0.0/General_Category/Decimal_Number/code-points.js'))
 	.toString();
 
+matchers['punctuation'] = regenerate()
+	.add(require('unicode-9.0.0/General_Category/Punctuation/code-points.js'))
+	.toString();
+
 fs.writeFileSync(
 	path.join(__dirname, '..', 'language', 'matchers.js'),
 	'/* eslint-disable */ module.exports = ' + JSON.stringify(matchers) + ';'

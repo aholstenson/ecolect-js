@@ -17,10 +17,16 @@ class Parser extends Node {
 		this.needsAll = (options && options.needsAll) || false;
 
 		this.supportsPartial = false;
+		this._skipPunctuation = false;
 	}
 
 	allowPartial() {
 		this.supportsPartial = true;
+		return this;
+	}
+
+	skipPunctuation() {
+		this._skipPunctuation = true;
 		return this;
 	}
 
@@ -91,6 +97,10 @@ class Parser extends Node {
 		let first;
 		let last;
 		this.language.tokenize(text).forEach(t => {
+			if(this._skipPunctuation && t.punctuation) {
+				return;
+			}
+
 			const node = new TokenNode(this.language, t);
 			if(last) {
 				last.outgoing.push(node);
@@ -166,6 +176,10 @@ class Parser extends Node {
 		if(typeof encounter === 'string') {
 			encounter = new Encounter(this.language, encounter, options || {});
 			encounter.outgoing = this.outgoing;
+
+			if(this._skipPunctuation) {
+				encounter.skipPunctuation = true;
+			}
 		}
 
 		if(! encounter) {

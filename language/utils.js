@@ -2,6 +2,11 @@
 
 const matchers = require('./matchers');
 
+const MATCHER_PUNCTUATION = new RegExp('^(' + matchers.punctuation + ')+$');
+function isPunctuation(text) {
+	return MATCHER_PUNCTUATION.test(text);
+}
+
 const MATCHER_ALPHABETIC = '(?:' + matchers.wordish + ')+';
 const MATCHER_NUMERIC = '(?:' + matchers.numeric + ')+';
 const MATCHER_EMOJI = matchers.emoji + '(?:' + matchers.emojiModifier + ')*';
@@ -24,10 +29,18 @@ function tokenizeSingle(index, text, transformer, result) {
 					t.stop = offsetStart + t.raw.length;
 				}
 
+				if(isPunctuation(t.raw)) {
+					t.punctuation = true;
+				}
+
 				offsetStart = t.stop;
 				result.push(t);
 			});
 		} else {
+			if(isPunctuation(tokens.raw)) {
+				tokens.punctuation = true;
+			}
+
 			result.push(tokens);
 		}
 	}

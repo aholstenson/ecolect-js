@@ -11,6 +11,7 @@ class SubNode extends Node {
 		this.filter = filter || ALWAYS_TRUE;
 		this.mapper = roots instanceof Node ? roots._mapper : null;
 		this.supportsPartial = roots instanceof Node && typeof roots.supportsPartial !== 'undefined' ? roots.supportsPartial : true;
+		this.skipPunctuation = typeof roots._skipPunctuation !== 'undefined' ? roots._skipPunctuation : null;
 	}
 
 	match(encounter) {
@@ -60,16 +61,23 @@ class SubNode extends Node {
 
 		// Memorize if we are running a partial match
 		const partial = encounter.partial;
+		const skipPunctuation = encounter.skipPunctuation;
 
 		return encounter.branchWithOnMatch(onMatch, () => {
 			if(partial && ! this.supportsPartial) {
 				// If we do not support partial matching
 				encounter.partial = false;
 			}
+
+			if(this.skipPunctuation != null) {
+				encounter.skipPunctuation = this.skipPunctuation;
+			}
+
 			return encounter.next(this.roots);
 		}).then(() => {
 			// Restore partial flag
 			encounter.partial = partial;
+			encounter.skipPunctuation = skipPunctuation;
 
 			let result = [];
 			let promise = Promise.resolve();
