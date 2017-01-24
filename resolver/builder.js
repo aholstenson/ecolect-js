@@ -27,7 +27,7 @@ class Builder {
 			};
 
 			// Transfer any values that have been pushed by other parsers
-			values.forEach(value => {
+			encounter.data.forEach(value => {
 				if(value.id && typeof value.value !== 'undefined') {
 					result.values[value.id] = value.value;
 				}
