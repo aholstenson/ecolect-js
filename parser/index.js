@@ -25,6 +25,11 @@ class Parser extends Node {
 		return this;
 	}
 
+	name(name) {
+		this._name = this.language.id + ':' + name;
+		return this;
+	}
+
 	skipPunctuation() {
 		this._skipPunctuation = true;
 		return this;

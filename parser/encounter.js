@@ -39,6 +39,8 @@ class Encounter {
 		this.verbose = options.verbose;
 
 		this.options = options;
+
+		this._cache = {};
 	}
 
 	/**
@@ -194,6 +196,13 @@ class Encounter {
 		if(this.onMatch) {
 			return this.onMatch(data);
 		}
+	}
+
+	cache(index) {
+		if(typeof index === 'undefined') {
+			index = this.currentIndex;
+		}
+		return this._cache[index] || (this._cache[index] = {});
 	}
 }
 

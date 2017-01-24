@@ -11,6 +11,7 @@ class SubNode extends Node {
 		this.filter = filter || ALWAYS_TRUE;
 		this.mapper = roots instanceof Node ? roots._mapper : null;
 		this.supportsPartial = roots instanceof Node && typeof roots.supportsPartial !== 'undefined' ? roots.supportsPartial : true;
+		this.name = roots._name || null;
 		this.skipPunctuation = typeof roots._skipPunctuation !== 'undefined' ? roots._skipPunctuation : null;
 	}
 
@@ -40,10 +41,45 @@ class SubNode extends Node {
 			}
 		}
 
-		const variants = [];
-		const onMatch = result => {
-			if(! this.filter(result)) return;
+		// Set the index we were called at
+		let previousIndex = this.currentIndex;
+		this.currentIndex = encounter.currentIndex;
 
+		const variants = [];
+		const branchIntoVariants = variants0 => {
+			let result = [];
+			let promise = Promise.resolve();
+			variants0.forEach(v => {
+				if(! this.filter(v.data)) return;
+
+				promise = promise.then(() => {
+					return encounter.next(
+						v.score - encounter.currentScore,
+						v.index - encounter.currentIndex,
+						v.data
+					).then(r => result.push(...r));
+				});
+			});
+
+			return promise.then(() => {
+				this.currentIndex = previousIndex;
+				if(result.length === 0) {
+					return null;
+				} else if(result.length === 1) {
+					return result[0];
+				} else {
+					return result;
+				}
+			});
+		};
+
+		// Check the cache
+		const cache = encounter.cache();
+		if(cache[this.roots]) {
+			return branchIntoVariants(cache[this.roots]);
+		}
+
+		const onMatch = result => {
 			if(this.mapper && result !== null && typeof result !== 'undefined') {
 				result = this.mapper(result);
 			}
@@ -54,10 +90,6 @@ class SubNode extends Node {
 				data: result
 			});
 		};
-
-		// Set the index we were called at
-		let previousIndex = this.currentIndex;
-		this.currentIndex = encounter.currentIndex;
 
 		// Memorize if we are running a partial match
 		const partial = encounter.partial;
@@ -79,31 +111,27 @@ class SubNode extends Node {
 			encounter.partial = partial;
 			encounter.skipPunctuation = skipPunctuation;
 
-			let result = [];
-			let promise = Promise.resolve();
-			variants.forEach(v => promise = promise.then(() => {
-				return encounter.next(
-					v.score - encounter.currentScore,
-					v.index - encounter.currentIndex,
-					v.data
-				).then(r => result.push(...r));
-			}));
-
-			return promise.then(() => {
-				this.currentIndex = previousIndex;
-				return result;
-			});
+			cache[this.roots] = variants;
+			return branchIntoVariants(variants);
 		});
 	}
 
 	equals(other) {
+		function arrayEquals(a, b) {
+			if(a.length != b.length) return false;
+			for(let i=0; i<a.length; i++) {
+				if(a !== b) return false;
+			}
+			return true;
+		}
+
 		return other instanceof SubNode
-			&& this.roots === other.roots
+			&& arrayEquals(this.roots, other.roots)
 			&& this.filter === other.filter;
 	}
 
 	toString() {
-		return 'SubGraph[' + this.roots + ']';
+		return 'SubGraph[' + (this.name || this.roots) + ']';
 	}
 }
 
