@@ -7,6 +7,7 @@ const addMonths = require('date-fns/add_months');
 const setISODay = require('date-fns/set_iso_day');
 const getISODay = require('date-fns/get_iso_day');
 const addWeeks = require('date-fns/add_weeks');
+const addDays = require('date-fns/add_days');
 
 function value(v) {
 	if(Array.isArray(v)) {
@@ -81,6 +82,15 @@ function adjustedMonth(date, diff) {
 	return {
 		year: date.getFullYear(),
 		month: date.getMonth()
+	};
+}
+
+function adjustedDays(date, diff) {
+	date = addDays(date, diff);
+	return {
+		year: date.getFullYear(),
+		month: date.getMonth(),
+		day: date.getDate()
 	};
 }
 
@@ -189,6 +199,13 @@ module.exports = function(language) {
 		.add([ 'this', Parser.result(isDayOfWeek) ], nextDayOfWeek)
 		.add([ 'next', Parser.result(isDayOfWeek) ], nextDayOfWeek)
 
+		.add('today', (v, e) => adjustedDays(currentTime(e), 0))
+		.add('tomorrow', (v, e) => adjustedDays(currentTime(e), 1))
+		.add('day after tomorrow', (v, e) => adjustedDays(currentTime(e), 2))
+		.add('the day after tomorrow', (v, e) => adjustedDays(currentTime(e), 2))
+		.add('yesterday', (v, e) => adjustedDays(currentTime(e), -1))
+		.add([ 'in', ordinal, 'days' ], (v, e) => adjustedDays(currentTime(e), v[0].value))
+
 		// Named months
 		.map(
 			{
@@ -234,6 +251,7 @@ module.exports = function(language) {
 		.add('this month', (v, e) => adjustedMonth(currentTime(e), 0))
 		.add('last month', (v, e) => adjustedMonth(currentTime(e), -1))
 		.add('next month', (v, e) => adjustedMonth(currentTime(e), +1))
+		.add([ 'in', ordinal, 'months' ], (v, e) => adjustedMonth(currentTime(e), v[0].value))
 
 		// Years
 		.add([ /^[0-9]{4}$/ ], v => { return { year: parseInt(value(v[0])) }})
@@ -256,12 +274,32 @@ module.exports = function(language) {
 		.add([ Parser.result(hasMonth), 'in', Parser.result(isYear) ], v => withYear(v[0], v[1]))
 		.add([ Parser.result(hasMonth), 'of', Parser.result(isYear) ], v => withYear(v[0], v[1]))
 
+		.add([ Parser.result(hasMonth), /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
+		.add([ Parser.result(hasMonth), 'in', /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
+		.add([ Parser.result(hasMonth), 'of', /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
+
 		// Year - Month - Day, such as 2017-01-24 or 2017 2 5
 		.add([ /^[0-9]{4}$/, /^[0-9]{1,2}$/, /^[0-9]{1,2}$/ ], v => {
 			return {
 				year: parseInt(v[0]),
 				month: parseInt(v[1]) - 1,
 				day: parseInt(v[2])
+			};
+		})
+
+		// Month - Day - Year
+		.add([ /^[0-9]{1,2}$/, /^[0-9]{1,2}$/,  /^[0-9]{4}$/ ], v => {
+			return {
+				year: parseInt(v[2]),
+				month: parseInt(v[0]) - 1,
+				day: parseInt(v[1])
+			};
+		})
+
+		.add([ /^[0-9]{1,2}$/, /^[0-9]{1,2}$/ ], v => {
+			return {
+				month: parseInt(v[0]) - 1,
+				day: parseInt(v[1])
 			};
 		})
 

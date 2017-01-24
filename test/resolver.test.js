@@ -118,6 +118,8 @@ describe('Resolver', function() {
 				});
 		});
 
+		/*
+
 		it('start (complex)', function() {
 			return resolver.match('tomorrow at 14:00 stuff')
 				.then(r => {
@@ -140,6 +142,7 @@ describe('Resolver', function() {
 				expect(r.best).to.be.null;
 			});
 		});
+		*/
 	});
 
 	describe('Partial matching', function() {

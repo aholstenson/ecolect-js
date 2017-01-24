@@ -81,7 +81,7 @@ class SubNode extends Node {
 
 		const onMatch = result => {
 			if(this.mapper && result !== null && typeof result !== 'undefined') {
-				result = this.mapper(result);
+				result = this.mapper(result, encounter);
 			}
 
 			variants.push({

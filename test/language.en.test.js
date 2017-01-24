@@ -363,6 +363,28 @@ describe('English', function() {
 						})
 					);
 			});
+
+			it('in one month', function() {
+				const now = new Date(2010, 0, 1);
+				return date('in one month', { now: now })
+					.then(v =>
+						expect(v).to.deep.equal({
+							year: 2010,
+							month: 1
+						})
+					);
+			});
+
+			it('in 4 months', function() {
+				const now = new Date(2010, 0, 1);
+				return date('in 4 months', { now: now })
+					.then(v =>
+						expect(v).to.deep.equal({
+							year: 2010,
+							month: 4
+						})
+					);
+			});
 		});
 
 		describe('Month + day', function() {
@@ -391,6 +413,13 @@ describe('English', function() {
 				return date('12th of november')
 				.then(v =>
 					expect(v).to.deep.equal({ month: 10, day: 12 })
+				);
+			});
+
+			it('4/12', function() {
+				return date('4/12')
+				.then(v =>
+					expect(v).to.deep.equal({ month: 3, day: 12 })
 				);
 			});
 		});
@@ -491,7 +520,7 @@ describe('English', function() {
 						day: 1
 					})
 				});
-			})
+			});
 
 			it('2010-01-01', function() {
 				return date('2010-01-01')
@@ -502,6 +531,63 @@ describe('English', function() {
 						day: 1
 					})
 				});
+			});
+
+			it('01 02 2010', function() {
+				return date('01 02 2010')
+				.then(v => {
+					expect(v).to.deep.equal({
+						year: 2010,
+						month: 0,
+						day: 2
+					})
+				});
+			});
+
+			it('01/02/2010', function() {
+				return date('01/02/2010')
+				.then(v => {
+					expect(v).to.deep.equal({
+						year: 2010,
+						month: 0,
+						day: 2
+					})
+				});
+			});
+
+			it('today', function() {
+				return date('today', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2010, month: 0, day: 1 })
+				);
+			});
+
+			it('tomorrow', function() {
+				return date('tomorrow', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2010, month: 0, day: 2 })
+				);
+			});
+
+			it('yesterday', function() {
+				return date('yesterday', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2009, month: 11, day: 31 })
+				);
+			});
+
+			it('day after tomorrow', function() {
+				return date('day after tomorrow', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2010, month: 0, day: 3 })
+				);
+			});
+
+			it('in 3 days', function() {
+				return date('in 3 days', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2010, month: 0, day: 4 })
+				);
 			});
 		});
 
@@ -546,6 +632,28 @@ describe('English', function() {
 						year: 2018,
 						month: 0,
 						day: 5
+					})
+				);
+			});
+
+			it('first friday in may 2018', function() {
+				return date('first friday in may 2018')
+				.then(v =>
+					expect(v).to.deep.equal({
+						year: 2018,
+						month: 4,
+						day: 4
+					})
+				);
+			});
+
+			it('first friday in may in 4 years', function() {
+				return date('first friday in may in 4 years', { now: new Date(2014, 2, 22) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						year: 2018,
+						month: 4,
+						day: 4
 					})
 				);
 			});
