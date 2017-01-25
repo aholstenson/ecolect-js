@@ -9,7 +9,7 @@ class SubNode extends Node {
 
 		this.roots = roots instanceof Node ? roots.outgoing : roots;
 		this.filter = filter || ALWAYS_TRUE;
-		this.mapper = roots instanceof Node ? roots._mapper : null;
+		//this.mapper = roots instanceof Node ? roots._mapper : null;
 		this.supportsPartial = roots instanceof Node && typeof roots.supportsPartial !== 'undefined' ? roots.supportsPartial : true;
 		this.name = roots._name || null;
 		this.skipPunctuation = typeof roots._skipPunctuation !== 'undefined' ? roots._skipPunctuation : null;

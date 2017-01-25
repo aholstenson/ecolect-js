@@ -11,7 +11,7 @@ class ValueParser extends Node {
 		this.node = new SubNode(parser);
 		this.options = options;
 
-		const mapper = this.node.mapper;
+		const mapper = parser._mapper;
 		this.node.mapper = (r, encounter) => {
 			r = mapper ? mapper(r, encounter) : r;
 			return {

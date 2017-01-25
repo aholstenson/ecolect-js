@@ -2,6 +2,7 @@
 
 const utils = require('./utils');
 
+const integer = require('./en/integer');
 const number = require('./en/number');
 const ordinal = require('./en/ordinal');
 const boolean = require('./en/boolean');
@@ -88,6 +89,7 @@ module.exports = {
 	}
 };
 
+module.exports.integer = integer(module.exports);
 module.exports.number = number(module.exports);
 module.exports.ordinal = ordinal(module.exports);
 module.exports.boolean = boolean(module.exports);

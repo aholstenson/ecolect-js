@@ -3,8 +3,10 @@
 const Parser = require('../../parser');
 
 function withUnit(v, unit) {
-	v.unit = unit;
-	return v;
+	return {
+		value: v.value,
+		unit: unit
+	};
 }
 
 module.exports = function(language) {
@@ -23,10 +25,11 @@ module.exports = function(language) {
 		.add(['degrees', Parser.result(() => true) ], v => v[0])
 
 		.mapResults((data, encounter) => {
-			if(! data.unit) {
-				data.unit = encounter.options.temperature || 'unknown';
-			}
-			return data;
+			const mapped = {
+				value: data.value,
+				unit: data.unit || encounter.options.temperature || 'unknown'
+			};
+			return mapped;
 		})
 
 		.onlyBest()

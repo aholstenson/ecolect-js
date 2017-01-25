@@ -5,11 +5,11 @@ const Parser = require('../../parser');
 module.exports = function(language) {
 	return new Parser(language)
 
-		.add(language.number, v => v[0])
-		.add([ language.number, 'st' ], v => v[0])
-		.add([ language.number, 'nd' ], v => v[0])
-		.add([ language.number, 'rd' ], v => v[0])
-		.add([ language.number, 'th' ], v => v[0])
+		.add(language.integer, v => v[0])
+		.add([ language.integer, 'st' ], v => v[0])
+		.add([ language.integer, 'nd' ], v => v[0])
+		.add([ language.integer, 'rd' ], v => v[0])
+		.add([ language.integer, 'th' ], v => v[0])
 
 		.map(
 			{
@@ -28,4 +28,10 @@ module.exports = function(language) {
 		)
 
 		.onlyBest()
+		.mapResults(r => {
+			const mapped = {
+				value: r.value
+			};
+			return mapped;
+		});
 }
