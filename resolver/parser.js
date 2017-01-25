@@ -21,6 +21,8 @@ class ResolverParser extends Parser {
 		});
 
 		this.values = {};
+
+		this.fuzzy();
 	}
 
 	value(id, type) {

@@ -41,6 +41,13 @@ function normalize(word, next) {
 	}
 }
 
+/**
+ * Normalized tokens that can be skipped if they are missing in the input.
+ */
+const SKIPPABLE = [
+	'in', 'at', 'for'
+];
+
 /*
  * Implementation of English. Uses stemming and a distance metric to determine
  * if a token matches or not.
@@ -59,7 +66,8 @@ module.exports = {
 					raw: word,
 					normalized: normalized,
 					short: word.length <= 4,
-					stemmed: stemmer(normalized)
+					stemmed: stemmer(normalized),
+					skippable: SKIPPABLE.indexOf(normalized) >= 0
 				};
 			}
 			return tokens;

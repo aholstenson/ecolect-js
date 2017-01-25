@@ -18,11 +18,7 @@ class Parser extends Node {
 
 		this.supportsPartial = false;
 		this._skipPunctuation = false;
-	}
-
-	allowPartial() {
-		this.supportsPartial = true;
-		return this;
+		this._fuzzy = false;
 	}
 
 	name(name) {
@@ -30,8 +26,18 @@ class Parser extends Node {
 		return this;
 	}
 
+	allowPartial() {
+		this.supportsPartial = true;
+		return this;
+	}
+
 	skipPunctuation() {
 		this._skipPunctuation = true;
+		return this;
+	}
+
+	fuzzy() {
+		this._fuzzy = true;
 		return this;
 	}
 
@@ -192,6 +198,10 @@ class Parser extends Node {
 
 			if(this._skipPunctuation) {
 				encounter.skipPunctuation = true;
+			}
+
+			if(this._fuzzy) {
+				encounter.fuzzy = true;
 			}
 		}
 

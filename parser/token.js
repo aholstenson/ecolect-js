@@ -34,6 +34,13 @@ class Token extends Node {
 			return encounter.next(1.0, 1);
 		}
 
+		if(encounter.fuzzy && (this.token.skippable || this.token.punctuation)) {
+			/*
+			 * This token is skippable, skip it without adding any score.
+			 */
+			return encounter.next(0.0, 0);
+		}
+
 		return null;
 	}
 

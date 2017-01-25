@@ -7,12 +7,18 @@ class SubNode extends Node {
 	constructor(roots, filter) {
 		super();
 
-		this.roots = roots instanceof Node ? roots.outgoing : roots;
 		this.filter = filter || ALWAYS_TRUE;
-		//this.mapper = roots instanceof Node ? roots._mapper : null;
-		this.supportsPartial = roots instanceof Node && typeof roots.supportsPartial !== 'undefined' ? roots.supportsPartial : true;
-		this.name = roots._name || null;
-		this.skipPunctuation = typeof roots._skipPunctuation !== 'undefined' ? roots._skipPunctuation : null;
+
+		if(roots instanceof Node) {
+			// This node probably points to another parser
+			this.roots = roots.outgoing;
+			this.supportsPartial = typeof roots.supportsPartial !== 'undefined' ? roots.supportsPartial : true;
+			this.name = roots._name || null;
+			this.skipPunctuation = typeof roots._skipPunctuation !== 'undefined' ? roots._skipPunctuation : null;
+			this.fuzzy = typeof roots._fuzzy !== 'undefined' ? roots._fuzzy : null;
+		} else {
+			this.roots = roots;
+		}
 	}
 
 	match(encounter) {
@@ -94,6 +100,7 @@ class SubNode extends Node {
 		// Memorize if we are running a partial match
 		const partial = encounter.partial;
 		const skipPunctuation = encounter.skipPunctuation;
+		const fuzzy = encounter.fuzzy;
 
 		return encounter.branchWithOnMatch(onMatch, () => {
 			if(partial && ! this.supportsPartial) {
@@ -105,11 +112,16 @@ class SubNode extends Node {
 				encounter.skipPunctuation = this.skipPunctuation;
 			}
 
+			if(this.fuzzy != null) {
+				encounter.fuzzy = this.fuzzy;
+			}
+
 			return encounter.next(this.roots);
 		}).then(() => {
 			// Restore partial flag
 			encounter.partial = partial;
 			encounter.skipPunctuation = skipPunctuation;
+			encounter.fuzzy = fuzzy;
 
 			cache[this.roots] = variants;
 			return branchIntoVariants(variants);

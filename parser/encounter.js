@@ -85,15 +85,15 @@ class Encounter {
 			nextIndex = this.currentIndex;
 		}
 
+		let token = this.token(nextIndex);
+
 		let pushedData = false;
 		if(data !== null && typeof data !== 'undefined') {
 			pushedData = true;
 			this.data.push(data);
 		}
 
-		let results = [];
-		let promise = Promise.resolve();
-		nodes.forEach(node => promise = promise.then(() => {
+		const branchInto = node => () => {
 			let result = this.branch(node, () => {
 				this.currentIndex = nextIndex;
 				this.currentScore = nextScore;
@@ -123,12 +123,27 @@ class Encounter {
 			if(result && result.then) {
 				return result.then(handleResult);
 			} else {
-				handleResult(result);
+				return handleResult(result);
 			}
-		}));
+		};
+
+		let results = [];
+		let promise = Promise.resolve();
+		nodes.forEach(node => promise = promise.then(branchInto(node)));
 
 		return promise.then(() => {
 			if(pushedData) this.data.pop();
+
+			if(results.length === 0 && this.fuzzy && token && token.punctuation) {
+				/*
+				 * The encounter is currently in fuzzy mode and we did not match,
+				 * consume the next token if it's punctuation.
+				 *
+				 * The token will not count towards the score of any match later
+				 * down the expression.
+				 */
+				return this.next(nodes, 0.0, (consumedTokens || 0) + 1, data);
+			}
 
 			return results;
 		});
