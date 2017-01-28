@@ -8,6 +8,7 @@ const ordinal = require('./en/ordinal');
 const boolean = require('./en/boolean');
 const temperature = require('./en/temperature');
 const date = require('./en/date');
+const time = require('./en/time');
 
 const stemmer = require('talisman/stemmers/porter');
 const similarity = require('talisman/metrics/distance/jaro-winkler').similarity;
@@ -103,3 +104,4 @@ module.exports.ordinal = ordinal(module.exports);
 module.exports.boolean = boolean(module.exports);
 module.exports.temperature = temperature(module.exports);
 module.exports.date = date(module.exports);
+module.exports.time = time(module.exports);

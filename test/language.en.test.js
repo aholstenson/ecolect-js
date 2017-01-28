@@ -9,6 +9,7 @@ const number = text => en.number.match(text);
 const ordinal = text => en.ordinal.match(text);
 const temperature = (text, options) => en.temperature.match(text, options);
 const date = (text, options) => en.date.match(text, options);
+const time = (text, options) => en.time.match(text, options);
 
 describe('English', function() {
 	describe('Tokenization', function() {
@@ -759,6 +760,142 @@ describe('English', function() {
 				);
 			});
 		});
-
 	});
+/*
+	describe('Time', function() {
+		describe('Exactish', function() {
+			it('00:00', function() {
+				return time('00:00')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 0,
+						minute: 0,
+						precision: 'normal'
+					})
+				);
+			});
+
+			it('00 00', function() {
+				return time('00:00')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 0,
+						minute: 0,
+						precision: 'normal'
+					})
+				);
+			});
+
+			it('3:30', function() {
+				return time('3:30')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 3,
+						minute: 30,
+						precision: 'normal'
+					})
+				);
+			});
+
+			it('3:30 PM', function() {
+				return time('3:30 PM')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 15,
+						minute: 30,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('3:30 p.m.', function() {
+				return time('3:30 p.m.')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 15,
+						minute: 30,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('3 a.m.', function() {
+				return time('3 a.m.')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 15,
+						precision: 'normal'
+					})
+				)
+			});
+		});
+
+		describe('Relative', function() {
+			it('in 4 hours', function() {
+				return time('in 4 hours', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 17,
+						minute: 30,
+						precision: 'normal'
+					})
+				);
+			});
+
+			it('in 5 minutes', function() {
+				return time('in 5 minutes', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 13,
+						minute: 35,
+						precision: 'normal'
+					})
+				);
+			});
+
+			it('in 4 hours 10 minutes', function() {
+				return time('in 4 hours 10 minutes', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 17,
+						minute: 40,
+						precision: 'normal'
+					})
+				);
+			});
+
+			it('in 4 hours and 10 minutes', function() {
+				return time('in 4 hours and 10 minutes', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 17,
+						minute: 40,
+						precision: 'normal'
+					})
+				);
+			});
+
+			it('in 45 minutes', function() {
+				return time('in 45 minutes', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 14,
+						minute: 15,
+						precision: 'normal'
+					})
+				);
+			});
+
+			it('at in 4 hours', function() {
+				return time('at in 4 hours', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 17,
+						minute: 30,
+						precision: 'normal'
+					})
+				);
+			});
+		});
+	})*/
 });
