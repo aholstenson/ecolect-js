@@ -761,7 +761,7 @@ describe('English', function() {
 			});
 		});
 	});
-/*
+
 	describe('Time', function() {
 		describe('Exactish', function() {
 			it('00:00', function() {
@@ -786,6 +786,17 @@ describe('English', function() {
 				);
 			});
 
+			it('330', function() {
+				return time('330')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 3,
+						minute: 30,
+						precision: 'normal'
+					})
+				);
+			});
+
 			it('3:30', function() {
 				return time('3:30')
 				.then(v =>
@@ -796,6 +807,20 @@ describe('English', function() {
 					})
 				);
 			});
+
+			// TODO: Activate this test when integer parsing is updated
+			/*
+			it('three thirty', function() {
+				return time('three thirty')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 3,
+						minute: 30,
+						precision: 'normal'
+					})
+				);
+			});
+			*/
 
 			it('3:30 PM', function() {
 				return time('3:30 PM')
@@ -823,12 +848,163 @@ describe('English', function() {
 				return time('3 a.m.')
 				.then(v =>
 					expect(v).to.deep.equal({
-						hour: 15,
+						hour: 3,
+						minute: 0,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('12 a.m.', function() {
+				return time('12 a.m.')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 0,
+						minute: 0,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('20 a.m.', function() {
+				return time('20 a.m.')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 8,
+						minute: 0,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('12 p.m.', function() {
+				return time('12 p.m.')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 12,
+						minute: 0,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('22 p.m.', function() {
+				return time('22 p.m.')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 22,
+						minute: 0,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('at 3', function() {
+				return time('at 3')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 3,
+						minute: 0,
 						precision: 'normal'
 					})
 				)
 			});
 		});
+
+		describe('Expressive', function() {
+
+			it('quarter to twelve', function() {
+				return time('quarter to twelve')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 11,
+						minute: 45,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('15 before 12', function() {
+				return time('15 before 12')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 11,
+						minute: 45,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('half before 12', function() {
+				return time('half before 12')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 11,
+						minute: 30,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('3 quarters til 12', function() {
+				return time('3 quarters til 12')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 11,
+						minute: 15,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('15 minutes before 3 pm', function() {
+				return time('15 minutes before 3 pm')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 14,
+						minute: 45,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('half past twelve', function() {
+				return time('half past twelve')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 12,
+						minute: 30,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('half twelve', function() {
+				return time('half twelve')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 12,
+						minute: 30,
+						precision: 'normal'
+					})
+				)
+			});
+		});
+
+		/*
+		describe('Timezones', function() {
+			it('04:00 EST', function() {
+				return time('04:00 EST')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 4,
+						minute: 0,
+						precision: 'normal'
+					})
+				)
+			});
+		});
+		*/
 
 		describe('Relative', function() {
 			it('in 4 hours', function() {
@@ -897,5 +1073,5 @@ describe('English', function() {
 				);
 			});
 		});
-	})*/
+	});
 });

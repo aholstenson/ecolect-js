@@ -46,7 +46,7 @@ function normalize(word, next) {
  * Normalized tokens that can be skipped if they are missing in the input.
  */
 const SKIPPABLE = [
-	'in', 'at', 'for'
+	'in', 'at', 'for', 'a', 'an'
 ];
 
 /*
