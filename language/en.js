@@ -2,11 +2,17 @@
 
 const utils = require('./utils');
 
+const dateLocale = require('date-fns/locale/en');
+
 const integer = require('./en/integer');
 const number = require('./en/number');
 const ordinal = require('./en/ordinal');
 const boolean = require('./en/boolean');
 const temperature = require('./en/temperature');
+
+const dayOfWeek = require('./en/dayOfWeek');
+const month = require('./en/month');
+const year = require('./en/year');
 const date = require('./en/date');
 const time = require('./en/time');
 
@@ -102,6 +108,11 @@ module.exports.integer = integer(module.exports);
 module.exports.number = number(module.exports);
 module.exports.ordinal = ordinal(module.exports);
 module.exports.boolean = boolean(module.exports);
-module.exports.temperature = temperature(module.exports);
+
+module.exports.dayOfWeek = dayOfWeek(module.exports);
+module.exports.month = month(module.exports);
+module.exports.year = year(module.exports);
 module.exports.date = date(module.exports);
 module.exports.time = time(module.exports);
+
+module.exports.temperature = temperature(module.exports);

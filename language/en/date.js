@@ -1,6 +1,8 @@
 'use strict';
 
 const Parser = require('../../parser');
+const utils = require('../dates');
+
 const cloneDeep = require('lodash.clonedeep');
 
 const addMonths = require('date-fns/add_months');
@@ -19,13 +21,6 @@ function value(v) {
 	}
 
 	return v;
-}
-
-function isDayOfWeek(v) {
-	return typeof v.dayOfWeek !== 'undefined'
-		&& typeof v.year === 'undefined'
-		&& typeof v.month === 'undefined'
-		&& typeof v.day === 'undefined';
 }
 
 function isMonth(v) {
@@ -51,10 +46,6 @@ function isNoYear(v) {
 	if(typeof v.year !== 'undefined') return false;
 
 	return typeof v.month !== 'undefined';
-}
-
-function isYear(v) {
-	return v.year >= 0 && typeof v.day === 'undefined' && typeof v.month === 'undefined';
 }
 
 function withDay(date, day) {
@@ -98,7 +89,7 @@ function nextDayOfWeek(v, e) {
 	let date = currentTime(e);
 
 	// TODO: Would this change if start of week is on Sunday?
-	const dayOfWeek = v[0].dayOfWeek;
+	const dayOfWeek = v[0].value;
 	const currentDayOfWeek = getISODay(date);
 	if(currentDayOfWeek >= dayOfWeek) {
 		date = addWeeks(date, 1);
@@ -161,44 +152,21 @@ function toDate(date, now) {
 
 module.exports = function(language) {
 	const ordinal = language.ordinal;
+	const dayOfWeek = language.dayOfWeek;
+	const month = language.month;
+	const year = language.year;
 
 	return new Parser(language)
 		.name('date')
 
 		.skipPunctuation()
 
-		// Day of week
-		.map(
-			{
-				'mon': 1,
-				'monday': 1,
+		// This Sunday, Next Monday or On Tuesday
+		.add([ 'this', dayOfWeek ], nextDayOfWeek)
+		.add([ 'next', dayOfWeek ], nextDayOfWeek)
+		.add([ 'on', dayOfWeek ], nextDayOfWeek)
 
-				'tue': 2,
-				'tuesday': 2,
-
-				'wed': 3,
-				'wednesday': 3,
-
-				'thu': 4,
-				'thurs': 4,
-				'thursday': 4,
-
-				'fri': 5,
-				'friday': 5,
-
-				'sat': 6,
-				'saturday': 6,
-
-				'sun': 7,
-				'sunday': 7
-			},
-			l => { return { dayOfWeek: l } }
-		)
-
-		// This Sunday
-		.add([ 'this', Parser.result(isDayOfWeek) ], nextDayOfWeek)
-		.add([ 'next', Parser.result(isDayOfWeek) ], nextDayOfWeek)
-
+		// Expressions for describing the day, such as today and tomorrow
 		.add('today', (v, e) => adjustedDays(currentTime(e), 0))
 		.add('tomorrow', (v, e) => adjustedDays(currentTime(e), 1))
 		.add('day after tomorrow', (v, e) => adjustedDays(currentTime(e), 2))
@@ -206,77 +174,21 @@ module.exports = function(language) {
 		.add('yesterday', (v, e) => adjustedDays(currentTime(e), -1))
 		.add([ 'in', ordinal, 'days' ], (v, e) => adjustedDays(currentTime(e), v[0].value))
 
-		// Named months
-		.map(
-			{
-				'jan': 0,
-				'january': 0,
-
-				'feb': 1,
-				'february': 1,
-
-				'march': 2,
-
-				'apr': 3,
-				'april': 3,
-
-				'may': 4,
-
-				'jun': 5,
-				'june': 5,
-
-				'jul': 6,
-				'july': 6,
-
-				'aug': 7,
-				'august': 7,
-
-				'sep': 8,
-				'sept': 8,
-				'september': 8,
-
-				'oct': 9,
-				'october': 9,
-
-				'nov': 10,
-				'november': 10,
-
-				'dec': 11,
-				'december': 11
-			},
-			l => { return { month: l } }
-		)
-
-		// Dynamic months
-		.add('this month', (v, e) => adjustedMonth(currentTime(e), 0))
-		.add('last month', (v, e) => adjustedMonth(currentTime(e), -1))
-		.add('next month', (v, e) => adjustedMonth(currentTime(e), +1))
-		.add([ 'in', ordinal, 'months' ], (v, e) => adjustedMonth(currentTime(e), v[0].value))
-
-		// Years
-		.add([ /^[0-9]{4}$/ ], v => { return { year: parseInt(value(v[0])) }})
-		.add('this year', (v, e) => { return { year: currentTime(e).getFullYear() }})
-		.add('next year', (v, e) => { return { year: currentTime(e).getFullYear() + 1 }})
-		.add('last year', (v, e) => { return { year: currentTime(e).getFullYear() - 1 }})
-		.add([ 'in', ordinal, 'years' ], (v, e) => { return { year: currentTime(e).getFullYear() + v[0].value }})
-
 		// Month followed by day - Jan 12, February 1st
-		.add([ Parser.result(isMonth), Parser.result(ordinal, v => v.value >= 0 && v.value < 31) ], v => withDay(v[0], v[1]))
+		.add([ month, Parser.result(ordinal, v => v.value >= 0 && v.value < 31) ], v => withDay(v[0], v[1]))
 
 		// Day followed by month - 12 Jan, 1st February
-		.add([ ordinal, Parser.result(isMonth) ], v => withDay(v[1], v[0]))
-		.add([ ordinal, 'of', Parser.result(isMonth) ], v => withDay(v[1], v[0]))
+		.add([ ordinal, month ], v => withDay(v[1], v[0]))
+		.add([ ordinal, 'of', month ], v => withDay(v[1], v[0]))
 
 		// Non-year (month and day) followed by year
 		// With day: 12 Jan 2018, 1st February 2018
 		// Without day: Jan 2018, this month 2018
-		.add([ Parser.result(hasMonth), Parser.result(isYear) ], v => withYear(v[0], v[1]))
-		.add([ Parser.result(hasMonth), 'in', Parser.result(isYear) ], v => withYear(v[0], v[1]))
-		.add([ Parser.result(hasMonth), 'of', Parser.result(isYear) ], v => withYear(v[0], v[1]))
+		.add([ Parser.result(hasMonth), year ], v => withYear(v[0], v[1]))
 
-		.add([ Parser.result(hasMonth), /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
-		.add([ Parser.result(hasMonth), 'in', /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
-		.add([ Parser.result(hasMonth), 'of', /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
+		.add([ month, /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
+		.add([ month, 'in', /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
+		.add([ month, 'of', /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
 
 		// Year - Month - Day, such as 2017-01-24 or 2017 2 5
 		.add([ /^[0-9]{4}$/, /^[0-9]{1,2}$/, /^[0-9]{1,2}$/ ], v => {
@@ -287,7 +199,7 @@ module.exports = function(language) {
 			};
 		})
 
-		// Month - Day - Year
+		// Month / Day / Year
 		.add([ /^[0-9]{1,2}$/, /^[0-9]{1,2}$/,  /^[0-9]{4}$/ ], v => {
 			return {
 				year: parseInt(v[2]),
@@ -296,6 +208,7 @@ module.exports = function(language) {
 			};
 		})
 
+		// Month / Day
 		.add([ /^[0-9]{1,2}$/, /^[0-9]{1,2}$/ ], v => {
 			return {
 				month: parseInt(v[0]) - 1,
@@ -304,15 +217,15 @@ module.exports = function(language) {
 		})
 
 		// nth day of week in month
-		.add([ ordinal, Parser.result(isDayOfWeek), Parser.result(isMonth) ], v => {
-			const dayOfWeek = v[1].dayOfWeek;
+		.add([ ordinal, dayOfWeek, month ], v => {
+			const dayOfWeek = v[1].value;
 			const ordinal = v[0].value;
 			return withAdjuster(v[2], (date, now) => dayInMonth(now, date, ordinal, dayOfWeek))
 		})
 
 		// nth day of week in year
-		.add([ ordinal, Parser.result(isDayOfWeek), Parser.result(isYear) ], v => {
-			const dayOfWeek = v[1].dayOfWeek;
+		.add([ ordinal, dayOfWeek, year ], v => {
+			const dayOfWeek = v[1].value;
 			const ordinal = v[0].value;
 			return withAdjuster(v[2], (date, now) => dayInYear(now, date, ordinal, dayOfWeek))
 		})
@@ -322,27 +235,6 @@ module.exports = function(language) {
 		.add([ 'on', Parser.result() ], v => v[0])
 		.add([ 'on', 'the', Parser.result() ], v => v[0])
 
-		.mapResults((r, e) => {
-			const now = currentTime(e);
-			if(r.adjusters) {
-				r.adjusters.forEach(a => a(r, now));
-			}
-
-			const result = {};
-			if(typeof r.year !== 'undefined') {
-				result.year = r.year;
-			}
-			if(typeof r.month !== 'undefined') {
-				result.month = r.month;
-			}
-			if(typeof r.day !== 'undefined') {
-				result.day = r.day;
-			}
-			if(typeof r.dayOfWeek !== 'undefined') {
-				result.dayOfWeek = r.dayOfWeek;
-			}
-
-			return result;
-		})
+		.mapResults(utils.mapDate)
 		.onlyBest();
 }
