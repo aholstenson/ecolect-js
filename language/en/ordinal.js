@@ -27,6 +27,8 @@ module.exports = function(language) {
 			l => { return { value: l } }
 		)
 
+		.add([ 'the', Parser.result() ], v => v[0])
+
 		.onlyBest()
 		.mapResults(r => {
 			const mapped = {
