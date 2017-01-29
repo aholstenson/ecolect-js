@@ -79,11 +79,6 @@ module.exports = function(language) {
 		// Thousands separator
 		.add([ Parser.result(isDigits), ',', Parser.result(isDigits) ], v => utils.combine(v[0], v[1]))
 
-		.mapResults(r => {
-			const mapped = {
-				value: r.value
-			};
-			return mapped;
-		})
+		.mapResults(utils.map)
 		.onlyBest();
 }

@@ -31,11 +31,6 @@ module.exports = function(language) {
 		.add([ 'minus', Parser.result(number) ], v => utils.negative(v[0]))
 		.add([ 'negative', Parser.result(number) ], v => utils.negative(v[0]))
 
-		.mapResults(r => {
-			const mapped = {
-				value: r.value
-			};
-			return mapped;
-		})
+		.mapResults(utils.map)
 		.onlyBest();
 }

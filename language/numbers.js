@@ -51,3 +51,17 @@ module.exports.float = function float(a, b) {
 		integer: false
 	};
 };
+
+module.exports.map = function(data) {
+	return new NumberValue(data);
+}
+
+class NumberValue {
+	constructor(obj) {
+		this.value = obj.value;
+	}
+
+	format() {
+		return String(this.value);
+	}
+}
