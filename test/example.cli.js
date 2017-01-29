@@ -8,7 +8,7 @@ const en = require('../language/en');
 const any = require('../values/any');
 const date = require('../values/date');
 const number = require('../values/number');
-const enumeration = require('../values/enum');
+const enumeration = require('../values/enumeration');
 
 const intents = ecolect.intents(en)
 	.intent('todo:list')

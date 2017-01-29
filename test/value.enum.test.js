@@ -6,9 +6,9 @@ const expect = chai.expect;
 const lang = require('../language/en');
 const Builder = require('../resolver/builder');
 
-const enumeration = require('../values/enum');
+const enumeration = require('../values/enumeration');
 
-describe('Value: Enum', function() {
+describe('Value: Enumeration', function() {
 	describe('No mapping', function() {
 		const resolver = new Builder(lang)
 			.value('company', enumeration([ 'Balloons', 'Cookie Co', 'Banana Inc' ]))
