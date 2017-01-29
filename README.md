@@ -73,7 +73,7 @@ Capture any positive integer number.
 
 Language         | Examples
 -----------------|-------------
-English          | `20`, `zero`, `one million`, `4 000`, '1 dozen', '100k'
+English          | `20`, `zero`, `one million`, `4 000`, `1 dozen`, `100k`
 
 #### Returned value
 
@@ -101,7 +101,7 @@ Capture any number, including numbers with a fractional element.
 
 Language         | Examples
 -----------------|-------------
-English          | `20`, `2.4 million`, `8.0`, '-12'
+English          | `20`, `2.4 million`, `8.0`, `-12`
 
 #### Returned value
 
@@ -128,7 +128,7 @@ Capture an ordinal, such as `1st`, indicating a position.
 
 Language         | Examples
 -----------------|-------------
-English          | `1st`, `third`, `3`, 'the fifth'
+English          | `1st`, `third`, `3`, `the fifth`
 
 #### Returned value
 
@@ -159,8 +159,13 @@ English          | `today`, `in 2 days`, `january 12th`, `2010-02-22`, `02/22/20
 
 #### Returned value
 
-The returned value is an object with the keys `year`, `month`, `day` and a
-parsed date ``
+The returned value is an object with the keys `year`, `month`, `day` and can
+be turned into a `Date` via the function `toDate`.
+
+```javascript
+const date = value.toDate();
+```
+
 #### Example
 
 ```javascript
@@ -180,12 +185,40 @@ Language         | Examples
 -----------------|-------------
 English          | `09:00`, `3 pm`, `at 3:30 am`, `noon`, `quarter to twelve`, `in 2 hours`, `in 45 minutes`
 
+#### Returned value
+
+The returned value is an object with the keys `hour`, `minute`, `second` and can
+be turned into a `Date` via the function `toDate`.
+
+```javascript
+const date = value.toDate();
+```
+
+#### Example
+
 ```javascript
 const time = require('ecolect/values/time');
 
 builder.intent('alarm')
 	.value('time', time())
 	.add('Wake me {time}')
+	.done();
+```
+
+### Date & Time
+
+Capture both a date and a time.
+
+Language         | Examples
+-----------------|-------------
+English          | `3pm on Jan 12th`, `in 2 days and 2 hours`, `14:00`
+
+```javascript
+const datetime = require('ecolect/values/datetime');
+
+builder.intent('schedule')
+	.value('when', datetime())
+	.add('Schedule a call {when}')
 	.done();
 ```
 

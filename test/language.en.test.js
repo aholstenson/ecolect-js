@@ -13,6 +13,7 @@ const month = (text, options) => en.month.match(text, options);
 const year = (text, options) => en.year.match(text, options);
 const date = (text, options) => en.date.match(text, options);
 const time = (text, options) => en.time.match(text, options);
+const datetime = (text, options) => en.datetime.match(text, options);
 
 describe('English', function() {
 	describe('Tokenization', function() {
@@ -468,7 +469,7 @@ describe('English', function() {
 		it('in 4 years', function() {
 			return year('in 4 years', { now: new Date(2010, 0, 1) })
 				.then(v =>
-					expect(v).to.deep.equal({ year: 2014 })
+					expect(v).to.deep.equal({ year: 2014, month: 0 })
 				);
 		});
 	});
@@ -705,10 +706,38 @@ describe('English', function() {
 				);
 			});
 
+			it('in 1 day', function() {
+				return date('in 1 day', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2010, month: 0, day: 2 })
+				);
+			});
+
 			it('in 3 days', function() {
 				return date('in 3 days', { now: new Date(2010, 0, 1) })
 				.then(v =>
 					expect(v).to.deep.equal({ year: 2010, month: 0, day: 4 })
+				);
+			});
+
+			it('in 2 months and 3 days', function() {
+				return date('in 2 months and 3 days', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2010, month: 2, day: 4 })
+				);
+			});
+
+			it('in 1 week', function() {
+				return date('in 1 week', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2010, month: 0, day: 8 })
+				);
+			});
+
+			it('in two weeks', function() {
+				return date('in 2 weeks', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2010, month: 0, day: 15 })
 				);
 			});
 
@@ -1109,6 +1138,106 @@ describe('English', function() {
 					})
 				);
 			});
+		});
+	});
+
+	describe('Date & Time', function() {
+		it('12:10, jan 12th', function() {
+			return datetime('12:10, jan 12th', { now: new Date(2010, 0, 1, 13, 30) })
+			.then(v =>
+				expect(v).to.deep.equal({
+					year: 2010,
+					month: 0,
+					day: 12,
+					hour: 12,
+					minute: 10,
+					precision: 'normal'
+				})
+			);
+		});
+
+		it('jan 12th 12:10', function() {
+			return datetime('jan 12th 12:10', { now: new Date(2010, 0, 1, 13, 30) })
+			.then(v =>
+				expect(v).to.deep.equal({
+					year: 2010,
+					month: 0,
+					day: 12,
+					hour: 12,
+					minute: 10,
+					precision: 'normal'
+				})
+			);
+		});
+
+		it('on jan 12th at 12:10', function() {
+			return datetime('on jan 12th at 12:10', { now: new Date(2010, 0, 1, 13, 30) })
+			.then(v =>
+				expect(v).to.deep.equal({
+					year: 2010,
+					month: 0,
+					day: 12,
+					hour: 12,
+					minute: 10,
+					precision: 'normal'
+				})
+			);
+		});
+
+		it('14:15', function() {
+			return datetime('14:15', { now: new Date(2010, 0, 1, 13, 30) })
+			.then(v =>
+				expect(v).to.deep.equal({
+					year: 2010,
+					month: 0,
+					day: 1,
+					hour: 14,
+					minute: 15,
+					precision: 'normal'
+				})
+			);
+		});
+
+		it('in 2 days', function() {
+			return datetime('in 2 days', { now: new Date(2010, 0, 1, 13, 30) })
+			.then(v =>
+				expect(v).to.deep.equal({
+					year: 2010,
+					month: 0,
+					day: 3,
+					hour: 13,
+					minute: 30,
+					precision: 'normal'
+				})
+			);
+		});
+
+		it('in 2 days and 2 hours', function() {
+			return datetime('in 2 days and 2 hours', { now: new Date(2010, 0, 1, 13, 30) })
+			.then(v =>
+				expect(v).to.deep.equal({
+					year: 2010,
+					month: 0,
+					day: 3,
+					hour: 15,
+					minute: 30,
+					precision: 'normal'
+				})
+			);
+		});
+
+		it('in 2 months and 2 days', function() {
+			return datetime('in 2 months and 2 days', { now: new Date(2010, 0, 1, 13, 30) })
+			.then(v =>
+				expect(v).to.deep.equal({
+					year: 2010,
+					month: 2,
+					day: 3,
+					hour: 13,
+					minute: 30,
+					precision: 'normal'
+				})
+			);
 		});
 	});
 });

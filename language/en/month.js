@@ -21,7 +21,7 @@ function adjustedMonth(date, diff) {
 }
 
 module.exports = function(language) {
-	const ordinal = language.ordinal;
+	const integer = language.integer;
 
 	return new Parser(language)
 		.name('month')
@@ -74,7 +74,7 @@ module.exports = function(language) {
 		.add('this month', (v, e) => adjustedMonth(currentTime(e), 0))
 		.add('last month', (v, e) => adjustedMonth(currentTime(e), -1))
 		.add('next month', (v, e) => adjustedMonth(currentTime(e), +1))
-		.add([ 'in', ordinal, 'months' ], (v, e) => adjustedMonth(currentTime(e), v[0].value))
+		.add([ 'in', integer, 'months' ], v => { return { relativeMonths: v[0].value }})
 
 		.add([ 'in', Parser.result() ], v => v[0])
 

@@ -2,11 +2,7 @@
 
 const Parser = require('../../parser');
 const cloneDeep = require('lodash.clonedeep');
-
-const addSeconds = require('date-fns/add_seconds')
-const setHours = require('date-fns/set_hours')
-const setMinutes = require('date-fns/set_minutes')
-const setSeconds = require('date-fns/set_seconds')
+const utils = require('../dates');
 
 function value(v) {
 	if(Array.isArray(v)) {
@@ -180,35 +176,6 @@ module.exports = function(language) {
 		.add([ Parser.result(isTime), 'sharp' ], v => combine(v[0], { precision: 'exact' }))
 
 
-		.mapResults((r, e) => {
-			const result = {};
-			let time = currentTime(e);
-
-			if(r.relative > 0) {
-				time = addSeconds(time, r.relative);
-			} else {
-				if(typeof r.hour !== 'undefined') {
-					time = setHours(time, r.hour);
-				}
-
-				if(typeof r.minute !== 'undefined') {
-					time = setMinutes(time, r.minute);
-				} else {
-					time = setMinutes(time, 0);
-				}
-
-				if(typeof r.second !== 'undefined') {
-					time = setSeconds(time, r.second);
-				} else {
-					time = setSeconds(time, 0);
-				}
-			}
-
-			result.hour = time.getHours();
-			result.minute = time.getMinutes();
-			result.precision = r.precision || 'normal';
-
-			return result;
-		})
+		.mapResults(utils.mapTime)
 		.onlyBest();
 }

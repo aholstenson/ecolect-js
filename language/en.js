@@ -2,7 +2,7 @@
 
 const utils = require('./utils');
 
-const dateLocale = require('date-fns/locale/en');
+//const dateLocale = require('date-fns/locale/en');
 
 const integer = require('./en/integer');
 const number = require('./en/number');
@@ -15,6 +15,7 @@ const month = require('./en/month');
 const year = require('./en/year');
 const date = require('./en/date');
 const time = require('./en/time');
+const datetime = require('./en/datetime');
 
 const stemmer = require('talisman/stemmers/porter');
 const similarity = require('talisman/metrics/distance/jaro-winkler').similarity;
@@ -84,9 +85,9 @@ module.exports = {
 	compareTokens(a, b) {
 		if(a.normalized === b.normalized) return 1.0;
 
-		if(a.short || b.short) return 0;
-
 		if(a.stemmed === b.stemmed) return 0.95;
+
+		if(a.short || b.short) return 0;
 
 		const d = similarity(a.normalized, b.normalized);
 		if(d > 0.9) return d * 0.9;
@@ -114,5 +115,6 @@ module.exports.month = month(module.exports);
 module.exports.year = year(module.exports);
 module.exports.date = date(module.exports);
 module.exports.time = time(module.exports);
+module.exports.datetime = datetime(module.exports);
 
 module.exports.temperature = temperature(module.exports);

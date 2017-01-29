@@ -38,16 +38,6 @@ function hasMonth(v) {
 	return true;
 }
 
-function isMonthDay(v) {
-	return typeof v.year === 'undefined' && v.month >= 0 && v.day >= 0;
-}
-
-function isNoYear(v) {
-	if(typeof v.year !== 'undefined') return false;
-
-	return typeof v.month !== 'undefined';
-}
-
 function withDay(date, day) {
 	const result = cloneDeep(date);
 	result.day = value(day);
@@ -66,14 +56,6 @@ function currentTime(encounter) {
 	} else {
 		return encounter.options.now = new Date();
 	}
-}
-
-function adjustedMonth(date, diff) {
-	date = addMonths(date, diff);
-	return {
-		year: date.getFullYear(),
-		month: date.getMonth()
-	};
 }
 
 function adjustedDays(date, diff) {
@@ -102,56 +84,9 @@ function nextDayOfWeek(v, e) {
 	};
 }
 
-function withAdjuster(date, adjuster) {
-	const result = cloneDeep(date);
-	if(! result.adjusters) {
-		result.adjusters = [ adjuster ];
-	} else {
-		result.adjusters.push(adjuster);
-	}
-	return result;
-}
-
-function dayInMonth(now, result, ordinal, day) {
-	result.day = 1;
-	let date = toDate(result, now);
-	const currentDayOfWeek = getISODay(date);
-	if(currentDayOfWeek > day) {
-		date = addWeeks(date, 1);
-	}
-	date = setISODay(date, day);
-
-	for(let i=1; i<ordinal; i++) {
-		date = addWeeks(date, 1);
-	}
-
-	result.year = date.getFullYear();
-	result.month = date.getMonth();
-	result.day = date.getDate();
-}
-
-function dayInYear(now, date, ordinal, day) {
-	date.day = 1;
-	date.month = 0;
-	dayInMonth(now, date, ordinal, day);
-}
-
-function combine(a, b) {
-	const result = cloneDeep(a);
-	Object.keys(b).forEach(key => result[key] = b[key]);
-	return result;
-}
-
-function toDate(date, now) {
-	return new Date(
-		typeof date.year !== 'undefined' ? date.year : now.getFullYear(),
-		typeof date.month !== 'undefined' ? date.month : now.getMonth(),
-		typeof date.day !== 'undefined' ? date.day : now.getDate()
-	);
-}
-
 module.exports = function(language) {
 	const ordinal = language.ordinal;
+	const integer = language.integer;
 	const dayOfWeek = language.dayOfWeek;
 	const month = language.month;
 	const year = language.year;
@@ -172,7 +107,6 @@ module.exports = function(language) {
 		.add('day after tomorrow', (v, e) => adjustedDays(currentTime(e), 2))
 		.add('the day after tomorrow', (v, e) => adjustedDays(currentTime(e), 2))
 		.add('yesterday', (v, e) => adjustedDays(currentTime(e), -1))
-		.add([ 'in', ordinal, 'days' ], (v, e) => adjustedDays(currentTime(e), v[0].value))
 
 		// Month followed by day - Jan 12, February 1st
 		.add([ month, Parser.result(ordinal, v => v.value >= 0 && v.value < 31) ], v => withDay(v[0], v[1]))
@@ -184,7 +118,7 @@ module.exports = function(language) {
 		// Non-year (month and day) followed by year
 		// With day: 12 Jan 2018, 1st February 2018
 		// Without day: Jan 2018, this month 2018
-		.add([ Parser.result(hasMonth), year ], v => withYear(v[0], v[1]))
+		.add([ Parser.result(hasMonth), year ], v => utils.combine(v[0], v[1]))
 
 		.add([ month, /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
 		.add([ month, 'in', /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
@@ -216,20 +150,30 @@ module.exports = function(language) {
 			};
 		})
 
+		// Relative dates
+		.add([ integer, 'days' ], v => { return { relativeDays: v[0].value }})
+		.add([ integer, 'months' ], v => { return { relativeMonths: v[0].value }})
+		.add([ integer, 'weeks' ], v => { return { relativeDays: v[0].value * 7 }})
+
+		.add([ Parser.result(utils.isRelative), Parser.result(utils.isRelative) ], v => utils.combine(v[0], v[1]))
+		.add([ Parser.result(utils.isRelative), 'and', Parser.result(utils.isRelative) ], v => utils.combine(v[0], v[1]))
+
 		// nth day of week in month
-		.add([ ordinal, dayOfWeek, month ], v => {
-			const dayOfWeek = v[1].value;
-			const ordinal = v[0].value;
-			return withAdjuster(v[2], (date, now) => dayInMonth(now, date, ordinal, dayOfWeek))
-		})
+		.add([ ordinal, dayOfWeek, month ], v => utils.combine(v[2], {
+			dayOfWeek: v[1].value,
+			dayOfWeekOrdinal: v[0].value
+		}))
 
 		// nth day of week in year
-		.add([ ordinal, dayOfWeek, year ], v => {
-			const dayOfWeek = v[1].value;
-			const ordinal = v[0].value;
-			return withAdjuster(v[2], (date, now) => dayInYear(now, date, ordinal, dayOfWeek))
-		})
+		.add([ ordinal, dayOfWeek, year ], v => utils.combine(v[2], {
+			dayOfWeek: v[1].value,
+			dayOfWeekOrdinal: v[0].value
+		}))
 
+		.add([ ordinal, dayOfWeek, Parser.result(utils.isRelative) ], v => utils.combine(v[2], {
+			dayOfWeek: v[1].value,
+			dayOfWeekOrdinal: v[0].value
+		}))
 
 		.add([ 'in', Parser.result() ], v => v[0])
 		.add([ 'on', Parser.result() ], v => v[0])
