@@ -1,5 +1,8 @@
 # Ecolect
 
+[![Build Status](https://travis-ci.org/aholstenson/ecolect-js.svg?branch=master)](https://travis-ci.org/aholstenson/ecolect-js)
+[![Coverage Status](https://coveralls.io/repos/aholstenson/ecolect-js/badge.svg)](https://coveralls.io/github/aholstenson/ecolect-js)
+
 Ecolect helps with parsing natural language to intents and values. This can be
 used as a part in building a natural language interface for things such as bots,
 voice or search interfaces.
