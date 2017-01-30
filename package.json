@@ -4,7 +4,8 @@
   "description": "Natural language handling for commands and intents",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha test/*.test.js && node_modules/.bin/eslint *.js language/*.js resolver/*.js values/*.js"
+    "test": "node_modules/.bin/mocha test/*.test.js && node_modules/.bin/eslint *.js language/*.js resolver/*.js values/*.js",
+    "coverage": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec ./test/*.test.js"
   },
   "license": "MIT",
   "repository": "aholstenson/ecolect-js",
@@ -30,8 +31,10 @@
     "chai-as-promised": "^6.0.0",
     "chalk": "^1.1.3",
     "cli-autocomplete": "^0.4.0",
+    "coveralls": "^2.11.15",
     "eslint": "^3.13.0",
     "eslint-plugin-node": "^3.0.5",
+    "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "regenerate": "^1.3.2",
     "unicode-9.0.0": "^0.7.0"
