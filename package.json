@@ -15,6 +15,9 @@
     "commands",
     "parsing"
   ],
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "dependencies": {
     "chrono-node": "^1.2.5",
     "date-fns": "^1.27.1",
