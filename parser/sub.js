@@ -39,7 +39,7 @@ class SubNode extends Node {
 					*/
 					return encounter.next(1.0, 0);
 				}
-			} else if(this.supports) {
+			} else if(this.supportsPartial) {
 				/**
 				 * No tokens means we can't match.
 				 */
