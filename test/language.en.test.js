@@ -1037,6 +1037,42 @@ describe('English', function() {
 			});
 		});
 
+		describe('Invalid', function() {
+			it('25', function() {
+				return time('25')
+				.then(v => expect(v).to.equal(null))
+			});
+
+			it('25 a.m.', function() {
+				return time('25 a.m.')
+				.then(v => expect(v).to.equal(null))
+			});
+
+			it('10:75.', function() {
+				return time('10:75', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 22,
+						minute: 0,
+						second: 0,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('5 minutes to 25', function() {
+				return time('5 minutes to 25', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 13,
+						minute: 35,
+						second: 0,
+						precision: 'normal'
+					})
+				)
+			});
+		})
+
 		describe('Expressive', function() {
 
 			it('quarter to twelve', function() {
