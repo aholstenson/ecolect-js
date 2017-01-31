@@ -831,44 +831,60 @@ describe('English', function() {
 	describe('Time', function() {
 		describe('Exactish', function() {
 			it('00:00', function() {
-				return time('00:00')
+				return time('00:00', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
 						hour: 0,
 						minute: 0,
+						second: 0,
 						precision: 'normal'
 					})
 				);
 			});
 
 			it('00 00', function() {
-				return time('00:00')
+				return time('00:00', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
 						hour: 0,
 						minute: 0,
+						second: 0,
 						precision: 'normal'
 					})
 				);
 			});
 
-			it('330', function() {
-				return time('330')
+			it('330 (local 13:30)', function() {
+				return time('330', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 15,
+						minute: 30,
+						second: 0,
+						precision: 'normal'
+					})
+				);
+			});
+
+			it('330 (local 2:30)', function() {
+				return time('330', { now: new Date(2010, 0, 1, 2, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
 						hour: 3,
 						minute: 30,
+						second: 0,
 						precision: 'normal'
 					})
 				);
 			});
 
 			it('3:30', function() {
-				return time('3:30')
+				return time('3:30', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
-						hour: 3,
+						hour: 15,
 						minute: 30,
+						second: 0,
 						precision: 'normal'
 					})
 				);
@@ -889,22 +905,24 @@ describe('English', function() {
 			*/
 
 			it('3:30 PM', function() {
-				return time('3:30 PM')
+				return time('3:30 PM', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
 						hour: 15,
 						minute: 30,
+						second: 0,
 						precision: 'normal'
 					})
 				)
 			});
 
 			it('3:30 p.m.', function() {
-				return time('3:30 p.m.')
+				return time('3:30 p.m.', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
 						hour: 15,
 						minute: 30,
+						second: 0,
 						precision: 'normal'
 					})
 				)
@@ -916,6 +934,19 @@ describe('English', function() {
 					expect(v).to.deep.equal({
 						hour: 3,
 						minute: 0,
+						second: 0,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('3 am', function() {
+				return time('3 am')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 3,
+						minute: 0,
+						second: 0,
 						precision: 'normal'
 					})
 				)
@@ -927,6 +958,7 @@ describe('English', function() {
 					expect(v).to.deep.equal({
 						hour: 0,
 						minute: 0,
+						second: 0,
 						precision: 'normal'
 					})
 				)
@@ -938,6 +970,19 @@ describe('English', function() {
 					expect(v).to.deep.equal({
 						hour: 8,
 						minute: 0,
+						second: 0,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('7 p.m.', function() {
+				return time('7 p.m.')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 19,
+						minute: 0,
+						second: 0,
 						precision: 'normal'
 					})
 				)
@@ -949,6 +994,7 @@ describe('English', function() {
 					expect(v).to.deep.equal({
 						hour: 12,
 						minute: 0,
+						second: 0,
 						precision: 'normal'
 					})
 				)
@@ -960,17 +1006,31 @@ describe('English', function() {
 					expect(v).to.deep.equal({
 						hour: 22,
 						minute: 0,
+						second: 0,
 						precision: 'normal'
 					})
 				)
 			});
 
 			it('at 3', function() {
-				return time('at 3')
+				return time('at 3', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
-						hour: 3,
+						hour: 15,
 						minute: 0,
+						second: 0,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('11:12:13', function() {
+				return time('11:12:13', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 23,
+						minute: 12,
+						second: 13,
 						precision: 'normal'
 					})
 				)
@@ -980,44 +1040,48 @@ describe('English', function() {
 		describe('Expressive', function() {
 
 			it('quarter to twelve', function() {
-				return time('quarter to twelve')
+				return time('quarter to twelve', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
-						hour: 11,
+						hour: 23,
 						minute: 45,
+						second: 0,
 						precision: 'normal'
 					})
 				)
 			});
 
 			it('15 before 12', function() {
-				return time('15 before 12')
+				return time('15 before 12', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
-						hour: 11,
+						hour: 23,
 						minute: 45,
+						second: 0,
 						precision: 'normal'
 					})
 				)
 			});
 
 			it('half before 12', function() {
-				return time('half before 12')
+				return time('half before 12', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
-						hour: 11,
+						hour: 23,
 						minute: 30,
+						second: 0,
 						precision: 'normal'
 					})
 				)
 			});
 
 			it('3 quarters til 12', function() {
-				return time('3 quarters til 12')
+				return time('3 quarters til 12', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
-						hour: 11,
+						hour: 23,
 						minute: 15,
+						second: 0,
 						precision: 'normal'
 					})
 				)
@@ -1029,28 +1093,67 @@ describe('English', function() {
 					expect(v).to.deep.equal({
 						hour: 14,
 						minute: 45,
+						second: 0,
 						precision: 'normal'
 					})
 				)
 			});
 
 			it('half past twelve', function() {
-				return time('half past twelve')
+				return time('half past twelve', { now: new Date(2010, 0, 1, 10, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
 						hour: 12,
 						minute: 30,
+						second: 0,
 						precision: 'normal'
 					})
 				)
 			});
 
 			it('half twelve', function() {
-				return time('half twelve')
+				return time('half twelve', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 0,
+						minute: 30,
+						second: 0,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('midnight', function() {
+				return time('midnight')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 0,
+						minute: 0,
+						second: 0,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('noon', function() {
+				return time('noon')
 				.then(v =>
 					expect(v).to.deep.equal({
 						hour: 12,
-						minute: 30,
+						minute: 0,
+						second: 0,
+						precision: 'normal'
+					})
+				)
+			});
+
+			it('5 minutes to midnight', function() {
+				return time('5 minutes to midnight')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 23,
+						minute: 55,
+						second: 0,
 						precision: 'normal'
 					})
 				)
@@ -1079,6 +1182,7 @@ describe('English', function() {
 					expect(v).to.deep.equal({
 						hour: 17,
 						minute: 30,
+						second: 0,
 						precision: 'normal'
 					})
 				);
@@ -1090,6 +1194,7 @@ describe('English', function() {
 					expect(v).to.deep.equal({
 						hour: 13,
 						minute: 35,
+						second: 0,
 						precision: 'normal'
 					})
 				);
@@ -1101,6 +1206,7 @@ describe('English', function() {
 					expect(v).to.deep.equal({
 						hour: 17,
 						minute: 40,
+						second: 0,
 						precision: 'normal'
 					})
 				);
@@ -1112,6 +1218,7 @@ describe('English', function() {
 					expect(v).to.deep.equal({
 						hour: 17,
 						minute: 40,
+						second: 0,
 						precision: 'normal'
 					})
 				);
@@ -1123,6 +1230,7 @@ describe('English', function() {
 					expect(v).to.deep.equal({
 						hour: 14,
 						minute: 15,
+						second: 0,
 						precision: 'normal'
 					})
 				);
@@ -1134,7 +1242,130 @@ describe('English', function() {
 					expect(v).to.deep.equal({
 						hour: 17,
 						minute: 30,
+						second: 0,
 						precision: 'normal'
+					})
+				);
+			});
+		});
+
+		describe('Precision', function() {
+			it('7 ish', function() {
+				return time('7 ish', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 19,
+						minute: 0,
+						second: 0,
+						precision: 'approximate'
+					})
+				);
+			});
+
+			it('7 pm ish', function() {
+				return time('7 pm ish', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 19,
+						minute: 0,
+						second: 0,
+						precision: 'approximate'
+					})
+				);
+			});
+
+			it('7 amish', function() {
+				return time('7 amish', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 7,
+						minute: 0,
+						second: 0,
+						precision: 'approximate'
+					})
+				);
+			});
+
+			it('7 pmish', function() {
+				return time('7 pmish', { now: new Date(2010, 0, 1, 5, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 19,
+						minute: 0,
+						second: 0,
+						precision: 'approximate'
+					})
+				);
+			});
+
+			it('08:15 approximately', function() {
+				return time('08:15 approximately', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 20,
+						minute: 15,
+						second: 0,
+						precision: 'approximate'
+					})
+				);
+			});
+
+			it('around 7', function() {
+				return time('around 7', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 19,
+						minute: 0,
+						second: 0,
+						precision: 'approximate'
+					})
+				);
+			});
+
+			it('exactly 7 a.m.', function() {
+				return time('exactly 7 a.m.', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 7,
+						minute: 0,
+						second: 0,
+						precision: 'exact'
+					})
+				);
+			});
+
+			it('18:00 sharp', function() {
+				return time('18:00 sharp')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 18,
+						minute: 0,
+						second: 0,
+						precision: 'exact'
+					})
+				);
+			});
+
+			it('7 p.m. sharp', function() {
+				return time('7 p.m. sharp')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 19,
+						minute: 0,
+						second: 0,
+						precision: 'exact'
+					})
+				);
+			});
+
+			it('7 a.m. sharp', function() {
+				return time('7 a.m. sharp')
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 7,
+						minute: 0,
+						second: 0,
+						precision: 'exact'
 					})
 				);
 			});
@@ -1151,6 +1382,7 @@ describe('English', function() {
 					day: 12,
 					hour: 12,
 					minute: 10,
+					second: 0,
 					precision: 'normal'
 				})
 			);
@@ -1165,6 +1397,7 @@ describe('English', function() {
 					day: 12,
 					hour: 12,
 					minute: 10,
+					second: 0,
 					precision: 'normal'
 				})
 			);
@@ -1179,6 +1412,7 @@ describe('English', function() {
 					day: 12,
 					hour: 12,
 					minute: 10,
+					second: 0,
 					precision: 'normal'
 				})
 			);
@@ -1193,6 +1427,7 @@ describe('English', function() {
 					day: 1,
 					hour: 14,
 					minute: 15,
+					second: 0,
 					precision: 'normal'
 				})
 			);
@@ -1207,6 +1442,7 @@ describe('English', function() {
 					day: 3,
 					hour: 13,
 					minute: 30,
+					second: 0,
 					precision: 'normal'
 				})
 			);
@@ -1221,6 +1457,7 @@ describe('English', function() {
 					day: 3,
 					hour: 15,
 					minute: 30,
+					second: 0,
 					precision: 'normal'
 				})
 			);
@@ -1235,6 +1472,7 @@ describe('English', function() {
 					day: 3,
 					hour: 13,
 					minute: 30,
+					second: 0,
 					precision: 'normal'
 				})
 			);
