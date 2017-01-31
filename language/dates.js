@@ -111,10 +111,6 @@ module.exports.toDate = toDate;
 
 function mapYear(r, e) {
 	const now = module.exports.currentTime(e);
-	if(r.adjusters) {
-		r.adjusters.forEach(a => a(r, now));
-	}
-
 	const result = new DateValue(e.language);
 
 	if(typeof r.relativeYear !== 'undefined') {
