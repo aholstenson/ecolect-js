@@ -3,20 +3,7 @@
 const cloneDeep = require('lodash.clonedeep');
 
 function scorePartial(tokens, depth, maxDepth, score) {
-	const diff = Math.abs(score - tokens);
-
-	if(tokens === 0) {
-		// Special case for no tokens, low effort first
-		return 1 / score;
-	} else if(score > tokens) {
-		let result = 0.95;
-		if(diff > 0) {
-			result += (diff / Math.max(diff, depth - tokens)) * 0.05;
-		}
-		return result;
-	} else {
-		return (score / tokens) * 0.95;
-	}
+	return (1 / depth) * 0.8 + Math.min(1, score / depth) * 0.2;
 }
 
 /**
