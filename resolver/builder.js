@@ -114,12 +114,17 @@ class Builder {
 				.map(r => {
 					// Ensure that partial matching exposes the values in the expression
 					if(r.expression) {
+						r.pending = false;
 						r.expression.forEach(part => {
 							if(part.type === 'value') {
 								part.value = r.values[part.id] || null;
+								if(part.value === null) {
+									r.pending = true;
+								}
 							}
 						});
 					}
+
 					return r;
 				})
 
