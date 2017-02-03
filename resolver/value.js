@@ -64,17 +64,7 @@ class Value extends Node {
 		if(encounter.partial) {
 			if(idx >= stop) {
 				// There are no tokens available for this value, assume it will match in the future
-				return encounter.next(1.0, 0);
-			} else if(idx == stop - 1) {
-				promise = promise.then(() => {
-					if(results.length > 0) return;
-
-					// The parsing of the value failed somehow, assume we will match when the user keeps typing
-					return encounter.next(1.0, 1)
-						.then(matches => {
-							results.push(...matches);
-						});
-				});
+				return encounter.next(0.0, 0);
 			}
 		}
 
