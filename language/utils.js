@@ -67,7 +67,7 @@ module.exports.tokenize = function(text, transformer) {
 		text = text.normalize();
 	}
 
-	let result = new Tokens();
+	let result = makeTokens([]);
 
 	const NON_SPACE = /\S+/gu;
 	let match;
@@ -99,9 +99,8 @@ module.exports.raw = function(tokens) {
 };
 
 
-class Tokens extends Array {
-
-	raw() {
+function makeTokens(array) {
+	array.raw = function() {
 		let result = [];
 		let index = this[0].start;
 		for(let i=0; i<this.length; i++) {
@@ -116,12 +115,12 @@ class Tokens extends Array {
 		}
 
 		return result.join('');
-	}
+	};
 
-	slice() {
+	array.slice = function() {
 		const array = Array.prototype.slice.apply(this, arguments);
-		const result = new Tokens();
-		result.push(...array);
-		return result;
-	}
+		return makeTokens(array);
+	};
+
+	return array;
 }
