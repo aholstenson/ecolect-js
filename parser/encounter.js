@@ -27,7 +27,7 @@ class Encounter {
 
 		this.options = options;
 
-		this._cache = {};
+		this._cache = new Map();
 	}
 
 	/**
@@ -204,7 +204,13 @@ class Encounter {
 		if(typeof index === 'undefined') {
 			index = this.currentIndex;
 		}
-		return this._cache[index] || (this._cache[index] = {});
+
+		let map = this._cache.get(index);
+		if(map) return map;
+
+		map = new Map();
+		this._cache.set(index, map);
+		return map;
 	}
 }
 

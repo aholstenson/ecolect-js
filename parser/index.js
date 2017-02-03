@@ -19,6 +19,8 @@ class Parser extends Node {
 		this.supportsPartial = false;
 		this._skipPunctuation = false;
 		this._fuzzy = false;
+
+		this._cache = {};
 	}
 
 	name(name) {

@@ -16,13 +16,15 @@ class SubNode extends Node {
 			this.name = roots._name || null;
 			this.skipPunctuation = typeof roots._skipPunctuation !== 'undefined' ? roots._skipPunctuation : null;
 			this.fuzzy = typeof roots._fuzzy !== 'undefined' ? roots._fuzzy : null;
+			this.state = roots._cache;
 		} else {
 			this.roots = roots;
+			this.state = this;
 		}
 	}
 
 	match(encounter) {
-		if(this.currentIndex === encounter.currentIndex) {
+		if(this.state.currentIndex === encounter.currentIndex) {
 			/*
 			 * If this node is called with the same index again we skip
 			 * evaulating.
@@ -48,8 +50,8 @@ class SubNode extends Node {
 		}
 
 		// Set the index we were called at
-		let previousIndex = this.currentIndex;
-		this.currentIndex = encounter.currentIndex;
+		let previousIndex = this.state.currentIndex;
+		this.state.currentIndex = encounter.currentIndex;
 
 		const variants = [];
 		const branchIntoVariants = variants0 => {
@@ -68,7 +70,7 @@ class SubNode extends Node {
 			});
 
 			return promise.then(() => {
-				this.currentIndex = previousIndex;
+				this.state.currentIndex = previousIndex;
 				if(result.length === 0) {
 					return null;
 				} else if(result.length === 1) {
@@ -81,8 +83,9 @@ class SubNode extends Node {
 
 		// Check the cache
 		const cache = encounter.cache();
-		if(cache[this.roots]) {
-			return branchIntoVariants(cache[this.roots]);
+		let cached = cache.get(this.roots);
+		if(cached) {
+			return branchIntoVariants(cached);
 		}
 
 		const onMatch = result => {
@@ -123,7 +126,7 @@ class SubNode extends Node {
 			encounter.skipPunctuation = skipPunctuation;
 			encounter.fuzzy = fuzzy;
 
-			cache[this.roots] = variants;
+			cache.set(this.roots, variants);
 			return branchIntoVariants(variants);
 		});
 	}
