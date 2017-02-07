@@ -29,7 +29,7 @@ function normalize(word, next) {
 			if(next == 'n\'t') {
 				return 'can';
 			}
-			break;
+			return word;
 		case 'n\'t':
 			return 'not';
 		case '\'m':
