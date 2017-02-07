@@ -4,7 +4,7 @@
   "description": "Natural language handling for commands and intents",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha test/*.test.js && node_modules/.bin/eslint *.js language/*.js resolver/*.js values/*.js",
+    "test": "node_modules/.bin/mocha test/*.test.js && node_modules/.bin/eslint *.js language/**/*.js resolver/*.js values/*.js",
     "coverage": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec ./test/*.test.js"
   },
   "license": "MIT",

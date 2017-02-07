@@ -5,7 +5,6 @@ const utils = require('../dates');
 
 const cloneDeep = require('lodash.clonedeep');
 
-const addMonths = require('date-fns/add_months');
 const setISODay = require('date-fns/set_iso_day');
 const getISODay = require('date-fns/get_iso_day');
 const addWeeks = require('date-fns/add_weeks');
@@ -21,13 +20,6 @@ function value(v) {
 	}
 
 	return v;
-}
-
-function isMonth(v) {
-	return typeof v.year === 'undefined'
-		&& v.month >= 0
-		&& typeof v.day === 'undefined'
-		&& typeof v.dayOfWeek === 'undefined';
 }
 
 function hasMonth(v) {
