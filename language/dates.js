@@ -224,7 +224,7 @@ function resolveTime(r, e, now, result) {
 		}
 	}
 
-	if(r.meridiem === 'auto') {
+	if(r.meridiem === 'auto' && time.getHours() <= 12) {
 		// This is a 12-hour time, so we might want to switch the hours around
 		if(isSameDay(now || time, current) && time.getHours() < current.getHours()) {
 			// Same day and hour is before the current hour so assume night time
