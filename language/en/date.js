@@ -146,6 +146,7 @@ module.exports = function(language) {
 		.add([ integer, 'days' ], v => { return { relativeDays: v[0].value }})
 		.add([ integer, 'months' ], v => { return { relativeMonths: v[0].value }})
 		.add([ integer, 'weeks' ], v => { return { relativeDays: v[0].value * 7 }})
+		.add([ integer, 'years' ], v => { return { relativeYears: v[0].value, period: 'year' }})
 
 		.add([ Parser.result(utils.isRelative), Parser.result(utils.isRelative) ], v => utils.combine(v[0], v[1]))
 		.add([ Parser.result(utils.isRelative), 'and', Parser.result(utils.isRelative) ], v => utils.combine(v[0], v[1]))

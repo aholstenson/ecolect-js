@@ -334,6 +334,13 @@ describe('English', function() {
 					expect(v).to.deep.equal({ year: 2010, month: 0, day: 2 })
 				);
 			});
+
+			it('in 1 year', function() {
+				return date('in 1 year', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({ year: 2011, month: 0, day: 1 })
+				);
+			});
 		});
 
 		describe('Relative dates within year', function() {
@@ -386,6 +393,17 @@ describe('English', function() {
 
 			it('first friday in may 2018', function() {
 				return date('first friday in may 2018')
+				.then(v =>
+					expect(v).to.deep.equal({
+						year: 2018,
+						month: 4,
+						day: 4
+					})
+				);
+			});
+
+			it('first friday in may in 4 years', function() {
+				return date('first friday in may in 4 years', { now: new Date(2014, 2, 22) })
 				.then(v =>
 					expect(v).to.deep.equal({
 						year: 2018,

@@ -159,13 +159,21 @@ function resolveDate(r, e, options) {
 
 	const now = toDate(result, (options && options.base) || currentTime(e));
 
+	if(typeof r.relativeYears !== 'undefined') {
+		const date = addYears(toDate(result, now), r.relativeYears);
+		result.year = date.getFullYear();
+		result.month = date.getMonth();
+		result.day = date.getDate();
+	}
+
 	if(typeof r.relativeDays !== 'undefined') {
 		const date = addDays(toDate(result, now), r.relativeDays);
 		result.year = date.getFullYear();
 		result.month = date.getMonth();
 		result.day = date.getDate();
 	} else {
-		if(typeof r.day !== 'undefined') {
+		if(typeof r.day !== 'undefined' && typeof result.day !== 'undefined') {
+			// If there is no day set and we have a one - use the requested one
 			result.day = r.day;
 		}
 	}
