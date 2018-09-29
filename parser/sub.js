@@ -3,6 +3,14 @@
 const Node = require('./node');
 const ALWAYS_TRUE = () => true;
 
+/*
+ * Small penalty applied when a SubNode matches. This helps the algorithm
+ * prefer less parser matches. So if a parser P1 can match (A | A B) and
+ * another one P1 matches (B) this penalty helps cases where P1 is followed
+ * by an optional P2 to match P1 before before P1 P2.
+ */
+const PARSER_PENALTY = 0.001;
+
 class SubNode extends Node {
 	constructor(roots, filter) {
 		super();
@@ -62,7 +70,7 @@ class SubNode extends Node {
 
 				promise = promise.then(() => {
 					return encounter.next(
-						v.score - encounter.currentScore,
+						v.score - encounter.currentScore - PARSER_PENALTY,
 						v.index - encounter.currentIndex,
 						v.data
 					).then(r => result.push(...r));
