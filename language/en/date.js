@@ -3,13 +3,6 @@
 const Parser = require('../../parser');
 const utils = require('../dates');
 
-const cloneDeep = require('lodash.clonedeep');
-
-const setISODay = require('date-fns/set_iso_day');
-const getISODay = require('date-fns/get_iso_day');
-const addWeeks = require('date-fns/add_weeks');
-const addDays = require('date-fns/add_days');
-
 function value(v) {
 	if(Array.isArray(v)) {
 		if(v[0] === v) return null;
@@ -31,49 +24,19 @@ function hasMonth(v) {
 }
 
 function withDay(date, day) {
-	const result = cloneDeep(date);
-	result.day = value(day);
-	return result;
+	return utils.combine(date, {
+		day: value(day)
+	});
 }
 
-function withYear(date, year) {
-	const result = cloneDeep(date);
-	result.year = year.year > 0 ? year.year : value(year);
-	return result;
+function withYear(v) {
+	return utils.combine(v[0], {
+		year: value(v[1])
+	});
 }
 
-function currentTime(encounter) {
-	if(encounter.options.now) {
-		return encounter.options.now;
-	} else {
-		return encounter.options.now = new Date();
-	}
-}
-
-function adjustedDays(date, diff) {
-	date = addDays(date, diff);
-	return {
-		year: date.getFullYear(),
-		month: date.getMonth(),
-		day: date.getDate()
-	};
-}
-
-function nextDayOfWeek(v, e) {
-	let date = currentTime(e);
-
-	// TODO: Would this change if start of week is on Sunday?
-	const dayOfWeek = v[0].value;
-	const currentDayOfWeek = getISODay(date);
-	if(currentDayOfWeek >= dayOfWeek) {
-		date = addWeeks(date, 1);
-	}
-	date = setISODay(date, dayOfWeek);
-	return {
-		year: date.getFullYear(),
-		month: date.getMonth(),
-		day: date.getDate()
-	};
+function nextDayOfWeek(v) {
+	return { dayOfWeek: v[0].value };
 }
 
 module.exports = function(language) {
@@ -83,38 +46,43 @@ module.exports = function(language) {
 	const month = language.month;
 	const year = language.year;
 
+	const day = Parser.result(ordinal, v => v.value >= 0 && v.value < 31);
+
 	return new Parser(language)
 		.name('date')
 
 		.skipPunctuation()
 
 		// This Sunday, Next Monday or On Tuesday
+		.add(dayOfWeek, nextDayOfWeek)
 		.add([ 'this', dayOfWeek ], nextDayOfWeek)
 		.add([ 'next', dayOfWeek ], nextDayOfWeek)
 		.add([ 'on', dayOfWeek ], nextDayOfWeek)
 
 		// Expressions for describing the day, such as today and tomorrow
-		.add('today', (v, e) => adjustedDays(currentTime(e), 0))
-		.add('tomorrow', (v, e) => adjustedDays(currentTime(e), 1))
-		.add('day after tomorrow', (v, e) => adjustedDays(currentTime(e), 2))
-		.add('the day after tomorrow', (v, e) => adjustedDays(currentTime(e), 2))
-		.add('yesterday', (v, e) => adjustedDays(currentTime(e), -1))
+		.add('today', () => ({ relativeDays: 0 }))
+		.add('tomorrow', () => ({ relativeDays: 1 }))
+		.add('day after tomorrow', () => ({ relativeDays: 2 }))
+		.add('the day after tomorrow', () => ({ relativeDays: 2 }))
+		.add('yesterday', () => ({ relativeDays: -1 }))
 
 		// Month followed by day - Jan 12, February 1st
-		.add([ month, Parser.result(ordinal, v => v.value >= 0 && v.value < 31) ], v => withDay(v[0], v[1]))
+		.add([ month, day ], v => withDay(v[0], v[1]))
+
+		// Just the day
+		.add([ day ], v => { return { day: v[0].value } })
 
 		// Day followed by month - 12 Jan, 1st February
-		.add([ ordinal, month ], v => withDay(v[1], v[0]))
-		.add([ ordinal, 'of', month ], v => withDay(v[1], v[0]))
+		.add([ day, month ], v => withDay(v[1], v[0]))
+		.add([ day, 'of', month ], v => withDay(v[1], v[0]))
 
 		// Non-year (month and day) followed by year
 		// With day: 12 Jan 2018, 1st February 2018
 		// Without day: Jan 2018, this month 2018
 		.add([ Parser.result(hasMonth), year ], v => utils.combine(v[0], v[1]))
 
-		.add([ month, /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
-		.add([ month, 'in', /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
-		.add([ month, 'of', /^[0-9]{1,2}$/ ], v => withYear(v[0], v[1]))
+		.add([ month, 'in', /^[0-9]{1,2}$/ ], withYear)
+		.add([ month, 'of', /^[0-9]{1,2}$/ ], withYear)
 
 		// Year - Month - Day, such as 2017-01-24 or 2017 2 5
 		.add([ /^[0-9]{4}$/, /^[0-9]{1,2}$/, /^[0-9]{1,2}$/ ], v => {
@@ -145,8 +113,13 @@ module.exports = function(language) {
 		// Relative dates
 		.add([ integer, 'days' ], v => { return { relativeDays: v[0].value }})
 		.add([ integer, 'months' ], v => { return { relativeMonths: v[0].value }})
-		.add([ integer, 'weeks' ], v => { return { relativeDays: v[0].value * 7 }})
-		.add([ integer, 'years' ], v => { return { relativeYears: v[0].value, period: 'year' }})
+		.add([ integer, 'weeks' ], v => { return { relativeWeeks: v[0].value }})
+		.add([ year ], v => v[0])
+
+		.add([ 'this week' ], () => ({ relativeWeeks: 0, intervalEdge: 'start' }))
+		.add([ 'week', ordinal ], v => ({ week: v[0].value }))
+		.add('start of week', () => ({ relativeWeeks: 0, intervalEdge: 'start' }))
+		.add('end of week', () => ({ relativeWeeks: 0, intervalEdge: 'end' }))
 
 		.add([ Parser.result(utils.isRelative), Parser.result(utils.isRelative) ], v => utils.combine(v[0], v[1]))
 		.add([ Parser.result(utils.isRelative), 'and', Parser.result(utils.isRelative) ], v => utils.combine(v[0], v[1]))
@@ -168,9 +141,23 @@ module.exports = function(language) {
 			dayOfWeekOrdinal: v[0].value
 		}))
 
+		// Week N of year
+		.add([ 'week', ordinal, year ], v => utils.combine(v[1], {
+			week: v[0].value
+		}))
+
+		.add([ ordinal, 'week', year ], v => utils.combine(v[1], {
+			week: v[0].value
+		}))
+
 		.add([ 'in', Parser.result() ], v => v[0])
 		.add([ 'on', Parser.result() ], v => v[0])
 		.add([ 'on', 'the', Parser.result() ], v => v[0])
+
+		// Edges, such as start of [date] or end of [date]
+		.add([ 'start of', Parser.result() ], utils.startOf)
+		.add([ 'beginning of', Parser.result() ], utils.startOf)
+		.add([ 'end of', Parser.result() ], utils.endOf)
 
 		.mapResults(utils.mapDate)
 		.onlyBest();

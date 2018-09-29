@@ -14,10 +14,12 @@ describe('English', function() {
 				return time('00:00', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 0,
 						minute: 0,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				);
 			});
@@ -26,46 +28,54 @@ describe('English', function() {
 				return time('00:00', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 0,
 						minute: 0,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				);
 			});
 
-			it('330 (local 13:30)', function() {
+			it('330', function() {
 				return time('330', { now: new Date(2010, 0, 1, 13, 30) })
-				.then(v =>
-					expect(v).to.deep.equal({
-						hour: 15,
-						minute: 30,
-						second: 0,
-						precision: 'normal'
-					})
-				);
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'minute',
+							precision: 'normal',
+
+							hour: 15,
+							minute: 30,
+							second: 0
+						})
+					);
 			});
 
 			it('330 (local 2:30)', function() {
 				return time('330', { now: new Date(2010, 0, 1, 2, 30) })
-				.then(v =>
-					expect(v).to.deep.equal({
-						hour: 3,
-						minute: 30,
-						second: 0,
-						precision: 'normal'
-					})
-				);
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'minute',
+							precision: 'normal',
+
+							hour: 3,
+							minute: 30,
+							second: 0
+						})
+					);
 			});
 
 			it('3:30', function() {
 				return time('3:30', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 15,
 						minute: 30,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				);
 			});
@@ -88,10 +98,12 @@ describe('English', function() {
 				return time('3:30 PM', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 15,
 						minute: 30,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -100,10 +112,12 @@ describe('English', function() {
 				return time('3:30 p.m.', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 15,
 						minute: 30,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -112,10 +126,12 @@ describe('English', function() {
 				return time('3 a.m.')
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'normal',
+
 						hour: 3,
 						minute: 0,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -124,10 +140,12 @@ describe('English', function() {
 				return time('3 am')
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'normal',
+
 						hour: 3,
 						minute: 0,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -136,10 +154,12 @@ describe('English', function() {
 				return time('12 a.m.')
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'normal',
+
 						hour: 0,
 						minute: 0,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -148,10 +168,12 @@ describe('English', function() {
 				return time('20 a.m.')
 				.then(v =>
 					expect(v).to.deep.equal({
-						hour: 8,
+						period: 'hour',
+						precision: 'normal',
+
+						hour: 20,
 						minute: 0,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -160,10 +182,12 @@ describe('English', function() {
 				return time('7 p.m.')
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'normal',
+
 						hour: 19,
 						minute: 0,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -172,10 +196,12 @@ describe('English', function() {
 				return time('12 p.m.')
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'normal',
+
 						hour: 12,
 						minute: 0,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -184,10 +210,12 @@ describe('English', function() {
 				return time('22 p.m.')
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'normal',
+
 						hour: 22,
 						minute: 0,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -196,10 +224,12 @@ describe('English', function() {
 				return time('at 3', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'normal',
+
 						hour: 15,
 						minute: 0,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -208,10 +238,12 @@ describe('English', function() {
 				return time('11:12:13', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'second',
+						precision: 'normal',
+
 						hour: 23,
 						minute: 12,
-						second: 13,
-						precision: 'normal'
+						second: 13
 					})
 				)
 			});
@@ -249,10 +281,12 @@ describe('English', function() {
 				return time('quarter to twelve', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 23,
 						minute: 45,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -261,10 +295,12 @@ describe('English', function() {
 				return time('15 before 12', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 23,
 						minute: 45,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -273,10 +309,12 @@ describe('English', function() {
 				return time('half before 12', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 23,
 						minute: 30,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -285,10 +323,12 @@ describe('English', function() {
 				return time('3 quarters til 12', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 23,
 						minute: 15,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -297,10 +337,12 @@ describe('English', function() {
 				return time('15 minutes before 3 pm')
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 14,
 						minute: 45,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -309,10 +351,12 @@ describe('English', function() {
 				return time('half past twelve', { now: new Date(2010, 0, 1, 10, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 12,
 						minute: 30,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -321,10 +365,12 @@ describe('English', function() {
 				return time('half twelve', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 0,
 						minute: 30,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -333,10 +379,12 @@ describe('English', function() {
 				return time('midnight')
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'normal',
+
 						hour: 0,
 						minute: 0,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -345,10 +393,12 @@ describe('English', function() {
 				return time('noon')
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'normal',
+
 						hour: 12,
 						minute: 0,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -357,10 +407,12 @@ describe('English', function() {
 				return time('5 minutes to midnight')
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 23,
 						minute: 55,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				)
 			});
@@ -386,10 +438,12 @@ describe('English', function() {
 				return time('in 4 hours', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'normal',
+
 						hour: 17,
 						minute: 30,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				);
 			});
@@ -398,10 +452,12 @@ describe('English', function() {
 				return time('in 5 minutes', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 13,
 						minute: 35,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				);
 			});
@@ -410,10 +466,12 @@ describe('English', function() {
 				return time('5 minutes', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 13,
 						minute: 35,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				);
 			});
@@ -422,10 +480,12 @@ describe('English', function() {
 				return time('in 4 hours 10 minutes', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 17,
 						minute: 40,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				);
 			});
@@ -434,10 +494,12 @@ describe('English', function() {
 				return time('in 4 hours and 10 minutes', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 17,
 						minute: 40,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				);
 			});
@@ -446,10 +508,12 @@ describe('English', function() {
 				return time('in 45 minutes', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 14,
 						minute: 15,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				);
 			});
@@ -458,10 +522,12 @@ describe('English', function() {
 				return time('at in 4 hours', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'normal',
+
 						hour: 17,
 						minute: 30,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				);
 			});
@@ -470,10 +536,12 @@ describe('English', function() {
 				return time('45 minutes ago', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 12,
 						minute: 45,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				);
 			});
@@ -482,10 +550,12 @@ describe('English', function() {
 				return time('1 hour and 45 minutes ago', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'normal',
+
 						hour: 11,
 						minute: 45,
-						second: 0,
-						precision: 'normal'
+						second: 0
 					})
 				);
 			});
@@ -496,10 +566,12 @@ describe('English', function() {
 				return time('7 ish', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'approximate',
+
 						hour: 19,
 						minute: 0,
 						second: 0,
-						precision: 'approximate'
 					})
 				);
 			});
@@ -508,10 +580,12 @@ describe('English', function() {
 				return time('7 pm ish', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'approximate',
+
 						hour: 19,
 						minute: 0,
-						second: 0,
-						precision: 'approximate'
+						second: 0
 					})
 				);
 			});
@@ -520,10 +594,12 @@ describe('English', function() {
 				return time('7 amish', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'approximate',
+
 						hour: 7,
 						minute: 0,
-						second: 0,
-						precision: 'approximate'
+						second: 0
 					})
 				);
 			});
@@ -532,10 +608,12 @@ describe('English', function() {
 				return time('7 pmish', { now: new Date(2010, 0, 1, 5, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'approximate',
+
 						hour: 19,
 						minute: 0,
-						second: 0,
-						precision: 'approximate'
+						second: 0
 					})
 				);
 			});
@@ -544,10 +622,12 @@ describe('English', function() {
 				return time('08:15 approximately', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'approximate',
+
 						hour: 20,
 						minute: 15,
-						second: 0,
-						precision: 'approximate'
+						second: 0
 					})
 				);
 			});
@@ -556,10 +636,12 @@ describe('English', function() {
 				return time('around 7', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'approximate',
+
 						hour: 19,
 						minute: 0,
-						second: 0,
-						precision: 'approximate'
+						second: 0
 					})
 				);
 			});
@@ -568,10 +650,12 @@ describe('English', function() {
 				return time('exactly 7 a.m.', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'exact',
+
 						hour: 7,
 						minute: 0,
-						second: 0,
-						precision: 'exact'
+						second: 0
 					})
 				);
 			});
@@ -580,10 +664,12 @@ describe('English', function() {
 				return time('18:00 sharp', { now: new Date(2010, 0, 1, 19, 30) })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'minute',
+						precision: 'exact',
+
 						hour: 18,
 						minute: 0,
-						second: 0,
-						precision: 'exact'
+						second: 0
 					})
 				);
 			});
@@ -592,10 +678,12 @@ describe('English', function() {
 				return time('7 p.m. sharp')
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'exact',
+
 						hour: 19,
 						minute: 0,
-						second: 0,
-						precision: 'exact'
+						second: 0
 					})
 				);
 			});
@@ -604,10 +692,12 @@ describe('English', function() {
 				return time('7 a.m. sharp')
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'hour',
+						precision: 'exact',
+
 						hour: 7,
 						minute: 0,
-						second: 0,
-						precision: 'exact'
+						second: 0
 					})
 				);
 			});

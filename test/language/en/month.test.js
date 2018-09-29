@@ -11,19 +11,27 @@ describe('English', function() {
 
 	describe('Month', function() {
 		it('jan', function() {
-			return month('jan')
+			const now = new Date(2010, 0, 1);
+			return month('jan', { now: now })
 				.then(v =>
-					expect(v).to.deep.equal({ month: 0 })
+					expect(v).to.deep.equal({
+						period: 'month',
+						year: 2010,
+						month: 0,
+						day: 1
+					})
 				);
 		});
 
 		it('this month', function() {
-			const now = new Date(2010, 0, 1);
+			const now = new Date(2010, 5, 2);
 			return month('this month', { now: now })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'month',
 						year: 2010,
-						month: 0
+						month: 5,
+						day: 1
 					})
 				);
 		});
@@ -33,8 +41,10 @@ describe('English', function() {
 			return month('next month', { now: now })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'month',
 						year: 2010,
-						month: 1
+						month: 1,
+						day: 1
 					})
 				);
 		});
@@ -44,8 +54,10 @@ describe('English', function() {
 			return month('last month', { now: now })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'month',
 						year: 2009,
-						month: 11
+						month: 11,
+						day: 1
 					})
 				);
 		});
@@ -55,8 +67,10 @@ describe('English', function() {
 			return month('in one month', { now: now })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'month',
 						year: 2010,
-						month: 1
+						month: 1,
+						day: 1
 					})
 				);
 		});
@@ -66,8 +80,10 @@ describe('English', function() {
 			return month('in 4 months', { now: now })
 				.then(v =>
 					expect(v).to.deep.equal({
+						period: 'month',
 						year: 2010,
-						month: 4
+						month: 4,
+						day: 1
 					})
 				);
 		});

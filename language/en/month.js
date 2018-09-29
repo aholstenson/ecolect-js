@@ -1,24 +1,7 @@
 'use strict';
 
 const Parser = require('../../parser');
-const utils = require('../dates');
-const addMonths = require('date-fns/add_months');
-
-function currentTime(encounter) {
-	if(encounter.options.now) {
-		return encounter.options.now;
-	} else {
-		return encounter.options.now = new Date();
-	}
-}
-
-function adjustedMonth(date, diff) {
-	date = addMonths(date, diff);
-	return {
-		year: date.getFullYear(),
-		month: date.getMonth()
-	};
-}
+const { mapMonth } = require('../dates');
 
 module.exports = function(language) {
 	const integer = language.integer;
@@ -71,13 +54,14 @@ module.exports = function(language) {
 		)
 
 		// Dynamic months
-		.add('this month', (v, e) => adjustedMonth(currentTime(e), 0))
-		.add('last month', (v, e) => adjustedMonth(currentTime(e), -1))
-		.add('next month', (v, e) => adjustedMonth(currentTime(e), +1))
+		.add('this month', () => ({ relativeMonths: 0 }))
+		.add('previous month', () => ({ relativeMonths: -1 }))
+		.add('last month', () => ({ relativeMonths: -1 }))
+		.add('next month', () => ({ relativeMonths: 1 }))
 		.add([ 'in', integer, 'months' ], v => { return { relativeMonths: v[0].value }})
 
 		.add([ 'in', Parser.result() ], v => v[0])
 
-		.mapResults(utils.mapMonth)
+		.mapResults(mapMonth)
 		.onlyBest();
 }

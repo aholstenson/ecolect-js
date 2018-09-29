@@ -6,20 +6,38 @@ const addMonths = require('date-fns/add_months')
 const addWeeks = require('date-fns/add_weeks');
 const addDays = require('date-fns/add_days')
 const addHours = require('date-fns/add_hours')
+const addMinutes = require('date-fns/add_minutes');
 const addSeconds = require('date-fns/add_seconds')
 const addYears = require('date-fns/add_years');
 
-const setDate = require('date-fns/set_date');
 const setISODay = require('date-fns/set_iso_day');
 const getISODay = require('date-fns/get_iso_day');
+
+const setISOWeek = require('date-fns/set_iso_week');
+const getISOWeek = require('date-fns/get_iso_week');
+
+const setYear = require('date-fns/set_year');
+const setMonth = require('date-fns/set_month');
+const setDate = require('date-fns/set_date');
 const setHours = require('date-fns/set_hours')
 const setMinutes = require('date-fns/set_minutes')
 const setSeconds = require('date-fns/set_seconds')
 
-const isSameDay = require('date-fns/is_same_day');
+const startOfYear = require('date-fns/start_of_year');
+const startOfWeek = require('date-fns/start_of_week');
+const startOfMonth = require('date-fns/start_of_month');
+const startOfDay = require('date-fns/start_of_day');
+const startOfHour = require('date-fns/start_of_hour');
+const startOfMinute = require('date-fns/start_of_minute');
+const startOfSecond = require('date-fns/start_of_second');
 
-const lastDayOfMonth = require('date-fns/last_day_of_month');
-const lastDayOfYear = require('date-fns/last_day_of_year')
+const endOfYear = require('date-fns/end_of_year');
+const endOfWeek = require('date-fns/end_of_week');
+const endOfMonth = require('date-fns/end_of_month');
+const endOfDay = require('date-fns/end_of_day');
+const endOfHour = require('date-fns/end_of_hour');
+const endOfMinute = require('date-fns/end_of_minute');
+const endOfSecond = require('date-fns/end_of_second');
 
 module.exports.isRelative = function isRelative(v) {
 	return v && (v.relativeMonths >= 0 || v.relativeWeeks >= 0 || v.relativeDays >= 0 || v.relative >= 0);
@@ -36,8 +54,8 @@ module.exports.time12h = function(hour, minute, second) {
 	return {
 		hour: hour,
 		minute: minute,
-		second: second || 0,
-		meridiem: hour === 0 ? 'fixed' : 'auto'
+		second: second,
+		meridiem: hour === 0 || hour > 12 ? 'fixed' : 'auto'
 	};
 };
 
@@ -52,7 +70,7 @@ module.exports.time24h = function(hour, minute, second) {
 	return {
 		hour: hour,
 		minute: minute,
-		second: second || 0,
+		second: second,
 		meridiem: 'fixed'
 	};
 };
@@ -61,11 +79,7 @@ module.exports.time24h = function(hour, minute, second) {
  * Switch the given time to PM.
  */
 module.exports.toPM = function(time) {
-	const hour = time.hour;
-	if(hour >= 0 && hour < 12) {
-		time.hour += 12;
-	}
-	time.meridiem = 'fixed';
+	time.meridiem = 'pm';
 	return time;
 };
 
@@ -73,11 +87,7 @@ module.exports.toPM = function(time) {
  * Switch the given time to AM.
  */
 module.exports.toAM = function(time) {
-	const hour = time.hour;
-	if(hour >= 12) {
-		time.hour -= 12;
-	}
-	time.meridiem = 'fixed';
+	time.meridiem = 'am';
 	return time;
 };
 
@@ -93,6 +103,68 @@ module.exports.combine = function(a, b) {
 
 	return result;
 };
+
+module.exports.endOf = function(v) {
+	if(Array.isArray(v)) {
+		v = v[0];
+	}
+
+	v.intervalEdge = 'end';
+	return v;
+};
+
+module.exports.startOf = function(v) {
+	if(Array.isArray(v)) {
+		v = v[0];
+	}
+
+	v.intervalEdge = 'start';
+	return v;
+};
+
+function toStart(time, period, options=undefined) {
+	switch(period) {
+		case 'year':
+			return startOfYear(time);
+		case 'week':
+			return startOfWeek(time, options);
+		case 'month':
+			return startOfMonth(time);
+		case 'day':
+			return startOfDay(time);
+		case 'hour':
+			return startOfHour(time);
+		case 'minute':
+			return startOfMinute(time);
+		case 'second':
+			return startOfSecond(time);
+	}
+
+	// Default case, just ignore and return full time
+	return time;
+}
+
+function toEnd(time, period, options=undefined) {
+	switch(period) {
+		case 'year':
+			return endOfYear(time);
+		case 'week':
+			return endOfWeek(time, options);
+		case 'month':
+			return endOfMonth(time);
+		case 'day':
+			return endOfDay(time);
+		case 'hour':
+			return endOfHour(time);
+		case 'minute':
+			return endOfMinute(time);
+		case 'second':
+			return endOfSecond(time);
+	}
+
+	// Default case, just ignore and return full time
+	return time;
+}
 
 function currentTime(encounter) {
 	if(encounter.options.now) {
@@ -118,34 +190,57 @@ module.exports.toDate = toDate;
 
 function mapYear(r, e) {
 	const now = module.exports.currentTime(e);
+
+	let time;
+	if(typeof r.relativeYears !== 'undefined') {
+		// Relative year
+		time = addYears(now, r.relativeYears);
+	} else if(typeof r.year !== 'undefined') {
+		time = setYear(now, r.year);
+	} else {
+		// No year available - skip it
+		return null;
+	}
+
+	// Adjust the time to the start of the year
+	time = startOfYear(time);
+
 	const result = new DateValue(e.language);
-
-	if(typeof r.relativeYear !== 'undefined') {
-		result.year = now.getFullYear() + r.relativeYear;
-		result.month = now.getMonth();
-	}
-
-	if(typeof r.relativeMonths !== 'undefined') {
-		const time = addMonths(toDate(result, now), r.relativeMonths);
-		result.year = time.getFullYear();
-		result.month = time.getMonth();
-	}
-
-	if(typeof r.year !== 'undefined') {
-		result.year = r.year;
-	}
-
-	if(typeof r.month !== 'undefined') {
-		result.month = r.month;
-	}
-
+	result.period = 'year';
+	result.year = time.getFullYear();
+	result.month = time.getMonth();
+	result.day = time.getDate();
 	return result;
 }
 
 module.exports.mapYear = mapYear;
-module.exports.mapMonth = mapYear;
 
-function resolveDate(r, e, options) {
+function mapMonth(r, e) {
+	const now = module.exports.currentTime(e);
+
+	let time;
+	if(typeof r.relativeMonths !== 'undefined') {
+		time = addMonths(now, r.relativeMonths);
+	} else if(typeof r.month !== 'undefined') {
+		time = setMonth(now, r.month)
+	} else {
+		// No month available - skip it
+		return null;
+	}
+
+	// Set the time to the start of the month
+	time = startOfMonth(time);
+
+	const result = new DateValue(e.language);
+	result.period = 'month';
+	result.year = time.getFullYear();
+	result.month = time.getMonth();
+	result.day = time.getDate();
+	return result;
+}
+module.exports.mapMonth = mapMonth;
+
+function resolveDate(r, e) {
 	if(r instanceof Date) {
 		// Special case to turn a Date into a DateValue
 		const result = new DateValue(e.language);
@@ -155,89 +250,106 @@ function resolveDate(r, e, options) {
 		return result;
 	}
 
-	const result = mapYear(r, e);
+	// Resolve the current time for the encounter
+	let time = currentTime(e);
 
-	const now = toDate(result, (options && options.base) || currentTime(e));
+	// The actual result
+	const result = new DateValue(e.language);
+	result.period = 'day';
 
+	// First resolve the year
 	if(typeof r.relativeYears !== 'undefined') {
-		const date = addYears(toDate(result, now), r.relativeYears);
-		result.year = date.getFullYear();
-		result.month = date.getMonth();
-		result.day = date.getDate();
+		// Relative year - add the years and keep the current month and day
+		result.period = 'year';
+		time = addYears(time, r.relativeYears);
+	} else if(typeof r.year !== 'undefined') {
+		// Exact year - set the month and day to the start of year
+		result.period = 'year';
+		time = startOfYear(setYear(time, r.year));
 	}
 
+	// Resolve week if set
+	if(typeof r.relativeWeeks !== 'undefined') {
+		// Relative week - add the week, keep the week day
+		result.period = 'week';
+		time = addWeeks(time, r.relativeWeeks);
+	} else if(typeof r.week !== 'undefined') {
+		// Exact week - set it and reset to start of week
+		result.period = 'week';
+
+		if(r.week < getISOWeek(time) && ! r.past) {
+			time = setISOWeek(addYears(time, 1), r.week);
+		} else {
+			time = setISOWeek(time, r.week);
+		}
+
+		time = startOfWeek(time, e.options);
+	}
+
+	// Resolve the month
+	if(typeof r.relativeMonths !== 'undefined') {
+		// Relative month - add the months and keep the day
+		result.period = 'month';
+		time = addMonths(time, r.relativeMonths);
+	} else if(typeof r.month !== 'undefined') {
+		// Exact month - set the day to the start of the month
+		result.period = 'month';
+
+		if(r.month < time.getMonth() && ! r.past) {
+			// The given month is before the current month - assume next year
+			time = setMonth(addYears(time, 1), r.month);
+		} else {
+			// After current or the same month - assume this year
+			time = setMonth(time, r.month);
+		}
+
+		time = startOfMonth(time);
+	}
+
+	// Resolve the day
 	if(typeof r.relativeDays !== 'undefined') {
-		const date = addDays(toDate(result, now), r.relativeDays);
-		result.year = date.getFullYear();
-		result.month = date.getMonth();
-		result.day = date.getDate();
-	} else {
-		if(typeof r.day !== 'undefined' && typeof result.day !== 'undefined') {
-			// If there is no day set and we have a one - use the requested one
-			result.day = r.day;
+		// Relative day
+		result.period = 'day';
+		time = addDays(time, r.relativeDays);
+	} else if(typeof r.day !== 'undefined') {
+		// If there is an explicit day set it
+		result.period = 'day';
+
+		if(r.day < time.getDate() && ! r.past) {
+			// The given day is before the current day - assume next month
+			time = setDate(addMonths(time, 1), r.day);
+		} else {
+			// After the current or same day - assume this month
+			time = setDate(time, r.day);
 		}
 	}
-
 
 	if(typeof r.dayOfWeek !== 'undefined') {
-		if(typeof result.month === 'undefined') {
-			// Reset to first month
-			result.month = 0;
-		}
+		result.period = 'day';
 
-		if(typeof result.day === 'undefined') {
-			// Reset to first day
-			result.day = 1;
+		const currentDayOfWeek = getISODay(time);
+		if(currentDayOfWeek >= r.dayOfWeek) {
+			time = addWeeks(time, 1);
 		}
-
-		let date = toDate(result, now);
-
-		const currentDayOfWeek = getISODay(date);
-		if(currentDayOfWeek > r.dayOfWeek) {
-			date = addWeeks(date, 1);
-		}
-		date = setISODay(date, r.dayOfWeek);
+		time = setISODay(time, r.dayOfWeek);
 
 		for(let i=1; i<r.dayOfWeekOrdinal; i++) {
-			date = addWeeks(date, 1);
-		}
-
-		result.year = date.getFullYear();
-		result.month = date.getMonth();
-		result.day = date.getDate();
-	}
-
-	if(typeof r.year !== 'undefined') {
-		if(typeof result.month === 'undefined') {
-			result.month = 0;
-
-			if(options && options.end) {
-				result.month = 11;
-			}
+			time = addWeeks(time, 1);
 		}
 	}
 
-	if(typeof result.year === 'undefined') {
-		result.year = now.getFullYear();
+	if(r.intervalEdge === 'end') {
+		// If the end of the period has been requested
+		time = toEnd(time, result.period, e.options);
+	} else if(r.intervalEdge === 'start') {
+		// If the start of the period has been requested
+		time = toStart(time, result.period, e.options);
 	}
 
-	if(typeof result.month !== 'undefined') {
-		if(typeof result.day === 'undefined') {
-			result.day = 1;
-
-			if(options && options.end) {
-				result.day = lastDayOfMonth(result.toDate()).getDate();
-			}
-		}
-	}
-
-	if(typeof result.month === 'undefined') {
-		result.month = now.getMonth();
-	}
-
-	if(typeof result.day === 'undefined') {
-		result.day = now.getDate();
-	}
+	// Move the time into the result
+	result.year = time.getFullYear();
+	result.month = time.getMonth();
+	result.day = time.getDate();
 
 	return result;
 }
@@ -249,32 +361,81 @@ function resolveTime(r, e, now, result) {
 
 	let current = currentTime(e);
 	let time = current;
-
-	if(typeof r.relative === 'number') {
-		time = addSeconds(time, r.relative);
-	} else {
-		if(typeof r.hour !== 'undefined') {
-			time = setHours(time, r.hour);
-		}
-
-		if(typeof r.minute !== 'undefined') {
-			time = setMinutes(time, r.minute);
-		} else {
-			time = setMinutes(time, 0);
-		}
-
-		if(typeof r.second !== 'undefined') {
-			time = setSeconds(time, r.second);
-		} else {
-			time = setSeconds(time, 0);
-		}
+	if(! now) {
+		now = current;
 	}
 
-	if(r.meridiem === 'auto' && time.getHours() <= 12) {
-		// This is a 12-hour time, so we might want to switch the hours around
-		if(isSameDay(now || time, current) && time.getHours() < current.getHours()) {
-			// Same day and hour is before the current hour so assume night time
-			time = addHours(time, 12);
+	if(typeof r.relativeHours !== 'undefined') {
+		result.period = 'hour';
+
+		time = addHours(time, r.relativeHours);
+	} else if(typeof r.hour !== 'undefined') {
+		result.period = 'hour';
+
+		if(r.hour > 12) {
+			// Always force fixed meridiem when hours are > 12
+			r.meridiem = 'fixed';
+		}
+
+		// Hours are a bit special and require some special meridiem handling
+		let hourToSet;
+		if(r.meridiem === 'auto') {
+			// Automatic meridiem
+			const hour12 = now.getHours() % 12 || 12;
+			if(r.hour < hour12 || (now.getHours() > 12 && r.hour ===  12)) {
+				// Requested time is before the current hour - adjust forward in time
+				hourToSet = r.hour + 12;
+			} else {
+				hourToSet = now.getHours() <= 12 ? r.hour : (r.hour + 12);
+			}
+		} else if(r.meridiem === 'am') {
+			// AM meridiem - time set is hours directly
+			hourToSet = r.hour === 12 ? 0 : r.hour;
+		} else if(r.meridiem === 'pm') {
+			// PM meridiem - time to set is hours + 12
+			hourToSet = r.hour === 12 ? 12 : (r.hour + 12);
+		} else {
+			// Assume fixed meridiem
+			hourToSet = r.hour;
+		}
+
+		// TODO: Move time ahead by a day?
+		time = setHours(time, hourToSet);
+
+		time = startOfHour(time);
+	}
+
+	if(typeof r.relativeMinutes !== 'undefined') {
+		result.period = 'minute';
+
+		time = addMinutes(time, r.relativeMinutes);
+	} else if(typeof r.minute !== 'undefined') {
+		result.period = 'minute';
+
+		if(r.minute < time.getMinutes() && ! r.past) {
+			// The given minute is before the current minute - assume next hour
+			time = setMinutes(addHours(time, 1), r.minute);
+		} else {
+			// Treat as same hour
+			time = setMinutes(time, r.minute);
+		}
+
+		time = startOfMinute(time);
+	}
+
+	if(typeof r.relativeSeconds !== 'undefined') {
+		result.period = 'second';
+
+		time = addSeconds(time, r.relativeSeconds);
+	} else if(typeof r.second !== 'undefined') {
+		result.period = 'second';
+
+		if(r.second < time.getSeconds() && ! r.past) {
+			// The given second is before the current second - assume next minute
+			time = setSeconds(addMinutes(time, 1), r.second);
+		} else {
+			// Treat as same minute
+			time = setSeconds(time, r.second);
 		}
 	}
 
@@ -294,6 +455,37 @@ module.exports.mapDateTime = function(r, e) {
 	return resolveTime(r, e, result.toDate(), result);
 }
 
+module.exports.weekRange = function() {
+
+}
+
+function range(from, to) {
+	if(Array.isArray(from)) {
+		return range(from[0], from[1]);
+	}
+
+	return {
+		from: from.from ? from.from : from,
+		to: to && to.from ? to.from : to
+	};
+}
+module.exports.range = range;
+
+module.exports.mapDateRange = function(r, e) {
+	const from = resolveDate(r.from, e);
+	let to;
+	if(r.to) {
+		r.to.intervalEdge = 'end';
+		to = resolveDate(r.from, e);
+
+	} else {
+		r.from.intervalEdge = 'end';
+		to = resolveDate(r.from, e);
+	}
+
+	return new RangeValue(from, to);
+};
+
 class DateValue {
 	constructor(language) {
 		Object.defineProperty(this, 'language', {
@@ -303,5 +495,21 @@ class DateValue {
 
 	toDate(now) {
 		return module.exports.toDate(this, now || new Date());
+	}
+}
+
+class RangeValue {
+
+	constructor(from, to) {
+		this.from = from;
+		this.to = to;
+	}
+
+	toStartDate() {
+		return this.from.toDate();
+	}
+
+	toEndDate() {
+		return this.to.toDate();
 	}
 }
