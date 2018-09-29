@@ -4,7 +4,6 @@ const chai = require('chai');
 const expect = chai.expect;
 
 const utils = require('../language/utils');
-const en = require('../language/en');
 
 function checkTokens(tokens, raw) {
 	expect(tokens.length).to.equal(raw.length, 'Wrong number of tokens extracted');
