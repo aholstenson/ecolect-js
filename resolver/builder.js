@@ -33,9 +33,8 @@ class Builder {
 				}
 			});
 
-			if(encounter.partial) {
-				result.expression = this.describeExpression(encounter);
-			}
+			// Build information about the matching expression
+			result.expression = this.describeExpression(encounter);
 
 			return result;
 		};
