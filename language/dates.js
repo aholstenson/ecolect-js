@@ -7,7 +7,9 @@ const addWeeks = require('date-fns/add_weeks');
 const addDays = require('date-fns/add_days')
 const addHours = require('date-fns/add_hours')
 const addSeconds = require('date-fns/add_seconds')
+const addYears = require('date-fns/add_years');
 
+const setDate = require('date-fns/set_date');
 const setISODay = require('date-fns/set_iso_day');
 const getISODay = require('date-fns/get_iso_day');
 const setHours = require('date-fns/set_hours')
@@ -15,6 +17,9 @@ const setMinutes = require('date-fns/set_minutes')
 const setSeconds = require('date-fns/set_seconds')
 
 const isSameDay = require('date-fns/is_same_day');
+
+const lastDayOfMonth = require('date-fns/last_day_of_month');
+const lastDayOfYear = require('date-fns/last_day_of_year')
 
 module.exports.isRelative = function isRelative(v) {
 	return v && (v.relativeMonths >= 0 || v.relativeWeeks >= 0 || v.relativeDays >= 0 || v.relative >= 0);
@@ -78,10 +83,12 @@ module.exports.toAM = function(time) {
 
 module.exports.combine = function(a, b) {
 	const result = cloneDeep(a);
-	Object.keys(b).forEach(key => result[key] = b[key]);
-
-	if(a.relative >= 0) {
-		result.relative += a.relative;
+	for(const key of Object.keys(b)) {
+		if(key === 'relative' && typeof result[key] === 'number') {
+			result[key] += b[key];
+		} else {
+			result[key] = b[key];
+		}
 	}
 
 	return result;
@@ -138,18 +145,19 @@ function mapYear(r, e) {
 module.exports.mapYear = mapYear;
 module.exports.mapMonth = mapYear;
 
-function resolveDate(r, e) {
+function resolveDate(r, e, options) {
+	if(r instanceof Date) {
+		// Special case to turn a Date into a DateValue
+		const result = new DateValue(e.language);
+		result.year = r.getFullYear();
+		result.month = r.getMonth();
+		result.day = r.getDate();
+		return result;
+	}
+
 	const result = mapYear(r, e);
 
-	const now = toDate(result, currentTime(e));
-
-	if(typeof result.year === 'undefined') {
-		result.year = now.getFullYear();
-	}
-
-	if(typeof result.month === 'undefined') {
-		result.month = now.getMonth();
-	}
+	const now = toDate(result, (options && options.base) || currentTime(e));
 
 	if(typeof r.relativeDays !== 'undefined') {
 		const date = addDays(toDate(result, now), r.relativeDays);
@@ -159,19 +167,17 @@ function resolveDate(r, e) {
 	} else {
 		if(typeof r.day !== 'undefined') {
 			result.day = r.day;
-		} else {
-			result.day = now.getDate();
 		}
 	}
 
 
 	if(typeof r.dayOfWeek !== 'undefined') {
-		if(typeof r.month === 'undefined') {
+		if(typeof result.month === 'undefined') {
 			// Reset to first month
 			result.month = 0;
 		}
 
-		if(typeof r.day === 'undefined') {
+		if(typeof result.day === 'undefined') {
 			// Reset to first day
 			result.day = 1;
 		}
@@ -191,6 +197,38 @@ function resolveDate(r, e) {
 		result.year = date.getFullYear();
 		result.month = date.getMonth();
 		result.day = date.getDate();
+	}
+
+	if(typeof r.year !== 'undefined') {
+		if(typeof result.month === 'undefined') {
+			result.month = 0;
+
+			if(options && options.end) {
+				result.month = 11;
+			}
+		}
+	}
+
+	if(typeof result.year === 'undefined') {
+		result.year = now.getFullYear();
+	}
+
+	if(typeof result.month !== 'undefined') {
+		if(typeof result.day === 'undefined') {
+			result.day = 1;
+
+			if(options && options.end) {
+				result.day = lastDayOfMonth(result.toDate()).getDate();
+			}
+		}
+	}
+
+	if(typeof result.month === 'undefined') {
+		result.month = now.getMonth();
+	}
+
+	if(typeof result.day === 'undefined') {
+		result.day = now.getDate();
 	}
 
 	return result;
