@@ -30,6 +30,21 @@ describe('Combined Intents', function() {
 				.done()
 			.build();
 
+		it('Match: orders', function() {
+			return intents.match('orders')
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.intent).to.equal('orders');
+				});
+		});
+
+		it('No match: show', function() {
+			return intents.match('show')
+				.then(results => {
+					expect(results.matches.length).to.equal(0);
+				});
+		});
+
 		it('Partial: orders', function() {
 			return intents.match('orders', { partial: true })
 				.then(results => {
