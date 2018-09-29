@@ -20,10 +20,10 @@
     "node": ">=6.0.0"
   },
   "dependencies": {
-    "date-fns": "^1.27.1",
+    "date-fns": "^1.29.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
-    "talisman": "^0.16.0"
+    "talisman": "^0.21.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
