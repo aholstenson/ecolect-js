@@ -24,15 +24,33 @@ function relativeTime(seconds) {
 	}
 }
 
+function reverseRelativeTime(v) {
+	const result = cloneDeep(v[0]);
+	result.relative = -result.relative;
+	return result;
+}
+
 module.exports = function(language) {
 	const integer = language.integer;
 
 	const relativeMinutes = new Parser(language)
+		.name('relativeMinutes')
+
 		.add([ Parser.result(integer, v => v.value >= 1 && v.value <= 3), 'quarters' ], v => v[0].value * 15)
 		.add('quarter', 15)
 		.add('half', 30)
 		.add(integer, v => v[0].value)
 		.add([ integer, 'minutes' ], v => v[0].value);
+
+	const relativeTimes = new Parser(language)
+		.name('relativeTime')
+
+		.add([ integer, 'hours' ], v => relativeTime(v[0].value * 3600))
+		.add([ integer, 'minutes' ], v => relativeTime(v[0].value * 60))
+		.add([ integer, 'seconds' ], v => relativeTime(v[0].value))
+
+		.add([ Parser.result(), Parser.result() ], v => utils.combine(v[0], v[1]))
+		.add([ Parser.result(), 'and', Parser.result() ], v => utils.combine(v[0], v[1]));
 
 	return new Parser(language)
 		.name('time')
@@ -99,16 +117,10 @@ module.exports = function(language) {
 		.add([ relativeMinutes, 'after', Parser.result(isHour) ], v => adjustMinutes(v[1], v[0]))
 		.add([ 'half', Parser.result(isHour) ], v => adjustMinutes(v[0], 30))
 
-		// Relative times
-		.add([ integer, 'hours' ], v => relativeTime(v[0].value * 3600))
-		.add([ integer, 'minutes' ], v => relativeTime(v[0].value * 60))
-		.add([ integer, 'seconds' ], v => relativeTime(v[0].value))
-
-		.add([ Parser.result(utils.isRelative), Parser.result(utils.isRelative) ], v => utils.combine(v[0], v[1]))
-		.add([ Parser.result(utils.isRelative), 'and', Parser.result(utils.isRelative) ], v => utils.combine(v[0], v[1]))
-		.add([ 'in', Parser.result(utils.isRelative) ], v => v[0])
-
 		// Qualifiers
+		.add([ 'in', relativeTimes ], v => v[0])
+		.add([ relativeTimes ], v => v[0])
+		.add([ relativeTimes, 'ago' ], reverseRelativeTime)
 		.add([ 'at', Parser.result() ], v => v[0])
 
 		.mapResults(utils.mapTime)

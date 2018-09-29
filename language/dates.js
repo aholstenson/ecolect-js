@@ -204,7 +204,7 @@ function resolveTime(r, e, now, result) {
 	let current = currentTime(e);
 	let time = current;
 
-	if(r.relative > 0) {
+	if(typeof r.relative === 'number') {
 		time = addSeconds(time, r.relative);
 	} else {
 		if(typeof r.hour !== 'undefined') {

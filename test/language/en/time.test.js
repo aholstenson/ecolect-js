@@ -465,6 +465,30 @@ describe('English', function() {
 					})
 				);
 			});
+
+			it('45 minutes ago', function() {
+				return time('45 minutes ago', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 12,
+						minute: 45,
+						second: 0,
+						precision: 'normal'
+					})
+				);
+			});
+
+			it('1 hour and 45 minutes ago', function() {
+				return time('1 hour and 45 minutes ago', { now: new Date(2010, 0, 1, 13, 30) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						hour: 11,
+						minute: 45,
+						second: 0,
+						precision: 'normal'
+					})
+				);
+			});
 		});
 
 		describe('Precision', function() {
