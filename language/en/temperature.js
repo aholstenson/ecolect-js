@@ -11,6 +11,7 @@ function withUnit(v, unit) {
 
 module.exports = function(language) {
 	return new Parser(language)
+		.name('temperature')
 
 		.add(language.number, v => v[0])
 		.add([ language.number, 'degrees' ], v => v[0])

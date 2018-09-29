@@ -4,6 +4,7 @@ const Parser = require('../../parser');
 
 module.exports = function(language) {
 	return new Parser(language)
+		.name('boolean')
 
 		.add('true', true)
 		.add('on', true)

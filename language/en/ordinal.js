@@ -4,6 +4,7 @@ const Parser = require('../../parser');
 
 module.exports = function(language) {
 	return new Parser(language)
+		.name('ordinal')
 
 		.add(language.integer, v => v[0])
 		.add([ language.integer, 'st' ], v => v[0])

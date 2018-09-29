@@ -27,6 +27,10 @@ class RegExpNode extends Node {
 	toString() {
 		return 'RegExp[' + this.regexp + ']';
 	}
+
+	toDot() {
+		return 'label="' + this.regexp + '"';
+	}
 }
 
 module.exports = RegExpNode;

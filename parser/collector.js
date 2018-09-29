@@ -37,6 +37,10 @@ class Collector extends Node {
 	toString() {
 		return 'Collector[' + this.value + ']';
 	}
+
+	toDot() {
+		return 'shape=diamond, label=""';
+	}
 }
 
 module.exports = Collector;

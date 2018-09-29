@@ -51,6 +51,10 @@ class Token extends Node {
 	toString() {
 		return 'Token[' + this.token.raw + ']';
 	}
+
+	toDot() {
+		return 'label="' + this.token.raw + '"';
+	}
 }
 
 module.exports = Token;

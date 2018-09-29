@@ -23,4 +23,8 @@ module.exports.ParsingValue = class ParsingValue {
 	toNode(id) {
 		return new ValueParserNode(id, this.parser, this.options);
 	}
+
+	toDot() {
+		return this.parser.toDot();
+	}
 }

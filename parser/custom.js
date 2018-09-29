@@ -24,6 +24,10 @@ class CustomNode extends Node {
 	equals(other) {
 		return other instanceof CustomNode && this.validator === other.validator;
 	}
+
+	toDot() {
+		return 'label="Custom"';
+	}
 }
 
 module.exports = CustomNode;

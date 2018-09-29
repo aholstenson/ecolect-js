@@ -225,6 +225,50 @@ class Parser extends Node {
 		return 'Parser[]';
 	}
 
+	toDot() {
+		const iterate = (node, func) => {
+			func(node);
+
+			for(const n of node.outgoing) {
+				iterate(n, func);
+			}
+		};
+
+		let result = 'digraph {\nrankdir=LR;\n';
+
+		result += 'collector[shape=diamond,label=""];\n';
+
+		const nodes = new Map();
+		iterate(this, node => {
+			if(node instanceof CollectorNode) {
+				return;
+			}
+
+			let id = nodes.get(node);
+			if(id) return;
+
+			id = 'node' + nodes.size;
+			nodes.set(node, id);
+
+			if(node instanceof Parser) {
+				result += id + '[shape=circle, label=""];\n';
+			} else {
+				result += id + '[' + node.toDot() + '];\n';
+			}
+		});
+
+		iterate(this, node => {
+			let id = nodes.get(node);
+			for(const n of node.outgoing) {
+				const id2 = n instanceof CollectorNode ? 'collector' : nodes.get(n);
+				result += id + ' -> ' + id2 + ';\n';
+			}
+		});
+
+		result += '}';
+		return result;
+	}
+
 	static result(node, validator) {
 		if(typeof validator === 'undefined') {
 			validator = node;
@@ -234,7 +278,21 @@ class Parser extends Node {
 		return function(parser) {
 			const sub = new SubNode(node ? node : parser.outgoing, validator);
 			if(validator) {
-				sub.name = (node ? node.name + ':' : '') + validator.name;
+				let name = node && node.name;
+				if(typeof name === 'function') {
+					name = node._name;
+				}
+
+				if(validator.name) {
+					if(name) {
+						name += ' - ' + validator.name;
+					} else {
+						name = validator.name;
+					}
+				}
+				sub.name = name;
+			} else {
+				sub.name = 'Self';
 			}
 			return sub;
 		};

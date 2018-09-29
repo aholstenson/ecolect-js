@@ -148,6 +148,14 @@ class SubNode extends Node {
 	toString() {
 		return 'SubGraph[' + (this.name || this.roots) + ']';
 	}
+
+	toDot() {
+		if(this.name === 'Self') {
+			return 'shape=circle, label=""';
+		} else {
+			return 'shape=rectangle, label="' + (this.name || '') + '"';
+		}
+	}
 }
 
 module.exports = SubNode;
