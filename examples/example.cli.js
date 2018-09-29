@@ -36,8 +36,12 @@ const intents = ecolect.intents(en)
 	.build();
 
 function formatValue(value) {
-	if(value && value.value) {
-		return value.value;
+	if(value) {
+		if(value.value) {
+			return value.value;
+		} else if(value.toDate) {
+			return value.toDate();
+		}
 	}
 	return value;
 }
