@@ -24,6 +24,7 @@ class Encounter {
 		this.partial = options.partial || false;
 		this.onMatch = options.onMatch;
 		this.verbose = options.verbose;
+		this.onlyComplete = options.onlyComplete || false;
 
 		this.options = options;
 
@@ -92,9 +93,18 @@ class Encounter {
 				if(item instanceof Match) {
 					results.push(item);
 				} else {
-					const score = this.partial
-						? scorePartial(this.tokens.length, nextIndex, this.maxDepth, nextScore)
-						: nextScore / this.tokens.length;
+					let score;
+					if(this.partial) {
+						score = scorePartial(this.tokens.length, nextIndex, this.maxDepth, nextScore)
+					} else {
+						if(this.onlyComplete && nextIndex < this.tokens.length) {
+							// Skip this match unless it has consumed all tokens
+							return;
+						}
+
+						score = nextScore / this.tokens.length;
+					}
+
 					results.push(new Match(nextIndex, score, item));
 				}
 			};

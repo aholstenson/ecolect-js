@@ -193,9 +193,11 @@ class Parser extends Node {
 		});
 	}
 
-	match(encounter, options) {
+	match(encounter, options={}) {
 		if(typeof encounter === 'string') {
-			encounter = new Encounter(this.language, encounter, options || {});
+			encounter = new Encounter(this.language, encounter, Object.assign({
+				onlyComplete: true
+			}, options));
 			encounter.outgoing = this.outgoing;
 
 			if(this._skipPunctuation) {
