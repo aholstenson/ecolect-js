@@ -66,6 +66,14 @@ intents.match('turn lights', { partial: true })
 	});
 ```
 
+## Options
+
+Option         | Default      | Description
+---------------|--------------|-------------
+`partial`      | `false`      | If partial matching should be performed
+`now`          | `new Date()` | Date to use as a base for times and dates parsed
+`weekStartsOn` | `0` (Sunday) | The day the week starts on
+
 ## Values
 
 Intents in Ecolect can also contain values, there are several built in types and
