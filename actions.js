@@ -6,9 +6,13 @@ module.exports.Builder = class Builder {
 	constructor(lang) {
 		this.builder = new intents.Builder(lang);
 		this.handlers = new Map();
+		this.id = 0;
 	}
 
 	action(id) {
+		// Auto assign an id
+		if(! id) id = ('__auto__' + ++this.id);
+
 		const builder = this.builder.intent(id);
 
 		const self = this;
@@ -56,7 +60,7 @@ class Actions {
 
 		return this.matcher.match(expression, options)
 			.then(result => {
-				result.matches = result.matches.forEach(map);
+				result.matches = result.matches.map(map);
 				result.best = map(result.best);
 
 				return result;
