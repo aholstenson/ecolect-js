@@ -2,7 +2,9 @@
 
 const Parser = require('../../parser');
 const cloneDeep = require('lodash.clonedeep');
-const utils = require('../dates');
+
+const { combine } = require('../../time/matching');
+const { map, time12h, time24h, toAM, toPM } = require('../../time/times');
 
 function hasHour(v) {
 	return v && typeof v.hour !== 'undefined';
@@ -13,7 +15,7 @@ function isHour(v) {
 }
 
 function adjustMinutes(time, minutes) {
-	return utils.combine(time, {
+	return combine(time, {
 		relativeMinutes: minutes
 	});
 }
@@ -53,8 +55,8 @@ module.exports = function(language) {
 		.add([ integer, 'minutes' ], v => ({ relativeMinutes: v[0].value }))
 		.add([ integer, 'seconds' ], v => ({ relativeSeconds: v[0].value }))
 
-		.add([ Parser.result(), Parser.result() ], v => utils.combine(v[0], v[1]))
-		.add([ Parser.result(), 'and', Parser.result() ], v => utils.combine(v[0], v[1]));
+		.add([ Parser.result(), Parser.result() ], v => combine(v[0], v[1]))
+		.add([ Parser.result(), 'and', Parser.result() ], v => combine(v[0], v[1]));
 
 	return new Parser(language)
 		.name('time')
@@ -62,19 +64,19 @@ module.exports = function(language) {
 		.skipPunctuation()
 
 		// Approximate times
-		.add([ Parser.result(), 'ish' ], v => utils.combine(v[0], { precision: 'approximate' }))
-		.add([ Parser.result(), 'approximately' ], v => utils.combine(v[0], { precision: 'approximate' }))
-		.add([ 'about', Parser.result() ], v => utils.combine(v[0], { precision: 'approximate' }))
-		.add([ 'around', Parser.result() ], v => utils.combine(v[0], { precision: 'approximate' }))
-		.add([ 'approximately', Parser.result() ], v => utils.combine(v[0], { precision: 'approximate' }))
+		.add([ Parser.result(), 'ish' ], v => combine(v[0], { precision: 'approximate' }))
+		.add([ Parser.result(), 'approximately' ], v => combine(v[0], { precision: 'approximate' }))
+		.add([ 'about', Parser.result() ], v => combine(v[0], { precision: 'approximate' }))
+		.add([ 'around', Parser.result() ], v => combine(v[0], { precision: 'approximate' }))
+		.add([ 'approximately', Parser.result() ], v => combine(v[0], { precision: 'approximate' }))
 
-		.add([ Parser.result(), 'amish' ], v => utils.combine(utils.toAM(v[0]), { precision: 'approximate' }))
-		.add([ Parser.result(), 'pmish' ], v => utils.combine(utils.toPM(v[0]), { precision: 'approximate' }))
+		.add([ Parser.result(), 'amish' ], v => combine(toAM(v[0]), { precision: 'approximate' }))
+		.add([ Parser.result(), 'pmish' ], v => combine(toPM(v[0]), { precision: 'approximate' }))
 
 		// Exact times
-		.add([ 'exactly', Parser.result() ], v => utils.combine(v[0], { precision: 'exact' }))
-		.add([ Parser.result(), 'exactly' ], v => utils.combine(v[0], { precision: 'exact' }))
-		.add([ Parser.result(), 'sharp' ], v => utils.combine(v[0], { precision: 'exact' }))
+		.add([ 'exactly', Parser.result() ], v => combine(v[0], { precision: 'exact' }))
+		.add([ Parser.result(), 'exactly' ], v => combine(v[0], { precision: 'exact' }))
+		.add([ Parser.result(), 'sharp' ], v => combine(v[0], { precision: 'exact' }))
 
 		// Named times
 		.map(
@@ -82,34 +84,34 @@ module.exports = function(language) {
 				'midnight': 0,
 				'noon': 12
 			},
-			v => utils.time24h(v)
+			v => time24h(v)
 		)
 
 		// HH, such as 4, 14
-		.add(/^[0-9]{1,2}$/, v => utils.time12h(parseInt(v[0])))
-		.add([ integer ], v => utils.time12h(v[0].value))
+		.add(/^[0-9]{1,2}$/, v => time12h(parseInt(v[0])))
+		.add([ integer ], v => time12h(v[0].value))
 
 		// HH:MM, such as 00:10, 9:30, 14 00
 		.add([ /^[0-9]{1,2}$/, /^[0-9]{1,2}$/ ], v => {
-			return utils.time12h(parseInt(v[0]), parseInt(v[1]));
+			return time12h(parseInt(v[0]), parseInt(v[1]));
 		})
-		.add([ integer, integer ], v => utils.time12h(v[0].value, v[1].value))
+		.add([ integer, integer ], v => time12h(v[0].value, v[1].value))
 		.add(/^[0-9]{3,4}$/, v => {
 			const t = v[0];
 			const h = t.length == 3 ? t.substring(0, 1) : t.substring(0, 2);
 			const m = t.substring(t.length-2);
-			return utils.time12h(parseInt(h), parseInt(m));
+			return time12h(parseInt(h), parseInt(m));
 		})
 
 		// HH:MM:SS
 		.add([ /^[0-9]{1,2}$/, /^[0-9]{1,2}$/, /^[0-9]{1,2}$/ ], v => {
-			return utils.time12h(parseInt(v[0]), parseInt(v[1]), parseInt(v[2]));
+			return time12h(parseInt(v[0]), parseInt(v[1]), parseInt(v[2]));
 		})
 
-		.add([ Parser.result(hasHour), 'pm' ], v => utils.toPM(v[0]))
-		.add([ Parser.result(hasHour), 'p.m.' ], v => utils.toPM(v[0]))
-		.add([ Parser.result(hasHour), 'am' ], v => utils.toAM(v[0]))
-		.add([ Parser.result(hasHour), 'a.m.' ], v => utils.toAM(v[0]))
+		.add([ Parser.result(hasHour), 'pm' ], v => toPM(v[0]))
+		.add([ Parser.result(hasHour), 'p.m.' ], v => toPM(v[0]))
+		.add([ Parser.result(hasHour), 'am' ], v => toAM(v[0]))
+		.add([ Parser.result(hasHour), 'a.m.' ], v => toAM(v[0]))
 
 
 		.add([ relativeMinutes, 'to', Parser.result(isHour) ], v => adjustMinutes(v[1], - v[0]))
@@ -127,6 +129,6 @@ module.exports = function(language) {
 		.add([ relativeTimes, 'ago' ], reverseRelativeTime)
 		.add([ 'at', Parser.result() ], v => v[0])
 
-		.mapResults(utils.mapTime)
+		.mapResults(map)
 		.onlyBest();
 }

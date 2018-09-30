@@ -1,7 +1,7 @@
 'use strict';
 
 const Parser = require('../../parser');
-const { mapMonth } = require('../dates');
+const { map } = require('../../time/months');
 
 module.exports = function(language) {
 	const integer = language.integer;
@@ -62,6 +62,6 @@ module.exports = function(language) {
 
 		.add([ 'in', Parser.result() ], v => v[0])
 
-		.mapResults(mapMonth)
+		.mapResults(map)
 		.onlyBest();
 }

@@ -1,7 +1,9 @@
 'use strict';
 
 const Parser = require('../../parser');
-const utils = require('../dates');
+
+const { combine, isRelative, startOf, endOf } = require('../../time/matching');
+const { map } = require('../../time/dates');
 
 function value(v) {
 	if(Array.isArray(v)) {
@@ -24,13 +26,13 @@ function hasMonth(v) {
 }
 
 function withDay(date, day) {
-	return utils.combine(date, {
+	return combine(date, {
 		day: value(day)
 	});
 }
 
 function withYear(v) {
-	return utils.combine(v[0], {
+	return combine(v[0], {
 		year: value(v[1])
 	});
 }
@@ -79,7 +81,7 @@ module.exports = function(language) {
 		// Non-year (month and day) followed by year
 		// With day: 12 Jan 2018, 1st February 2018
 		// Without day: Jan 2018, this month 2018
-		.add([ Parser.result(hasMonth), year ], v => utils.combine(v[0], v[1]))
+		.add([ Parser.result(hasMonth), year ], v => combine(v[0], v[1]))
 
 		.add([ month, 'in', /^[0-9]{1,2}$/ ], withYear)
 		.add([ month, 'of', /^[0-9]{1,2}$/ ], withYear)
@@ -110,6 +112,9 @@ module.exports = function(language) {
 			};
 		})
 
+		// Month
+		.add([ month ], v => v[0])
+
 		// Relative dates
 		.add([ integer, 'days' ], v => { return { relativeDays: v[0].value }})
 		.add([ integer, 'months' ], v => { return { relativeMonths: v[0].value }})
@@ -121,32 +126,32 @@ module.exports = function(language) {
 		.add('start of week', () => ({ relativeWeeks: 0, intervalEdge: 'start' }))
 		.add('end of week', () => ({ relativeWeeks: 0, intervalEdge: 'end' }))
 
-		.add([ Parser.result(utils.isRelative), Parser.result(utils.isRelative) ], v => utils.combine(v[0], v[1]))
-		.add([ Parser.result(utils.isRelative), 'and', Parser.result(utils.isRelative) ], v => utils.combine(v[0], v[1]))
+		.add([ Parser.result(isRelative), Parser.result(isRelative) ], v => combine(v[0], v[1]))
+		.add([ Parser.result(isRelative), 'and', Parser.result(isRelative) ], v => combine(v[0], v[1]))
 
 		// nth day of week in month
-		.add([ ordinal, dayOfWeek, month ], v => utils.combine(v[2], {
+		.add([ ordinal, dayOfWeek, month ], v => combine(v[2], {
 			dayOfWeek: v[1].value,
 			dayOfWeekOrdinal: v[0].value
 		}))
 
 		// nth day of week in year
-		.add([ ordinal, dayOfWeek, year ], v => utils.combine(v[2], {
+		.add([ ordinal, dayOfWeek, year ], v => combine(v[2], {
 			dayOfWeek: v[1].value,
 			dayOfWeekOrdinal: v[0].value
 		}))
 
-		.add([ ordinal, dayOfWeek, Parser.result(utils.isRelative) ], v => utils.combine(v[2], {
+		.add([ ordinal, dayOfWeek, Parser.result(isRelative) ], v => combine(v[2], {
 			dayOfWeek: v[1].value,
 			dayOfWeekOrdinal: v[0].value
 		}))
 
 		// Week N of year
-		.add([ 'week', ordinal, year ], v => utils.combine(v[1], {
+		.add([ 'week', ordinal, year ], v => combine(v[1], {
 			week: v[0].value
 		}))
 
-		.add([ ordinal, 'week', year ], v => utils.combine(v[1], {
+		.add([ ordinal, 'week', year ], v => combine(v[1], {
 			week: v[0].value
 		}))
 
@@ -155,10 +160,10 @@ module.exports = function(language) {
 		.add([ 'on', 'the', Parser.result() ], v => v[0])
 
 		// Edges, such as start of [date] or end of [date]
-		.add([ 'start of', Parser.result() ], utils.startOf)
-		.add([ 'beginning of', Parser.result() ], utils.startOf)
-		.add([ 'end of', Parser.result() ], utils.endOf)
+		.add([ 'start of', Parser.result() ], startOf)
+		.add([ 'beginning of', Parser.result() ], startOf)
+		.add([ 'end of', Parser.result() ], endOf)
 
-		.mapResults(utils.mapDate)
+		.mapResults(map)
 		.onlyBest();
 }
