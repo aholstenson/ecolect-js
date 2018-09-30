@@ -14,6 +14,10 @@ module.exports.Builder = class Builder {
 	}
 
 	intent(id) {
+		if(typeof id !== 'string') {
+			throw new Error('Intents require identifiers that are strings');
+		}
+
 		const self = this;
 		const instance = new ResolverBuilder(this.language, id);
 		return {

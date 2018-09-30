@@ -7,7 +7,22 @@ const ecolect = require('../');
 const en = require('../language/en');
 const any = require('../values/any');
 
-describe('Combined Intents', function() {
+describe('Intents', function() {
+	describe('Basic', function() {
+		it('Throws error when no language', () => {
+			expect(() => {
+				ecolect.intents();
+			}).to.throw();
+		});
+
+		it('Throws error when no intent id', () => {
+			expect(() => {
+				ecolect.intents(en)
+					.intent();
+			}).to.throw();
+		});
+	});
+
 	describe('Orders', function() {
 		const intents = ecolect.intents(en)
 			.intent('orders')
