@@ -80,6 +80,28 @@ Intents in Ecolect can also contain values, there are several built in types and
 it's easy to provide custom value validation. Values are used to capture
 information, such as dates, numbers, names and freeform text.
 
+Values can either be used within intents or standalone as matchers:
+
+```javascript
+const en = require('ecolect/language/en');
+const date = require('ecolect/values/date');
+
+// Create a matcher for the date value
+const dateMatcher = date().matcher(en);
+
+// Call the matcher
+dateMatcher('2018')
+	.then(value => /* do something with the value */)
+	.catch(err => /* handle errors */);
+
+// Optionally specify options for parsing, such as what day the week starts on
+dateMatcher('start of week 12', { weekStartsOn: 1 /* Monday*/ })
+	.then(value => /* do something with the value */)
+	.catch(err => /* handle errors */);
+```
+
+## Value types
+
 ### Integer
 
 Capture any positive integer number.

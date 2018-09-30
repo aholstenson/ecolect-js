@@ -10,6 +10,21 @@ class LanguageSpecificValue {
 	create(language) {
 		return this.factory(language);
 	}
+
+	/**
+	 * Create a matcher function for this value and the specified language.
+	 *
+	 * @param {Language} language
+	 */
+	matcher(language) {
+		const parser = this.factory(language).parser;
+
+		return function(text, options) {
+			if(typeof text !== 'string') return Promise.resolve(null);
+
+			return parser.match(text, options)
+		};
+	}
 }
 
 module.exports.LanguageSpecificValue = LanguageSpecificValue;
