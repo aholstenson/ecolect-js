@@ -4,7 +4,7 @@ const chai = require('chai');
 const expect = chai.expect;
 
 const en = require('../../../language/en');
-const datetime = (text, options) => en.datetime.match(text, options);
+const datetime = (text, options) => en.dateTime.match(text, options);
 
 describe('English', function() {
 
