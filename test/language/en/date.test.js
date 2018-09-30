@@ -625,5 +625,55 @@ describe('English', function() {
 					);
 			});
 		});
+
+		describe('Interval modifiers', function() {
+			it('end of jan next year', function() {
+				return date('end of jan next year', { now: new Date(2014, 2, 22) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'month',
+							year: 2015,
+							month: 0,
+							day: 31
+						})
+					);
+			});
+
+			it('end of next year', function() {
+				return date('end of next year', { now: new Date(2014, 2, 22) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'year',
+							year: 2015,
+							month: 11,
+							day: 31
+						})
+					);
+			});
+
+			it('start of week 12', function() {
+				return date('start of week 12', { now: new Date(2014, 2, 22) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'week',
+							year: 2014,
+							month: 2,
+							day: 16
+						})
+					);
+			});
+
+			it('end of week 12', function() {
+				return date('end of week 12', { now: new Date(2014, 2, 22) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'week',
+							year: 2014,
+							month: 2,
+							day: 22
+						})
+					);
+			});
+		});
 	});
 });
