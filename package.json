@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/mocha --recursive test/ && node_modules/.bin/eslint .",
-    "coverage": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec --recursive test"
+    "coverage": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec --recursive test",
+    "build": "node ./build/unicode.js"
   },
   "license": "MIT",
   "repository": "aholstenson/ecolect-js",
