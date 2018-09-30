@@ -36,34 +36,34 @@ const en = require('ecolect/language/en');
 const any = require('ecolect/values/any');
 
 const intents = ecolect.intents(en)
-	.intent('lights:on')
-		.value('room', any())
-		.add('turn lights on')
-		.add('turn lights in {room} on')
-		.done()
-	.intent('lights:off')
-		.value('room', any())
-		.add('turn lights off')
-		.add('turn lights in {room} off')
-		.done()
-	.build();
+  .intent('lights:on')
+    .value('room', any())
+    .add('turn lights on')
+    .add('turn lights in {room} on')
+    .done()
+  .intent('lights:off')
+    .value('room', any())
+    .add('turn lights off')
+    .add('turn lights in {room} off')
+    .done()
+  .build();
 
 // Normal mode - match the best
 intents.match('turn lights off')
-	.then(results => {
-		if(results.best) {
-			// One of the expressions matched
-			console.log('Intent:', results.best.intent);
-			console.log('Values:', results.best.values)
+  .then(results => {
+    if(results.best) {
+      // One of the expressions matched
+      console.log('Intent:', results.best.intent);
+      console.log('Values:', results.best.values)
 
-			// results.matches will contain the top matches if anything else matched as well
-		}
-	});
+      // results.matches will contain the top matches if anything else matched as well
+    }
+  });
 
 intents.match('turn lights', { partial: true })
-	.then(results => {
-		results.matches.forEach(match => console.log(match));
-	});
+  .then(results => {
+    results.matches.forEach(match => console.log(match));
+  });
 ```
 
 ## Options
@@ -102,9 +102,9 @@ The returned value is a simple object with one key named `value`.
 const integer = require('ecolect/values/integer');
 
 builder.intent('list')
-	.value('count', integer())
-	.add('Show top {count} items')
-	.done();
+  .value('count', integer())
+  .add('Show top {count} items')
+  .done();
 ```
 
 
@@ -130,9 +130,9 @@ The returned value is a simple object with one key named `value`.
 const number = require('ecolect/values/number');
 
 builder.intent('add')
-	.value('amount', number())
-	.add('Add {amount} to result')
-	.done();
+  .value('amount', number())
+  .add('Add {amount} to result')
+  .done();
 ```
 
 ### Ordinal
@@ -157,9 +157,9 @@ The returned value is a simple object with one key named `value`.
 const ordinal = require('ecolect/values/ordinal');
 
 builder.intent('pick')
-	.value('position', ordinal())
-	.add('Show {position} in the list')
-	.done();
+  .value('position', ordinal())
+  .add('Show {position} in the list')
+  .done();
 ```
 
 ### Date
@@ -185,9 +185,9 @@ const date = value.toDate();
 const date = require('ecolect/values/date');
 
 builder.intent('deadline')
-	.value('date', date())
-	.add('Set deadline to {date}')
-	.done();
+  .value('date', date())
+  .add('Set deadline to {date}')
+  .done();
 ```
 
 ### Time
@@ -213,9 +213,9 @@ const date = value.toDate();
 const time = require('ecolect/values/time');
 
 builder.intent('alarm')
-	.value('time', time())
-	.add('Wake me {time}')
-	.done();
+  .value('time', time())
+  .add('Wake me {time}')
+  .done();
 ```
 
 ### Date & Time
@@ -227,12 +227,12 @@ Language         | Examples
 English          | `3pm on Jan 12th`, `in 2 days and 2 hours`, `14:00`
 
 ```javascript
-const datetime = require('ecolect/values/datetime');
+const dateTime = require('ecolect/values/date-time');
 
 builder.intent('schedule')
-	.value('when', datetime())
-	.add('Schedule a call {when}')
-	.done();
+  .value('when', dateTime())
+  .add('Schedule a call {when}')
+  .done();
 ```
 
 ### Enumeration
@@ -244,13 +244,13 @@ should match.
 const enumeration = require('ecolect/values/enumeration');
 
 builder.intent('list')
-	.value('type', enumeration([
-		'Balloons',
-		'Cookies',
-		'Tasty Cake'
-	]))
-	.add('Show me the last {type}')
-	.done();
+  .value('type', enumeration([
+    'Balloons',
+    'Cookies',
+    'Tasty Cake'
+  ]))
+  .add('Show me the last {type}')
+  .done();
 ```
 
 ### Text
@@ -263,7 +263,7 @@ always try to capture as much as they can and will not validate the result.
 const any = require('ecolect/values/any');
 
 builder.intent('echo')
-	.value('text', any())
-	.add('Echo {text}')
-	.done();
+  .value('text', any())
+  .add('Echo {text}')
+  .done();
 ```
