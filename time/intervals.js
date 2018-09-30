@@ -59,4 +59,3 @@ module.exports.toEnd = function(time, period, options=undefined) {
 	// Default case, just ignore and return full time
 	return time;
 };
-

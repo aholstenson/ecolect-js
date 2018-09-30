@@ -62,3 +62,17 @@ module.exports.startOf = function(v) {
 	return v;
 };
 
+/**
+ * Create an interval between the two values. Handles the case where one or
+ * both values are already an interval.
+ */
+module.exports.between = function(start, end) {
+	if(Array.isArray(start)) {
+		return module.exports.between(start[0], start[1]);
+	}
+
+	return {
+		start: start.start ? start.start : start,
+		end: end && end.start ? end.start : end
+	};
+};
