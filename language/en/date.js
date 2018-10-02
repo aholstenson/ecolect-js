@@ -50,6 +50,17 @@ module.exports = function(language) {
 
 	const day = Parser.result(ordinal, v => v.value >= 0 && v.value < 31);
 
+	const relative = new Parser(language)
+		.name('relative')
+
+		// Relative dates
+		.add([ integer, 'days' ], v => { return { relativeDays: v[0].value }})
+		.add([ integer, 'months' ], v => { return { relativeMonths: v[0].value }})
+		.add([ integer, 'weeks' ], v => { return { relativeWeeks: v[0].value }})
+
+		.add([ Parser.result(isRelative), Parser.result(isRelative) ], v => combine(v[0], v[1]))
+		.add([ Parser.result(isRelative), 'and', Parser.result(isRelative) ], v => combine(v[0], v[1]));
+
 	return new Parser(language)
 		.name('date')
 
@@ -115,10 +126,6 @@ module.exports = function(language) {
 		// Month
 		.add([ month ], v => v[0])
 
-		// Relative dates
-		.add([ integer, 'days' ], v => { return { relativeDays: v[0].value }})
-		.add([ integer, 'months' ], v => { return { relativeMonths: v[0].value }})
-		.add([ integer, 'weeks' ], v => { return { relativeWeeks: v[0].value }})
 		.add([ year ], v => v[0])
 
 		.add([ 'this week' ], () => ({ relativeWeeks: 0, intervalEdge: 'start' }))
@@ -126,8 +133,7 @@ module.exports = function(language) {
 		.add('start of week', () => ({ relativeWeeks: 0, intervalEdge: 'start' }))
 		.add('end of week', () => ({ relativeWeeks: 0, intervalEdge: 'end' }))
 
-		.add([ Parser.result(isRelative), Parser.result(isRelative) ], v => combine(v[0], v[1]))
-		.add([ Parser.result(isRelative), 'and', Parser.result(isRelative) ], v => combine(v[0], v[1]))
+		.add([ relative ], v => v[0])
 
 		// nth day of week in month
 		.add([ ordinal, dayOfWeek, month ], v => combine(v[2], {
