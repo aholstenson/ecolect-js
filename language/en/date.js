@@ -32,8 +32,9 @@ function withDay(date, day) {
 }
 
 function withYear(v) {
+	const year = parseInt(value(v[1]));
 	return combine(v[0], {
-		year: value(v[1])
+		year: year < 1000 ? year + 2000 : year
 	});
 }
 
