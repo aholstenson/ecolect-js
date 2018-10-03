@@ -1,6 +1,6 @@
 'use strict';
 
-const cloneDeep = require('lodash.clonedeep');
+const { cloneObject } = require('../utils/cloning');
 
 /**
  * Check if a given result is currently relative.
@@ -24,7 +24,7 @@ module.exports.hasMonth = function(v) {
 
 
 module.exports.combine = function(a, b) {
-	const result = cloneDeep(a);
+	const result = cloneObject(a);
 	for(const key of Object.keys(b)) {
 		if(key === 'relative' && typeof result[key] === 'number') {
 			result[key] += b[key];
@@ -44,7 +44,7 @@ module.exports.endOf = function(v) {
 		v = v[0];
 	}
 
-	v = cloneDeep(v);
+	v = cloneObject(v);
 	v.intervalEdge = 'end';
 	return v;
 };
@@ -57,7 +57,7 @@ module.exports.startOf = function(v) {
 		v = v[0];
 	}
 
-	v = cloneDeep(v);
+	v = cloneObject(v);
 	v.intervalEdge = 'start';
 	return v;
 };

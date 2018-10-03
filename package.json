@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "date-fns": "^1.29.0",
-    "lodash.clonedeep": "^4.5.0",
+    "fast-clone": "^1.5.3",
     "lodash.isequal": "^4.5.0",
     "talisman": "^0.21.0"
   },

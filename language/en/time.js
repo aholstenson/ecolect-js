@@ -1,7 +1,7 @@
 'use strict';
 
 const Parser = require('../../parser');
-const cloneDeep = require('lodash.clonedeep');
+const { cloneObject } = require('../../utils/cloning');
 
 const { combine } = require('../../time/matching');
 const { map, time12h, time24h, toAM, toPM } = require('../../time/times');
@@ -21,7 +21,7 @@ function adjustMinutes(time, minutes) {
 }
 
 function reverseRelativeTime(v) {
-	const result = cloneDeep(v[0]);
+	const result = cloneObject(v[0]);
 	if(result.relativeHours) {
 		result.relativeHours = - result.relativeHours;
 	}

@@ -2,7 +2,7 @@
 
 const Parser = require('../../parser');
 
-const cloneDeep = require('lodash.clonedeep');
+const { cloneObject } = require('../../utils/cloning');
 
 module.exports = function(language) {
 	return new Parser(language)
@@ -38,6 +38,6 @@ module.exports = function(language) {
 
 		.add([ 'on', Parser.result() ], v => v[0])
 
-		.mapResults(cloneDeep)
+		.mapResults(cloneObject)
 		.onlyBest();
 }

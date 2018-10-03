@@ -1,6 +1,6 @@
 'use strict';
 
-const cloneDeep = require('lodash.clonedeep');
+const { cloneObject, clone } = require('../utils/cloning');
 
 function scorePartial(tokens, depth, maxDepth, score) {
 	return (1 / depth) * 0.8 + Math.min(1, score / depth) * 0.2;
@@ -232,9 +232,9 @@ class Match {
 	}
 
 	copy() {
-		const r = new Match(this.index, this.score, cloneDeep(this.data));
+		const r = new Match(this.index, this.score, clone(this.data));
 		if(this.expression) {
-			r.expression = cloneDeep(r.expression);
+			r.expression = cloneObject(r.expression);
 		}
 		return r;
 	}
