@@ -5,6 +5,8 @@ const { map } = require('../../time/months');
 
 module.exports = function(language) {
 	const integer = language.integer;
+	const ordinal = language.ordinal;
+	const ordinalMonth = Parser.result(ordinal, v => v.type === 'specific' && v.value >= 1 && v.value <= 12);
 
 	return new Parser(language)
 		.name('month')
@@ -58,7 +60,12 @@ module.exports = function(language) {
 		.add('previous month', () => ({ relativeMonths: -1 }))
 		.add('last month', () => ({ relativeMonths: -1 }))
 		.add('next month', () => ({ relativeMonths: 1 }))
+
 		.add([ 'in', integer, 'months' ], v => { return { relativeMonths: v[0].value }})
+
+		// Numbered months
+		.add([ ordinalMonth, 'month' ], v => ({ month: v[0].value - 1 }))
+		.add([ ordinalMonth ], v => ({ month: v[0].value - 1, }))
 
 		.add([ 'in', Parser.result() ], v => v[0])
 

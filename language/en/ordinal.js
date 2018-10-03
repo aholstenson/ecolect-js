@@ -2,15 +2,17 @@
 
 const Parser = require('../../parser');
 
+const specific = v => ({ value: v[0].value, type: 'specific' });
+
 module.exports = function(language) {
 	return new Parser(language)
 		.name('ordinal')
 
-		.add(language.integer, v => v[0])
-		.add([ language.integer, 'st' ], v => v[0])
-		.add([ language.integer, 'nd' ], v => v[0])
-		.add([ language.integer, 'rd' ], v => v[0])
-		.add([ language.integer, 'th' ], v => v[0])
+		.add(language.integer, v => ({ value: v[0].value, type: 'ambigious' }))
+		.add([ language.integer, 'st' ], specific)
+		.add([ language.integer, 'nd' ], specific)
+		.add([ language.integer, 'rd' ], specific)
+		.add([ language.integer, 'th' ], specific)
 
 		.map(
 			{
@@ -25,7 +27,7 @@ module.exports = function(language) {
 				'ninth': 9,
 				'tenth': 10
 			},
-			l => { return { value: l } }
+			l => { return { value: l, type: 'specific' } }
 		)
 
 		.add([ 'the', Parser.result() ], v => v[0])
