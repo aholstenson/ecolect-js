@@ -12,8 +12,12 @@ const MATCHER_NUMERIC = '(?:' + matchers.numeric + ')+';
 const MATCHER_EMOJI = matchers.emoji + '(?:' + matchers.emojiModifier + ')*';
 const MATCHER = new RegExp('(' + MATCHER_ALPHABETIC + '|' + MATCHER_NUMERIC + '|' + MATCHER_EMOJI + '|.)', 'gu');
 function tokenizeSingle(index, text, transformer, result) {
+	MATCHER.previousIndex = 0;
+	let match;
+	while((match = MATCHER.exec(text))) {
+		const offset = match.index;
+		const raw = match[0];
 
-	function pushToken(offset, raw) {
 		let offsetStart = index + offset;
 		const token = {
 			start: offsetStart,
@@ -23,7 +27,8 @@ function tokenizeSingle(index, text, transformer, result) {
 
 		let tokens = transformer(token);
 		if(Array.isArray(tokens)) {
-			tokens.forEach(t => {
+			for(let i=0; i<tokens.length; i++) {
+				const t = tokens[i];
 				if(typeof t.start === 'undefined') {
 					t.start = offsetStart;
 					t.stop = offsetStart + t.raw.length;
@@ -35,7 +40,7 @@ function tokenizeSingle(index, text, transformer, result) {
 
 				offsetStart = t.stop;
 				result.push(t);
-			});
+			}
 		} else {
 			if(isPunctuation(tokens.raw)) {
 				tokens.punctuation = true;
@@ -43,15 +48,6 @@ function tokenizeSingle(index, text, transformer, result) {
 
 			result.push(tokens);
 		}
-	}
-
-	MATCHER.previousIndex = 0;
-	let match;
-	while((match = MATCHER.exec(text))) {
-		const offset = match.index;
-		const raw = match[0];
-
-		pushToken(offset, raw);
 	}
 }
 
@@ -98,29 +94,17 @@ module.exports.raw = function(tokens) {
 	return result.join('');
 };
 
+const raw = function() {
+	return module.exports.raw(this);
+};
+
+const slice = function() {
+	const array = Array.prototype.slice.apply(this, arguments);
+	return makeTokens(array);
+};
 
 function makeTokens(array) {
-	array.raw = function() {
-		let result = [];
-		let index = this[0].start;
-		for(let i=0; i<this.length; i++) {
-			const token = this[i];
-
-			for(let j=index; j<token.start; j++) {
-				result.push(' ');
-			}
-			index = token.stop;
-
-			result.push(token.raw);
-		}
-
-		return result.join('');
-	};
-
-	array.slice = function() {
-		const array = Array.prototype.slice.apply(this, arguments);
-		return makeTokens(array);
-	};
-
+	array.raw = raw;
+	array.slice = slice;
 	return array;
 }

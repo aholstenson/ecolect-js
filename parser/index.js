@@ -102,12 +102,12 @@ class Parser extends Node {
 			}
 		};
 
-		nodes.forEach(n => {
+		for(const n of nodes) {
 			let r = createNode(n);
 			if(r && ! (r instanceof TokenNode)) {
 				values++;
 			}
-		});
+		}
 
 		push(new CollectorNode(values, value, this.needsAll));
 

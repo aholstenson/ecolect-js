@@ -65,8 +65,9 @@ class SubNode extends Node {
 		const branchIntoVariants = variants0 => {
 			let result = [];
 			let promise = Promise.resolve();
-			variants0.forEach(v => {
-				if(! this.filter(v.data)) return;
+			for(let i=0; i<variants0.length; i++) {
+				const v = variants0[i];
+				if(! this.filter(v.data)) continue;
 
 				promise = promise.then(() => {
 					return encounter.next(
@@ -75,7 +76,7 @@ class SubNode extends Node {
 						v.data
 					).then(r => result.push(...r));
 				});
-			});
+			}
 
 			return promise.then(() => {
 				this.state.currentIndex = previousIndex;

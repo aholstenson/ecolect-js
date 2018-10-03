@@ -28,7 +28,7 @@ class Encounter {
 
 		this.options = options;
 
-		this._cache = new Map();
+		this._cache = [];
 	}
 
 	/**
@@ -73,13 +73,43 @@ class Encounter {
 			nextIndex = this.currentIndex;
 		}
 
-		let token = this.token(nextIndex);
+		let token = this.tokens[nextIndex];
 
 		let pushedData = false;
 		if(data !== null && typeof data !== 'undefined') {
 			pushedData = true;
 			this.data.push(data);
 		}
+
+		const push = item => {
+			if(item instanceof Match) {
+				results.push(item);
+			} else {
+				let score;
+				if(this.partial) {
+					score = scorePartial(this.tokens.length, nextIndex, this.maxDepth, nextScore)
+				} else {
+					if(this.onlyComplete && nextIndex < this.tokens.length) {
+						// Skip this match unless it has consumed all tokens
+						return;
+					}
+
+					score = nextScore / this.tokens.length;
+				}
+
+				results.push(new Match(nextIndex, score, item));
+			}
+		};
+
+		const handleResult = r => {
+			if(Array.isArray(r)) {
+				for(let i=0; i<r.length; i++) {
+					push(r[i]);
+				}
+			} else if(r != null && typeof r !== 'undefined') {
+				push(r);
+			}
+		};
 
 		const branchInto = node => () => {
 			let result = this.branch(node, () => {
@@ -88,34 +118,6 @@ class Encounter {
 
 				return node.match(this);
 			});
-
-			let push = item => {
-				if(item instanceof Match) {
-					results.push(item);
-				} else {
-					let score;
-					if(this.partial) {
-						score = scorePartial(this.tokens.length, nextIndex, this.maxDepth, nextScore)
-					} else {
-						if(this.onlyComplete && nextIndex < this.tokens.length) {
-							// Skip this match unless it has consumed all tokens
-							return;
-						}
-
-						score = nextScore / this.tokens.length;
-					}
-
-					results.push(new Match(nextIndex, score, item));
-				}
-			};
-
-			let handleResult = r => {
-				if(Array.isArray(r)) {
-					r.forEach(push);
-				} else if(r != null && typeof r !== 'undefined') {
-					push(r);
-				}
-			};
 
 			if(result && result.then) {
 				return result.then(handleResult);
@@ -126,7 +128,9 @@ class Encounter {
 
 		let results = [];
 		let promise = Promise.resolve();
-		nodes.forEach(node => promise = promise.then(branchInto(node)));
+		for(let i=0; i<nodes.length; i++) {
+			promise = promise.then(branchInto(nodes[i]));
+		}
 
 		return promise.then(() => {
 			if(pushedData) this.data.pop();
@@ -215,11 +219,11 @@ class Encounter {
 			index = this.currentIndex;
 		}
 
-		let map = this._cache.get(index);
+		let map = this._cache[index];
 		if(map) return map;
 
 		map = new Map();
-		this._cache.set(index, map);
+		this._cache[index] = map;
 		return map;
 	}
 }
