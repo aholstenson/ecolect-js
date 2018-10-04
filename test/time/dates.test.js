@@ -102,7 +102,7 @@ describe('Time', () => {
 			});
 
 			it('week before current week with past=true keeps year', () => {
-				const r = map({ week: 11, past: true }, e);
+				const r = map({ week: 11, relationToCurrent: 'past' }, e);
 
 				expect(r).to.deep.equal({
 					period: 'week',
@@ -146,7 +146,7 @@ describe('Time', () => {
 			});
 
 			it('month before current month with past=true is same year', () => {
-				const r = map({ month: 1, past: true }, e);
+				const r = map({ month: 1, relationToCurrent: 'past' }, e);
 
 				expect(r).to.deep.equal({
 					period: 'month',

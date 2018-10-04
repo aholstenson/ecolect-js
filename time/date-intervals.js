@@ -4,17 +4,17 @@ const { map } = require('./dates');
 const IntervalValue = require('./interval-value');
 
 module.exports.map = function(r, e) {
-	r.start.intervalEdge = 'start';
-
-	// Check if the
+	const startEdge = r.start.intervalEdge;
+	if(! r.start.intervalEdge) r.start.intervalEdge = 'start';
+	if(! r.start.relationToCurrent) r.start.relationToCurrent = 'current-period';
 
 	const start = map(r.start, e);
 	let end;
 	if(r.end) {
-		r.end.intervalEdge = 'end';
-		end = map(r.end, e);
+		if(! r.end.intervalEdge) r.end.intervalEdge = 'end';
+		end = map(r.end, e, { now: start.toDate() });
 	} else {
-		r.start.intervalEdge = 'end';
+		if(! startEdge) r.start.intervalEdge = 'end';
 		end = map(r.start, e);
 	}
 

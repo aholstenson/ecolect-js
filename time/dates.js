@@ -1,7 +1,5 @@
 'use strict';
 
-'use strict';
-
 const addMonths = require('date-fns/add_months')
 const addWeeks = require('date-fns/add_weeks');
 const addDays = require('date-fns/add_days')
@@ -26,7 +24,83 @@ const DateValue = require('./date-value');
 
 const { toStart, toEnd } = require('./intervals');
 
-module.exports.map = function(r, e) {
+const WEEK = {
+	field: 'week',
+
+	get: getISOWeek,
+	set: setISOWeek,
+
+	adjuster: addYears,
+	parentData: r => typeof r.year !== 'undefined'
+};
+
+const MONTH = {
+	field: 'month',
+
+	get: d => d.getMonth(),
+	set: setMonth,
+
+	adjuster: addYears,
+	parentData: r => typeof r.year !== 'undefined'
+};
+
+const DAY = {
+	field: 'day',
+
+	get: d => d.getDate(),
+	set: setDate,
+
+	adjuster: addMonths,
+	parentData: r => typeof r.year !== 'undefined' || typeof r.month !== 'undefined'
+};
+
+/**
+ * Adjust the current time based on a field. Implements different strategies
+ * such as automatic, which tries to adjust the field forward if it's in the
+ * past.
+ *
+ * @param {Date} time
+ *   the current time
+ * @param {Object} r
+ *   the object containing the data
+ * @param {*} def
+ *   definition describing the field to modify
+ */
+function adjust(time, r, def) {
+	const requested = r[def.field];
+	const current = def.get(time);
+
+	if(r.relationToCurrent === 'auto') {
+		if(requested < current) {
+			time = def.set(def.adjuster(time, 1), requested);
+		} else {
+			time = def.set(time, requested);
+		}
+	} else if(r.relationToCurrent === 'current-period') {
+		// TODO: Does all interval
+		if(def.parentData(r) && requested < current) {
+			time = def.set(def.adjuster(time, 1), requested);
+		} else {
+			time = def.set(time, requested);
+		}
+	} else if(r.relationToCurrent === 'future') {
+		if(requested <= current) {
+			time = def.set(def.adjuster(time, 1), requested);
+		} else {
+			time = def.set(time, requested);
+		}
+	} else if(r.relationToCurrent === 'past') {
+		if(requested >= current) {
+			time = def.set(def.adjuster(time, -1), requested);
+		} else {
+			time = def.set(time, requested);
+		}
+	}
+
+	return time;
+}
+
+module.exports.map = function(r, e, options={}) {
 	if(r instanceof Date) {
 		// Special case to turn a Date into a DateValue
 		const result = new DateValue(e.language);
@@ -36,8 +110,12 @@ module.exports.map = function(r, e) {
 		return result;
 	}
 
+	if(! r.relationToCurrent) {
+		r.relationToCurrent = 'auto';
+	}
+
 	// Resolve the current time for the encounter
-	let time = currentTime(e);
+	let time = options.now || currentTime(e);
 
 	// The actual result
 	const result = new DateValue(e.language);
@@ -63,12 +141,7 @@ module.exports.map = function(r, e) {
 		// Exact week - set it and reset to start of week
 		result.period = 'week';
 
-		if(r.week < getISOWeek(time) && ! r.past) {
-			time = setISOWeek(addYears(time, 1), r.week);
-		} else {
-			time = setISOWeek(time, r.week);
-		}
-
+		time = adjust(time, r, WEEK);
 		time = startOfWeek(time, e.options);
 	}
 
@@ -81,14 +154,7 @@ module.exports.map = function(r, e) {
 		// Exact month - set the day to the start of the month
 		result.period = 'month';
 
-		if(r.month < time.getMonth() && ! r.past) {
-			// The given month is before the current month - assume next year
-			time = setMonth(addYears(time, 1), r.month);
-		} else {
-			// After current or the same month - assume this year
-			time = setMonth(time, r.month);
-		}
-
+		time = adjust(time, r, MONTH);
 		time = startOfMonth(time);
 	}
 
@@ -101,13 +167,7 @@ module.exports.map = function(r, e) {
 		// If there is an explicit day set it
 		result.period = 'day';
 
-		if(r.day < time.getDate() && ! r.past) {
-			// The given day is before the current day - assume next month
-			time = setDate(addMonths(time, 1), r.day);
-		} else {
-			// After the current or same day - assume this month
-			time = setDate(time, r.day);
-		}
+		time = adjust(time, r, DAY);
 	}
 
 	if(typeof r.dayOfWeek !== 'undefined') {
