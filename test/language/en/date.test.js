@@ -231,20 +231,50 @@ describe('English', function() {
 			});
 		});
 
-		// TODO: This is range, move to range tests when implemented
-		/*
 		describe('Month + Year', function() {
 			it('may 2018', function() {
 				return date('may 2018')
 					.then(v =>
 						expect(v).to.deep.equal({
+							period: 'month',
 							year: 2018,
-							month: 4
+							month: 4,
+							day: 1
+						})
+					);
+			});
+
+			it('last month 2018', function() {
+				const now = new Date(2010, 2, 1);
+				return date('last month 2018', { now: now })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'month',
+							year: 2018,
+							month: 11,
+							day: 1
+						})
+					);
+			});
+
+			it('first month 2018', function() {
+				const now = new Date(2010, 2, 1);
+				return date('last month 2018', { now: now })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'month',
+							year: 2018,
+							month: 11,
+							day: 1
+						})
+					);
+			});
+
+		});
 						})
 					);
 			});
 		});
-		*/
 
 		describe('Full dates', function() {
 			it('12 jan 2018', function() {

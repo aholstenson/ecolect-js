@@ -1,7 +1,7 @@
 'use strict';
 
 const Parser = require('../../parser');
-const { map } = require('../../time/months');
+const { map, thisMonth, nextMonth, previousMonth } = require('../../time/months');
 
 module.exports = function(language) {
 	const integer = language.integer;
@@ -56,10 +56,10 @@ module.exports = function(language) {
 		)
 
 		// Dynamic months
-		.add('this month', () => ({ relativeMonths: 0 }))
-		.add('previous month', () => ({ relativeMonths: -1 }))
-		.add('last month', () => ({ relativeMonths: -1 }))
-		.add('next month', () => ({ relativeMonths: 1 }))
+		.add('this month', thisMonth)
+		.add('previous month', previousMonth)
+		.add('last month', previousMonth)
+		.add('next month', nextMonth)
 
 		.add([ 'in', integer, 'months' ], v => { return { relativeMonths: v[0].value }})
 

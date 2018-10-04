@@ -1,5 +1,7 @@
 'use strict';
 
+const setYear = require('date-fns/set_year');
+
 const addMonths = require('date-fns/add_months')
 const setMonth = require('date-fns/set_month');
 const startOfMonth = require('date-fns/start_of_month');
@@ -7,14 +9,39 @@ const startOfMonth = require('date-fns/start_of_month');
 const currentTime = require('./currentTime');
 const DateValue = require('./date-value');
 
-module.exports.map = function(r, e) {
-	const now = currentTime(e);
+module.exports.thisMonth = function(r, e) {
+	return {
+		month: currentTime(e).getMonth()
+	};
+};
 
-	let time;
+module.exports.nextMonth = function(r, e) {
+	const time = addMonths(currentTime(e), 1);
+	return {
+		year: time.getFullYear(),
+		month: time.getMonth()
+	};
+};
+
+module.exports.previousMonth = function(r, e) {
+	const time = addMonths(currentTime(e), -1);
+	return {
+		year: time.getFullYear(),
+		month: time.getMonth()
+	};
+};
+
+module.exports.map = function(r, e) {
+	let time = currentTime(e);
+
+	if(typeof r.year !== 'undefined') {
+		time = setYear(time, r.year);
+	}
+
 	if(typeof r.relativeMonths !== 'undefined') {
-		time = addMonths(now, r.relativeMonths);
+		time = addMonths(time, r.relativeMonths);
 	} else if(typeof r.month !== 'undefined') {
-		time = setMonth(now, r.month)
+		time = setMonth(time, r.month)
 	} else {
 		// No month available - skip it
 		return null;

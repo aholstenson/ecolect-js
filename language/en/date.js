@@ -90,6 +90,11 @@ module.exports = function(language) {
 		.add([ day, month ], v => withDay(v[1], v[0]))
 		.add([ day, 'of', month ], v => withDay(v[1], v[0]))
 
+		// Month
+		.add([ month ], v => v[0])
+		.add([ 'last month', year ], v => combine(v[0], { month: 11 }))
+		.add([ 'first month', year ], v => combine(v[0], { month: 0 }))
+
 		// Non-year (month and day) followed by year
 		// With day: 12 Jan 2018, 1st February 2018
 		// Without day: Jan 2018, this month 2018
@@ -123,9 +128,6 @@ module.exports = function(language) {
 				day: parseInt(v[1])
 			};
 		})
-
-		// Month
-		.add([ month ], v => v[0])
 
 		.add([ year ], v => v[0])
 
