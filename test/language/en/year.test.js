@@ -68,6 +68,18 @@ describe('English', function() {
 					})
 				);
 		});
+
+		it('4 years ago', function() {
+			return year('4 years ago', { now: new Date(2010, 0, 1) })
+				.then(v =>
+					expect(v).to.deep.equal({
+						period: 'year',
+						year: 2006,
+						month: 0,
+						day: 1
+					})
+				);
+		});
 	});
 
 });

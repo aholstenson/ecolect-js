@@ -1,9 +1,8 @@
 'use strict';
 
 const Parser = require('../../parser');
-const { cloneObject } = require('../../utils/cloning');
 
-const { combine } = require('../../time/matching');
+const { combine, reverse } = require('../../time/matching');
 const { map, time12h, time24h, toAM, toPM } = require('../../time/times');
 
 function hasHour(v) {
@@ -18,22 +17,6 @@ function adjustMinutes(time, minutes) {
 	return combine(time, {
 		relativeMinutes: minutes
 	});
-}
-
-function reverseRelativeTime(v) {
-	const result = cloneObject(v[0]);
-	if(result.relativeHours) {
-		result.relativeHours = - result.relativeHours;
-	}
-
-	if(result.relativeMinutes) {
-		result.relativeMinutes = - result.relativeMinutes;
-	}
-
-	if(result.relativeSeconds) {
-		result.relativeSeconds = - result.relativeSeconds;
-	}
-	return result;
 }
 
 module.exports = function(language) {
@@ -126,7 +109,7 @@ module.exports = function(language) {
 		// Qualifiers
 		.add([ 'in', relativeTimes ], v => v[0])
 		.add([ relativeTimes ], v => v[0])
-		.add([ relativeTimes, 'ago' ], reverseRelativeTime)
+		.add([ relativeTimes, 'ago' ], reverse)
 		.add([ 'at', Parser.result() ], v => v[0])
 
 		.mapResults(map)

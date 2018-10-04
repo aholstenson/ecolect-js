@@ -9,7 +9,8 @@ const {
 	endOf,
 	isWeek,
 	isMonth,
-	hasMonth
+	hasMonth,
+	reverse
 } = require('../../time/matching');
 const { map } = require('../../time/dates');
 
@@ -55,12 +56,13 @@ module.exports = function(language) {
 		.name('relative')
 
 		// Relative dates
-		.add([ integer, 'days' ], v => { return { relativeDays: v[0].value }})
-		.add([ integer, 'months' ], v => { return { relativeMonths: v[0].value }})
+		.add([ integer, 'years' ], v => { return { relativeYears: v[0].value }})
 		.add([ integer, 'weeks' ], v => { return { relativeWeeks: v[0].value }})
+		.add([ integer, 'months' ], v => { return { relativeMonths: v[0].value }})
+		.add([ integer, 'days' ], v => { return { relativeDays: v[0].value }})
 
-		.add([ Parser.result(isRelative), Parser.result(isRelative) ], v => combine(v[0], v[1]))
-		.add([ Parser.result(isRelative), 'and', Parser.result(isRelative) ], v => combine(v[0], v[1]));
+		.add([ Parser.result(), Parser.result() ], v => combine(v[0], v[1]))
+		.add([ Parser.result(), 'and', Parser.result() ], v => combine(v[0], v[1]));
 
 	return new Parser(language)
 		.name('date')
@@ -129,14 +131,13 @@ module.exports = function(language) {
 			};
 		})
 
+		// Standalone year
 		.add([ year ], v => v[0])
 
 		.add([ 'this week' ], () => ({ relativeWeeks: 0, intervalEdge: 'start' }))
 		.add([ 'week', ordinal ], v => ({ week: v[0].value }))
 		.add('start of week', () => ({ relativeWeeks: 0, intervalEdge: 'start' }))
 		.add('end of week', () => ({ relativeWeeks: 0, intervalEdge: 'end' }))
-
-		.add([ relative ], v => v[0])
 
 		// Week N of year
 		.add([ 'week', ordinal, year ], v => combine(v[1], {
@@ -189,9 +190,14 @@ module.exports = function(language) {
 			dayOfWeekOrdinal: 1
 		}))
 
+		// Relative
+		.add([ relative ], v => v[0])
+
+		// Extra qualifiers such as in and on
 		.add([ 'in', Parser.result() ], v => v[0])
 		.add([ 'on', Parser.result() ], v => v[0])
 		.add([ 'on', 'the', Parser.result() ], v => v[0])
+		.add([ relative, 'ago' ], reverse)
 
 		// Edges, such as start of [date] or end of [date]
 		.add([ 'start of', Parser.result() ], startOf)

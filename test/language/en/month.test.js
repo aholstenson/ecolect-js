@@ -425,6 +425,19 @@ describe('English', function() {
 					})
 				);
 		});
+
+		it('4 months ago', function() {
+			const now = new Date(2010, 0, 1);
+			return month('4 months ago', { now: now })
+				.then(v =>
+					expect(v).to.deep.equal({
+						period: 'month',
+						year: 2009,
+						month: 8,
+						day: 1
+					})
+				);
+		});
 	});
 
 });

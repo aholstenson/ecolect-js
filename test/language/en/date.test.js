@@ -637,6 +637,42 @@ describe('English', function() {
 						})
 					);
 			});
+
+			it('3 days ago', function() {
+				return date('3 days ago', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'day',
+							year: 2009,
+							month: 11,
+							day: 29
+						})
+					);
+			});
+
+			it('3 weeks ago', function() {
+				return date('3 weeks ago', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'week',
+							year: 2009,
+							month: 11,
+							day: 11
+						})
+					);
+			});
+
+			it('1 month and 3 days ago', function() {
+				return date('1 month and 3 days ago', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'day',
+							year: 2009,
+							month: 10,
+							day: 28
+						})
+					);
+			});
 		});
 
 		describe('Relative dates within year', function() {

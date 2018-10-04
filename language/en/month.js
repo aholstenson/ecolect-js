@@ -1,12 +1,19 @@
 'use strict';
 
 const Parser = require('../../parser');
+
+const { reverse } = require('../../time/matching');
 const { map, thisMonth, nextMonth, previousMonth } = require('../../time/months');
 
 module.exports = function(language) {
 	const integer = language.integer;
 	const ordinal = language.ordinal;
 	const ordinalMonth = Parser.result(ordinal, v => v.type === 'specific' && v.value >= 1 && v.value <= 12);
+
+	const relative = new Parser(language)
+		.name('relativeMonths')
+
+		.add([ integer, 'months' ], v => { return { relativeMonths: v[0].value }});
 
 	return new Parser(language)
 		.name('month')
@@ -61,13 +68,14 @@ module.exports = function(language) {
 		.add('last month', previousMonth)
 		.add('next month', nextMonth)
 
-		.add([ 'in', integer, 'months' ], v => { return { relativeMonths: v[0].value }})
+		.add([ relative ], v => v[0])
 
 		// Numbered months
 		.add([ ordinalMonth, 'month' ], v => ({ month: v[0].value - 1 }))
 		.add([ ordinalMonth ], v => ({ month: v[0].value - 1, }))
 
 		.add([ 'in', Parser.result() ], v => v[0])
+		.add([ relative, 'ago' ], reverse)
 
 		.mapResults(map)
 		.onlyBest();

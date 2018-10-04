@@ -7,6 +7,24 @@ const startOfYear = require('date-fns/start_of_year');
 const currentTime = require('./currentTime');
 const DateValue = require('./date-value');
 
+module.exports.thisYear = function(r, e) {
+	return {
+		year: currentTime(e).getFullYear()
+	};
+};
+
+module.exports.nextYear = function(r, e) {
+	return {
+		year: currentTime(e).getFullYear() + 1
+	};
+};
+
+module.exports.previousYear = function(r, e) {
+	return {
+		year: currentTime(e).getFullYear() - 1
+	};
+};
+
 module.exports.map = function(r, e) {
 	const now = currentTime(e);
 

@@ -6,7 +6,8 @@ const { cloneObject } = require('../utils/cloning');
  * Check if a given result is currently relative.
  */
 module.exports.isRelative = function(v) {
-	return typeof v.relativeMonths === 'number'
+	return typeof v.relativeYears === 'number'
+		|| typeof v.relativeMonths === 'number'
 		|| typeof v.relativeWeeks === 'number'
 		|| typeof v.relativeDays === 'number'
 		|| typeof v.relativeHours === 'number'
@@ -93,3 +94,36 @@ module.exports.between = function(start, end) {
 		end: end && end.start ? end.start : end
 	};
 };
+
+module.exports.reverse = function(v) {
+	const result = cloneObject(v[0]);
+
+	if(result.relativeYears) {
+		result.relativeYears = - result.relativeYears;
+	}
+
+	if(result.relativeWeeks) {
+		result.relativeWeeks = - result.relativeWeeks;
+	}
+
+	if(result.relativeMonths) {
+		result.relativeMonths = - result.relativeMonths;
+	}
+
+	if(result.relativeDays) {
+		result.relativeDays = - result.relativeDays;
+	}
+
+	if(result.relativeHours) {
+		result.relativeHours = - result.relativeHours;
+	}
+
+	if(result.relativeMinutes) {
+		result.relativeMinutes = - result.relativeMinutes;
+	}
+
+	if(result.relativeSeconds) {
+		result.relativeSeconds = - result.relativeSeconds;
+	}
+	return result;
+}
