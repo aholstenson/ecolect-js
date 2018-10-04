@@ -138,6 +138,21 @@ describe('English', () => {
 			}
 		});
 
+		test('February to March 2009', { now: new Date(2010, 8, 1) }, {
+			start: {
+				period: 'month',
+				year: 2009,
+				month: 1,
+				day: 1
+			},
+			end: {
+				period: 'month',
+				year: 2009,
+				month: 2,
+				day: 31
+			}
+		});
+
 		test('2018-05-01', {}, {
 			start: {
 				period: 'day',

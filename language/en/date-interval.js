@@ -6,7 +6,7 @@ const { between } = require('../../time/matching');
 const { map } = require('../../time/date-intervals');
 
 function singleFrom(v) {
-	return v && v.start && ! v.end;
+	return v && v.start && v.end === v.start;
 }
 
 module.exports = function(language) {

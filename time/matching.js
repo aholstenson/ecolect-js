@@ -91,7 +91,7 @@ module.exports.between = function(start, end) {
 
 	return {
 		start: start.start ? start.start : start,
-		end: end && end.start ? end.start : end
+		end: (end && end.start ? end.start : end) || start
 	};
 };
 

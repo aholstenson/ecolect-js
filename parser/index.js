@@ -134,7 +134,7 @@ class Parser extends Node {
 	}
 
 	map(values, func) {
-		Object.keys(values).forEach(k => this.add(k, func(values[k])));
+		Object.keys(values).forEach(k => this.add(k, () => func(values[k])));
 
 		return this;
 	}
