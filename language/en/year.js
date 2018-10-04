@@ -13,6 +13,7 @@ module.exports = function(language) {
 		.add('this year', (v, e) => ({ year: currentTime(e).getFullYear() }))
 		.add('next year', (v, e) => ({ year: currentTime(e).getFullYear() + 1 }))
 		.add('last year', (v, e) => ({ year: currentTime(e).getFullYear() - 1 }))
+		.add('previous year', (v, e) => ({ year: currentTime(e).getFullYear() - 1 }))
 		.add([ 'in', integer, 'years' ], v => ({ relativeYears: v[0].value }))
 
 		.add([ 'in', Parser.result() ], v => v[0])

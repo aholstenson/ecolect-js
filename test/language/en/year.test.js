@@ -33,6 +33,30 @@ describe('English', function() {
 				);
 		});
 
+		it('last year', function() {
+			return year('last year')
+				.then(v =>
+					expect(v).to.deep.equal({
+						period: 'year',
+						year: new Date().getFullYear() - 1,
+						month: 0,
+						day: 1
+					})
+				);
+		});
+
+		it('previous year', function() {
+			return year('previous year')
+				.then(v =>
+					expect(v).to.deep.equal({
+						period: 'year',
+						year: new Date().getFullYear() - 1,
+						month: 0,
+						day: 1
+					})
+				);
+		});
+
 		it('in 4 years', function() {
 			return year('in 4 years', { now: new Date(2010, 0, 1) })
 				.then(v =>
