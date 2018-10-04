@@ -2,7 +2,15 @@
 
 const Parser = require('../../parser');
 
-const { combine, isRelative, startOf, endOf } = require('../../time/matching');
+const {
+	combine,
+	isRelative,
+	startOf,
+	endOf,
+	isWeek,
+	isMonth,
+	hasMonth
+} = require('../../time/matching');
 const { map } = require('../../time/dates');
 
 function value(v) {
@@ -15,14 +23,6 @@ function value(v) {
 	}
 
 	return v;
-}
-
-function hasMonth(v) {
-	if(typeof v.month === 'undefined') return false;
-
-	if(typeof v.year !== 'undefined' && typeof v.day !== 'undefined') return false;
-
-	return true;
 }
 
 function withDay(date, day) {
@@ -139,9 +139,15 @@ module.exports = function(language) {
 		.add([ relative ], v => v[0])
 
 		// nth day of week in month
-		.add([ ordinal, dayOfWeek, month ], v => combine(v[2], {
+		.add([ ordinal, dayOfWeek, Parser.result(isMonth) ], v => combine(v[2], {
 			dayOfWeek: v[1].value,
 			dayOfWeekOrdinal: v[0].value
+		}))
+
+		// first day of week in month
+		.add([ dayOfWeek, Parser.result(isMonth) ], v => combine(v[1], {
+			dayOfWeek: v[0].value,
+			dayOfWeekOrdinal: 1
 		}))
 
 		// nth day of week in year
@@ -150,6 +156,13 @@ module.exports = function(language) {
 			dayOfWeekOrdinal: v[0].value
 		}))
 
+		// first day of week in year
+		.add([ dayOfWeek, year ], v => combine(v[1], {
+			dayOfWeek: v[0].value,
+			dayOfWeekOrdinal: 1
+		}))
+
+		// nth day of week in X time
 		.add([ ordinal, dayOfWeek, Parser.result(isRelative) ], v => combine(v[2], {
 			dayOfWeek: v[1].value,
 			dayOfWeekOrdinal: v[0].value

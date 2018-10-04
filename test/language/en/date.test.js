@@ -229,6 +229,31 @@ describe('English', function() {
 						})
 					);
 			});
+
+			it('3rd Friday in May 2010', function() {
+				return date('3rd Friday in May 2010', { now: new Date(2005, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'day',
+							year: 2010,
+							month: 4,
+							day: 21
+						})
+					);
+			});
+
+			it('Friday in May', function() {
+				return date('Friday in May', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'day',
+							year: 2010,
+							month: 4,
+							day: 7
+						})
+					);
+			});
+
 		});
 
 		describe('Month + Year', function() {

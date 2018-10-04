@@ -22,6 +22,16 @@ module.exports.hasMonth = function(v) {
 	return true;
 };
 
+/**
+ * Get if a date represents a month, with an optional year.
+ */
+module.exports.isMonth = function(v) {
+	if(typeof v.day !== 'undefined') return false;
+	if(typeof v.dayOfWeek !== 'undefined') return false;
+	if(typeof v.week !== 'undefined') return false;
+
+	return typeof v.month !== 'undefined';
+};
 
 module.exports.combine = function(a, b) {
 	const result = cloneObject(a);
