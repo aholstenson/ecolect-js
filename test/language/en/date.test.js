@@ -296,6 +296,88 @@ describe('English', function() {
 			});
 
 		});
+
+		describe('Weeks', function() {
+			it('week 2 2018', function() {
+				return date('week 2 2018')
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'week',
+							year: 2018,
+							month: 0,
+							day: 7
+						})
+					);
+			});
+
+			it('week 2 2018 - Monday start', function() {
+				return date('week 2 2018', { weekStartsOn: 1 })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'week',
+							year: 2018,
+							month: 0,
+							day: 8
+						})
+					);
+			});
+
+			it('Wednesday week 2 2018', function() {
+				return date('Wednesday week 2 2018', { weekStartsOn: 1 })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'day',
+							year: 2018,
+							month: 0,
+							day: 10
+						})
+					);
+			});
+
+			it('this week - Sunday start', function() {
+				return date('this week', { now: new Date(2010, 0, 1), weekStartsOn: 7 })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'week',
+							year: 2009,
+							month: 11,
+							day: 27
+						})
+					);
+			});
+
+			it('end of week - Sunday start', function() {
+				return date('end of week', { now: new Date(2010, 0, 1), weekStartsOn: 7 })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'week',
+							year: 2010,
+							month: 0,
+							day: 2
+						})
+					);
+			});
+
+			it('end of week - Monday start', function() {
+				return date('end of week', { now: new Date(2010, 0, 1), weekStartsOn: 1 })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'week',
+							year: 2010,
+							month: 0,
+							day: 3
+						})
+					);
+			});
+
+			it('start of week', function() {
+				return date('start of week', { now: new Date(2010, 0, 1), weekStartsOn: 1 })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'week',
+							year: 2009,
+							month: 11,
+							day: 28
 						})
 					);
 			});
@@ -448,54 +530,6 @@ describe('English', function() {
 					);
 			});
 
-			it('this week - Sunday start', function() {
-				return date('this week', { now: new Date(2010, 0, 1), weekStart: 7 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2009,
-							month: 11,
-							day: 27
-						})
-					);
-			});
-
-			it('end of week - Sunday start', function() {
-				return date('end of week', { now: new Date(2010, 0, 1), weekStartsOn: 7 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2010,
-							month: 0,
-							day: 2
-						})
-					);
-			});
-
-			it('end of week - Monday start', function() {
-				return date('end of week', { now: new Date(2010, 0, 1), weekStartsOn: 1 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2010,
-							month: 0,
-							day: 3
-						})
-					);
-			});
-
-			it('start of week', function() {
-				return date('start of week', { now: new Date(2010, 0, 1), weekStartsOn: 1 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2009,
-							month: 11,
-							day: 28
-						})
-					);
-			});
-
 			it('in 1 day', function() {
 				return date('in 1 day', { now: new Date(2010, 0, 1) })
 					.then(v =>
@@ -618,19 +652,18 @@ describe('English', function() {
 				);
 			});
 
-			// TODO: This is a range, move test when implemented
-			/*
 			it('this month 2018', function() {
 				const now = new Date(2010, 0, 1);
 				return date('this month 2018', { now: now })
-				.then(v =>
-					expect(v).to.deep.equal({
-						year: 2018,
-						month: 0
-					})
-				);
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'month',
+							year: 2018,
+							month: 0,
+							day: 1
+						})
+					);
 			});
-			*/
 
 			it('first friday in 2018', function() {
 				return date('first friday in 2018')

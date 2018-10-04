@@ -138,6 +138,15 @@ module.exports = function(language) {
 
 		.add([ relative ], v => v[0])
 
+		// Week N of year
+		.add([ 'week', ordinal, year ], v => combine(v[1], {
+			week: v[0].value
+		}))
+
+		.add([ ordinal, 'week', year ], v => combine(v[1], {
+			week: v[0].value
+		}))
+
 		// nth day of week in month
 		.add([ ordinal, dayOfWeek, Parser.result(isMonth) ], v => combine(v[2], {
 			dayOfWeek: v[1].value,
@@ -168,13 +177,16 @@ module.exports = function(language) {
 			dayOfWeekOrdinal: v[0].value
 		}))
 
-		// Week N of year
-		.add([ 'week', ordinal, year ], v => combine(v[1], {
-			week: v[0].value
+		// first day of week in X time
+		.add([ dayOfWeek, Parser.result(isRelative) ], v => combine(v[1], {
+			dayOfWeek: v[0].value,
+			dayOfWeekOrdinal: 1
 		}))
 
-		.add([ ordinal, 'week', year ], v => combine(v[1], {
-			week: v[0].value
+		// day of week in week X
+		.add([ dayOfWeek, Parser.result(isWeek) ], v => combine(v[1], {
+			dayOfWeek: v[0].value,
+			dayOfWeekOrdinal: 1
 		}))
 
 		.add([ 'in', Parser.result() ], v => v[0])

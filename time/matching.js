@@ -33,6 +33,13 @@ module.exports.isMonth = function(v) {
 	return typeof v.month !== 'undefined';
 };
 
+module.exports.isWeek = function(v) {
+	if(typeof v.day !== 'undefined') return false;
+	if(typeof v.dayOfWeek !== 'undefined') return false;
+
+	return typeof v.week !== 'undefined';
+}
+
 module.exports.combine = function(a, b) {
 	const result = cloneObject(a);
 	for(const key of Object.keys(b)) {
