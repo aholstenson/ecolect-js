@@ -168,5 +168,20 @@ describe('English', () => {
 			}
 		});
 
+		test('week 42', { now: new Date(2012, 8, 1) }, {
+			start: {
+				period: 'week',
+				year: 2012,
+				month: 9,
+				day: 14
+			},
+			end: {
+				period: 'week',
+				year: 2012,
+				month: 9,
+				day: 20
+			}
+		});
+
 	});
 });
