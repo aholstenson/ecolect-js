@@ -353,4 +353,42 @@ describe('Resolver', function() {
 				});
 		});
 	})
+
+	describe('Graph contains matching expression', function() {
+		const resolver = new Builder(lang)
+			.value('boolean', boolean())
+			.value('free', any())
+			.add('stuff {boolean}')
+			.add('a {boolean} c')
+			.add('longer {free} message')
+			.build();
+
+		it('Expression has source offsets', function() {
+			return resolver.match('a yes c')
+				.then(result => {
+					expect(result.best.expression).to.be.not.empty;
+
+					const e = result.best.expression;
+
+					expect(e.length).to.equal(3);
+					expect(e[0].source).to.deep.equal({ start: 0, end: 1 });
+					expect(e[1].source).to.deep.equal({ start: 2, end: 5 });
+					expect(e[2].source).to.deep.equal({ start: 6, end: 7 });
+				});
+		});
+
+		it('Expression with any() has source offsets', function() {
+			return resolver.match('longer hello world message')
+				.then(result => {
+					expect(result.best.expression).to.be.not.empty;
+
+					const e = result.best.expression;
+
+					expect(e.length).to.equal(3);
+					expect(e[0].source).to.deep.equal({ start: 0, end: 6 });
+					expect(e[1].source).to.deep.equal({ start: 7, end: 12 });
+					expect(e[2].source).to.deep.equal({ start: 13, end: 26 });
+				});
+		});
+	});
 })

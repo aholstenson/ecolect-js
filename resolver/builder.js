@@ -66,29 +66,69 @@ class Builder {
 		// Partial matching so expose the full expression that would match
 		let path = [];
 		let text = [];
-		encounter.currentNodes.forEach(node => {
+
+		const nodes = encounter.currentNodes;
+		const tokens = encounter.currentTokens;
+
+		const toPos = (c, p) => {
+			let start = -1;
+			let end = -1;
+			for(let i=p+1; i<=c; i++) {
+				const t = encounter.tokens[i];
+				if(! t) continue;
+
+				if(start == -1) start = t.start;
+
+				end = t.stop;
+			}
+			return {
+				start: start,
+				end: end
+			};
+		}
+
+		let currentToken = 0;
+		let previousToken = -1;
+		for(let i=0; i<nodes.length; i++) {
+			const node = nodes[i];
+
 			if(node instanceof TokenNode) {
 				text.push(node.token.raw);
+
+				currentToken = tokens[i];
 			} else if(node instanceof ValueNode || node instanceof ValueParserNode) {
 				if(text.length > 0) {
 					path.push({
 						type: 'text',
-						value: text.join(' ')
+						value: text.join(' '),
+
+						source: toPos(currentToken, previousToken)
 					});
+
+					previousToken = currentToken;
+
 					text.length = 0;
 				}
 
+				currentToken = tokens[i];
+
 				path.push({
 					type: 'value',
-					id: node.id
+					id: node.id,
+
+					source: toPos(currentToken, previousToken)
 				});
+
+				previousToken = currentToken;
 			}
-		});
+		}
 
 		if(text.length > 0) {
 			path.push({
 				type: 'text',
-				value: text.join(' ')
+				value: text.join(' '),
+
+				source: toPos(currentToken, previousToken)
 			});
 		}
 

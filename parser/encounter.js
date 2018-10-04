@@ -18,6 +18,7 @@ class Encounter {
 		this.currentIndex = 0;
 		this.currentScore = 0;
 		this.currentNodes = [];
+		this.currentTokens = [];
 		this.data = [];
 		this.maxDepth = 0;
 
@@ -165,6 +166,7 @@ class Encounter {
 
 			this.outgoing = outgoing;
 			this.currentNodes.pop();
+			this.currentTokens.pop();
 
 			return result;
 		};
@@ -172,6 +174,8 @@ class Encounter {
 		this.outgoing = node.outgoing;
 
 		const result = func();
+
+		this.currentTokens.push(this.currentIndex);
 
 		if(result && result.then) {
 			return result.then(restore);

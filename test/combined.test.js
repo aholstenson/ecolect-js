@@ -116,5 +116,5 @@ describe('Intents', function() {
 					expect(results.matches.length).to.equal(1);
 				});
 		});
-	})
+	});
 });

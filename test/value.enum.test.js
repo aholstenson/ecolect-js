@@ -107,7 +107,12 @@ describe('Value: Enumeration', function() {
 					expect(expr[expr.length - 1]).to.deep.equal({
 						type: 'value',
 						id: 'company',
-						value: 'Cookie Co'
+						value: 'Cookie Co',
+
+						source: {
+							start: 11,
+							end: 12
+						}
 					});
 				});
 		});
