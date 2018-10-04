@@ -115,13 +115,13 @@ const dateMatcher = date().matcher(en);
 
 // Call the matcher
 dateMatcher('2018')
-	.then(value => /* do something with the value */)
-	.catch(err => /* handle errors */);
+  .then(value => /* do something with the value */)
+  .catch(err => /* handle errors */);
 
 // Optionally specify options for parsing, such as what day the week starts on
 dateMatcher('start of week 12', { weekStartsOn: 1 /* Monday*/ })
-	.then(value => /* do something with the value */)
-	.catch(err => /* handle errors */);
+  .then(value => /* do something with the value */)
+  .catch(err => /* handle errors */);
 ```
 
 ## Value types
@@ -278,6 +278,35 @@ const dateTime = require('ecolect/values/date-time');
 builder.intent('schedule')
   .value('when', dateTime())
   .add('Schedule a call {when}')
+  .done();
+```
+
+### Date Interval
+
+Capture an interval between two dates.
+
+Language         | Examples
+-----------------|-------------
+English          | `today`, `this month`, `February to March`, `2018-01-01 to 2018-04-05`
+
+#### Returned value
+
+The returned value is an object with two dates in the `start` and `end` keys.
+Objects can be turned into dates with `toStartDate()` and `toEndDate()`:
+
+```javascript
+const start = value.toStartDate();
+const end = value.toEndDate();
+```
+
+#### Example
+
+```javascript
+const dateInterval = require('ecolect/values/date-interval');
+
+builder.intent('add')
+  .value('interval', dateInterval())
+  .add('Todos with deadline within {dateInterval}')
   .done();
 ```
 
