@@ -21,7 +21,7 @@
     "node": ">=6.0.0"
   },
   "dependencies": {
-    "date-fns": "^1.29.0",
+    "date-fns": "^2.0.0-alpha.20",
     "fast-clone": "^1.5.3",
     "lodash.isequal": "^4.5.0",
     "talisman": "^0.21.0"

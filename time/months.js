@@ -1,10 +1,10 @@
 'use strict';
 
-const setYear = require('date-fns/set_year');
+const setYear = require('date-fns/setYear');
 
-const addMonths = require('date-fns/add_months')
-const setMonth = require('date-fns/set_month');
-const startOfMonth = require('date-fns/start_of_month');
+const addMonths = require('date-fns/addMonths')
+const setMonth = require('date-fns/setMonth');
+const startOfMonth = require('date-fns/startOfMonth');
 
 const currentTime = require('./currentTime');
 const DateValue = require('./date-value');

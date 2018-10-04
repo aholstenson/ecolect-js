@@ -335,7 +335,7 @@ describe('English', function() {
 			});
 
 			it('this week - Sunday start', function() {
-				return date('this week', { now: new Date(2010, 0, 1), weekStartsOn: 7 })
+				return date('this week', { now: new Date(2010, 0, 1), weekStartsOn: 0 })
 					.then(v =>
 						expect(v).to.deep.equal({
 							period: 'week',
@@ -347,7 +347,7 @@ describe('English', function() {
 			});
 
 			it('end of week - Sunday start', function() {
-				return date('end of week', { now: new Date(2010, 0, 1), weekStartsOn: 7 })
+				return date('end of week', { now: new Date(2010, 0, 1), weekStartsOn: 0 })
 					.then(v =>
 						expect(v).to.deep.equal({
 							period: 'week',
@@ -627,13 +627,13 @@ describe('English', function() {
 			});
 
 			it('week 12 in 1 year', function() {
-				return date('week 12 in 1 year', { now: new Date(2010, 0, 1) })
+				return date('week 12 in 1 year', { now: new Date(2010, 0, 1), weekStartsOn: 1, firstWeekContainsDate: 4 })
 					.then(v =>
 						expect(v).to.deep.equal({
 							period: 'week',
 							year: 2011,
 							month: 2,
-							day: 27
+							day: 21
 						})
 					);
 			});

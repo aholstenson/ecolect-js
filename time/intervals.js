@@ -1,20 +1,20 @@
 'use strict';
 
-const startOfYear = require('date-fns/start_of_year');
-const startOfWeek = require('date-fns/start_of_week');
-const startOfMonth = require('date-fns/start_of_month');
-const startOfDay = require('date-fns/start_of_day');
-const startOfHour = require('date-fns/start_of_hour');
-const startOfMinute = require('date-fns/start_of_minute');
-const startOfSecond = require('date-fns/start_of_second');
+const startOfYear = require('date-fns/startOfYear');
+const startOfWeek = require('date-fns/startOfWeek');
+const startOfMonth = require('date-fns/startOfMonth');
+const startOfDay = require('date-fns/startOfDay');
+const startOfHour = require('date-fns/startOfHour');
+const startOfMinute = require('date-fns/startOfMinute');
+const startOfSecond = require('date-fns/startOfSecond');
 
-const endOfYear = require('date-fns/end_of_year');
-const endOfWeek = require('date-fns/end_of_week');
-const endOfMonth = require('date-fns/end_of_month');
-const endOfDay = require('date-fns/end_of_day');
-const endOfHour = require('date-fns/end_of_hour');
-const endOfMinute = require('date-fns/end_of_minute');
-const endOfSecond = require('date-fns/end_of_second');
+const endOfYear = require('date-fns/endOfYear');
+const endOfWeek = require('date-fns/endOfWeek');
+const endOfMonth = require('date-fns/endOfMonth');
+const endOfDay = require('date-fns/endOfDay');
+const endOfHour = require('date-fns/endOfHour');
+const endOfMinute = require('date-fns/endOfMinute');
+const endOfSecond = require('date-fns/endOfSecond');
 
 module.exports.toStart = function(time, period, options=undefined) {
 	switch(period) {

@@ -1,23 +1,23 @@
 'use strict';
 
-const addMonths = require('date-fns/add_months')
-const addWeeks = require('date-fns/add_weeks');
-const addDays = require('date-fns/add_days')
-const addYears = require('date-fns/add_years');
+const addMonths = require('date-fns/addMonths')
+const addWeeks = require('date-fns/addWeeks');
+const addDays = require('date-fns/addDays')
+const addYears = require('date-fns/addYears');
 
-const setISODay = require('date-fns/set_iso_day');
-const getISODay = require('date-fns/get_iso_day');
+const setISODay = require('date-fns/setISODay');
+const getISODay = require('date-fns/getISODay');
 
-const setISOWeek = require('date-fns/set_iso_week');
-const getISOWeek = require('date-fns/get_iso_week');
+const setWeek = require('date-fns/setWeek');
+const getWeek = require('date-fns/getWeek');
 
-const setYear = require('date-fns/set_year');
-const setMonth = require('date-fns/set_month');
-const setDate = require('date-fns/set_date');
+const setYear = require('date-fns/setYear');
+const setMonth = require('date-fns/setMonth');
+const setDate = require('date-fns/setDate');
 
-const startOfYear = require('date-fns/start_of_year');
-const startOfWeek = require('date-fns/start_of_week');
-const startOfMonth = require('date-fns/start_of_month');
+const startOfYear = require('date-fns/startOfYear');
+const startOfWeek = require('date-fns/startOfWeek');
+const startOfMonth = require('date-fns/startOfMonth');
 
 const currentTime = require('./currentTime');
 const DateValue = require('./date-value');
@@ -27,8 +27,8 @@ const { toStart, toEnd } = require('./intervals');
 const WEEK = {
 	field: 'week',
 
-	get: getISOWeek,
-	set: setISOWeek,
+	get: getWeek,
+	set: setWeek,
 
 	adjuster: addYears,
 	parentData: r => typeof r.year !== 'undefined'
@@ -66,34 +66,33 @@ const DAY = {
  * @param {*} def
  *   definition describing the field to modify
  */
-function adjust(time, r, def) {
+function adjust(r, e, time, def) {
 	const requested = r[def.field];
-	const current = def.get(time);
+	const current = def.get(time, e.options);
 
 	if(r.relationToCurrent === 'auto') {
 		if(requested < current) {
-			time = def.set(def.adjuster(time, 1), requested);
+			time = def.set(def.adjuster(time, 1, e.options), requested, e.options);
 		} else {
-			time = def.set(time, requested);
+			time = def.set(time, requested, e.options);
 		}
 	} else if(r.relationToCurrent === 'current-period') {
-		// TODO: Does all interval
 		if(def.parentData(r) && requested < current) {
-			time = def.set(def.adjuster(time, 1), requested);
+			time = def.set(def.adjuster(time, 1, e.options), requested, e.options);
 		} else {
-			time = def.set(time, requested);
+			time = def.set(time, requested, e.options);
 		}
 	} else if(r.relationToCurrent === 'future') {
 		if(requested <= current) {
-			time = def.set(def.adjuster(time, 1), requested);
+			time = def.set(def.adjuster(time, 1, e.options), requested, e.options);
 		} else {
-			time = def.set(time, requested);
+			time = def.set(time, requested, e.options);
 		}
 	} else if(r.relationToCurrent === 'past') {
 		if(requested >= current) {
-			time = def.set(def.adjuster(time, -1), requested);
+			time = def.set(def.adjuster(time, -1, e.options), requested, e.options);
 		} else {
-			time = def.set(time, requested);
+			time = def.set(time, requested, e.options);
 		}
 	}
 
@@ -141,7 +140,7 @@ module.exports.map = function(r, e, options={}) {
 		// Exact week - set it and reset to start of week
 		result.period = 'week';
 
-		time = adjust(time, r, WEEK);
+		time = adjust(r, e, time, WEEK);
 		time = startOfWeek(time, e.options);
 	}
 
@@ -154,7 +153,7 @@ module.exports.map = function(r, e, options={}) {
 		// Exact month - set the day to the start of the month
 		result.period = 'month';
 
-		time = adjust(time, r, MONTH);
+		time = adjust(r, e, time, MONTH);
 		time = startOfMonth(time);
 	}
 
@@ -167,7 +166,7 @@ module.exports.map = function(r, e, options={}) {
 		// If there is an explicit day set it
 		result.period = 'day';
 
-		time = adjust(time, r, DAY);
+		time = adjust(r, e, time, DAY);
 	}
 
 	if(typeof r.dayOfWeek !== 'undefined') {

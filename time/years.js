@@ -1,8 +1,8 @@
 'use strict';
 
-const addYears = require('date-fns/add_years');
-const setYear = require('date-fns/set_year');
-const startOfYear = require('date-fns/start_of_year');
+const addYears = require('date-fns/addYears');
+const setYear = require('date-fns/setYear');
+const startOfYear = require('date-fns/startOfYear');
 
 const currentTime = require('./currentTime');
 const DateValue = require('./date-value');
