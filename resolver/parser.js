@@ -50,7 +50,7 @@ class ResolverParser extends Parser {
 		let parse = (from, to) => {
 			let sub = text.substring(from, to);
 			this.language.tokenize(sub).forEach(t => {
-				if(t.length == 0) return;
+				if(t.length === 0) return;
 
 				let nextNode = new TokenNode(this.language, t);
 
@@ -67,7 +67,7 @@ class ResolverParser extends Parser {
 		VALUE.lastIndex = 0;
 		let match;
 		while((match = VALUE.exec(text))) {
-			if(match.index != 0) {
+			if(match.index !== 0) {
 				parse(previousIndex, match.index);
 			}
 			previousIndex = VALUE.lastIndex;

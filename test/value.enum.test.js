@@ -126,4 +126,4 @@ describe('Value: Enumeration', function() {
 				});
 		});
 	});
-})
+});

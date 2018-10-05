@@ -80,13 +80,13 @@ describe('Actions', function() {
 					return p;
 				})
 				.then(v => expect(v).to.equal('active 1234'));
-		})
+		});
 
 		it('handle() calls activate()', () => {
 			return actions.handle('orders')
 				.then(v => {
 					expect(v.intent).to.equal('orders');
-					expect(v.result).to.equal('executed orders')
+					expect(v.result).to.equal('executed orders');
 				});
 		});
 
@@ -103,5 +103,5 @@ describe('Actions', function() {
 					expect(v.result).to.equal('active cookie');
 				});
 		});
-	})
+	});
 });

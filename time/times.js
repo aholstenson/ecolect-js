@@ -1,12 +1,12 @@
 'use strict';
 
-const addHours = require('date-fns/addHours')
+const addHours = require('date-fns/addHours');
 const addMinutes = require('date-fns/addMinutes');
-const addSeconds = require('date-fns/addSeconds')
+const addSeconds = require('date-fns/addSeconds');
 
-const setHours = require('date-fns/setHours')
-const setMinutes = require('date-fns/setMinutes')
-const setSeconds = require('date-fns/setSeconds')
+const setHours = require('date-fns/setHours');
+const setMinutes = require('date-fns/setMinutes');
+const setSeconds = require('date-fns/setSeconds');
 
 const startOfHour = require('date-fns/startOfHour');
 const startOfMinute = require('date-fns/startOfMinute');

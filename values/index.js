@@ -22,7 +22,7 @@ class LanguageSpecificValue {
 		return function(text, options) {
 			if(typeof text !== 'string') return Promise.resolve(null);
 
-			return parser.match(text, options)
+			return parser.match(text, options);
 		};
 	}
 }
@@ -42,4 +42,4 @@ module.exports.ParsingValue = class ParsingValue {
 	toDot() {
 		return this.parser.toDot();
 	}
-}
+};

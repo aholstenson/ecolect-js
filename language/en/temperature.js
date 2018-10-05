@@ -33,5 +33,5 @@ module.exports = function(language) {
 			return mapped;
 		})
 
-		.onlyBest()
-}
+		.onlyBest();
+};

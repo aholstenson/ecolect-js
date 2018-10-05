@@ -27,7 +27,7 @@ module.exports = function(language) {
 				'ninth': 9,
 				'tenth': 10
 			},
-			l => { return { value: l, type: 'specific' } }
+			l => ({ value: l, type: 'specific' })
 		)
 
 		.add([ 'the', Parser.result() ], v => v[0])
@@ -39,4 +39,4 @@ module.exports = function(language) {
 			};
 			return mapped;
 		});
-}
+};

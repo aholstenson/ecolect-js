@@ -27,7 +27,7 @@ function normalize(word, next) {
 
 	switch(word) {
 		case 'ca':
-			if(next == 'n\'t') {
+			if(next === 'n\'t') {
 				return 'can';
 			}
 			return word;

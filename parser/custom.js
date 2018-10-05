@@ -15,7 +15,7 @@ class CustomNode extends Node {
 
 		return Promise.resolve(this.validator(token))
 			.then(r => {
-				if(typeof r !== 'undefined' && r != null) {
+				if(typeof r !== 'undefined' && r !== null) {
 					return encounter.next(1, 1, r);
 				}
 			});

@@ -156,7 +156,7 @@ describe('Resolver', function() {
 				partial: true
 			}).then(r => {
 				expect(r.matches.length).to.equal(1);
-			})
+			});
 		});
 
 		it('Partial token', function() {
@@ -165,8 +165,8 @@ describe('Resolver', function() {
 				partial: true
 			}).then(r => {
 				expect(r.matches.length).to.equal(1);
-			})
-		})
+			});
+		});
 	});
 
 	describe('Partial matching with value', function() {
@@ -189,7 +189,7 @@ describe('Resolver', function() {
 				partial: true
 			}).then(r => {
 				expect(r.matches.length).to.equal(1);
-			})
+			});
 		});
 
 		it('Value - valid', function() {
@@ -197,7 +197,7 @@ describe('Resolver', function() {
 				partial: true
 			}).then(r => {
 				expect(r.matches.length).to.equal(1);
-			})
+			});
 		});
 
 		it('Value - invalid', function() {
@@ -205,7 +205,7 @@ describe('Resolver', function() {
 				partial: true
 			}).then(r => {
 				expect(r.matches.length).to.equal(0);
-			})
+			});
 		});
 	});
 
@@ -352,7 +352,7 @@ describe('Resolver', function() {
 					expect(results.matches.length).to.equal(2);
 				});
 		});
-	})
+	});
 
 	describe('Graph contains matching expression', function() {
 		const resolver = new Builder(lang)
@@ -391,4 +391,4 @@ describe('Resolver', function() {
 				});
 		});
 	});
-})
+});

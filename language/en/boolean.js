@@ -15,4 +15,4 @@ module.exports = function(language) {
 		.add('no', false)
 
 		.onlyBest();
-}
+};

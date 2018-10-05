@@ -2,7 +2,7 @@
 
 const setYear = require('date-fns/setYear');
 
-const addMonths = require('date-fns/addMonths')
+const addMonths = require('date-fns/addMonths');
 const setMonth = require('date-fns/setMonth');
 const startOfMonth = require('date-fns/startOfMonth');
 
@@ -41,7 +41,7 @@ module.exports.map = function(r, e) {
 	if(typeof r.relativeMonths !== 'undefined') {
 		time = addMonths(time, r.relativeMonths);
 	} else if(typeof r.month !== 'undefined') {
-		time = setMonth(time, r.month)
+		time = setMonth(time, r.month);
 	} else {
 		// No month available - skip it
 		return null;

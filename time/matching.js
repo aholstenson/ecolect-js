@@ -39,7 +39,7 @@ module.exports.isWeek = function(v) {
 	if(typeof v.dayOfWeek !== 'undefined') return false;
 
 	return typeof v.week !== 'undefined';
-}
+};
 
 module.exports.combine = function(a, b) {
 	const result = cloneObject(a);
@@ -126,4 +126,4 @@ module.exports.reverse = function(v) {
 		result.relativeSeconds = - result.relativeSeconds;
 	}
 	return result;
-}
+};

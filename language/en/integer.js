@@ -52,7 +52,7 @@ module.exports = function(language) {
 				'eighteen': 18,
 				'nineteen': 19
 			},
-			l => { return { value: l, raw: l, literal: true } }
+			l => ({ value: l, raw: l, literal: true })
 		)
 
 		.map(
@@ -67,7 +67,7 @@ module.exports = function(language) {
 				'K': 1000,
 				'M': 1000000
 			},
-			l => { return { value: l, raw: l, suffix: true, literal: true }}
+			l => ({ value: l, raw: l, suffix: true, literal: true })
 		)
 
 		// Digits + digits or digits + suffix, combines 1 000 and 1 thousand but not one 000
@@ -81,4 +81,4 @@ module.exports = function(language) {
 
 		.mapResults(utils.map)
 		.onlyBest();
-}
+};

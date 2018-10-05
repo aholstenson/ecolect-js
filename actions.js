@@ -56,7 +56,7 @@ class Actions {
 			};
 
 			return item;
-		}
+		};
 
 		return this.matcher.match(expression, options)
 			.then(result => {

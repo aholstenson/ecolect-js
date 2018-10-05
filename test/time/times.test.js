@@ -1,3 +1,4 @@
+'use strict';
 
 const chai = require('chai');
 const expect = chai.expect;
@@ -14,7 +15,7 @@ describe('Time', () => {
 					minute: 12,
 					second: 42,
 					meridiem: 'auto'
-				})
+				});
 			});
 
 			it('Hour + minute', () => {
@@ -24,7 +25,7 @@ describe('Time', () => {
 					minute: 12,
 					second: undefined,
 					meridiem: 'auto'
-				})
+				});
 			});
 
 			it('Hour', () => {
@@ -34,7 +35,7 @@ describe('Time', () => {
 					minute: undefined,
 					second: undefined,
 					meridiem: 'auto'
-				})
+				});
 			});
 
 			it('Hour 0 has fixed meridiem', () => {
@@ -44,7 +45,7 @@ describe('Time', () => {
 					minute: 12,
 					second: 42,
 					meridiem: 'fixed'
-				})
+				});
 			});
 
 			it('Hour > 12 has fixed meridiem', () => {
@@ -54,7 +55,7 @@ describe('Time', () => {
 					minute: 12,
 					second: 42,
 					meridiem: 'fixed'
-				})
+				});
 			});
 		});
 
@@ -66,7 +67,7 @@ describe('Time', () => {
 					minute: 12,
 					second: 42,
 					meridiem: 'fixed'
-				})
+				});
 			});
 
 			it('Hour + minute', () => {
@@ -76,7 +77,7 @@ describe('Time', () => {
 					minute: 12,
 					second: undefined,
 					meridiem: 'fixed'
-				})
+				});
 			});
 
 			it('Hour', () => {
@@ -86,7 +87,7 @@ describe('Time', () => {
 					minute: undefined,
 					second: undefined,
 					meridiem: 'fixed'
-				})
+				});
 			});
 
 			it('Hour > 12', () => {
@@ -96,7 +97,7 @@ describe('Time', () => {
 					minute: 12,
 					second: 42,
 					meridiem: 'fixed'
-				})
+				});
 			});
 		});
 

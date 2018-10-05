@@ -28,6 +28,8 @@ class SubNode extends Node {
 		} else {
 			this.roots = roots;
 			this.state = this;
+			this.fuzzy = null;
+			this.skipPunctuation = null;
 		}
 	}
 
@@ -120,11 +122,11 @@ class SubNode extends Node {
 				encounter.partial = false;
 			}
 
-			if(this.skipPunctuation != null) {
+			if(this.skipPunctuation !== null) {
 				encounter.skipPunctuation = this.skipPunctuation;
 			}
 
-			if(this.fuzzy != null) {
+			if(this.fuzzy !== null) {
 				encounter.fuzzy = this.fuzzy;
 			}
 
@@ -142,7 +144,7 @@ class SubNode extends Node {
 
 	equals(other) {
 		function arrayEquals(a, b) {
-			if(a.length != b.length) return false;
+			if(a.length !== b.length) return false;
 			for(let i=0; i<a.length; i++) {
 				if(a !== b) return false;
 			}

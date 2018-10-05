@@ -105,7 +105,7 @@ describe('English', function() {
 						minute: 30,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('3:30 p.m.', function() {
@@ -119,7 +119,7 @@ describe('English', function() {
 						minute: 30,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('3 a.m.', function() {
@@ -133,7 +133,7 @@ describe('English', function() {
 						minute: 0,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('3 am', function() {
@@ -147,7 +147,7 @@ describe('English', function() {
 						minute: 0,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('12 a.m.', function() {
@@ -161,7 +161,7 @@ describe('English', function() {
 						minute: 0,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('20 a.m.', function() {
@@ -175,7 +175,7 @@ describe('English', function() {
 						minute: 0,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('7 p.m.', function() {
@@ -189,7 +189,7 @@ describe('English', function() {
 						minute: 0,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('12 p.m.', function() {
@@ -203,7 +203,7 @@ describe('English', function() {
 						minute: 0,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('22 p.m.', function() {
@@ -217,7 +217,7 @@ describe('English', function() {
 						minute: 0,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('at 3', function() {
@@ -231,7 +231,7 @@ describe('English', function() {
 						minute: 0,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('11:12:13', function() {
@@ -245,35 +245,35 @@ describe('English', function() {
 						minute: 12,
 						second: 13
 					})
-				)
+				);
 			});
 		});
 
 		describe('Invalid', function() {
 			it('25', function() {
 				return time('25')
-				.then(v => expect(v).to.equal(null))
+				.then(v => expect(v).to.equal(null));
 			});
 
 			it('25 a.m.', function() {
 				return time('25 a.m.')
-				.then(v => expect(v).to.equal(null))
+				.then(v => expect(v).to.equal(null));
 			});
 
 			it('10:75.', function() {
 				return time('10:75', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal(null)
-				)
+				);
 			});
 
 			it('5 minutes to 25', function() {
 				return time('5 minutes to 25', { now: new Date(2010, 0, 1, 13, 30) })
 				.then(v =>
 					expect(v).to.deep.equal(null)
-				)
+				);
 			});
-		})
+		});
 
 		describe('Expressive', function() {
 
@@ -288,7 +288,7 @@ describe('English', function() {
 						minute: 45,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('15 before 12', function() {
@@ -302,7 +302,7 @@ describe('English', function() {
 						minute: 45,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('half before 12', function() {
@@ -316,7 +316,7 @@ describe('English', function() {
 						minute: 30,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('3 quarters til 12', function() {
@@ -330,7 +330,7 @@ describe('English', function() {
 						minute: 15,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('15 minutes before 3 pm', function() {
@@ -344,7 +344,7 @@ describe('English', function() {
 						minute: 45,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('half past twelve', function() {
@@ -358,7 +358,7 @@ describe('English', function() {
 						minute: 30,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('half twelve', function() {
@@ -372,7 +372,7 @@ describe('English', function() {
 						minute: 30,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('midnight', function() {
@@ -386,7 +386,7 @@ describe('English', function() {
 						minute: 0,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('noon', function() {
@@ -400,7 +400,7 @@ describe('English', function() {
 						minute: 0,
 						second: 0
 					})
-				)
+				);
 			});
 
 			it('5 minutes to midnight', function() {
@@ -414,7 +414,7 @@ describe('English', function() {
 						minute: 55,
 						second: 0
 					})
-				)
+				);
 			});
 		});
 

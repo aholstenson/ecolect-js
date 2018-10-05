@@ -1,8 +1,8 @@
 'use strict';
 
-const addMonths = require('date-fns/addMonths')
+const addMonths = require('date-fns/addMonths');
 const addWeeks = require('date-fns/addWeeks');
-const addDays = require('date-fns/addDays')
+const addDays = require('date-fns/addDays');
 const addYears = require('date-fns/addYears');
 
 const setISODay = require('date-fns/setISODay');

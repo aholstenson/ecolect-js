@@ -33,11 +33,11 @@ module.exports = function(language) {
 				'sun': 7,
 				'sunday': 7
 			},
-			l => { return { value: l } }
+			l => ({ value: l })
 		)
 
 		.add([ 'on', Parser.result() ], v => v[0])
 
 		.mapResults(cloneObject)
 		.onlyBest();
-}
+};

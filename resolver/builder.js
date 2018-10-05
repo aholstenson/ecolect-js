@@ -77,7 +77,7 @@ class Builder {
 				const t = encounter.tokens[i];
 				if(! t) continue;
 
-				if(start == -1) start = t.start;
+				if(start === -1) start = t.start;
 
 				end = t.stop;
 			}
@@ -85,7 +85,7 @@ class Builder {
 				start: start,
 				end: end
 			};
-		}
+		};
 
 		let currentToken = 0;
 		let previousToken = -1;
@@ -165,7 +165,7 @@ class Builder {
 					}
 
 					return r;
-				})
+				});
 
 			return {
 				best: results[0] || null,

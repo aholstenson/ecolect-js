@@ -13,7 +13,7 @@ module.exports = function(language) {
 	const relative = new Parser(language)
 		.name('relativeMonths')
 
-		.add([ integer, 'months' ], v => { return { relativeMonths: v[0].value }});
+		.add([ integer, 'months' ], v => ({ relativeMonths: v[0].value }));
 
 	return new Parser(language)
 		.name('month')
@@ -59,7 +59,7 @@ module.exports = function(language) {
 				'dec': 11,
 				'december': 11
 			},
-			l => { return { month: l } }
+			l => ({ month: l })
 		)
 
 		// Dynamic months
@@ -79,4 +79,4 @@ module.exports = function(language) {
 
 		.mapResults(map)
 		.onlyBest();
-}
+};

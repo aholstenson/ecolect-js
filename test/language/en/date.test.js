@@ -440,7 +440,7 @@ describe('English', function() {
 							year: 2010,
 							month: 1,
 							day: 1
-						})
+						});
 					});
 			});
 
@@ -452,7 +452,7 @@ describe('English', function() {
 							year: 2010,
 							month: 0,
 							day: 5
-						})
+						});
 					});
 			});
 
@@ -464,7 +464,7 @@ describe('English', function() {
 							year: 2010,
 							month: 0,
 							day: 2
-						})
+						});
 					});
 			});
 
@@ -476,7 +476,7 @@ describe('English', function() {
 							year: 2010,
 							month: 0,
 							day: 2
-						})
+						});
 					});
 			});
 		});

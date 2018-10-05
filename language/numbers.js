@@ -54,7 +54,7 @@ module.exports.float = function float(a, b) {
 
 module.exports.map = function(data) {
 	return new NumberValue(data);
-}
+};
 
 class NumberValue {
 	constructor(obj) {

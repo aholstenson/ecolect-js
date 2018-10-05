@@ -33,4 +33,4 @@ module.exports = function(language) {
 
 		.mapResults(utils.map)
 		.onlyBest();
-}
+};

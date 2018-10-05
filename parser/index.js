@@ -150,7 +150,7 @@ class Parser extends Node {
 			const previous = this._finalizer;
 			this._finalizer = function(results, encounter) {
 				return func(previous(results, encounter));
-			}
+			};
 		} else {
 			this._finalizer = func;
 		}

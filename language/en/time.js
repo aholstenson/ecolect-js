@@ -81,7 +81,7 @@ module.exports = function(language) {
 		.add([ integer, integer ], v => time12h(v[0].value, v[1].value))
 		.add(/^[0-9]{3,4}$/, v => {
 			const t = v[0];
-			const h = t.length == 3 ? t.substring(0, 1) : t.substring(0, 2);
+			const h = t.length === 3 ? t.substring(0, 1) : t.substring(0, 2);
 			const m = t.substring(t.length-2);
 			return time12h(parseInt(h), parseInt(m));
 		})
@@ -114,4 +114,4 @@ module.exports = function(language) {
 
 		.mapResults(map)
 		.onlyBest();
-}
+};

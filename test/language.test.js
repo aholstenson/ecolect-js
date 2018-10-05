@@ -164,4 +164,4 @@ describe('Language', function() {
 			expect(raw).to.equal('hello world');
 		});
 	});
-})
+});

@@ -88,7 +88,7 @@ class Encounter {
 			} else {
 				let score;
 				if(this.partial) {
-					score = scorePartial(this.tokens.length, nextIndex, this.maxDepth, nextScore)
+					score = scorePartial(this.tokens.length, nextIndex, this.maxDepth, nextScore);
 				} else {
 					if(this.onlyComplete && nextIndex < this.tokens.length) {
 						// Skip this match unless it has consumed all tokens
@@ -107,7 +107,7 @@ class Encounter {
 				for(let i=0; i<r.length; i++) {
 					push(r[i]);
 				}
-			} else if(r != null && typeof r !== 'undefined') {
+			} else if(r !== null && typeof r !== 'undefined') {
 				push(r);
 			}
 		};

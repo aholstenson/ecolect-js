@@ -56,10 +56,10 @@ module.exports = function(language) {
 		.name('relative')
 
 		// Relative dates
-		.add([ integer, 'years' ], v => { return { relativeYears: v[0].value }})
-		.add([ integer, 'weeks' ], v => { return { relativeWeeks: v[0].value }})
-		.add([ integer, 'months' ], v => { return { relativeMonths: v[0].value }})
-		.add([ integer, 'days' ], v => { return { relativeDays: v[0].value }})
+		.add([ integer, 'years' ], v => ({ relativeYears: v[0].value }))
+		.add([ integer, 'weeks' ], v => ({ relativeWeeks: v[0].value }))
+		.add([ integer, 'months' ], v => ({ relativeMonths: v[0].value }))
+		.add([ integer, 'days' ], v => ({ relativeDays: v[0].value }))
 
 		.add([ Parser.result(), Parser.result() ], v => combine(v[0], v[1]))
 		.add([ Parser.result(), 'and', Parser.result() ], v => combine(v[0], v[1]));
@@ -86,7 +86,7 @@ module.exports = function(language) {
 		.add([ month, day ], v => withDay(v[0], v[1]))
 
 		// Just the day
-		.add([ day ], v => { return { day: v[0].value } })
+		.add([ day ], v => ({ day: v[0].value }))
 
 		// Day followed by month - 12 Jan, 1st February
 		.add([ day, month ], v => withDay(v[1], v[0]))
@@ -206,4 +206,4 @@ module.exports = function(language) {
 
 		.mapResults(map)
 		.onlyBest();
-}
+};

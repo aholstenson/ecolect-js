@@ -30,4 +30,4 @@ module.exports = function(language) {
 
 		.mapResults(map)
 		.onlyBest();
-}
+};
