@@ -298,6 +298,18 @@ describe('English', function() {
 		});
 
 		describe('Weeks', function() {
+			it('this week', function() {
+				return date('this week', { now: new Date(2010, 1, 5), weekStartsOn: 1, firstWeekContainsDate: 4 })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'week',
+							year: 2010,
+							month: 1,
+							day: 1
+						})
+					);
+			});
+
 			it('week 2 2018', function() {
 				return date('week 2 2018')
 					.then(v =>
@@ -378,6 +390,30 @@ describe('English', function() {
 							year: 2009,
 							month: 11,
 							day: 28
+						})
+					);
+			});
+
+			it('Tuesday this week', function() {
+				return date('Tuesday this week', { now: new Date(2010, 1, 5), weekStartsOn: 1, firstWeekContainsDate: 4 })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'day',
+							year: 2010,
+							month: 1,
+							day: 2
+						})
+					);
+			});
+
+			it('this week Tuesday', function() {
+				return date('this week Tuesday', { now: new Date(2010, 1, 5), weekStartsOn: 1, firstWeekContainsDate: 4 })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'day',
+							year: 2010,
+							month: 1,
+							day: 2
 						})
 					);
 			});
@@ -692,6 +728,18 @@ describe('English', function() {
 						expect(v).to.deep.equal({
 							period: 'year',
 							year: 2011,
+							month: 0,
+							day: 1
+						})
+					);
+			});
+
+			it('2 yrs from today', function() {
+				return date('2 yrs from today', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'year',
+							year: 2012,
 							month: 0,
 							day: 1
 						})

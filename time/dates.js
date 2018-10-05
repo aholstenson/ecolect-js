@@ -5,8 +5,8 @@ const addWeeks = require('date-fns/addWeeks');
 const addDays = require('date-fns/addDays');
 const addYears = require('date-fns/addYears');
 
-const setISODay = require('date-fns/setISODay');
-const getISODay = require('date-fns/getISODay');
+const setDay = require('date-fns/setDay');
+const getDay = require('date-fns/getDay');
 
 const setWeek = require('date-fns/setWeek');
 const getWeek = require('date-fns/getWeek');
@@ -23,6 +23,29 @@ const currentTime = require('./currentTime');
 const DateValue = require('./date-value');
 
 const { toStart, toEnd } = require('./intervals');
+
+module.exports.thisWeek = function(r, e) {
+	const time = currentTime(e);
+	return {
+		week: getWeek(time, e.options)
+	};
+};
+
+module.exports.nextWeek = function(r, e) {
+	const time = addWeeks(currentTime(e), 1);
+	return {
+		year: time.getFullYear(),
+		week: getWeek(time, e.options)
+	};
+};
+
+module.exports.previousWeek = function(r, e) {
+	const time = addWeeks(currentTime(e), -1);
+	return {
+		year: time.getFullYear(),
+		week: getWeek(time, e.options)
+	};
+};
 
 const WEEK = {
 	field: 'week',
@@ -185,11 +208,11 @@ module.exports.map = function(r, e, options={}) {
 	if(typeof r.dayOfWeek !== 'undefined') {
 		result.period = 'day';
 
-		const currentDayOfWeek = getISODay(time);
+		const currentDayOfWeek = getDay(time);
 		if(currentDayOfWeek >= r.dayOfWeek) {
 			time = addWeeks(time, 1);
 		}
-		time = setISODay(time, r.dayOfWeek);
+		time = setDay(time, r.dayOfWeek);
 
 		for(let i=1; i<r.dayOfWeekOrdinal; i++) {
 			time = addWeeks(time, 1);

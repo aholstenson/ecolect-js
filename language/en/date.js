@@ -12,7 +12,7 @@ const {
 	hasMonth,
 	reverse
 } = require('../../time/matching');
-const { map } = require('../../time/dates');
+const { map, thisWeek, nextWeek, previousWeek } = require('../../time/dates');
 
 function value(v) {
 	if(Array.isArray(v)) {
@@ -80,6 +80,9 @@ module.exports = function(language) {
 		// Relative
 		.add([ relative ], v => v[0])
 		.add([ relative, 'after', Parser.result() ], v => combine(v[0], {
+			relativeTo: v[1]
+		}))
+		.add([ relative, 'from', Parser.result() ], v => combine(v[0], {
 			relativeTo: v[1]
 		}))
 		.add([ relative, 'before', Parser.result() ], v => combine(reverse(v[0]), {
@@ -151,10 +154,15 @@ module.exports = function(language) {
 		// Standalone year
 		.add([ year ], v => v[0])
 
-		.add([ 'this week' ], () => ({ relativeWeeks: 0, intervalEdge: 'start' }))
+		// Weeks relative to current time
+		.add([ 'this week' ], thisWeek)
+		.add([ 'next week' ], nextWeek)
+		.add([ 'last week' ], previousWeek)
+		.add([ 'previous week' ], previousWeek)
+
 		.add([ 'week', ordinal ], v => ({ week: v[0].value }))
-		.add('start of week', () => ({ relativeWeeks: 0, intervalEdge: 'start' }))
-		.add('end of week', () => ({ relativeWeeks: 0, intervalEdge: 'end' }))
+		.add('start of week', thisWeek)
+		.add('end of week', (v, e) => combine(thisWeek(v, e), { intervalEdge: 'end' }))
 
 		// Week N of year
 		.add([ 'week', ordinal, year ], v => combine(v[1], {
@@ -204,6 +212,11 @@ module.exports = function(language) {
 		// day of week in week X
 		.add([ dayOfWeek, Parser.result(isWeek) ], v => combine(v[1], {
 			dayOfWeek: v[0].value,
+			dayOfWeekOrdinal: 1
+		}))
+
+		.add([ Parser.result(isWeek), dayOfWeek ], v => combine(v[0], {
+			dayOfWeek: v[1].value,
 			dayOfWeekOrdinal: 1
 		}))
 
