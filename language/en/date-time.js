@@ -14,6 +14,7 @@ module.exports = function(language) {
 		.skipPunctuation()
 
 		.add(time, v => v[0])
+		.add(date, v => v[0])
 
 		.add([ time, date ], v => combine(v[0], v[1]))
 		.add([ time, 'and', date ], v => combine(v[0], v[1]))

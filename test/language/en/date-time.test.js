@@ -10,6 +10,23 @@ describe('English', function() {
 
 
 	describe('Date & Time', function() {
+		it('jan 12th', function() {
+			return datetime('jan 12th', { now: new Date(2010, 0, 1, 13, 30) })
+			.then(v =>
+				expect(v).to.deep.equal({
+					period: 'day',
+					precision: 'normal',
+
+					year: 2010,
+					month: 0,
+					day: 12,
+					hour: 13,
+					minute: 30,
+					second: 0
+				})
+			);
+		});
+
 		it('12:10, jan 12th', function() {
 			return datetime('12:10, jan 12th', { now: new Date(2010, 0, 1, 13, 30) })
 			.then(v =>
