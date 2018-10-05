@@ -530,18 +530,6 @@ describe('English', function() {
 					);
 			});
 
-			it('in 1 day', function() {
-				return date('in 1 day', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 0,
-							day: 2
-						})
-					);
-			});
-
 			it('in 3 days', function() {
 				return date('in 3 days', { now: new Date(2010, 0, 1) })
 					.then(v =>
@@ -566,6 +554,29 @@ describe('English', function() {
 					);
 			});
 
+			it('1 day after 2018-01-02', function() {
+				return date('1 day after 2018-01-02', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'day',
+							year: 2018,
+							month: 0,
+							day: 3
+						})
+					);
+			});
+
+			it('1 day before 2018-01-02', function() {
+				return date('1 day before 2018-01-02', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'day',
+							year: 2018,
+							month: 0,
+							day: 1
+						})
+					);
+			});
 
 			it('in 2 months and 3 days', function() {
 				return date('in 2 months and 3 days', { now: new Date(2010, 0, 1) })
@@ -818,6 +829,18 @@ describe('English', function() {
 							year: 2018,
 							month: 4,
 							day: 4
+						})
+					);
+			});
+
+			it('2 days after first friday in may in 4 years', function() {
+				return date('2 days after first friday in may in 4 years', { now: new Date(2014, 2, 22) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'day',
+							year: 2018,
+							month: 4,
+							day: 6
 						})
 					);
 			});

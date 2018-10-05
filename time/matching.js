@@ -96,7 +96,7 @@ module.exports.between = function(start, end) {
 };
 
 module.exports.reverse = function(v) {
-	const result = cloneObject(v[0]);
+	const result = cloneObject(v[0] || v);
 
 	if(result.relativeYears) {
 		result.relativeYears = - result.relativeYears;

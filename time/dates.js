@@ -114,7 +114,20 @@ module.exports.map = function(r, e, options={}) {
 	}
 
 	// Resolve the current time for the encounter
-	let time = options.now || currentTime(e);
+	let time;
+	if(r.relativeTo) {
+		// If this time is relative to another time
+		const sub = r.relativeTo;
+		sub.relationToCurrent = r.relationToCurrent;
+		sub.intervalEdge = r.intervalEdge;
+
+		const resolvedTime = module.exports.map(sub, e, options);
+		if(! resolvedTime) return null;
+
+		time = resolvedTime.toDate();
+	} else {
+		time = options.now || currentTime(e);
+	}
 
 	// The actual result
 	const result = new DateValue(e.language);

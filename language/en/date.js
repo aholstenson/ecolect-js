@@ -79,6 +79,12 @@ module.exports = function(language) {
 
 		// Relative
 		.add([ relative ], v => v[0])
+		.add([ relative, 'after', Parser.result() ], v => combine(v[0], {
+			relativeTo: v[1]
+		}))
+		.add([ relative, 'before', Parser.result() ], v => combine(reverse(v[0]), {
+			relativeTo: v[1]
+		}))
 
 		// This Sunday, Next Monday or On Tuesday
 		.add(dayOfWeek, nextDayOfWeek)
