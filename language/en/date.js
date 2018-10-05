@@ -57,9 +57,17 @@ module.exports = function(language) {
 
 		// Relative dates
 		.add([ integer, 'years' ], v => ({ relativeYears: v[0].value }))
+		.add([ integer, 'yrs' ], v => ({ relativeYears: v[0].value }))
+		.add([ integer, 'y' ], v => ({ relativeYears: v[0].value }))
 		.add([ integer, 'weeks' ], v => ({ relativeWeeks: v[0].value }))
+		.add([ integer, 'wks' ], v => ({ relativeWeeks: v[0].value }))
+		.add([ integer, 'w' ], v => ({ relativeWeeks: v[0].value }))
 		.add([ integer, 'months' ], v => ({ relativeMonths: v[0].value }))
+		.add([ integer, 'mths' ], v => ({ relativeMonths: v[0].value }))
+		.add([ integer, 'mon' ], v => ({ relativeMonths: v[0].value }))
+		.add([ integer, 'm' ], v => ({ relativeMonths: v[0].value }))
 		.add([ integer, 'days' ], v => ({ relativeDays: v[0].value }))
+		.add([ integer, 'd' ], v => ({ relativeDays: v[0].value }))
 
 		.add([ Parser.result(), Parser.result() ], v => combine(v[0], v[1]))
 		.add([ Parser.result(), 'and', Parser.result() ], v => combine(v[0], v[1]));
@@ -68,6 +76,9 @@ module.exports = function(language) {
 		.name('date')
 
 		.skipPunctuation()
+
+		// Relative
+		.add([ relative ], v => v[0])
 
 		// This Sunday, Next Monday or On Tuesday
 		.add(dayOfWeek, nextDayOfWeek)
@@ -189,9 +200,6 @@ module.exports = function(language) {
 			dayOfWeek: v[0].value,
 			dayOfWeekOrdinal: 1
 		}))
-
-		// Relative
-		.add([ relative ], v => v[0])
 
 		// Extra qualifiers such as in and on
 		.add([ 'in', Parser.result() ], v => v[0])

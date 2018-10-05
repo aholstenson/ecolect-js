@@ -554,6 +554,19 @@ describe('English', function() {
 					);
 			});
 
+			it('in 1 d', function() {
+				return date('in 1 d', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'day',
+							year: 2010,
+							month: 0,
+							day: 2
+						})
+					);
+			});
+
+
 			it('in 2 months and 3 days', function() {
 				return date('in 2 months and 3 days', { now: new Date(2010, 0, 1) })
 					.then(v =>
@@ -579,7 +592,31 @@ describe('English', function() {
 			});
 
 			it('in two weeks', function() {
-				return date('in 2 weeks', { now: new Date(2010, 0, 1) })
+				return date('in two weeks', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'week',
+							year: 2010,
+							month: 0,
+							day: 15
+						})
+					);
+			});
+
+			it('in 2w', function() {
+				return date('in 2w', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'week',
+							year: 2010,
+							month: 0,
+							day: 15
+						})
+					);
+			});
+
+			it('in 2wks', function() {
+				return date('in 2wks', { now: new Date(2010, 0, 1) })
 					.then(v =>
 						expect(v).to.deep.equal({
 							period: 'week',
@@ -616,6 +653,30 @@ describe('English', function() {
 
 			it('in 1 year', function() {
 				return date('in 1 year', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'year',
+							year: 2011,
+							month: 0,
+							day: 1
+						})
+					);
+			});
+
+			it('in 1y', function() {
+				return date('in 1y', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'year',
+							year: 2011,
+							month: 0,
+							day: 1
+						})
+					);
+			});
+
+			it('in 1 yr', function() {
+				return date('in 1 yr', { now: new Date(2010, 0, 1) })
 					.then(v =>
 						expect(v).to.deep.equal({
 							period: 'year',
@@ -664,6 +725,18 @@ describe('English', function() {
 
 			it('1 month and 3 days ago', function() {
 				return date('1 month and 3 days ago', { now: new Date(2010, 0, 1) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'day',
+							year: 2009,
+							month: 10,
+							day: 28
+						})
+					);
+			});
+
+			it('1 mon 3 d ago', function() {
+				return date('1 mon 3 d ago', { now: new Date(2010, 0, 1) })
 					.then(v =>
 						expect(v).to.deep.equal({
 							period: 'day',
