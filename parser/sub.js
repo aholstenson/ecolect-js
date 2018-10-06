@@ -20,7 +20,7 @@ class SubNode extends Node {
 		if(roots instanceof Node) {
 			// This node probably points to another parser
 			this.roots = roots.outgoing;
-			this.supportsPartial = typeof roots.supportsPartial !== 'undefined' ? roots.supportsPartial : true;
+			this.supportsPartial = typeof roots.supportsPartial !== 'undefined' ? roots.supportsPartial : null;
 			this.name = roots._name || null;
 			this.skipPunctuation = typeof roots._skipPunctuation !== 'undefined' ? roots._skipPunctuation : null;
 			this.fuzzy = typeof roots._fuzzy !== 'undefined' ? roots._fuzzy : null;
@@ -28,6 +28,7 @@ class SubNode extends Node {
 		} else {
 			this.roots = roots;
 			this.state = this;
+			this.supportsPartial = null;
 			this.fuzzy = null;
 			this.skipPunctuation = null;
 		}
@@ -127,9 +128,8 @@ class SubNode extends Node {
 		const fuzzy = encounter.fuzzy;
 
 		return encounter.branchWithOnMatch(onMatch, () => {
-			if(partial && ! this.supportsPartial) {
-				// If we do not support partial matching
-				encounter.partial = false;
+			if(partial && this.supportsPartial !== null) {
+				encounter.partial = this.supportsPartial;
 			}
 
 			if(this.skipPunctuation !== null) {
