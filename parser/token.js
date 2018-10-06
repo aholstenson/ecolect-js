@@ -18,12 +18,19 @@ class Token extends Node {
 			 * Consume a token in the input, score it and evaluate outgoing
 			 * nodes for both full and partial matches.
 			 */
-			const score = encounter.partial && encounter.isLastToken
-				? this.language.comparePartialTokens(this.token, token)
-				: this.language.compareTokens(this.token, token);
+			if(this.token.punctuation) {
+				// Punctuation nodes must match directly
+				if(this.token.normalized === token.normalized) {
+					return encounter.next(0.0, 1);
+				}
+			} else {
+				const score = encounter.partial && encounter.isLastToken
+					? this.language.comparePartialTokens(this.token, token)
+					: this.language.compareTokens(this.token, token);
 
-			if(score > 0) {
-				return encounter.next(score, 1);
+				if(score > 0) {
+					return encounter.next(score, 1);
+				}
 			}
 		} else if(encounter.partial) {
 			/*
@@ -38,7 +45,7 @@ class Token extends Node {
 			/*
 			 * This token is skippable, skip it without adding any score.
 			 */
-			return encounter.next(0.0, 0);
+			return encounter.next(0.0, 1);
 		}
 
 		return null;
