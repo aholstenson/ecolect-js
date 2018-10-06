@@ -13,6 +13,7 @@ module.exports = function(language) {
 	const date = language.date;
 
 	return new Parser(language)
+		.name('date-interval')
 
 		.add(date, between)
 
