@@ -1,19 +1,7 @@
 'use strict';
 
-const chai = require('chai');
-const expect = chai.expect;
-
 const en = require('../../../language/en');
-const dateInterval = (text, options) => en.dateInterval.match(text, options);
-
-function test(expr, opts, v) {
-	it(expr + ' [' + (opts.now ? opts.now.toString() : 'current time') + ']', () => {
-		return dateInterval(expr, opts)
-			.then(r => {
-				expect(r).to.deep.equal(v);
-			});
-	});
-}
+const test = require('../helpers').testRunner(en.dateInterval);
 
 describe('English', () => {
 	describe('Date Interval', () => {

@@ -287,7 +287,7 @@ Capture an interval between two dates.
 
 Language         | Examples
 -----------------|-------------
-English          | `today`, `this month`, `February to March`, `2018-01-01 to 2018-04-05`
+English          | `today`, `this month`, `February to March`, `2018-01-01 to 2018-04-05`, `January 15th - 18th`
 
 #### Returned value
 
@@ -307,6 +307,39 @@ const dateInterval = require('ecolect/values/date-interval');
 builder.intent('add')
   .value('interval', dateInterval())
   .add('Todos with deadline within {dateInterval}')
+  .done();
+```
+
+### Date Duration
+
+Capture a duration.
+
+Language         | Examples
+-----------------|-------------
+English          | `2 days`, `2m, 1d`, `1 year and 2 days`, `4y 2m`, `1 week`
+
+#### Returned value
+
+The returned value is an object containg fields with the change, such as
+`years`, `weeks`, `months` and `days`. The function `toDate(currentTime)` can
+be used to add the duration to a date.
+
+```javascript
+// Add the duration to the current time
+const fromNow = value.toDate();
+
+// Add the duration to the specific date and time
+const fromSpecific = value.toDate(new Date(2015, 0, 2));
+```
+
+#### Example
+
+```javascript
+const dateDuration = require('ecolect/values/date-duration');
+
+builder.intent('listPending')
+  .value('dateDuration', dateDuration())
+  .add('Show todos due to be completed in {dateDuration}')
   .done();
 ```
 

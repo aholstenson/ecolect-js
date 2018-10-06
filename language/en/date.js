@@ -45,32 +45,12 @@ function nextDayOfWeek(v) {
 
 module.exports = function(language) {
 	const ordinal = language.ordinal;
-	const integer = language.integer;
 	const dayOfWeek = language.dayOfWeek;
 	const month = language.month;
 	const year = language.year;
+	const dateDuration = language.dateDuration;
 
 	const day = Parser.result(ordinal, v => v.value >= 0 && v.value < 31);
-
-	const relative = new Parser(language)
-		.name('relative')
-
-		// Relative dates
-		.add([ integer, 'years' ], v => ({ relativeYears: v[0].value }))
-		.add([ integer, 'yrs' ], v => ({ relativeYears: v[0].value }))
-		.add([ integer, 'y' ], v => ({ relativeYears: v[0].value }))
-		.add([ integer, 'weeks' ], v => ({ relativeWeeks: v[0].value }))
-		.add([ integer, 'wks' ], v => ({ relativeWeeks: v[0].value }))
-		.add([ integer, 'w' ], v => ({ relativeWeeks: v[0].value }))
-		.add([ integer, 'months' ], v => ({ relativeMonths: v[0].value }))
-		.add([ integer, 'mths' ], v => ({ relativeMonths: v[0].value }))
-		.add([ integer, 'mon' ], v => ({ relativeMonths: v[0].value }))
-		.add([ integer, 'm' ], v => ({ relativeMonths: v[0].value }))
-		.add([ integer, 'days' ], v => ({ relativeDays: v[0].value }))
-		.add([ integer, 'd' ], v => ({ relativeDays: v[0].value }))
-
-		.add([ Parser.result(), Parser.result() ], v => combine(v[0], v[1]))
-		.add([ Parser.result(), 'and', Parser.result() ], v => combine(v[0], v[1]));
 
 	return new Parser(language)
 		.name('date')
@@ -78,14 +58,14 @@ module.exports = function(language) {
 		.skipPunctuation()
 
 		// Relative
-		.add([ relative ], v => v[0])
-		.add([ relative, 'after', Parser.result() ], v => combine(v[0], {
+		.add([ dateDuration ], v => v[0])
+		.add([ dateDuration, 'after', Parser.result() ], v => combine(v[0], {
 			relativeTo: v[1]
 		}))
-		.add([ relative, 'from', Parser.result() ], v => combine(v[0], {
+		.add([ dateDuration, 'from', Parser.result() ], v => combine(v[0], {
 			relativeTo: v[1]
 		}))
-		.add([ relative, 'before', Parser.result() ], v => combine(reverse(v[0]), {
+		.add([ dateDuration, 'before', Parser.result() ], v => combine(reverse(v[0]), {
 			relativeTo: v[1]
 		}))
 
@@ -224,7 +204,7 @@ module.exports = function(language) {
 		.add([ 'in', Parser.result() ], v => v[0])
 		.add([ 'on', Parser.result() ], v => v[0])
 		.add([ 'on', 'the', Parser.result() ], v => v[0])
-		.add([ relative, 'ago' ], reverse)
+		.add([ dateDuration, 'ago' ], reverse)
 
 		// Edges, such as start of [date] or end of [date]
 		.add([ 'start of', Parser.result() ], startOf)
