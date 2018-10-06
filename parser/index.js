@@ -294,7 +294,7 @@ class Parser extends Node {
 				}
 				sub.name = name;
 			} else {
-				sub.name = 'Self';
+				sub.name = parser._name + ':self';
 			}
 			return sub;
 		};

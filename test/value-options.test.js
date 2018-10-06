@@ -48,7 +48,7 @@ describe('Value: Options', function() {
 		});
 	});
 
-	it('With values', () => {
+	describe('With values', () => {
 		const queryOptions = options({ min: 1 })
 			.option('deadline')
 				.value('deadline', dateInterval())
@@ -66,20 +66,48 @@ describe('Value: Options', function() {
 			.add('Things {queryOptions}')
 			.build();
 
-		return resolver.match('things with deadline jan 12th')
-			.then(r => {
-				expect(r.best).to.not.be.null;
-				expect(r.best.values.queryOptions).to.be.instanceOf(Array);
+		it('Full match', () => {
+			return resolver.match('things with deadline jan 12th', { now: new Date(2018, 0, 2) })
+				.then(r => {
+					expect(r.best).to.not.be.null;
+					expect(r.best.values.queryOptions).to.be.instanceOf(Array);
 
-				const v = r.best.values.queryOptions[0];
-				expect(v.option).to.equal('deadline');
-				expect(v.values).to.deep.equal({
-					deadline: {
-						start: { period: 'day', year: 2018, month: 0, day: 12 },
-						end: { period: 'day', year: 2018, month: 0, day: 12 }
-					}
+					const v = r.best.values.queryOptions[0];
+					expect(v.option).to.equal('deadline');
+					expect(v.values).to.deep.equal({
+						deadline: {
+							start: { period: 'day', year: 2018, month: 0, day: 12 },
+							end: { period: 'day', year: 2018, month: 0, day: 12 }
+						}
+					});
 				});
-			});
+		});
+
+		it('Multiple options', () => {
+			return resolver.match('things with deadline jan 12th and completed today', { now: new Date(2018, 0, 2) })
+				.then(r => {
+					expect(r.best).to.not.be.null;
+					expect(r.best.values.queryOptions).to.be.instanceOf(Array);
+
+					const v0 = r.best.values.queryOptions[0];
+					expect(v0.option).to.equal('deadline');
+					expect(v0.values).to.deep.equal({
+						deadline: {
+							start: { period: 'day', year: 2018, month: 0, day: 12 },
+							end: { period: 'day', year: 2018, month: 0, day: 12 }
+						}
+					});
+
+					const v1 = r.best.values.queryOptions[1];
+					expect(v1.option).to.equal('completed');
+					expect(v1.values).to.deep.equal({
+						completed: {
+							start: { period: 'day', year: 2018, month: 0, day: 2 },
+							end: { period: 'day', year: 2018, month: 0, day: 2 }
+						}
+					});
+				});
+		});
 	});
 
 });
