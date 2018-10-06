@@ -63,6 +63,21 @@ describe('English', () => {
 			}
 		});
 
+		test('2018 - 2019', { now: new Date(2010, 2, 1) }, {
+			start: {
+				period: 'year',
+				year: 2018,
+				month: 0,
+				day: 1
+			},
+			end: {
+				period: 'year',
+				year: 2019,
+				month: 11,
+				day: 31
+			}
+		});
+
 		test('February to March', { now: new Date(2010, 2, 1) }, {
 			start: {
 				period: 'month',
@@ -153,18 +168,18 @@ describe('English', () => {
 			}
 		});
 
-		test('2018-05-01', {}, {
+		test('2018-05-02', {}, {
 			start: {
 				period: 'day',
 				year: 2018,
 				month: 4,
-				day: 1
+				day: 2
 			},
 			end: {
 				period: 'day',
 				year: 2018,
 				month: 4,
-				day: 1
+				day: 2
 			}
 		});
 
@@ -183,5 +198,34 @@ describe('English', () => {
 			}
 		});
 
+		test('Friday to Tuesday', { now: new Date(2012, 8, 1) }, {
+			start: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 7
+			},
+			end: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 11
+			}
+		});
+
+		test('January 12th - 15th', { now: new Date(2012, 8, 1) }, {
+			start: {
+				period: 'day',
+				year: 2012,
+				month: 0,
+				day: 12
+			},
+			end: {
+				period: 'day',
+				year: 2012,
+				month: 0,
+				day: 15
+			}
+		});
 	});
 });

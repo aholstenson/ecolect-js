@@ -210,6 +210,28 @@ class Encounter {
 	}
 
 	/**
+	 * Get the index of the first non-skipped token.
+	 *
+	 * This looks backwards in the tokens to try to find the first
+	 * non-punctuation token. Used by SubNodes to allow puncutation to be
+	 * used both the parent parser and the sub-parser.
+	 */
+	previousNonSkipped() {
+		if(! this.skipPunctuation) return this.currentIndex;
+
+		let idx = this.currentIndex - 1;
+		let token = this.tokens[idx];
+		while(token && token.punctuation) {
+			token = this.tokens[--idx];
+		}
+		return idx + 1;
+	}
+
+	remainingTokens() {
+		return this.tokens.slice(this.currentIndex);
+	}
+
+	/**
 	 * Push the current match onto the result.
 	 */
 	match(data) {

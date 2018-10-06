@@ -109,6 +109,16 @@ class SubNode extends Node {
 				score: encounter.currentScore,
 				data: result
 			});
+
+			// Back-track to allow following nodes to also handle any trailing tokens
+			const previousNonSkipped = encounter.previousNonSkipped();
+			if(previousNonSkipped !== encounter.currentIndex) {
+				variants.push({
+					index: previousNonSkipped,
+					score: encounter.currentScore,
+					data: result
+				});
+			}
 		};
 
 		// Memorize if we are running a partial match
