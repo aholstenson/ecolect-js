@@ -78,6 +78,8 @@ module.exports.tokenize = function(text, transformer) {
 };
 
 module.exports.raw = function(tokens) {
+	if(tokens.length === 0) return '';
+
 	let result = [];
 	let index = tokens[0].start;
 	for(let i=0; i<tokens.length; i++) {
