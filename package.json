@@ -4,8 +4,9 @@
   "description": "Natural language handling for commands and intents",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha --recursive test/ && node_modules/.bin/eslint .",
+    "test": "node_modules/.bin/mocha --recursive test/",
     "coverage": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec --recursive test",
+    "lint": "node_modules/.bin/eslint .",
     "build": "node ./build/unicode.js"
   },
   "license": "MIT",
