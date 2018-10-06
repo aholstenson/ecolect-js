@@ -12,6 +12,7 @@ const temperature = require('./en/temperature');
 
 const dayOfWeek = require('./en/dayOfWeek');
 const month = require('./en/month');
+const week = require('./en/week');
 const year = require('./en/year');
 const dateDuration = require('./en/date-duration');
 const date = require('./en/date');
@@ -118,6 +119,7 @@ module.exports.ordinal = ordinal(module.exports);
 module.exports.boolean = boolean(module.exports);
 
 module.exports.dayOfWeek = dayOfWeek(module.exports);
+module.exports.week = week(module.exports);
 module.exports.month = month(module.exports);
 module.exports.year = year(module.exports);
 module.exports.dateDuration = dateDuration(module.exports);

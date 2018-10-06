@@ -12,7 +12,8 @@ const {
 	hasMonth,
 	reverse
 } = require('../../time/matching');
-const { map, thisWeek, nextWeek, previousWeek } = require('../../time/dates');
+const { thisWeek } = require('../../time/weeks');
+const { map } = require('../../time/dates');
 
 function value(v) {
 	if(Array.isArray(v)) {
@@ -47,6 +48,7 @@ module.exports = function(language) {
 	const ordinal = language.ordinal;
 	const dayOfWeek = language.dayOfWeek;
 	const month = language.month;
+	const week = language.week;
 	const year = language.year;
 	const dateDuration = language.dateDuration;
 
@@ -135,22 +137,17 @@ module.exports = function(language) {
 		.add([ year ], v => v[0])
 
 		// Weeks relative to current time
-		.add([ 'this week' ], thisWeek)
-		.add([ 'next week' ], nextWeek)
-		.add([ 'last week' ], previousWeek)
-		.add([ 'previous week' ], previousWeek)
-
-		.add([ 'week', ordinal ], v => ({ week: v[0].value }))
+		.add(week, v => v[0])
 		.add('start of week', thisWeek)
 		.add('end of week', (v, e) => combine(thisWeek(v, e), { intervalEdge: 'end' }))
 
 		// Week N of year
-		.add([ 'week', ordinal, year ], v => combine(v[1], {
-			week: v[0].value
+		.add([ week, year ], v => combine(v[1], {
+			week: v[0].week
 		}))
 
-		.add([ ordinal, 'week', year ], v => combine(v[1], {
-			week: v[0].value
+		.add([ year, week ], v => combine(v[0], {
+			week: v[1].week
 		}))
 
 		// nth day of week in month
@@ -201,7 +198,7 @@ module.exports = function(language) {
 		}))
 
 		// Extra qualifiers such as in and on
-		.add([ 'in', Parser.result() ], v => v[0])
+		.add([ 'in', Parser.result(isRelative) ], v => v[0])
 		.add([ 'on', Parser.result() ], v => v[0])
 		.add([ 'on', 'the', Parser.result() ], v => v[0])
 		.add([ dateDuration, 'ago' ], reverse)
