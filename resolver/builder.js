@@ -4,6 +4,7 @@ const isEqual = require('lodash.isequal');
 const ResolverParser = require('./parser');
 
 const TokenNode = require('../parser/token');
+const SubNode = require('../parser/sub');
 const ValueNode = require('./value');
 const ValueParserNode = require('./value-parser');
 
@@ -34,7 +35,7 @@ class Builder {
 			});
 
 			// Build information about the matching expression
-			result.expression = this.describeExpression(encounter);
+			result.expression = this.describeExpression(encounter, result.values);
 
 			return result;
 		};
@@ -62,7 +63,7 @@ class Builder {
 		return this;
 	}
 
-	describeExpression(encounter) {
+	describeExpression(encounter, values) {
 		// Partial matching so expose the full expression that would match
 		let path = [];
 		let text = [];
@@ -71,9 +72,10 @@ class Builder {
 		const tokens = encounter.currentTokens;
 
 		const toPos = (c, p) => {
+			if(! c) c = encounter.tokens.length;
 			let start = -1;
 			let end = -1;
-			for(let i=p+1; i<=c; i++) {
+			for(let i=p; i<c; i++) {
 				const t = encounter.tokens[i];
 				if(! t) continue;
 
@@ -87,39 +89,46 @@ class Builder {
 			};
 		};
 
-		let currentToken = 0;
-		let previousToken = -1;
-		for(let i=0; i<nodes.length; i++) {
+		/*
+		 * Scan backward to find the SubNode (if any) that has requested
+		 * this expression.
+		 */
+		let start = 0;
+		for(let i=nodes.length-3 /* collector -> sub */; i>=0; i--) {
+			if(nodes[i] instanceof SubNode) {
+				start = i + 1;
+				break;
+			}
+		}
+
+		let startToken = tokens[start];
+		for(let i=start; i<nodes.length; i++) {
 			const node = nodes[i];
 
 			if(node instanceof TokenNode) {
 				text.push(node.token.raw);
-
-				currentToken = tokens[i];
 			} else if(node instanceof ValueNode || node instanceof ValueParserNode) {
 				if(text.length > 0) {
 					path.push({
 						type: 'text',
 						value: text.join(' '),
 
-						source: toPos(currentToken, previousToken)
+						source: toPos(tokens[i], startToken)
 					});
-
-					previousToken = currentToken;
 
 					text.length = 0;
 				}
-
-				currentToken = tokens[i];
 
 				path.push({
 					type: 'value',
 					id: node.id,
 
-					source: toPos(currentToken, previousToken)
+					value: values[node.id],
+
+					source: toPos(tokens[i+1], tokens[i])
 				});
 
-				previousToken = currentToken;
+				startToken = tokens[i+1];
 			}
 		}
 
@@ -128,7 +137,7 @@ class Builder {
 				type: 'text',
 				value: text.join(' '),
 
-				source: toPos(currentToken, previousToken)
+				source: toPos(null, startToken)
 			});
 		}
 
@@ -149,23 +158,7 @@ class Builder {
 			const filter = encounter.partial
 				? partialIntentFilter()
 				: uniqueIntentFilter();
-			results = results.filter(filter)
-				.map(r => {
-					// Ensure that partial matching exposes the values in the expression
-					if(r.expression) {
-						r.pending = false;
-						r.expression.forEach(part => {
-							if(part.type === 'value') {
-								part.value = r.values[part.id] || null;
-								if(part.value === null) {
-									r.pending = true;
-								}
-							}
-						});
-					}
-
-					return r;
-				});
+			results = results.filter(filter);
 
 			return {
 				best: results[0] || null,

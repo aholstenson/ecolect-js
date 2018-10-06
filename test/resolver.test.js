@@ -386,8 +386,8 @@ describe('Resolver', function() {
 
 					expect(e.length).to.equal(3);
 					expect(e[0].source).to.deep.equal({ start: 0, end: 6 });
-					expect(e[1].source).to.deep.equal({ start: 7, end: 12 });
-					expect(e[2].source).to.deep.equal({ start: 13, end: 26 });
+					expect(e[1].source).to.deep.equal({ start: 7, end: 18 });
+					expect(e[2].source).to.deep.equal({ start: 19, end: 26 });
 				});
 		});
 	});
