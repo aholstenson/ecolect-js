@@ -23,6 +23,7 @@ class ResolverParser extends Parser {
 		this.values = {};
 
 		this.fuzzy();
+		this.allowPartial();
 	}
 
 	value(id, type) {
