@@ -10,6 +10,10 @@ insert_final_newline = true
 [*.md]
 trim_trailing_whitespace = false
 
-[package.json,.eslintrc]
+[package.json]
+indent_style = space
+indent_size = 2
+
+[.eslintrc]
 indent_style = space
 indent_size = 2
