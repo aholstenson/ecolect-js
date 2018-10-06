@@ -1,6 +1,7 @@
 'use strict';
 
 const addMonths = require('date-fns/addMonths');
+const addQuarters = require('date-fns/addQuarters');
 const addWeeks = require('date-fns/addWeeks');
 const addDays = require('date-fns/addDays');
 const addYears = require('date-fns/addYears');
@@ -11,11 +12,15 @@ const getDay = require('date-fns/getDay');
 const setWeek = require('date-fns/setWeek');
 const getWeek = require('date-fns/getWeek');
 
+const setQuarter = require('date-fns/setQuarter');
+const getQuarter = require('date-fns/getQuarter');
+
 const setYear = require('date-fns/setYear');
 const setMonth = require('date-fns/setMonth');
 const setDate = require('date-fns/setDate');
 
 const startOfYear = require('date-fns/startOfYear');
+const startOfQuarter = require('date-fns/startOfQuarter');
 const startOfWeek = require('date-fns/startOfWeek');
 const startOfMonth = require('date-fns/startOfMonth');
 
@@ -45,6 +50,39 @@ module.exports.previousWeek = function(r, e) {
 		year: time.getFullYear(),
 		week: getWeek(time, e.options)
 	};
+};
+
+module.exports.thisQuarter = function(r, e) {
+	const time = currentTime(e);
+	return {
+		querter: getQuarter(time, e.options)
+	};
+};
+
+module.exports.nextQuarter = function(r, e) {
+	const time = addQuarters(currentTime(e), 1);
+	return {
+		year: time.getFullYear(),
+		quarter: getQuarter(time, e.options)
+	};
+};
+
+module.exports.previousQuarter = function(r, e) {
+	const time = addQuarters(currentTime(e), -1);
+	return {
+		year: time.getFullYear(),
+		quarter: getQuarter(time, e.options)
+	};
+};
+
+const QUARTER = {
+	field: 'quarter',
+
+	get: getQuarter,
+	set: setQuarter,
+
+	adjuster: addYears,
+	parentData: r => typeof r.year !== 'undefined'
 };
 
 const WEEK = {
@@ -165,6 +203,19 @@ module.exports.map = function(r, e, options={}) {
 		// Exact year - set the month and day to the start of year
 		result.period = 'year';
 		time = startOfYear(setYear(time, r.year));
+	}
+
+	// Resolve quarter if set
+	if(typeof r.relativeQuarters !== 'undefined') {
+		// Relative quarter - add the number of quarters, but try to keep day within quarter
+		result.period = 'quarter';
+		time = addQuarters(time, r.relativeQuarters);
+	} else if(typeof r.quarter !== 'undefined') {
+		// Exact quarter - set it and reset to start of quarter
+		result.period = 'quarter';
+
+		time = adjust(r, e, time, QUARTER);
+		time = startOfQuarter(time, e.options);
 	}
 
 	// Resolve week if set

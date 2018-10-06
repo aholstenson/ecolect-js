@@ -1,6 +1,7 @@
 'use strict';
 
 const startOfYear = require('date-fns/startOfYear');
+const startOfQuarter = require('date-fns/startOfQuarter');
 const startOfWeek = require('date-fns/startOfWeek');
 const startOfMonth = require('date-fns/startOfMonth');
 const startOfDay = require('date-fns/startOfDay');
@@ -9,6 +10,7 @@ const startOfMinute = require('date-fns/startOfMinute');
 const startOfSecond = require('date-fns/startOfSecond');
 
 const endOfYear = require('date-fns/endOfYear');
+const endOfQuarter = require('date-fns/endOfQuarter');
 const endOfWeek = require('date-fns/endOfWeek');
 const endOfMonth = require('date-fns/endOfMonth');
 const endOfDay = require('date-fns/endOfDay');
@@ -20,6 +22,8 @@ module.exports.toStart = function(time, period, options=undefined) {
 	switch(period) {
 		case 'year':
 			return startOfYear(time);
+		case 'quarter':
+			return startOfQuarter(time);
 		case 'week':
 			return startOfWeek(time, options);
 		case 'month':
@@ -42,6 +46,8 @@ module.exports.toEnd = function(time, period, options=undefined) {
 	switch(period) {
 		case 'year':
 			return endOfYear(time);
+		case 'quarter':
+			return endOfQuarter(time);
 		case 'week':
 			return endOfWeek(time, options);
 		case 'month':

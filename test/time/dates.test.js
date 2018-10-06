@@ -59,6 +59,52 @@ describe('Time', () => {
 				});
 			});
 
+			it('relativeQuarters keeps day', () => {
+				const r = map({ relativeQuarters: 0 }, e);
+
+				expect(r).to.deep.equal({
+					period: 'quarter',
+					year: 2017,
+					month: 2,
+					day: 24
+				});
+			});
+
+			it('relativeQuarters changes quarter', () => {
+				const r = map({ relativeQuarters: 1 }, e);
+
+				expect(r).to.deep.equal({
+					period: 'quarter',
+					year: 2017,
+					month: 5,
+					day: 24
+				});
+			});
+
+			it('quarter after current keeps year', () => {
+				const r = map({ quarter: 3 }, e);
+
+				expect(r).to.deep.equal({
+					period: 'quarter',
+					year: 2017,
+					month: 6,
+					day: 1
+				});
+			});
+
+			it('quarter before current changes year', () => {
+				const r = map({ quarter: 1 }, { options: {
+					now: new Date(2017, 4, 24)
+				}});
+
+				expect(r).to.deep.equal({
+					period: 'quarter',
+					year: 2018,
+					month: 0,
+					day: 1
+				});
+			});
+
 			it('relativeWeeks keeps day', () => {
 				const r = map({ relativeWeeks: 0 }, e);
 
