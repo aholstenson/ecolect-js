@@ -21,6 +21,7 @@ function adjustMinutes(time, minutes) {
 
 module.exports = function(language) {
 	const integer = language.integer;
+	const timeDuration = language.timeDuration;
 
 	const relativeMinutes = new Parser(language)
 		.name('relativeMinutes')
@@ -30,16 +31,6 @@ module.exports = function(language) {
 		.add('half', 30)
 		.add(integer, v => v[0].value)
 		.add([ integer, 'minutes' ], v => v[0].value);
-
-	const relativeTimes = new Parser(language)
-		.name('relativeTime')
-
-		.add([ integer, 'hours' ], v => ({ relativeHours: v[0].value }))
-		.add([ integer, 'minutes' ], v => ({ relativeMinutes: v[0].value }))
-		.add([ integer, 'seconds' ], v => ({ relativeSeconds: v[0].value }))
-
-		.add([ Parser.result(), Parser.result() ], v => combine(v[0], v[1]))
-		.add([ Parser.result(), 'and', Parser.result() ], v => combine(v[0], v[1]));
 
 	return new Parser(language)
 		.name('time')
@@ -107,9 +98,9 @@ module.exports = function(language) {
 		.add([ 'half', Parser.result(isHour) ], v => adjustMinutes(v[0], 30))
 
 		// Qualifiers
-		.add([ 'in', relativeTimes ], v => v[0])
-		.add([ relativeTimes ], v => v[0])
-		.add([ relativeTimes, 'ago' ], reverse)
+		.add([ 'in', timeDuration ], v => v[0])
+		.add([ timeDuration ], v => v[0])
+		.add([ timeDuration, 'ago' ], reverse)
 		.add([ 'at', Parser.result() ], v => v[0])
 
 		.mapResults(map)

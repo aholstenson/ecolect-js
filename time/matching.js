@@ -125,5 +125,10 @@ module.exports.reverse = function(v) {
 	if(result.relativeSeconds) {
 		result.relativeSeconds = - result.relativeSeconds;
 	}
+
+	if(result.relativeMilliseconds) {
+		result.relativeMilliseconds = - result.relativeMilliseconds;
+	}
+
 	return result;
 };

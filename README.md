@@ -343,6 +343,39 @@ builder.intent('listPending')
   .done();
 ```
 
+### Time Duration
+
+Capture a duration of hours, minutes, seconds and miliseconds.
+
+Language         | Examples
+-----------------|-------------
+English          | `2 hours`, `1s`, `2h, 45m`, `4 minutes and 10 seconds`
+
+#### Returned value
+
+The returned value is an object containg fields with the change, such as
+`hours`, `minutes`, `seconds` and `milliseconds`. The function `toDate(currentTime)` can
+be used to add the duration to a date.
+
+```javascript
+// Add the duration to the current time
+const fromNow = value.toDate();
+
+// Add the duration to the specific date and time
+const fromSpecific = value.toDate(new Date(2015, 0, 2, 10, 0));
+```
+
+#### Example
+
+```javascript
+const timeDuration = require('ecolect/values/time-duration');
+
+builder.intent('timer')
+  .value('timeDuration', timeDuration())
+  .add('Set a timer for {timeDuration}')
+  .done();
+```
+
 ### Enumeration
 
 Capture one of the specified values. Used to specify one or more values that

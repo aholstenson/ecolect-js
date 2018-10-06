@@ -15,8 +15,12 @@ const month = require('./en/month');
 const year = require('./en/year');
 const dateDuration = require('./en/date-duration');
 const date = require('./en/date');
+
+const timeDuration = require('./en/time-duration');
 const time = require('./en/time');
+
 const dateTime = require('./en/date-time');
+
 const dateInterval = require('./en/date-interval');
 
 const stemmer = require('talisman/stemmers/porter');
@@ -117,8 +121,12 @@ module.exports.month = month(module.exports);
 module.exports.year = year(module.exports);
 module.exports.dateDuration = dateDuration(module.exports);
 module.exports.date = date(module.exports);
+
+module.exports.timeDuration = timeDuration(module.exports);
 module.exports.time = time(module.exports);
+
 module.exports.dateTime = dateTime(module.exports);
+
 module.exports.dateInterval = dateInterval(module.exports);
 
 module.exports.temperature = temperature(module.exports);
