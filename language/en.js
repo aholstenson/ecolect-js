@@ -19,6 +19,7 @@ const date = require('./en/date');
 const timeDuration = require('./en/time-duration');
 const time = require('./en/time');
 
+const dateTimeDuration = require('./en/date-time-duration');
 const dateTime = require('./en/date-time');
 
 const dateInterval = require('./en/date-interval');
@@ -125,6 +126,7 @@ module.exports.date = date(module.exports);
 module.exports.timeDuration = timeDuration(module.exports);
 module.exports.time = time(module.exports);
 
+module.exports.dateTimeDuration = dateTimeDuration(module.exports);
 module.exports.dateTime = dateTime(module.exports);
 
 module.exports.dateInterval = dateInterval(module.exports);
