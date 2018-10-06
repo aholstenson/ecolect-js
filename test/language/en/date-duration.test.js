@@ -137,6 +137,18 @@ describe('English', function() {
 			seconds: 0,
 			milliseconds: 0
 		});
+
+		test('1 quarter', {}, {
+			years: 0,
+			quarters: 1,
+			weeks: 0,
+			months: 0,
+			days: 0,
+			hours: 0,
+			minutes: 0,
+			seconds: 0,
+			milliseconds: 0
+		});
 	});
 
 });

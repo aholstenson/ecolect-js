@@ -29,52 +29,6 @@ const DateValue = require('./date-value');
 
 const { toStart, toEnd } = require('./intervals');
 
-module.exports.thisWeek = function(r, e) {
-	const time = currentTime(e);
-	return {
-		week: getWeek(time, e.options)
-	};
-};
-
-module.exports.nextWeek = function(r, e) {
-	const time = addWeeks(currentTime(e), 1);
-	return {
-		year: time.getFullYear(),
-		week: getWeek(time, e.options)
-	};
-};
-
-module.exports.previousWeek = function(r, e) {
-	const time = addWeeks(currentTime(e), -1);
-	return {
-		year: time.getFullYear(),
-		week: getWeek(time, e.options)
-	};
-};
-
-module.exports.thisQuarter = function(r, e) {
-	const time = currentTime(e);
-	return {
-		querter: getQuarter(time, e.options)
-	};
-};
-
-module.exports.nextQuarter = function(r, e) {
-	const time = addQuarters(currentTime(e), 1);
-	return {
-		year: time.getFullYear(),
-		quarter: getQuarter(time, e.options)
-	};
-};
-
-module.exports.previousQuarter = function(r, e) {
-	const time = addQuarters(currentTime(e), -1);
-	return {
-		year: time.getFullYear(),
-		quarter: getQuarter(time, e.options)
-	};
-};
-
 const QUARTER = {
 	field: 'quarter',
 

@@ -419,6 +419,92 @@ describe('English', function() {
 			});
 		});
 
+		describe('Quarters', function() {
+			it('this quarter', function() {
+				return date('this quarter', { now: new Date(2010, 1, 5) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'quarter',
+							year: 2010,
+							month: 0,
+							day: 1
+						})
+					);
+			});
+
+			it('quarter 2 2018', function() {
+				return date('quarter 2 2018')
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'quarter',
+							year: 2018,
+							month: 3,
+							day: 1
+						})
+					);
+			});
+
+			it('2018Q3', function() {
+				return date('2018Q3')
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'quarter',
+							year: 2018,
+							month: 6,
+							day: 1
+						})
+					);
+			});
+
+			it('end of Q1', function() {
+				return date('end of Q1', { now: new Date(2018, 0, 2) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'quarter',
+							year: 2018,
+							month: 2,
+							day: 31
+						})
+					);
+			});
+
+			it('last quarter', function() {
+				return date('last quarter', { now: new Date(2018, 0, 2) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'quarter',
+							year: 2017,
+							month: 9,
+							day: 1
+						})
+					);
+			});
+
+			it('previous quarter', function() {
+				return date('previous quarter', { now: new Date(2018, 0, 2) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'quarter',
+							year: 2017,
+							month: 9,
+							day: 1
+						})
+					);
+			});
+
+			it('next quarter', function() {
+				return date('next quarter', { now: new Date(2018, 0, 2) })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'quarter',
+							year: 2018,
+							month: 3,
+							day: 1
+						})
+					);
+			});
+		});
+
 		describe('Full dates', function() {
 			it('12 jan 2018', function() {
 				return date('12 jan 2018')

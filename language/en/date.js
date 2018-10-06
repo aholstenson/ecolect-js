@@ -13,6 +13,7 @@ const {
 	reverse
 } = require('../../time/matching');
 const { thisWeek } = require('../../time/weeks');
+const { thisQuarter } = require('../../time/quarters');
 const { map } = require('../../time/dates');
 
 function value(v) {
@@ -47,9 +48,10 @@ function nextDayOfWeek(v) {
 module.exports = function(language) {
 	const ordinal = language.ordinal;
 	const dayOfWeek = language.dayOfWeek;
-	const month = language.month;
-	const week = language.week;
 	const year = language.year;
+	const quarter = language.quarter;
+	const week = language.week;
+	const month = language.month;
 	const dateDuration = language.dateDuration;
 
 	const day = Parser.result(ordinal, v => v.value >= 0 && v.value < 31);
@@ -135,6 +137,20 @@ module.exports = function(language) {
 
 		// Standalone year
 		.add([ year ], v => v[0])
+
+		// Quarters
+		.add(quarter, v => v[0])
+		.add('start of quarter', thisQuarter)
+		.add('end of quarter', (v, e) => combine(thisQuarter(v, e), { intervalEdge: 'end' }))
+
+		// Quarter N of year
+		.add([ quarter, year ], v => combine(v[1], {
+			quarter: v[0].quarter
+		}))
+
+		.add([ year, quarter ], v => combine(v[0], {
+			quarter: v[1].quarter
+		}))
 
 		// Weeks relative to current time
 		.add(week, v => v[0])
