@@ -72,7 +72,7 @@ class Builder {
 		const tokens = encounter.currentTokens;
 
 		const toPos = (c, p) => {
-			if(! c) c = encounter.tokens.length;
+			if(! c) c = encounter.currentIndex;
 			let start = -1;
 			let end = -1;
 			for(let i=p; i<c; i++) {
