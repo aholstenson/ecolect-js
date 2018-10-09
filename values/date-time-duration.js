@@ -2,6 +2,6 @@
 
 const { LanguageSpecificValue, ParsingValue } = require('./index');
 
-module.exports = function() {
-	return new LanguageSpecificValue(language => new ParsingValue(language.dateTimeDuration));
+module.exports = function(options) {
+	return new LanguageSpecificValue(language => new ParsingValue(language.dateTimeDuration, options));
 };

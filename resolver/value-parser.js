@@ -5,7 +5,7 @@ const Node = require('../parser/node');
 const SubNode = require('../parser/sub');
 
 class ValueParser extends Node {
-	constructor(id, parser, options) {
+	constructor(id, parser, options={}) {
 		super();
 
 		this.id = id;
@@ -17,7 +17,7 @@ class ValueParser extends Node {
 			r = mapper ? mapper(r, encounter) : r;
 			return {
 				id: id,
-				value: r
+				value: options.mapper ? options.mapper(r) : r
 			};
 		};
 	}
@@ -28,7 +28,7 @@ class ValueParser extends Node {
 	}
 
 	match(encounter) {
-		return this.node.match(encounter, this.options);
+		return this.node.match(encounter);
 	}
 
 	toString() {

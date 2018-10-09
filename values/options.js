@@ -7,7 +7,8 @@ const ResolverBuilder = require('../resolver/builder');
 class Builder {
 	constructor(options) {
 		this.name = options.name;
-		this.options = {};
+		this.options = options;
+		this.data = {};
 	}
 
 	option(id) {
@@ -33,7 +34,7 @@ class Builder {
 			},
 
 			done() {
-				self.options[id] = result;
+				self.data[id] = result;
 				return self;
 			}
 		};
@@ -45,8 +46,8 @@ class Builder {
 				.name(this.name || 'options')
 				.allowPartial();
 
-			for(const id of Object.keys(this.options)) {
-				const option = this.options[id];
+			for(const id of Object.keys(this.data)) {
+				const option = this.data[id];
 				const instance = new ResolverBuilder(language, id);
 
 				// Set that this resolver doesn't need to match all tokens
@@ -77,9 +78,9 @@ class Builder {
 				}));
 			});
 
-			return new ParsingValue(parent, {
+			return new ParsingValue(parent, Object.assign({
 				supportsPartial: true
-			});
+			}, this.options));
 		});
 	}
 }
