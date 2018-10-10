@@ -40,7 +40,7 @@ class SubNode extends Node {
 			 * If this node is called with the same index again we skip
 			 * evaulating.
 			 */
-			return null;
+			return;
 		}
 
 		if(! encounter.token()) {
@@ -56,7 +56,7 @@ class SubNode extends Node {
 				/**
 				 * No tokens means we can't match.
 				 */
-				return null;
+				return;
 			}
 		}
 
@@ -77,19 +77,12 @@ class SubNode extends Node {
 						v.score - encounter.currentScore - PARSER_PENALTY,
 						v.index - encounter.currentIndex,
 						v.data
-					).then(r => result.push(...r));
+					).then(r => result.push(...encounter.matches));
 				});
 			}
 
 			return promise.then(() => {
 				this.state.currentIndex = previousIndex;
-				if(result.length === 0) {
-					return null;
-				} else if(result.length === 1) {
-					return result[0];
-				} else {
-					return result;
-				}
 			});
 		};
 
@@ -100,7 +93,8 @@ class SubNode extends Node {
 			return branchIntoVariants(cached);
 		}
 
-		const onMatch = result => {
+		const onMatch = match => {
+			let result = match.data;
 			if(this.mapper && result !== null && typeof result !== 'undefined') {
 				result = this.mapper(result, encounter);
 			}

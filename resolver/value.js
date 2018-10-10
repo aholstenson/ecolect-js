@@ -2,6 +2,12 @@
 
 const Node = require('../parser/node');
 
+/**
+ * Custom node used by resolvers to match free-text expressions. This node
+ * is greedy and matches as much as it can. This is done by checking if the
+ * rest of the expression can match and then after that asking the value if
+ * it matches.
+ */
 class Value extends Node {
 	constructor(id, value) {
 		super();
@@ -12,10 +18,8 @@ class Value extends Node {
 
 	match(encounter) {
 		const tokens = encounter.tokens;
-		const idx = encounter.currentIndex;
+		const currentIndex = encounter.currentIndex;
 		const stop = tokens.length;
-
-		let promise = Promise.resolve(false);
 
 		/**
 		 * Values always try to match as much as they can so we loop backwards
@@ -23,54 +27,49 @@ class Value extends Node {
 		 */
 		let valueEncounter = new ValueEncounter(encounter);
 		let results = [];
-		for(let i=stop; i>idx; i--) {
-			const currentStop = i;
-			promise = promise.then(() => {
-				const len = currentStop - idx;
-				return encounter.next(len * 0.9, len)
-					.then(nextMatched => {
-						if(nextMatched && nextMatched.length > 0) {
-							// The rest of the sequence will match
 
-							valueEncounter._adjust(idx, currentStop);
-							return Promise.resolve(
-								this.value.match(valueEncounter)
-							).then(value => {
-								if(typeof value !== 'undefined' && value !== null) {
-									nextMatched.forEach(match => {
-										if(encounter.partial && Array.isArray(value)) {
-											value.forEach(v => {
-												match = match.copy();
-												match.data.values[this.id] = v;
-												results.push(match);
-											});
-										} else {
-											match.data.values[this.id] = value;
-											results.push(match);
-										}
-									});
-									return nextMatched;
-								}
+		if(currentIndex >= stop) {
+			/*
+			 * If the current index has passed the end of the tokens either
+			 * assume this will match in the future if this is partial or
+			 * short circuit without looking ahead in the graph.
+			 */
+			return encounter.partial ? encounter.next(0.0, 0) : Promise.resolve();
+		}
 
-								return null;
-							});
-						}
+		const onMatch = match => {
+			return Promise.resolve(this.value.match(valueEncounter))
+				.then(() => {
+					if(valueEncounter._matches.length === 0) return;
 
-						return null;
-					});
+					for(const v of valueEncounter._matches) {
+						const matchCopy = match.copy();
+						matchCopy.data.values[this.id] = v.value;
+						results.push(matchCopy);
+					}
+				});
+		};
+
+		const match = idx => {
+			const len = idx - currentIndex;
+
+			if(len === 0) return Promise.resolve();
+
+			valueEncounter._adjust(currentIndex, idx);
+			return encounter.branchWithOnMatch(onMatch, () => encounter.next(len * 0.9, len))
+				.then(() => {
+					if(len > 1) {
+						return match(idx - 1);
+					}
+				});
+		};
+
+		return match(stop)
+			.then(() => {
+				for(const result of results) {
+					encounter.match(result);
+				}
 			});
-		}
-
-		if(encounter.partial) {
-			if(idx >= stop) {
-				// There are no tokens available for this value, assume it will match in the future
-				return encounter.next(0.0, 0);
-			}
-		}
-
-		return promise.then(() => {
-			return results.length > 0 ? results : null;
-		});
 	}
 
 	toString() {
@@ -83,14 +82,24 @@ class ValueEncounter {
 	constructor(encounter) {
 		this._encounter = encounter;
 		this.partial = encounter.partial;
+		this._matches = [];
 	}
 
 	_adjust(from, end) {
 		this.tokens = this._encounter.tokens.slice(from, end);
+		this._matches.length = 0;
 	}
 
 	text() {
 		return this.tokens.raw();
+	}
+
+	match(value, score=undefined) {
+		if(! this._encounter.partial && this._matches.length >= 1) {
+			throw new Error('Multiple matches are only supported when in partial mode');
+		}
+
+		this._matches.push({ value, score });
 	}
 }
 module.exports = Value;

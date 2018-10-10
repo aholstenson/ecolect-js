@@ -11,6 +11,21 @@ const date = require('../values/date');
 const number = require('../values/number');
 const boolean = require('../values/boolean');
 
+function checkExpression(expression, expected) {
+	expect(expression.length, 'expression length should be the same').to.equal(expected.length);
+
+	for(let i=0; i<expression.length; i++) {
+		const o = expression[i];
+		const v = expected[i];
+
+		expect(o.type, 'part ' + i + ' type').to.equal(v.type);
+		expect(o.id, 'part ' + i + ' id').to.equal(v.id);
+		expect(o.value, 'part ' + i + ' value').to.equal(v.value);
+		expect(o.source.start, 'part ' + i + ' start').to.equal(v.start);
+		expect(o.source.end, 'part ' + i + ' end').to.equal(v.end);
+	}
+}
+
 describe('Resolver', function() {
 	describe('Graph without value', function() {
 		const resolver = new Builder(lang)
@@ -174,10 +189,8 @@ describe('Resolver', function() {
 			.value('test', {
 				match(encounter) {
 					if(encounter.text() === 'world') {
-						return true;
+						encounter.match(true);
 					}
-
-					return null;
 				}
 			})
 			.add('hello {test}')
@@ -307,50 +320,233 @@ describe('Resolver', function() {
 		});
 	});
 
-	describe('Graph with custom value', function() {
-		const values = [
-			'one',
-			'two',
-			'three'
-		];
-		const resolver = new Builder(lang)
-			.value('name', function(encounter) {
-				let text = encounter.text();
-				if(encounter.partial) {
-					return values.filter(f => {
-						return f.indexOf(text) === 0;
-					});
-				} else {
-					if(values.indexOf(text) >= 0) {
-						return text;
+	describe('Graphs with custom values', function() {
+
+		describe('Single enumeration-like, no trailing', function() {
+			const values = [
+				'one',
+				'two',
+				'three',
+				'four five'
+			];
+			const resolver = new Builder(lang)
+				.value('name', function(encounter) {
+					let text = encounter.text();
+					if(encounter.partial) {
+						for(const v of values) {
+							if(v.indexOf(text) === 0) {
+								encounter.match(v);
+							}
+						}
+					} else {
+						if(values.indexOf(text) >= 0) {
+							encounter.match(text);
+						}
 					}
-				}
-			})
-			.add('do {name}')
-			.build();
+				})
+				.add('do {name}')
+				.build();
 
-		it('Match', function() {
-			return resolver.match('do one')
-				.then(results => {
-					expect(results.matches.length).to.equal(1);
-					expect(results.best.values.name).to.equal('one');
-				});
+			it('Match', function() {
+				return resolver.match('do one')
+					.then(results => {
+						expect(results.matches.length).to.equal(1);
+						expect(results.best.values.name).to.equal('one');
+
+						// Check that the expression matches
+						const expression = results.best.expression;
+						checkExpression(expression, [
+							{
+								type: 'text',
+								value: 'do',
+								start: 0,
+								end: 2
+							},
+
+							{
+								type: 'value',
+								id: 'name',
+								value: 'one',
+								start: 3,
+								end: 6
+							}
+						]);
+					});
+			});
+
+			it('Match multiple', function() {
+				return resolver.match('do four five')
+					.then(results => {
+						expect(results.matches.length).to.equal(1);
+						expect(results.best.values.name).to.equal('four five');
+
+						// Check that the expression matches
+						const expression = results.best.expression;
+						checkExpression(expression, [
+							{
+								type: 'text',
+								value: 'do',
+								start: 0,
+								end: 2
+							},
+
+							{
+								type: 'value',
+								id: 'name',
+								value: 'four five',
+								start: 3,
+								end: 12
+							}
+						]);
+					});
+			});
+
+			it('No match', function() {
+				return resolver.match('do four')
+					.then(results => {
+						expect(results.matches.length).to.equal(0);
+					});
+			});
+
+			it('Partial', function() {
+				return resolver.match('do t', {
+					partial: true
+				})
+					.then(results => {
+						expect(results.matches.length).to.equal(2);
+
+						// Check that the expressions matches
+						checkExpression(results.matches[0].expression, [
+							{
+								type: 'text',
+								value: 'do',
+								start: 0,
+								end: 2
+							},
+
+							{
+								type: 'value',
+								id: 'name',
+								value: 'two',
+								start: 3,
+								end: 4
+							}
+						]);
+
+						checkExpression(results.matches[1].expression, [
+							{
+								type: 'text',
+								value: 'do',
+								start: 0,
+								end: 2
+							},
+
+							{
+								type: 'value',
+								id: 'name',
+								value: 'three',
+								start: 3,
+								end: 4
+							}
+						]);
+					});
+			});
 		});
 
-		it('No match', function() {
-			return resolver.match('do four')
-				.then(results => {
-					expect(results.matches.length).to.equal(0);
-				});
-		});
+		describe('Single enumeration-like, trailing', function() {
+			const values = [
+				'one',
+				'two',
+				'three',
+				'four five'
+			];
+			const resolver = new Builder(lang)
+				.value('name', function(encounter) {
+					let text = encounter.text();
+					if(encounter.partial) {
+						for(const v of values) {
+							if(v.indexOf(text) === 0) {
+								encounter.match(v);
+							}
+						}
+					} else {
+						if(values.indexOf(text) >= 0) {
+							encounter.match(text);
+						}
+					}
+				})
+				.add('{name} value')
+				.build();
 
-		it('Partial', function() {
-			return resolver.match('do t', {
-				partial: true
-			})
-				.then(results => {
-					expect(results.matches.length).to.equal(2);
-				});
+			it('Match', function() {
+				return resolver.match('one value')
+					.then(results => {
+						expect(results.matches.length).to.equal(1);
+						expect(results.best.values.name).to.equal('one');
+
+						// Check that the expression matches
+						const expression = results.best.expression;
+						checkExpression(expression, [
+							{
+								type: 'value',
+								id: 'name',
+								value: 'one',
+								start: 0,
+								end: 3
+							},
+
+							{
+								type: 'text',
+								value: 'value',
+								start: 4,
+								end: 9
+							},
+						]);
+					});
+			});
+
+			it('Match multiple', function() {
+				return resolver.match('four five value')
+					.then(results => {
+						expect(results.matches.length).to.equal(1);
+						expect(results.best.values.name).to.equal('four five');
+
+						// Check that the expression matches
+						const expression = results.best.expression;
+						checkExpression(expression, [
+							{
+								type: 'value',
+								id: 'name',
+								value: 'four five',
+								start: 0,
+								end: 9
+							},
+
+							{
+								type: 'text',
+								value: 'value',
+								start: 10,
+								end: 15
+							},
+						]);
+					});
+			});
+
+			it('No match', function() {
+				return resolver.match('four value')
+					.then(results => {
+						expect(results.matches.length).to.equal(0);
+					});
+			});
+
+			it('Partial', function() {
+				return resolver.match('t', {
+					partial: true
+				})
+					.then(results => {
+						expect(results.matches.length).to.equal(2);
+					});
+			});
 		});
 	});
 

@@ -2,6 +2,9 @@
 
 const Node = require('./node');
 
+/**
+ * Node that matches a token against a regular expression.
+ */
 class RegExpNode extends Node {
 	constructor(regexp) {
 		super();
@@ -10,13 +13,16 @@ class RegExpNode extends Node {
 	}
 
 	match(encounter) {
+		// If there is no token available - skip this node
 		const token = encounter.token();
-		if(! token) return null;
+		if(! token) return;
 
+		// Reset and check the regular expression
 		this.regexp.previousIndex = 0;
 		const match = this.regexp.exec(token.raw);
-		if(! match) return null;
+		if(! match) return;
 
+		// If match consume the current token and push data onto the stack
 		return encounter.next(1, 1, match[0]);
 	}
 

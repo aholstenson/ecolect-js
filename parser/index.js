@@ -213,7 +213,11 @@ class Parser extends Node {
 			throw new Error('Nothing to match on');
 		}
 
-		let promise = encounter.next(0, 0);
+		let promise = encounter.next(0, 0)
+			.then(() => {
+				return encounter.matches;
+			});
+
 		if(this._finalizer) {
 			promise = promise.then(results => {
 				return this._finalizer(results, encounter);

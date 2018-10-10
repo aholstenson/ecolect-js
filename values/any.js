@@ -2,7 +2,7 @@
 
 const instance = {
 	match(encounter) {
-		return encounter.text();
+		encounter.match(encounter.text());
 	}
 };
 

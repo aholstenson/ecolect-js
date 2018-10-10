@@ -1,5 +1,7 @@
 'use strict';
 
+const fastClone = require('fast-clone');
+
 module.exports.cloneObject = function(a) {
 	let result = {};
 	for(const k in a) {
@@ -8,4 +10,10 @@ module.exports.cloneObject = function(a) {
 	return result;
 };
 
-module.exports.clone = require('fast-clone');
+module.exports.clone = function(r) {
+	if(r._clone) {
+		return r._clone();
+	}
+
+	return fastClone(r);
+};

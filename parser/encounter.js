@@ -1,6 +1,6 @@
 'use strict';
 
-const { cloneObject, clone } = require('../utils/cloning');
+const { clone } = require('../utils/cloning');
 
 function scorePartial(tokens, depth, maxDepth, score) {
 	return (1 / depth) * 0.8 + Math.min(1, score / depth) * 0.2;
@@ -20,6 +20,7 @@ class Encounter {
 		this.currentNodes = [];
 		this.currentTokens = [];
 		this.data = [];
+		this.matches = [];
 		this.maxDepth = 0;
 
 		this.partial = options.partial || false;
@@ -82,52 +83,15 @@ class Encounter {
 			this.data.push(data);
 		}
 
-		const push = item => {
-			if(item instanceof Match) {
-				results.push(item);
-			} else {
-				let score;
-				if(this.partial) {
-					score = scorePartial(this.tokens.length, nextIndex, this.maxDepth, nextScore);
-				} else {
-					if(this.onlyComplete && nextIndex < this.tokens.length) {
-						// Skip this match unless it has consumed all tokens
-						return;
-					}
-
-					score = nextScore / this.tokens.length;
-				}
-
-				results.push(new Match(nextIndex, score, item));
-			}
-		};
-
-		const handleResult = r => {
-			if(Array.isArray(r)) {
-				for(let i=0; i<r.length; i++) {
-					push(r[i]);
-				}
-			} else if(r !== null && typeof r !== 'undefined') {
-				push(r);
-			}
-		};
-
 		const branchInto = node => () => {
-			let result = this.branch(node, () => {
+			return this.branch(node, () => {
 				this.currentIndex = nextIndex;
 				this.currentScore = nextScore;
 
 				return node.match(this);
 			});
-
-			if(result && result.then) {
-				return result.then(handleResult);
-			} else {
-				return handleResult(result);
-			}
 		};
 
-		let results = [];
 		let promise = Promise.resolve();
 		for(let i=0; i<nodes.length; i++) {
 			promise = promise.then(branchInto(nodes[i]));
@@ -136,7 +100,7 @@ class Encounter {
 		return promise.then(() => {
 			if(pushedData) this.data.pop();
 
-			if(results.length === 0 && this.fuzzy && token && token.punctuation) {
+			if(this.fuzzy && token && token.punctuation) {
 				/*
 				 * The encounter is currently in fuzzy mode and we did not match,
 				 * consume the next token if it's punctuation.
@@ -146,8 +110,6 @@ class Encounter {
 				 */
 				return this.next(nodes, 0.0, (consumedTokens || 0) + 1, data);
 			}
-
-			return results;
 		});
 	}
 
@@ -235,8 +197,30 @@ class Encounter {
 	 * Push the current match onto the result.
 	 */
 	match(data) {
+		let match;
+		if(data instanceof Match) {
+			match = data;
+		} else {
+			let score;
+			if(this.partial) {
+				score = scorePartial(this.tokens.length, this.currentIndex, this.maxDepth, this.currentScore);
+			} else {
+				score = this.currentScore / this.tokens.length;
+			}
+
+			match = new Match(this.currentIndex, score, data);
+		}
+
 		if(this.onMatch) {
-			return this.onMatch(data);
+			return this.onMatch(match);
+		} else {
+			if(! this.partial && this.onlyComplete && match.index < this.tokens.length) {
+				// Skip this match unless it has consumed all tokens
+				return;
+			}
+
+			this.matches.push(match);
+			return;
 		}
 	}
 
@@ -262,11 +246,7 @@ class Match {
 	}
 
 	copy() {
-		const r = new Match(this.index, this.score, clone(this.data));
-		if(this.expression) {
-			r.expression = cloneObject(r.expression);
-		}
-		return r;
+		return new Match(this.index, this.score, clone(this.data));
 	}
 }
 

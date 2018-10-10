@@ -48,7 +48,7 @@ class Token extends Node {
 			return encounter.next(0.0, 1);
 		}
 
-		return null;
+		return;
 	}
 
 	equals(other) {

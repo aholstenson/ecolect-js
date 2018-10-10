@@ -23,15 +23,12 @@ class Collector extends Node {
 
 		if(this.needsAll && encounter.currentIndex < encounter.tokens.length) {
 			// Not all tokens have been matched so skip this result
-			return null;
+			return;
 		}
 
-		const promise = encounter.match(value);
-		if(promise) {
-			return promise;
+		if(typeof value !== 'undefined' && value !== null) {
+			return encounter.match(value);
 		}
-
-		return value;
 	}
 
 	toString() {

@@ -3,10 +3,7 @@
 const isEqual = require('lodash.isequal');
 const ResolverParser = require('./parser');
 
-const TokenNode = require('../parser/token');
-const SubNode = require('../parser/sub');
-const ValueNode = require('./value');
-const ValueParserNode = require('./value-parser');
+const ResolvedIntent = require('./resolved-intent');
 
 /**
  * This is a basic naive builder for instances of Resolver on top of the
@@ -22,20 +19,39 @@ class Builder {
 		this.data = data || 'unknown';
 
 		this.resultHandler = (values, encounter) => {
-			const result = {
-				intent: this.data,
-				values: {}
-			};
+			let added;
+			if(encounter.resultFilterCache) {
+				added = encounter.resultFilterCache;
+			} else {
+				added = encounter.resultFilterCache = {};
+			}
+
+			if(! encounter.partial) {
+				// Non-partial matching, don't create the result, just keep the highest scoring result
+				if(! uniqueIntentFilter(added, this.data, encounter.currentScore)) {
+					return null;
+				}
+			}
+
+			const result = new ResolvedIntent(this.data);
 
 			// Transfer any values that have been pushed by other parsers
-			encounter.data.forEach(value => {
+			for(let i=0; i<encounter.data.length; i++) {
+				const value = encounter.data[i];
 				if(value.id && typeof value.value !== 'undefined') {
 					result.values[value.id] = value.value;
 				}
-			});
+			}
+
+			if(encounter.partial) {
+				// Partial matching, keep same intents but with different values
+				if(! partialIntentFilter(added, result)) {
+					return null;
+				}
+			}
 
 			// Build information about the matching expression
-			result.expression = this.describeExpression(encounter, result.values);
+			result._updateExpression(encounter);
 
 			return result;
 		};
@@ -63,102 +79,25 @@ class Builder {
 		return this;
 	}
 
-	describeExpression(encounter, values) {
-		// Partial matching so expose the full expression that would match
-		let path = [];
-		let text = [];
-
-		const nodes = encounter.currentNodes;
-		const tokens = encounter.currentTokens;
-
-		const toPos = (c, p) => {
-			if(! c) c = encounter.currentIndex;
-			let start = -1;
-			let end = -1;
-			for(let i=p; i<c; i++) {
-				const t = encounter.tokens[i];
-				if(! t) continue;
-
-				if(start === -1) start = t.start;
-
-				end = t.stop;
-			}
-			return {
-				start: start,
-				end: end
-			};
-		};
-
-		/*
-		 * Scan backward to find the SubNode (if any) that has requested
-		 * this expression.
-		 */
-		let start = 0;
-		for(let i=nodes.length-3 /* collector -> sub */; i>=0; i--) {
-			if(nodes[i] instanceof SubNode) {
-				start = i + 1;
-				break;
-			}
-		}
-
-		let startToken = tokens[start];
-		for(let i=start; i<nodes.length; i++) {
-			const node = nodes[i];
-
-			if(node instanceof TokenNode) {
-				text.push(node.token.raw);
-			} else if(node instanceof ValueNode || node instanceof ValueParserNode) {
-				if(text.length > 0) {
-					path.push({
-						type: 'text',
-						value: text.join(' '),
-
-						source: toPos(tokens[i], startToken)
-					});
-
-					text.length = 0;
-				}
-
-				path.push({
-					type: 'value',
-					id: node.id,
-
-					value: values[node.id],
-
-					source: toPos(tokens[i+1], tokens[i])
-				});
-
-				startToken = tokens[i+1];
-			}
-		}
-
-		if(text.length > 0) {
-			path.push({
-				type: 'text',
-				value: text.join(' '),
-
-				source: toPos(null, startToken)
-			});
-		}
-
-		return path;
-	}
-
 	build() {
 		function makePrettyResult(result) {
 			result.data.score = result.score;
+			result.data._refreshExpression();
 			return result.data;
 		}
 
 		this.parser.finalizer((results, encounter) => {
-			results = results.map(makePrettyResult);
+			// Sort the list by score
 			results.sort((a, b) => b.score - a.score);
 
 			// Filter results so only one result of each intent is available
-			const filter = encounter.partial
-				? partialIntentFilter()
-				: uniqueIntentFilter();
-			results = results.filter(filter);
+			if(! encounter.partial) {
+				const added = {};
+				results = results.filter(m => uniqueIntentFilter(added, m.data.intent, m.score));
+			}
+
+			// Map so that only the data is made available
+			results = results.map(makePrettyResult);
 
 			return {
 				best: results[0] || null,
@@ -170,28 +109,27 @@ class Builder {
 	}
 }
 
-function uniqueIntentFilter() {
-	const added = {};
-	return function(match) {
-		if(added[match.intent]) return false;
-		return added[match.intent] = true;
-	};
+function uniqueIntentFilter(added, intent, score) {
+	if(added[intent] && score <= added[intent]) {
+		// This intent has already matched with a higher score
+		return false;
+	}
+
+	added[intent] = score;
+	return true;
 }
 
-function partialIntentFilter() {
-	const added = {};
-	return function(match) {
-		let matches = added[match.intent] || (added[match.intent] = []);
-		for(let i=0; i<matches.length; i++) {
-			if(isEqual(matches[i], match.values)) {
-				matches.push(match.values);
-				return false;
-			}
+function partialIntentFilter(added, match) {
+	let matches = added[match.intent] || (added[match.intent] = []);
+	for(let i=0; i<matches.length; i++) {
+		if(isEqual(matches[i], match.values)) {
+			matches.push(match.values);
+			return false;
 		}
+	}
 
-		matches.push(match.values);
-		return true;
-	};
+	matches.push(match.values);
+	return true;
 }
 
 module.exports = Builder;
