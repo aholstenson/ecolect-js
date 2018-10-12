@@ -1,5 +1,6 @@
 'use strict';
-const isEqual = require('lodash.isequal');
+
+const { isDeepEqual } = require('../utils/equality');
 
 const Node = require('../parser/node');
 const SubNode = require('../parser/sub');
@@ -24,7 +25,7 @@ class ValueParser extends Node {
 
 	equals(o) {
 		return o instanceof ValueParser && this.node.equals(o.node)
-			&& isEqual(this.options, o.options);
+			&& isDeepEqual(this.options, o.options);
 	}
 
 	match(encounter) {

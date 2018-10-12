@@ -1,6 +1,6 @@
 'use strict';
 
-const isEqual = require('lodash.isequal');
+const { isDeepEqual } = require('../utils/equality');
 const ResolverParser = require('./parser');
 
 const ResolvedIntent = require('./resolved-intent');
@@ -122,7 +122,7 @@ function uniqueIntentFilter(added, intent, score) {
 function partialIntentFilter(added, match) {
 	let matches = added[match.intent] || (added[match.intent] = []);
 	for(let i=0; i<matches.length; i++) {
-		if(isEqual(matches[i], match.values)) {
+		if(isDeepEqual(matches[i], match.values)) {
 			matches.push(match.values);
 			return false;
 		}
