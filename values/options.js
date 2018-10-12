@@ -53,9 +53,6 @@ class Builder {
 				// Set the name of the parser - for easier debugging
 				instance.parser._name = (this.name || 'options') + ':opt:' + id;
 
-				// Set that this resolver doesn't need to match all tokens
-				instance.parser.needsAll = false;
-
 				// Transfer all of the values
 				for(const valueKey of Object.keys(option.values)) {
 					instance.value(valueKey, option.values[valueKey]);

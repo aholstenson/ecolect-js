@@ -14,7 +14,6 @@ class Parser extends Node {
 		super();
 
 		this.language = language;
-		this.needsAll = (options && options.needsAll) || false;
 
 		this.supportsPartial = false;
 		this._skipPunctuation = false;
@@ -109,7 +108,7 @@ class Parser extends Node {
 			}
 		}
 
-		push(new CollectorNode(values, value, this.needsAll));
+		push(new CollectorNode(values, value));
 
 		return this;
 	}

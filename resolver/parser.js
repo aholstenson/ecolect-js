@@ -16,9 +16,7 @@ const { LanguageSpecificValue, ParsingValue } = require('../values');
  */
 class ResolverParser extends Parser {
 	constructor(language) {
-		super(language, {
-			needsAll: true
-		});
+		super(language);
 
 		this.values = {};
 

@@ -214,7 +214,7 @@ class Encounter {
 		if(this.onMatch) {
 			return this.onMatch(match);
 		} else {
-			if(! this.partial && this.onlyComplete && match.index < this.tokens.length) {
+			if(this.onlyComplete && match.index < this.tokens.length) {
 				// Skip this match unless it has consumed all tokens
 				return;
 			}

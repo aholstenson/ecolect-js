@@ -36,11 +36,11 @@ describe('Parser', function() {
 				});
 		});
 
-		it('Extra tokens - partial', function() {
+		it('Extra tokens - partial, no match', function() {
 			return parser.match('hello world and more', { partial: true })
 				.then(map)
 				.then(results => {
-					expect(results).to.deep.equal([ true ]);
+					expect(results).to.deep.equal([ ]);
 				});
 		});
 	});
@@ -56,7 +56,7 @@ describe('Parser', function() {
 			return parser.match('hello world', { partial: true })
 				.then(map)
 				.then(results => {
-					expect(results).to.deep.equal([ 1, 3 ]);
+					expect(results).to.deep.equal([ 1 ]);
 				});
 		});
 
@@ -128,7 +128,7 @@ describe('Parser', function() {
 				.add('one', 1)
 				.add('three', 3)
 				.add([ Parser.result(v => v === 1), 'two' ], 2)
-				.add([ Parser.result(v => v === 1), 'two', Parser.result(v => v === 3) ], 2);
+				.add([ Parser.result(v => v === 1), 'two', Parser.result(v => v === 3) ], 4);
 
 			it('Single token', function() {
 				return parser.match('one')
@@ -142,7 +142,7 @@ describe('Parser', function() {
 				return parser.match('one two', { partial: true })
 					.then(map)
 					.then(results => {
-						expect(results).to.deep.equal([ 1, 2, 2 ]);
+						expect(results).to.deep.equal([ 2, 4 ]);
 					});
 			});
 
@@ -150,7 +150,7 @@ describe('Parser', function() {
 				return parser.match('three two', { partial: true })
 					.then(map)
 					.then(results => {
-						expect(results).to.deep.equal([ 3 ]);
+						expect(results).to.deep.equal([ ]);
 					});
 			});
 		});
