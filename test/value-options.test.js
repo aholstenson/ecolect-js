@@ -110,4 +110,57 @@ describe('Value: Options', function() {
 		});
 	});
 
+	describe('With custom values', () => {
+		const values = [
+			'one',
+			'two',
+			'three',
+			'four five'
+		];
+
+		const queryOptions = options({ min: 1 })
+			.option('value')
+				.value('name', function(encounter) {
+					let text = encounter.text();
+					if(encounter.partial) {
+						for(const v of values) {
+							if(v.indexOf(text) === 0) {
+								encounter.match(v);
+							}
+						}
+					} else {
+						if(values.indexOf(text) >= 0) {
+							encounter.match(text);
+						}
+					}
+				})
+				.add('named {name}')
+				.done()
+			.option('completed')
+				.value('completed', dateInterval())
+				.add('completed {completed}')
+				.done()
+			.build();
+
+		const resolver = new Builder(lang)
+			.value('queryOptions', queryOptions)
+			.add('Things {queryOptions}')
+			.build();
+
+		it('Full match', () => {
+			return resolver.match('things named one', { now: new Date(2018, 0, 2) })
+				.then(r => {
+					expect(r.best).to.not.be.null;
+					expect(r.best.values.queryOptions).to.be.instanceOf(Array);
+
+					const v = r.best.values.queryOptions[0];
+					expect(v.option).to.equal('value');
+					expect(v.values).to.deep.equal({
+						name: 'one'
+					});
+				});
+		});
+
+	});
+
 });

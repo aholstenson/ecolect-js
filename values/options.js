@@ -50,6 +50,9 @@ class Builder {
 				const option = this.data[id];
 				const instance = new ResolverBuilder(language, id);
 
+				// Set the name of the parser - for easier debugging
+				instance.parser._name = (this.name || 'options') + ':opt:' + id;
+
 				// Set that this resolver doesn't need to match all tokens
 				instance.parser.needsAll = false;
 

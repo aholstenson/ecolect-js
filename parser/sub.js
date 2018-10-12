@@ -66,7 +66,6 @@ class SubNode extends Node {
 
 		const variants = [];
 		const branchIntoVariants = variants0 => {
-			let result = [];
 			let promise = Promise.resolve();
 			for(let i=0; i<variants0.length; i++) {
 				const v = variants0[i];
@@ -77,7 +76,7 @@ class SubNode extends Node {
 						v.score - encounter.currentScore - PARSER_PENALTY,
 						v.index - encounter.currentIndex,
 						v.data
-					).then(r => result.push(...encounter.matches));
+					);
 				});
 			}
 
@@ -100,14 +99,14 @@ class SubNode extends Node {
 			}
 
 			variants.push({
-				index: encounter.currentIndex,
+				index: match.index,
 				score: encounter.currentScore,
 				data: result
 			});
 
 			// Back-track to allow following nodes to also handle any trailing tokens
 			const previousNonSkipped = encounter.previousNonSkipped();
-			if(previousNonSkipped !== encounter.currentIndex) {
+			if(previousNonSkipped !== match.index) {
 				variants.push({
 					index: previousNonSkipped,
 					score: encounter.currentScore,
