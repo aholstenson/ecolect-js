@@ -6,7 +6,7 @@ const ValueNode = require('./value');
 
 const VALUE = /{([a-zA-Z0-9]+)}/g;
 
-const { LanguageSpecificValue, ParsingValue } = require('../values');
+const { LanguageSpecificValue, ParsingValue, ValueMatcher } = require('../values');
 const { isDeepEqual } = require('../utils/equality');
 
 /**
@@ -86,7 +86,7 @@ class ResolverParser extends Parser {
 				throw new Error('No type registered for ' + id);
 			}
 
-			let nextNode = value instanceof ParsingValue
+			let nextNode = value instanceof ParsingValue || value instanceof ValueMatcher
 				? value.toNode(id)
 				: new ValueNode(id, value);
 

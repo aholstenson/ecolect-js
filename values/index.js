@@ -1,6 +1,7 @@
 'use strict';
 
 const ValueParserNode = require('../resolver/value-parser');
+const ValueNode = require('../resolver/value');
 
 class LanguageSpecificValue {
 	constructor(factory) {
@@ -41,5 +42,15 @@ module.exports.ParsingValue = class ParsingValue {
 
 	toDot() {
 		return this.parser.toDot();
+	}
+};
+
+module.exports.ValueMatcher = class ValueMatcher {
+	constructor(options) {
+		this.options = options;
+	}
+
+	toNode(id) {
+		return new ValueNode(id, this.options);
 	}
 };
