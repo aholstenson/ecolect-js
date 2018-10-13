@@ -158,33 +158,7 @@ class Parser extends Node {
 
 	onlyBest() {
 		return this.finalizer((results, encounter) => {
-			let best;
-			for(let i=0; i<results.length; i++) {
-				const result = results[i];
-				if(! best || result.score > best.score) {
-					best = result;
-				}
-			}
-
-			let data = best ? best.data : null;
-			if(data && this._mapper) {
-				data = this._mapper(data, encounter);
-			}
-			return data;
-		});
-	}
-
-	onlyLongest() {
-		return this.finalizer((results, encounter) => {
-			let best;
-			for(let i=0; i<results.length; i++) {
-				const result = results[i];
-				if(! best || result.index > best.index) {
-					best = result;
-				}
-			}
-
-			let data = best ? best.data : null;
+			let data = results[0] ? results[0].data : null;
 			if(data && this._mapper) {
 				data = this._mapper(data, encounter);
 			}
@@ -214,7 +188,7 @@ class Parser extends Node {
 
 		let promise = encounter.next(0, 0)
 			.then(() => {
-				return encounter.matches;
+				return encounter.matches.toArray();
 			});
 
 		if(this._finalizer) {

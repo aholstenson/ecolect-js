@@ -125,6 +125,19 @@ describe('English', function() {
 					);
 			});
 
+			it('jan 12th', function() {
+				const now = new Date(2017, 2, 24);
+				return date('jan 12th', { now: now })
+					.then(v =>
+						expect(v).to.deep.equal({
+							period: 'day',
+							year: 2018,
+							month: 0,
+							day: 12
+						})
+					);
+			});
+
 			it('12th november', function() {
 				const now = new Date(2017, 0, 24);
 				return date('12th november', { now: now })

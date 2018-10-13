@@ -133,18 +133,16 @@ describe('Resolver', function() {
 				});
 		});
 
-		/*
-
-		it('start (complex)', function() {
-			return resolver.match('tomorrow at 14:00 stuff')
+		it('end - trailing th', function() {
+			return resolver.match('stuff jan 12th')
 				.then(r => {
 					expect(r.best).to.not.be.null;
 					expect(r.matches.length).to.equal(1);
 				});
 		});
 
-		it('end (complex)', function() {
-			return resolver.match('stuff tomorrow at 14:00')
+		it('end - partial, trailing th', function() {
+			return resolver.match('stuff jan 12th', { partial: true })
 				.then(r => {
 					expect(r.best).to.not.be.null;
 					expect(r.matches.length).to.equal(1);
@@ -157,7 +155,6 @@ describe('Resolver', function() {
 				expect(r.best).to.be.null;
 			});
 		});
-		*/
 	});
 
 	describe('Partial matching', function() {

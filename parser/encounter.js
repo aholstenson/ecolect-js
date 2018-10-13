@@ -1,6 +1,7 @@
 'use strict';
 
-const { clone } = require('../utils/cloning');
+const { Match } = require('../utils/match');
+const MatchSet = require('../utils/match-set');
 
 function scorePartial(tokens, depth, maxDepth, score) {
 	return (1 / depth) * 0.8 + Math.min(1, score / depth) * 0.2;
@@ -20,7 +21,9 @@ class Encounter {
 		this.currentNodes = [];
 		this.currentTokens = [];
 		this.data = [];
-		this.matches = [];
+		this.matches = new MatchSet({
+			isEqual: options.matchIsEqual
+		});
 		this.maxDepth = 0;
 
 		this.partial = options.partial || false;
@@ -219,8 +222,7 @@ class Encounter {
 				return;
 			}
 
-			this.matches.push(match);
-			return;
+			this.matches.add(match);
 		}
 	}
 
@@ -235,18 +237,6 @@ class Encounter {
 		map = new Map();
 		this._cache[index] = map;
 		return map;
-	}
-}
-
-class Match {
-	constructor(index, score, data) {
-		this.index = index;
-		this.score = score;
-		this.data = data;
-	}
-
-	copy() {
-		return new Match(this.index, this.score, clone(this.data));
 	}
 }
 

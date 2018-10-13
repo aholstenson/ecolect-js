@@ -142,7 +142,7 @@ describe('Parser', function() {
 				return parser.match('one two', { partial: true })
 					.then(map)
 					.then(results => {
-						expect(results).to.deep.equal([ 2, 4 ]);
+						expect(results).to.deep.equal([ 4, 2 ]);
 					});
 			});
 
@@ -199,7 +199,7 @@ describe('Parser', function() {
 				return parser.match('a - b c')
 					.then(map)
 					.then(results => {
-						expect(results).to.deep.equal([ 'abc', 'abc' ]);
+						expect(results).to.deep.equal([ 'abc' ]);
 					});
 			});
 

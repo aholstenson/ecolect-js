@@ -7,6 +7,7 @@ const ValueNode = require('./value');
 const VALUE = /{([a-zA-Z0-9]+)}/g;
 
 const { LanguageSpecificValue, ParsingValue } = require('../values');
+const { isDeepEqual } = require('../utils/equality');
 
 /**
  * Extension to the normal parser that handles refering to a values by
@@ -41,6 +42,14 @@ class ResolverParser extends Parser {
 
 		this.values[id] = factory;
 		return this;
+	}
+
+	match(e, options={}) {
+		options.matchIsEqual = options.partial
+			? (a, b) => a.intent === b.intent && isDeepEqual(a.values, b.values)
+			: (a, b) => a.intent === b.intent;
+
+		return super.match(e, options);
 	}
 
 	parse(text) {
