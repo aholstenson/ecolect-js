@@ -1,9 +1,9 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 
 module.exports = function(language) {
-	return new Parser(language)
+	return new GraphBuilder(language)
 		.name('boolean')
 
 		.add('true', true)
@@ -14,5 +14,7 @@ module.exports = function(language) {
 		.add('off', false)
 		.add('no', false)
 
-		.onlyBest();
+		.onlyBest()
+
+		.toMatcher();
 };

@@ -1,13 +1,13 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 const { combine } = require('../../time/matching');
 const { map } = require('../../time/durations');
 
 module.exports = function(language) {
 	const integer = language.integer;
 
-	return new Parser(language)
+	return new GraphBuilder(language)
 		.name('date-duration')
 
 		.skipPunctuation()
@@ -27,9 +27,10 @@ module.exports = function(language) {
 		.add([ integer, 'days' ], v => ({ relativeDays: v[0].value }))
 		.add([ integer, 'd' ], v => ({ relativeDays: v[0].value }))
 
-		.add([ Parser.result(), Parser.result() ], v => combine(v[0], v[1]))
-		.add([ Parser.result(), 'and', Parser.result() ], v => combine(v[0], v[1]))
+		.add([ GraphBuilder.result(), GraphBuilder.result() ], v => combine(v[0], v[1]))
+		.add([ GraphBuilder.result(), 'and', GraphBuilder.result() ], v => combine(v[0], v[1]))
 
 		.mapResults(map)
-		.onlyBest();
+		.onlyBest()
+		.toMatcher();
 };

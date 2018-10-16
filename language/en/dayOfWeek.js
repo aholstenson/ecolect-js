@@ -1,11 +1,11 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 
 const { cloneObject } = require('../../utils/cloning');
 
 module.exports = function(language) {
-	return new Parser(language)
+	return new GraphBuilder(language)
 		.name('dayOfWeek')
 
 		// Day of week
@@ -36,8 +36,9 @@ module.exports = function(language) {
 			l => ({ value: l })
 		)
 
-		.add([ 'on', Parser.result() ], v => v[0])
+		.add([ 'on', GraphBuilder.result() ], v => v[0])
 
 		.mapResults(cloneObject)
-		.onlyBest();
+		.onlyBest()
+		.toMatcher();
 };

@@ -1,6 +1,6 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 
 function withUnit(v, unit) {
 	return {
@@ -10,7 +10,7 @@ function withUnit(v, unit) {
 }
 
 module.exports = function(language) {
-	return new Parser(language)
+	return new GraphBuilder(language)
 		.name('temperature')
 
 		.add(language.number, v => v[0])
@@ -23,7 +23,7 @@ module.exports = function(language) {
 		.add([ language.number, 'C' ], v => withUnit(v[0], 'celsius'))
 		.add([ language.number, 'celsius' ], v => withUnit(v[0], 'celsius'))
 
-		.add(['degrees', Parser.result(() => true) ], v => v[0])
+		.add(['degrees', GraphBuilder.result(() => true) ], v => v[0])
 
 		.mapResults((data, encounter) => {
 			const mapped = {
@@ -33,5 +33,6 @@ module.exports = function(language) {
 			return mapped;
 		})
 
-		.onlyBest();
+		.onlyBest()
+		.toMatcher();
 };

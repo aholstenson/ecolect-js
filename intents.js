@@ -39,17 +39,6 @@ module.exports.Builder = class Builder {
 	}
 
 	build() {
-		return new Matcher(this.builder.build());
+		return this.builder.build();
 	}
 };
-
-class Matcher {
-	constructor(parser) {
-		this.parser = parser;
-		this.language = parser.language;
-	}
-
-	match(expression, options) {
-		return this.parser.match(expression, options);
-	}
-}

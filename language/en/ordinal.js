@@ -1,11 +1,11 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 
 const specific = v => ({ value: v[0].value, type: 'specific' });
 
 module.exports = function(language) {
-	return new Parser(language)
+	return new GraphBuilder(language)
 		.name('ordinal')
 
 		.add(language.integer, v => ({ value: v[0].value, type: 'ambigious' }))
@@ -30,7 +30,7 @@ module.exports = function(language) {
 			l => ({ value: l, type: 'specific' })
 		)
 
-		.add([ 'the', Parser.result() ], v => v[0])
+		.add([ 'the', GraphBuilder.result() ], v => v[0])
 
 		.onlyBest()
 		.mapResults(r => {
@@ -38,5 +38,6 @@ module.exports = function(language) {
 				value: r.value
 			};
 			return mapped;
-		});
+		})
+		.toMatcher();
 };

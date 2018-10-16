@@ -1,6 +1,6 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 const { combine, isRelative } = require('../../time/matching');
 const { map } = require('../../time/date-times');
 
@@ -8,7 +8,7 @@ module.exports = function(language) {
 	const time = language.time;
 	const date = language.date;
 
-	return new Parser(language)
+	return new GraphBuilder(language)
 		.name('date-time')
 
 		.skipPunctuation()
@@ -22,8 +22,9 @@ module.exports = function(language) {
 		.add([ date, time ], v => combine(v[0], v[1]))
 		.add([ date, 'and', time ], v => combine(v[0], v[1]))
 
-		.add(Parser.result(date, isRelative), (v, e) => v[0])
+		.add(GraphBuilder.result(date, isRelative), (v, e) => v[0])
 
 		.mapResults(map)
-		.onlyBest();
+		.onlyBest()
+		.toMatcher();
 };

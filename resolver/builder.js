@@ -1,5 +1,6 @@
 'use strict';
 
+const Matcher = require('../graph/matching/matcher');
 const ResolverParser = require('./parser');
 const ResolvedIntent = require('./resolved-intent');
 
@@ -42,14 +43,14 @@ class Builder {
 	}
 
 	add(firstArg) {
-		if(firstArg instanceof ResolverParser) {
+		if(firstArg instanceof Matcher) {
 			/**
 			 * If adding another parser for resolving intent just copy all
 			 * of its nodes as they should work just fine with our own parser.
 			 *
 			 * TODO: Maybe use add instead to use optimization?
 			 */
-			firstArg.outgoing.forEach(r => this.parser.outgoing.push(r));
+			firstArg.nodes.forEach(r => this.parser.outgoing.push(r));
 			return this;
 		}
 
@@ -75,7 +76,7 @@ class Builder {
 			};
 		});
 
-		return this.parser;
+		return this.parser.toMatcher();
 	}
 }
 

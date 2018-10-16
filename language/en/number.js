@@ -1,6 +1,6 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 
 const utils = require('../numbers');
 
@@ -10,27 +10,28 @@ function number(o) {
 
 module.exports = function(language) {
 	const integer = language.integer;
-	return new Parser(language)
+	return new GraphBuilder(language)
 		.name('number')
 
 		.add(integer, v => v[0])
 
-		.add([ Parser.result(number), integer ], v => utils.combine(v[0], v[1]))
-		.add([ integer, '.', Parser.result(integer, v => ! v.suffix && ! v.suffixed) ], v => utils.float(v[0], v[1]))
+		.add([ GraphBuilder.result(number), integer ], v => utils.combine(v[0], v[1]))
+		.add([ integer, '.', GraphBuilder.result(integer, v => ! v.suffix && ! v.suffixed) ], v => utils.float(v[0], v[1]))
 
-		.add([ Parser.result(number), 'e', /^[0-9]$/], v => utils.combine(v[0], {
+		.add([ GraphBuilder.result(number), 'e', /^[0-9]$/], v => utils.combine(v[0], {
 			value: Math.pow(10, parseInt(v[1])),
 			suffix: true
 		}))
-		.add([ Parser.result(number), 'e', '-', /^[0-9]$/], v => utils.combine(v[0], {
+		.add([ GraphBuilder.result(number), 'e', '-', /^[0-9]$/], v => utils.combine(v[0], {
 			value: Math.pow(10, -parseInt(v[1])),
 			suffix: true
 		}))
 
-		.add([ '-', Parser.result(number) ], v => utils.negative(v[0]))
-		.add([ 'minus', Parser.result(number) ], v => utils.negative(v[0]))
-		.add([ 'negative', Parser.result(number) ], v => utils.negative(v[0]))
+		.add([ '-', GraphBuilder.result(number) ], v => utils.negative(v[0]))
+		.add([ 'minus', GraphBuilder.result(number) ], v => utils.negative(v[0]))
+		.add([ 'negative', GraphBuilder.result(number) ], v => utils.negative(v[0]))
 
 		.mapResults(utils.map)
-		.onlyBest();
+		.onlyBest()
+		.toMatcher();
 };

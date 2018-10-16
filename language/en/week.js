@@ -1,13 +1,13 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 
 const { map, thisWeek, nextWeek, previousWeek } = require('../../time/weeks');
 
 module.exports = function(language) {
 	const ordinal = language.ordinal;
 
-	return new Parser(language)
+	return new GraphBuilder(language)
 		.name('week')
 
 		.skipPunctuation()
@@ -22,5 +22,6 @@ module.exports = function(language) {
 		.add([ ordinal, 'week' ], v => ({ week: v[0].value }))
 
 		.mapResults(map)
-		.onlyBest();
+		.onlyBest()
+		.toMatcher();
 };

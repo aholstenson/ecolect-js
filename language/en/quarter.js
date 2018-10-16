@@ -1,13 +1,13 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 
 const { map, thisQuarter, nextQuarter, previousQuarter } = require('../../time/quarters');
 
 module.exports = function(language) {
 	const ordinal = language.ordinal;
 
-	return new Parser(language)
+	return new GraphBuilder(language)
 		.name('quarters')
 
 		.skipPunctuation()
@@ -24,5 +24,6 @@ module.exports = function(language) {
 		.add([ ordinal, 'q' ], v => ({ quarter: v[0].value }))
 
 		.mapResults(map)
-		.onlyBest();
+		.onlyBest()
+		.toMatcher();
 };

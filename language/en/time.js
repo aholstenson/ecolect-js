@@ -1,6 +1,6 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 
 const { combine, reverse } = require('../../time/matching');
 const { map, time12h, time24h, toAM, toPM } = require('../../time/times');
@@ -23,34 +23,36 @@ module.exports = function(language) {
 	const integer = language.integer;
 	const timeDuration = language.timeDuration;
 
-	const relativeMinutes = new Parser(language)
+	const relativeMinutes = new GraphBuilder(language)
 		.name('relativeMinutes')
 
-		.add([ Parser.result(integer, v => v.value >= 1 && v.value <= 3), 'quarters' ], v => v[0].value * 15)
+		.add([ GraphBuilder.result(integer, v => v.value >= 1 && v.value <= 3), 'quarters' ], v => v[0].value * 15)
 		.add('quarter', 15)
 		.add('half', 30)
 		.add(integer, v => v[0].value)
-		.add([ integer, 'minutes' ], v => v[0].value);
+		.add([ integer, 'minutes' ], v => v[0].value)
 
-	return new Parser(language)
+		.toMatcher();
+
+	return new GraphBuilder(language)
 		.name('time')
 
 		.skipPunctuation()
 
 		// Approximate times
-		.add([ Parser.result(), 'ish' ], v => combine(v[0], { precision: 'approximate' }))
-		.add([ Parser.result(), 'approximately' ], v => combine(v[0], { precision: 'approximate' }))
-		.add([ 'about', Parser.result() ], v => combine(v[0], { precision: 'approximate' }))
-		.add([ 'around', Parser.result() ], v => combine(v[0], { precision: 'approximate' }))
-		.add([ 'approximately', Parser.result() ], v => combine(v[0], { precision: 'approximate' }))
+		.add([ GraphBuilder.result(), 'ish' ], v => combine(v[0], { precision: 'approximate' }))
+		.add([ GraphBuilder.result(), 'approximately' ], v => combine(v[0], { precision: 'approximate' }))
+		.add([ 'about', GraphBuilder.result() ], v => combine(v[0], { precision: 'approximate' }))
+		.add([ 'around', GraphBuilder.result() ], v => combine(v[0], { precision: 'approximate' }))
+		.add([ 'approximately', GraphBuilder.result() ], v => combine(v[0], { precision: 'approximate' }))
 
-		.add([ Parser.result(), 'amish' ], v => combine(toAM(v[0]), { precision: 'approximate' }))
-		.add([ Parser.result(), 'pmish' ], v => combine(toPM(v[0]), { precision: 'approximate' }))
+		.add([ GraphBuilder.result(), 'amish' ], v => combine(toAM(v[0]), { precision: 'approximate' }))
+		.add([ GraphBuilder.result(), 'pmish' ], v => combine(toPM(v[0]), { precision: 'approximate' }))
 
 		// Exact times
-		.add([ 'exactly', Parser.result() ], v => combine(v[0], { precision: 'exact' }))
-		.add([ Parser.result(), 'exactly' ], v => combine(v[0], { precision: 'exact' }))
-		.add([ Parser.result(), 'sharp' ], v => combine(v[0], { precision: 'exact' }))
+		.add([ 'exactly', GraphBuilder.result() ], v => combine(v[0], { precision: 'exact' }))
+		.add([ GraphBuilder.result(), 'exactly' ], v => combine(v[0], { precision: 'exact' }))
+		.add([ GraphBuilder.result(), 'sharp' ], v => combine(v[0], { precision: 'exact' }))
 
 		// Named times
 		.map(
@@ -82,27 +84,28 @@ module.exports = function(language) {
 			return time12h(parseInt(v[0]), parseInt(v[1]), parseInt(v[2]));
 		})
 
-		.add([ Parser.result(hasHour), 'pm' ], v => toPM(v[0]))
-		.add([ Parser.result(hasHour), 'p.m.' ], v => toPM(v[0]))
-		.add([ Parser.result(hasHour), 'am' ], v => toAM(v[0]))
-		.add([ Parser.result(hasHour), 'a.m.' ], v => toAM(v[0]))
+		.add([ GraphBuilder.result(hasHour), 'pm' ], v => toPM(v[0]))
+		.add([ GraphBuilder.result(hasHour), 'p.m.' ], v => toPM(v[0]))
+		.add([ GraphBuilder.result(hasHour), 'am' ], v => toAM(v[0]))
+		.add([ GraphBuilder.result(hasHour), 'a.m.' ], v => toAM(v[0]))
 
 
-		.add([ relativeMinutes, 'to', Parser.result(isHour) ], v => adjustMinutes(v[1], - v[0]))
-		.add([ relativeMinutes, 'til', Parser.result(isHour) ], v => adjustMinutes(v[1], - v[0]))
-		.add([ relativeMinutes, 'before', Parser.result(isHour) ], v => adjustMinutes(v[1], - v[0]))
-		.add([ relativeMinutes, 'of', Parser.result(isHour) ], v => adjustMinutes(v[1], - v[0]))
+		.add([ relativeMinutes, 'to', GraphBuilder.result(isHour) ], v => adjustMinutes(v[1], - v[0]))
+		.add([ relativeMinutes, 'til', GraphBuilder.result(isHour) ], v => adjustMinutes(v[1], - v[0]))
+		.add([ relativeMinutes, 'before', GraphBuilder.result(isHour) ], v => adjustMinutes(v[1], - v[0]))
+		.add([ relativeMinutes, 'of', GraphBuilder.result(isHour) ], v => adjustMinutes(v[1], - v[0]))
 
-		.add([ relativeMinutes, 'past', Parser.result(isHour) ], v => adjustMinutes(v[1], v[0]))
-		.add([ relativeMinutes, 'after', Parser.result(isHour) ], v => adjustMinutes(v[1], v[0]))
-		.add([ 'half', Parser.result(isHour) ], v => adjustMinutes(v[0], 30))
+		.add([ relativeMinutes, 'past', GraphBuilder.result(isHour) ], v => adjustMinutes(v[1], v[0]))
+		.add([ relativeMinutes, 'after', GraphBuilder.result(isHour) ], v => adjustMinutes(v[1], v[0]))
+		.add([ 'half', GraphBuilder.result(isHour) ], v => adjustMinutes(v[0], 30))
 
 		// Qualifiers
 		.add([ 'in', timeDuration ], v => v[0])
 		.add([ timeDuration ], v => v[0])
 		.add([ timeDuration, 'ago' ], reverse)
-		.add([ 'at', Parser.result() ], v => v[0])
+		.add([ 'at', GraphBuilder.result() ], v => v[0])
 
 		.mapResults(map)
-		.onlyBest();
+		.onlyBest()
+		.toMatcher();
 };

@@ -7,10 +7,15 @@ const SubNode = require('./sub');
 const CollectorNode = require('./collector');
 const CustomNode = require('./custom');
 
-const Encounter = require('./encounter');
+const Matcher = require('./matching/matcher');
 
-class Parser extends Node {
-	constructor(language, options) {
+/**
+ * Builder for a graph. This class is used to build matchers that can later
+ * be used within the graph or standalone to match expressions.
+ *
+ */
+module.exports = class Builder extends Node {
+	constructor(language) {
 		super();
 
 		this.language = language;
@@ -18,30 +23,68 @@ class Parser extends Node {
 		this.supportsPartial = false;
 		this._skipPunctuation = false;
 		this._fuzzy = false;
-
-		this._cache = {};
 	}
 
+	/**
+	 * Set the name of the graph being built.
+	 *
+	 * @param {string} name
+	 *   the name of the graph
+	 * @return
+	 *   self
+	 */
 	name(name) {
 		this._name = this.language.id + ':' + name;
 		return this;
 	}
 
+	/**
+	 * Indicate that this graph supports partial matching.
+	 *
+	 * @return
+	 *   self
+	 */
 	allowPartial() {
 		this.supportsPartial = true;
 		return this;
 	}
 
+	/**
+	 * Allow the graph to skip punctuation during matching.
+	 *
+	 * @return
+	 *   self
+	 */
 	skipPunctuation() {
 		this._skipPunctuation = true;
 		return this;
 	}
 
+	/**
+	 * Allow the graph to perform fuzzy matching.
+	 *
+	 * @return
+	 *   self
+	 */
 	fuzzy() {
 		this._fuzzy = true;
 		return this;
 	}
 
+	/**
+	 * Add some nodes and the value to record if all nodes match. `nodes` can
+	 * either be a single node/expression or an array of nodes and expressions.
+	 *
+	 * Examples:
+	 * * `add('Hello', 1)` will match against `Hello` and output `1`
+	 * *
+	 *   `add([ Builder.result(), 'World' ])` will match recursively against
+	 *    itself and then the token `World`.
+	 * * `add([ /[0-9]+/ ])` will match against the given regular expression
+	 *
+	 * @param {Array|Node} nodes
+	 * @param {*} value
+	 */
 	add(nodes, value) {
 		if(! Array.isArray(nodes)) {
 			nodes = [ nodes ];
@@ -90,7 +133,7 @@ class Parser extends Node {
 				return push(result);
 			} else if(n instanceof RegExp) {
 				return push(new RegExpNode(n));
-			} else if(n instanceof Parser) {
+			} else if(n instanceof Matcher) {
 				return push(new SubNode(n));
 			} else if(n instanceof Node) {
 				return push(n);
@@ -162,86 +205,19 @@ class Parser extends Node {
 		});
 	}
 
-	match(encounter, options={}) {
-		if(typeof encounter === 'string') {
-			encounter = new Encounter(this.language, encounter, Object.assign({
-				onlyComplete: true
-			}, options));
-			encounter.outgoing = this.outgoing;
-
-			if(this._skipPunctuation) {
-				encounter.skipPunctuation = true;
-			}
-
-			if(this._fuzzy) {
-				encounter.fuzzy = true;
-			}
-		}
-
-		if(! encounter) {
-			throw new Error('Nothing to match on');
-		}
-
-		let promise = encounter.next(0, 0)
-			.then(() => {
-				return encounter.matches.toArray();
-			});
-
-		if(this._finalizer) {
-			promise = promise.then(results => {
-				return this._finalizer(results, encounter);
-			});
-		}
-
-		return promise;
+	toMatcher() {
+		return this.createMatcher(this.language, this.outgoing, {
+			name: this._name,
+			fuzzy: this._fuzzy,
+			supportsPartial: this.supportsPartial,
+			skipPunctuation: this._skipPunctuation,
+			mapper: this._mapper,
+			finalizer: this._finalizer
+		});
 	}
 
-	toString() {
-		return 'Parser[]';
-	}
-
-	toDot() {
-		const iterate = (node, func) => {
-			func(node);
-
-			for(const n of node.outgoing) {
-				iterate(n, func);
-			}
-		};
-
-		let result = 'digraph {\nrankdir=LR;\n';
-
-		result += 'collector[shape=diamond,label=""];\n';
-
-		const nodes = new Map();
-		iterate(this, node => {
-			if(node instanceof CollectorNode) {
-				return;
-			}
-
-			let id = nodes.get(node);
-			if(id) return;
-
-			id = 'node' + nodes.size;
-			nodes.set(node, id);
-
-			if(node instanceof Parser) {
-				result += id + '[shape=circle, label=""];\n';
-			} else {
-				result += id + '[' + node.toDot() + '];\n';
-			}
-		});
-
-		iterate(this, node => {
-			let id = nodes.get(node);
-			for(const n of node.outgoing) {
-				const id2 = n instanceof CollectorNode ? 'collector' : nodes.get(n);
-				result += id + ' -> ' + id2 + ';\n';
-			}
-		});
-
-		result += '}';
-		return result;
+	createMatcher(lang, nodes, options) {
+		return new Matcher(lang, nodes, options);
 	}
 
 	static result(node, validator) {
@@ -250,8 +226,8 @@ class Parser extends Node {
 			node = null;
 		}
 
-		return function(parser) {
-			const sub = new SubNode(node ? node : parser.outgoing, validator);
+		return function(builder) {
+			const sub = new SubNode(node ? node : builder.outgoing, validator);
 			if(validator) {
 				let name = node && node.name;
 				if(typeof name === 'function') {
@@ -267,7 +243,7 @@ class Parser extends Node {
 				}
 				sub.name = name;
 			} else {
-				sub.name = parser._name + ':self';
+				sub.name = builder._name + ':self';
 			}
 			return sub;
 		};
@@ -278,6 +254,4 @@ class Parser extends Node {
 			return new CustomNode(validator);
 		};
 	}
-}
-
-module.exports = Parser;
+};

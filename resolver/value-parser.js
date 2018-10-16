@@ -2,18 +2,18 @@
 
 const { isDeepEqual } = require('../utils/equality');
 
-const Node = require('../parser/node');
-const SubNode = require('../parser/sub');
+const Node = require('../graph/node');
+const SubNode = require('../graph/sub');
 
 class ValueParser extends Node {
-	constructor(id, parser, options={}) {
+	constructor(id, matcher, options={}) {
 		super();
 
 		this.id = id;
-		this.node = new SubNode(parser);
+		this.node = new SubNode(matcher);
 		this.options = options;
 
-		const mapper = parser._mapper;
+		const mapper = matcher.mapper;
 		this.node.mapper = (r, encounter) => {
 			r = mapper ? mapper(r, encounter) : r;
 			return {

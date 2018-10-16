@@ -1,6 +1,7 @@
 'use strict';
 
 const Node = require('./node');
+const Matcher = require('./matching/matcher');
 const ALWAYS_TRUE = () => true;
 
 /*
@@ -17,13 +18,13 @@ class SubNode extends Node {
 
 		this.filter = filter || ALWAYS_TRUE;
 
-		if(roots instanceof Node) {
-			// This node probably points to another parser
-			this.roots = roots.outgoing;
+		if(roots instanceof Matcher) {
+			// Roots is actually a matcher, copy the graph from the matcher
+			this.roots = roots.nodes;
 			this.supportsPartial = typeof roots.supportsPartial !== 'undefined' ? roots.supportsPartial : null;
-			this.name = roots._name || null;
-			this.skipPunctuation = typeof roots._skipPunctuation !== 'undefined' ? roots._skipPunctuation : null;
-			this.fuzzy = typeof roots._fuzzy !== 'undefined' ? roots._fuzzy : null;
+			this.name = roots.name || null;
+			this.skipPunctuation = typeof roots.skipPunctuation !== 'undefined' ? roots.skipPunctuation : null;
+			this.fuzzy = typeof roots.fuzzy !== 'undefined' ? roots.fuzzy : null;
 			this.state = roots._cache;
 		} else {
 			this.roots = roots;

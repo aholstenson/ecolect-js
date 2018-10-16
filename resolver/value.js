@@ -1,6 +1,6 @@
 'use strict';
 
-const Node = require('../parser/node');
+const Node = require('../graph/node');
 
 /**
  * Custom node used by resolvers to match free-text expressions. This node

@@ -1,7 +1,7 @@
 'use strict';
 
-const { Match } = require('../utils/match');
-const MatchSet = require('../utils/match-set');
+const { Match } = require('../../utils/match');
+const MatchSet = require('../../utils/match-set');
 
 function scorePartial(tokens, depth, maxDepth, score) {
 	return (1 / depth) * 0.8 + Math.min(1, score / depth) * 0.2;
@@ -79,8 +79,6 @@ class Encounter {
 			nextIndexAfterPunctuation = this.currentIndex;
 		}
 
-		let token = this.tokens[nextIndex];
-
 		let pushedData = false;
 		if(data !== null && typeof data !== 'undefined') {
 			pushedData = true;
@@ -104,6 +102,7 @@ class Encounter {
 		return promise.then(() => {
 			if(pushedData) this.data.pop();
 
+			let token = this.tokens[nextIndexAfterPunctuation];
 			if(this.fuzzy && token && token.punctuation) {
 				/*
 				 * The encounter is currently in fuzzy mode and we did not match,

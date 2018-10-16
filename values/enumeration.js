@@ -1,6 +1,6 @@
 'use strict';
 
-const Parser = require('../parser');
+const GraphBuilder = require('../graph/builder');
 const { LanguageSpecificValue, ParsingValue } = require('./index');
 
 const DEFAULT_MAPPER = v => v;
@@ -10,13 +10,14 @@ module.exports = function(values, textMapper) {
 		textMapper = DEFAULT_MAPPER;
 	}
 	return new LanguageSpecificValue(language => {
-		const parser = new Parser(language)
+		const builder = new GraphBuilder(language)
 			.allowPartial();
-		values.forEach(value => {
-			parser.add(textMapper(value), value);
+
+			values.forEach(value => {
+			builder.add(textMapper(value), value);
 		});
 
-		return new ParsingValue(parser, {
+		return new ParsingValue(builder.toMatcher(), {
 			supportsPartial: true
 		});
 	});

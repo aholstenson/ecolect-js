@@ -1,6 +1,6 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 
 const { between } = require('../../time/matching');
 const { map } = require('../../time/date-intervals');
@@ -12,7 +12,7 @@ function singleFrom(v) {
 module.exports = function(language) {
 	const date = language.date;
 
-	return new Parser(language)
+	return new GraphBuilder(language)
 		.name('date-interval')
 
 		.add(date, between)
@@ -22,15 +22,16 @@ module.exports = function(language) {
 		// January 2010 to March 2011
 		// 2010-01-01 to 2010-02-05
 		// February to 2020
-		.add([ Parser.result(singleFrom), 'to', Parser.result(singleFrom) ], between)
-		.add([ Parser.result(singleFrom), 'until', Parser.result(singleFrom) ], between)
-		.add([ Parser.result(singleFrom), '-', Parser.result(singleFrom) ], between)
-		.add([ Parser.result(singleFrom), 'and', Parser.result(singleFrom) ], between)
+		.add([ GraphBuilder.result(singleFrom), 'to', GraphBuilder.result(singleFrom) ], between)
+		.add([ GraphBuilder.result(singleFrom), 'until', GraphBuilder.result(singleFrom) ], between)
+		.add([ GraphBuilder.result(singleFrom), '-', GraphBuilder.result(singleFrom) ], between)
+		.add([ GraphBuilder.result(singleFrom), 'and', GraphBuilder.result(singleFrom) ], between)
 
-		.add([ 'from', Parser.result() ])
-		.add([ 'between', Parser.result() ])
+		.add([ 'from', GraphBuilder.result() ])
+		.add([ 'between', GraphBuilder.result() ])
 
 		.mapResults(map)
 
-		.onlyBest();
+		.onlyBest()
+		.toMatcher();
 };

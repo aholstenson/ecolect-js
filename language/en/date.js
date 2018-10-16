@@ -1,6 +1,6 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 
 const {
 	combine,
@@ -54,22 +54,22 @@ module.exports = function(language) {
 	const month = language.month;
 	const dateDuration = language.dateDuration;
 
-	const day = Parser.result(ordinal, v => v.value >= 0 && v.value < 31);
+	const day = GraphBuilder.result(ordinal, v => v.value >= 0 && v.value < 31);
 
-	return new Parser(language)
+	return new GraphBuilder(language)
 		.name('date')
 
 		.skipPunctuation()
 
 		// Relative
 		.add([ dateDuration ], v => v[0])
-		.add([ dateDuration, 'after', Parser.result() ], v => combine(v[0], {
+		.add([ dateDuration, 'after', GraphBuilder.result() ], v => combine(v[0], {
 			relativeTo: v[1]
 		}))
-		.add([ dateDuration, 'from', Parser.result() ], v => combine(v[0], {
+		.add([ dateDuration, 'from', GraphBuilder.result() ], v => combine(v[0], {
 			relativeTo: v[1]
 		}))
-		.add([ dateDuration, 'before', Parser.result() ], v => combine(reverse(v[0]), {
+		.add([ dateDuration, 'before', GraphBuilder.result() ], v => combine(reverse(v[0]), {
 			relativeTo: v[1]
 		}))
 
@@ -104,7 +104,7 @@ module.exports = function(language) {
 		// Non-year (month and day) followed by year
 		// With day: 12 Jan 2018, 1st February 2018
 		// Without day: Jan 2018, this month 2018
-		.add([ Parser.result(hasMonth), year ], v => combine(v[0], v[1]))
+		.add([ GraphBuilder.result(hasMonth), year ], v => combine(v[0], v[1]))
 
 		.add([ month, 'in', /^[0-9]{1,2}$/ ], withYear)
 		.add([ month, 'of', /^[0-9]{1,2}$/ ], withYear)
@@ -167,13 +167,13 @@ module.exports = function(language) {
 		}))
 
 		// nth day of week in month
-		.add([ ordinal, dayOfWeek, Parser.result(isMonth) ], v => combine(v[2], {
+		.add([ ordinal, dayOfWeek, GraphBuilder.result(isMonth) ], v => combine(v[2], {
 			dayOfWeek: v[1].value,
 			dayOfWeekOrdinal: v[0].value
 		}))
 
 		// first day of week in month
-		.add([ dayOfWeek, Parser.result(isMonth) ], v => combine(v[1], {
+		.add([ dayOfWeek, GraphBuilder.result(isMonth) ], v => combine(v[1], {
 			dayOfWeek: v[0].value,
 			dayOfWeekOrdinal: 1
 		}))
@@ -191,39 +191,40 @@ module.exports = function(language) {
 		}))
 
 		// nth day of week in X time
-		.add([ ordinal, dayOfWeek, Parser.result(isRelative) ], v => combine(v[2], {
+		.add([ ordinal, dayOfWeek, GraphBuilder.result(isRelative) ], v => combine(v[2], {
 			dayOfWeek: v[1].value,
 			dayOfWeekOrdinal: v[0].value
 		}))
 
 		// first day of week in X time
-		.add([ dayOfWeek, Parser.result(isRelative) ], v => combine(v[1], {
+		.add([ dayOfWeek, GraphBuilder.result(isRelative) ], v => combine(v[1], {
 			dayOfWeek: v[0].value,
 			dayOfWeekOrdinal: 1
 		}))
 
 		// day of week in week X
-		.add([ dayOfWeek, Parser.result(isWeek) ], v => combine(v[1], {
+		.add([ dayOfWeek, GraphBuilder.result(isWeek) ], v => combine(v[1], {
 			dayOfWeek: v[0].value,
 			dayOfWeekOrdinal: 1
 		}))
 
-		.add([ Parser.result(isWeek), dayOfWeek ], v => combine(v[0], {
+		.add([ GraphBuilder.result(isWeek), dayOfWeek ], v => combine(v[0], {
 			dayOfWeek: v[1].value,
 			dayOfWeekOrdinal: 1
 		}))
 
 		// Extra qualifiers such as in and on
-		.add([ 'in', Parser.result(isRelative) ], v => v[0])
-		.add([ 'on', Parser.result() ], v => v[0])
-		.add([ 'on', 'the', Parser.result() ], v => v[0])
+		.add([ 'in', GraphBuilder.result(isRelative) ], v => v[0])
+		.add([ 'on', GraphBuilder.result() ], v => v[0])
+		.add([ 'on', 'the', GraphBuilder.result() ], v => v[0])
 		.add([ dateDuration, 'ago' ], reverse)
 
 		// Edges, such as start of [date] or end of [date]
-		.add([ 'start of', Parser.result() ], startOf)
-		.add([ 'beginning of', Parser.result() ], startOf)
-		.add([ 'end of', Parser.result() ], endOf)
+		.add([ 'start of', GraphBuilder.result() ], startOf)
+		.add([ 'beginning of', GraphBuilder.result() ], startOf)
+		.add([ 'end of', GraphBuilder.result() ], endOf)
 
 		.mapResults(map)
-		.onlyBest();
+		.onlyBest()
+		.toMatcher();
 };

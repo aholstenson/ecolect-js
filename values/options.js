@@ -1,6 +1,6 @@
 'use strict';
 
-const Parser = require('../parser');
+const GraphBuilder = require('../graph/builder');
 const { LanguageSpecificValue, ParsingValue } = require('./index');
 const ResolverBuilder = require('../resolver/builder');
 
@@ -42,7 +42,7 @@ class Builder {
 
 	build() {
 		return new LanguageSpecificValue(language => {
-			const parent = new Parser(language)
+			const parent = new GraphBuilder(language)
 				.name(this.name || 'options')
 				.allowPartial();
 
@@ -67,8 +67,8 @@ class Builder {
 				parent.add(parser, v => [ v[0] ]);
 			}
 
-			parent.add([ Parser.result(), Parser.result() ], v => v[0].concat(v[1]));
-			parent.add([ Parser.result(), 'and', Parser.result() ], v => v[0].concat(v[1]));
+			parent.add([ GraphBuilder.result(), GraphBuilder.result() ], v => v[0].concat(v[1]));
+			parent.add([ GraphBuilder.result(), 'and', GraphBuilder.result() ], v => v[0].concat(v[1]));
 
 			parent.mapResults(v => {
 				return v.filter(v => !! v).map(o => ({
@@ -78,7 +78,7 @@ class Builder {
 				}));
 			});
 
-			return new ParsingValue(parent, Object.assign({
+			return new ParsingValue(parent.toMatcher(), Object.assign({
 				supportsPartial: true
 			}, this.options));
 		});

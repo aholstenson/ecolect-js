@@ -1,6 +1,6 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 const utils = require('../numbers');
 
 function isDigits(o) {
@@ -16,7 +16,7 @@ function isLiteral(o) {
 }
 
 module.exports = function(language) {
-	return new Parser(language)
+	return new GraphBuilder(language)
 		.name('integer')
 
 		.add(/^[0-9]+$/, v => {
@@ -71,14 +71,15 @@ module.exports = function(language) {
 		)
 
 		// Digits + digits or digits + suffix, combines 1 000 and 1 thousand but not one 000
-		.add([ Parser.result(isDigits), Parser.result(isDigitsCompatible) ], v => utils.combine(v[0], v[1]))
+		.add([ GraphBuilder.result(isDigits), GraphBuilder.result(isDigitsCompatible) ], v => utils.combine(v[0], v[1]))
 
 		// Literal + literal - to avoid combining things as `one 000`
-		.add([ Parser.result(isLiteral), Parser.result(isLiteral) ], v => utils.combine(v[0], v[1]))
+		.add([ GraphBuilder.result(isLiteral), GraphBuilder.result(isLiteral) ], v => utils.combine(v[0], v[1]))
 
 		// Thousands separator
-		.add([ Parser.result(isDigits), ',', Parser.result(isDigits) ], v => utils.combine(v[0], v[1]))
+		.add([ GraphBuilder.result(isDigits), ',', GraphBuilder.result(isDigits) ], v => utils.combine(v[0], v[1]))
 
 		.mapResults(utils.map)
-		.onlyBest();
+		.onlyBest()
+		.toMatcher();
 };

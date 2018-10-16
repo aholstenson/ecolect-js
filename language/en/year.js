@@ -1,6 +1,6 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 
 const { reverse } = require('../../time/matching');
 const { map, thisYear, nextYear, previousYear } = require('../../time/years');
@@ -8,12 +8,14 @@ const { map, thisYear, nextYear, previousYear } = require('../../time/years');
 module.exports = function(language) {
 	const integer = language.integer;
 
-	const relative = new Parser(language)
+	const relative = new GraphBuilder(language)
 		.name('relativeYears')
 
-		.add([ integer, 'years' ], v => ({ relativeYears: v[0].value }));
+		.add([ integer, 'years' ], v => ({ relativeYears: v[0].value }))
 
-	return new Parser(language)
+		.toMatcher();
+
+	return new GraphBuilder(language)
 		.name('year')
 
 		.add([ /^[0-9]{4}$/ ], v => ({ year: parseInt(v[0]) }))
@@ -24,10 +26,11 @@ module.exports = function(language) {
 
 		.add(relative, v => v[0])
 
-		.add([ 'in', Parser.result() ], v => v[0])
-		.add([ 'of', Parser.result() ], v => v[0])
+		.add([ 'in', GraphBuilder.result() ], v => v[0])
+		.add([ 'of', GraphBuilder.result() ], v => v[0])
 		.add([ relative, 'ago' ], reverse)
 
 		.mapResults(map)
-		.onlyBest();
+		.onlyBest()
+		.toMatcher();
 };

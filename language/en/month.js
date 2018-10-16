@@ -1,6 +1,6 @@
 'use strict';
 
-const Parser = require('../../parser');
+const GraphBuilder = require('../../graph/builder');
 
 const { reverse } = require('../../time/matching');
 const { map, thisMonth, nextMonth, previousMonth } = require('../../time/months');
@@ -8,14 +8,16 @@ const { map, thisMonth, nextMonth, previousMonth } = require('../../time/months'
 module.exports = function(language) {
 	const integer = language.integer;
 	const ordinal = language.ordinal;
-	const ordinalMonth = Parser.result(ordinal, v => v.type === 'specific' && v.value >= 1 && v.value <= 12);
+	const ordinalMonth = GraphBuilder.result(ordinal, v => v.type === 'specific' && v.value >= 1 && v.value <= 12);
 
-	const relative = new Parser(language)
+	const relative = new GraphBuilder(language)
 		.name('relativeMonths')
 
-		.add([ integer, 'months' ], v => ({ relativeMonths: v[0].value }));
+		.add([ integer, 'months' ], v => ({ relativeMonths: v[0].value }))
 
-	return new Parser(language)
+		.toMatcher();
+
+	return new GraphBuilder(language)
 		.name('month')
 
 		.skipPunctuation()
@@ -74,9 +76,10 @@ module.exports = function(language) {
 		.add([ ordinalMonth, 'month' ], v => ({ month: v[0].value - 1 }))
 		.add([ ordinalMonth ], v => ({ month: v[0].value - 1, }))
 
-		.add([ 'in', Parser.result() ], v => v[0])
+		.add([ 'in', GraphBuilder.result() ], v => v[0])
 		.add([ relative, 'ago' ], reverse)
 
 		.mapResults(map)
-		.onlyBest();
+		.onlyBest()
+		.toMatcher();
 };

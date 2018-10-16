@@ -4,13 +4,14 @@ const chai = require('chai');
 const expect = chai.expect;
 
 const en = require('../language/en');
-const Parser = require('../parser');
+const GraphBuilder = require('../graph/builder');
 const map = results => results.map(r => r.data);
 
-describe('Parser', function() {
+describe('Graph Builder', function() {
 	describe('Linear', function() {
-		const parser = new Parser(en)
-			.add('hello world', true);
+		const parser = new GraphBuilder(en)
+			.add('hello world', true)
+			.toMatcher();
 
 		it('All tokens', function() {
 			return parser.match('hello world')
@@ -46,10 +47,11 @@ describe('Parser', function() {
 	});
 
 	describe('Multiple linear', function() {
-		const parser = new Parser(en)
+		const parser = new GraphBuilder(en)
 			.add('hello world', 1)
 			.add('cookies', 2)
-			.add('hello', 3);
+			.add('hello', 3)
+			.toMatcher();
 
 
 		it('Match longest - partial', function() {
@@ -79,11 +81,13 @@ describe('Parser', function() {
 
 	describe('Parser within parser', function() {
 		describe('Single token + Single token', function() {
-			const sub = new Parser(en)
-				.add('hello', 1);
+			const sub = new GraphBuilder(en)
+				.add('hello', 1)
+				.toMatcher();
 
-			const parser = new Parser(en)
-				.add([ sub, 'world' ], 2);
+			const parser = new GraphBuilder(en)
+				.add([ sub, 'world' ], 2)
+				.toMatcher();
 
 			it('All tokens', function() {
 				return parser.match('hello world')
@@ -103,8 +107,9 @@ describe('Parser', function() {
 		});
 
 		describe('Node factory', function() {
-			const parser = new Parser(en)
-				.add(Parser.custom(t => t.raw === 'one' ? true : null), 1);
+			const parser = new GraphBuilder(en)
+				.add(GraphBuilder.custom(t => t.raw === 'one' ? true : null), 1)
+				.toMatcher();
 
 			it('Single token', function() {
 				return parser.match('one')
@@ -124,11 +129,12 @@ describe('Parser', function() {
 		});
 
 		describe('Previous match', function() {
-			const parser = new Parser(en)
+			const parser = new GraphBuilder(en)
 				.add('one', 1)
 				.add('three', 3)
-				.add([ Parser.result(v => v === 1), 'two' ], 2)
-				.add([ Parser.result(v => v === 1), 'two', Parser.result(v => v === 3) ], 4);
+				.add([ GraphBuilder.result(v => v === 1), 'two' ], 2)
+				.add([ GraphBuilder.result(v => v === 1), 'two', GraphBuilder.result(v => v === 3) ], 4)
+				.toMatcher();
 
 			it('Single token', function() {
 				return parser.match('one')
@@ -156,12 +162,13 @@ describe('Parser', function() {
 		});
 
 		describe('Recursive match', function() {
-			const parser = new Parser(en)
+			const parser = new GraphBuilder(en)
 				.add(/^[a-z]$/, v => v[0])
-				.add([ Parser.result(v => true), Parser.result(v => true) ], v => v[0] + v[1])
-				.add([ Parser.result(v => true), '-', Parser.result(v => true) ], v => {
+				.add([ GraphBuilder.result(v => true), GraphBuilder.result(v => true) ], v => v[0] + v[1])
+				.add([ GraphBuilder.result(v => true), '-', GraphBuilder.result(v => true) ], v => {
 					return v[0] + v[1];
-				});
+				})
+				.toMatcher();
 
 			it('a', function() {
 				return parser.match('a')

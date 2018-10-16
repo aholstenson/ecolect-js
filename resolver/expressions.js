@@ -1,7 +1,7 @@
 'use strict';
 
-const TokenNode = require('../parser/token');
-const SubNode = require('../parser/sub');
+const TokenNode = require('../graph/token');
+const SubNode = require('../graph/sub');
 const ValueNode = require('./value');
 const ValueParserNode = require('./value-parser');
 

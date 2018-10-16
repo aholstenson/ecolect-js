@@ -1,7 +1,9 @@
 'use strict';
 
-const Parser = require('../parser');
-const TokenNode = require('../parser/token');
+const Builder = require('../graph/builder');
+const Matcher = require('../graph/matching/matcher');
+
+const TokenNode = require('../graph/token');
 const ValueNode = require('./value');
 
 const VALUE = /{([a-zA-Z0-9]+)}/g;
@@ -15,7 +17,7 @@ const { isDeepEqual } = require('../utils/equality');
  *
  * TODO: Extended grammar for optional tokens and OR between tokens?
  */
-class ResolverParser extends Parser {
+class ResolverParser extends Builder {
 	constructor(language) {
 		super(language);
 
@@ -42,14 +44,6 @@ class ResolverParser extends Parser {
 
 		this.values[id] = factory;
 		return this;
-	}
-
-	match(e, options={}) {
-		options.matchIsEqual = options.partial
-			? (a, b) => a.intent === b.intent && isDeepEqual(a.values, b.values)
-			: (a, b) => a.intent === b.intent;
-
-		return super.match(e, options);
 	}
 
 	parse(text) {
@@ -103,6 +97,22 @@ class ResolverParser extends Parser {
 
 		return firstNode;
 	}
+
+	createMatcher(language, nodes, options) {
+		return new ResolvingMatcher(language, nodes, options);
+	}
 }
 
 module.exports = ResolverParser;
+
+class ResolvingMatcher extends Matcher {
+
+	match(expression, options={}) {
+		options.matchIsEqual = options.partial
+			? (a, b) => a.intent === b.intent && isDeepEqual(a.values, b.values)
+			: (a, b) => a.intent === b.intent;
+
+		return super.match(expression, options);
+	}
+
+}
