@@ -117,10 +117,6 @@ class Parser extends Node {
 		let first;
 		let last;
 		this.language.tokenize(text).forEach(t => {
-			if(this._skipPunctuation && t.punctuation) {
-				return;
-			}
-
 			const node = new TokenNode(this.language, t);
 			if(last) {
 				last.outgoing.push(node);

@@ -7,12 +7,12 @@ class Token extends Node {
 		super();
 
 		this.token = token;
+		this.supportsPunctuation = token.punctuation;
 		this.language = language;
 	}
 
 	match(encounter) {
-		const token = encounter.token();
-
+		let token = encounter.token();
 		if(token) {
 			/*
 			 * Consume a token in the input, score it and evaluate outgoing
@@ -21,7 +21,10 @@ class Token extends Node {
 			if(this.token.punctuation) {
 				// Punctuation nodes must match directly
 				if(this.token.normalized === token.normalized) {
-					return encounter.next(0.0, 1);
+					return encounter.next(0.1, 1);
+				} else if(encounter.skipPunctuation) {
+					// This token is punctuation and the encounter allows skipping
+					return encounter.next(0.0, 0);
 				}
 			} else {
 				const score = encounter.partial && encounter.isLastToken
@@ -45,7 +48,7 @@ class Token extends Node {
 			/*
 			 * This token is skippable, skip it without adding any score.
 			 */
-			return encounter.next(0.0, 1);
+			return encounter.next(0.0, 0);
 		}
 
 		return;

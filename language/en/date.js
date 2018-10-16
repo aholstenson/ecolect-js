@@ -110,7 +110,7 @@ module.exports = function(language) {
 		.add([ month, 'of', /^[0-9]{1,2}$/ ], withYear)
 
 		// Year - Month - Day, such as 2017-01-24 or 2017 2 5
-		.add([ /^[0-9]{4}$/, /^[0-9]{1,2}$/, /^[0-9]{1,2}$/ ], v => {
+		.add([ /^[0-9]{4}$/, '-', /^[0-9]{1,2}$/, '-', /^[0-9]{1,2}$/ ], v => {
 			return {
 				year: parseInt(v[0]),
 				month: parseInt(v[1]) - 1,
@@ -119,7 +119,7 @@ module.exports = function(language) {
 		})
 
 		// Month / Day / Year
-		.add([ /^[0-9]{1,2}$/, /^[0-9]{1,2}$/,  /^[0-9]{4}$/ ], v => {
+		.add([ /^[0-9]{1,2}$/, '/', /^[0-9]{1,2}$/, '/', /^[0-9]{4}$/ ], v => {
 			return {
 				year: parseInt(v[2]),
 				month: parseInt(v[0]) - 1,
@@ -128,7 +128,7 @@ module.exports = function(language) {
 		})
 
 		// Month / Day
-		.add([ /^[0-9]{1,2}$/, /^[0-9]{1,2}$/ ], v => {
+		.add([ /^[0-9]{1,2}$/, '/', /^[0-9]{1,2}$/ ], v => {
 			return {
 				month: parseInt(v[0]) - 1,
 				day: parseInt(v[1])

@@ -112,6 +112,23 @@ describe('English', function() {
 			);
 		});
 
+		it('11/15', function() {
+			return datetime('11/15', { now: new Date(2010, 0, 1, 13, 30) })
+			.then(v =>
+				expect(v).to.deep.equal({
+					period: 'day',
+					precision: 'normal',
+
+					year: 2010,
+					month: 10,
+					day: 15,
+					hour: 13,
+					minute: 30,
+					second: 0
+				})
+			);
+		});
+
 		it('in 2 days', function() {
 			return datetime('in 2 days', { now: new Date(2010, 0, 1, 13, 30) })
 			.then(v =>

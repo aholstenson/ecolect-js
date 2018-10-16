@@ -48,6 +48,12 @@ describe('English', function() {
 			expect(tokens[0].normalized).to.equal('they');
 			expect(tokens[1].normalized).to.equal('will');
 		});
+
+		it('Simple: `:`', function() {
+			const tokens = en.tokenize(':');
+			expect(tokens.length).to.equal(1);
+			expect(tokens[0].raw).to.equal(':');
+		});
 	});
 
 });

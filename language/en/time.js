@@ -66,10 +66,10 @@ module.exports = function(language) {
 		.add([ integer ], v => time12h(v[0].value))
 
 		// HH:MM, such as 00:10, 9:30, 14 00
-		.add([ /^[0-9]{1,2}$/, /^[0-9]{1,2}$/ ], v => {
+		.add([ /^[0-9]{1,2}$/, ':', /^[0-9]{1,2}$/ ], v => {
 			return time12h(parseInt(v[0]), parseInt(v[1]));
 		})
-		.add([ integer, integer ], v => time12h(v[0].value, v[1].value))
+		.add([ integer, ':', integer ], v => time12h(v[0].value, v[1].value))
 		.add(/^[0-9]{3,4}$/, v => {
 			const t = v[0];
 			const h = t.length === 3 ? t.substring(0, 1) : t.substring(0, 2);
@@ -78,7 +78,7 @@ module.exports = function(language) {
 		})
 
 		// HH:MM:SS
-		.add([ /^[0-9]{1,2}$/, /^[0-9]{1,2}$/, /^[0-9]{1,2}$/ ], v => {
+		.add([ /^[0-9]{1,2}$/, ':', /^[0-9]{1,2}$/, ':', /^[0-9]{1,2}$/ ], v => {
 			return time12h(parseInt(v[0]), parseInt(v[1]), parseInt(v[2]));
 		})
 

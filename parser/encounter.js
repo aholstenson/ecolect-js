@@ -68,6 +68,7 @@ class Encounter {
 		let nextIndex = this.currentIndex + (consumedTokens || 0);
 		const nextScore = this.currentScore + (score || 0);
 
+		let nextIndexAfterPunctuation = nextIndex;
 		if(this.skipPunctuation) {
 			/*
 			 * Switch to the new index and read all of the punctuation tokens
@@ -75,7 +76,7 @@ class Encounter {
 			 */
 			this.currentIndex = nextIndex;
 			this.readPunctuation();
-			nextIndex = this.currentIndex;
+			nextIndexAfterPunctuation = this.currentIndex;
 		}
 
 		let token = this.tokens[nextIndex];
@@ -88,7 +89,7 @@ class Encounter {
 
 		const branchInto = node => () => {
 			return this.branch(node, () => {
-				this.currentIndex = nextIndex;
+				this.currentIndex = node.supportsPunctuation ? nextIndex : nextIndexAfterPunctuation;
 				this.currentScore = nextScore;
 
 				return node.match(this);
