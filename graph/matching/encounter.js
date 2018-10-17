@@ -1,7 +1,7 @@
 'use strict';
 
-const { Match } = require('../../utils/match');
-const MatchSet = require('../../utils/match-set');
+const { Match } = require('./match');
+const MatchSet = require('./match-set');
 
 function scorePartial(tokens, depth, maxDepth, score) {
 	return (1 / depth) * 0.8 + Math.min(1, score / depth) * 0.2;
@@ -85,13 +85,52 @@ class Encounter {
 			this.data.push(data);
 		}
 
-		const branchInto = node => () => {
-			return this.branch(node, () => {
-				this.currentIndex = node.supportsPunctuation ? nextIndex : nextIndexAfterPunctuation;
-				this.currentScore = nextScore;
+		const currentIndex = this.currentIndex;
+		const currentScore = this.currentScore;
+		const outgoing = this.outgoing;
 
-				return node.match(this);
-			});
+		/**
+		 * Create a function that evaluates the given node.
+		 *
+		 * @param {Node} node
+		 */
+		const branchInto = node => () => {
+			this.maxDepth = Math.max(this.maxDepth, this.currentNodes.length);
+
+			// Switch to the next index and score
+			this.currentIndex = node.supportsPunctuation ? nextIndex : nextIndexAfterPunctuation;
+			this.currentScore = nextScore;
+
+			this.currentNodes.push(node);
+			this.currentTokens.push(this.currentIndex);
+
+			// Swap the nodes being used
+			this.outgoing = node.outgoing;
+
+			// Match the result
+			const result = node.match(this);
+
+			if(result && result.then) {
+				// If the match returned a promise chain the reset
+				return result.then(() => {
+					// Restore the indexes
+					this.currentIndex = currentIndex;
+					this.currentScore = currentScore;
+
+					this.outgoing = outgoing;
+					this.currentNodes.pop();
+					this.currentTokens.pop();
+				});
+			} else {
+				// If the result was not a promise reset directly
+				this.currentIndex = currentIndex;
+				this.currentScore = currentScore;
+
+				this.outgoing = outgoing;
+				this.currentNodes.pop();
+				this.currentTokens.pop();
+				return result;
+			}
 		};
 
 		let promise = Promise.resolve();
@@ -114,40 +153,6 @@ class Encounter {
 				return this.next(nodes, 0.0, (consumedTokens || 0) + 1, data);
 			}
 		});
-	}
-
-	branch(node, func) {
-		const currentIndex = this.currentIndex;
-		const currentScore = this.currentScore;
-		const outgoing = this.outgoing;
-
-		this.currentNodes.push(node);
-
-		this.maxDepth = Math.max(this.maxDepth, this.currentNodes.length);
-
-		const restore = (result) => {
-			this.currentIndex = currentIndex;
-			this.currentScore = currentScore;
-
-			this.outgoing = outgoing;
-			this.currentNodes.pop();
-			this.currentTokens.pop();
-
-			return result;
-		};
-
-		this.outgoing = node.outgoing;
-
-		const result = func();
-
-		this.currentTokens.push(this.currentIndex);
-
-		if(result && result.then) {
-			return result.then(restore);
-		} else {
-			restore(result);
-			return result;
-		}
 	}
 
 	branchWithOnMatch(newOnMatch, func) {
@@ -226,11 +231,14 @@ class Encounter {
 		}
 	}
 
-	cache(index) {
-		if(typeof index === 'undefined') {
-			index = this.currentIndex;
-		}
-
+	/**
+	 * Get a map that can be used to cache things during the evaluation of
+	 * a graph. This is used by sub-nodes to cache their results based on the
+	 * start index.
+	 *
+	 * @param {number} index
+	 */
+	cache(index=this.currentIndex) {
 		let map = this._cache[index];
 		if(map) return map;
 

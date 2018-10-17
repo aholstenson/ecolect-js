@@ -1,6 +1,6 @@
 'use strict';
 
-const { isDeepEqual } = require('./equality');
+const { isDeepEqual } = require('../../utils/equality');
 
 function binarySearch(items, fromIndex, toIndex, key) {
 	let low = fromIndex;

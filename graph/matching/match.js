@@ -1,6 +1,6 @@
 'use strict';
 
-const { clone } = require('../utils/cloning');
+const { clone } = require('../../utils/cloning');
 
 
 module.exports.Match = class Match {
