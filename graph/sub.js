@@ -12,6 +12,16 @@ const ALWAYS_TRUE = () => true;
  */
 const PARSER_PENALTY = 0.001;
 
+/**
+ * Node that points to a sub-graph that should be evaluated as part of another
+ * graph. This type of node will resolve all variants it can starting from the
+ * current token working forwards.
+ *
+ * Given the tokens `T1 T2 T3 T4 T5 T6` and a match starting at T2 this node
+ * may return with variants that span `T2` and `T2 T3` in which case the next
+ * nodes will be evaluated both against both matches, so it will be invoked
+ * once starting from `T3` and once from `T4`.
+ */
 class SubNode extends Node {
 	constructor(roots, filter) {
 		super();
