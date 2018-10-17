@@ -451,6 +451,19 @@ describe('English', function() {
 				day: 3
 			});
 
+			test('2018-01-02 + 1 day', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2018,
+				month: 0,
+				day: 3
+			});
+
+			test('2018-01-02 plus 1 day', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2018,
+				month: 0,
+				day: 3
+			});
 
 			test('1 day before 2018-01-02', { now: new Date(2010, 0, 1) }, {
 				period: 'day',
@@ -459,6 +472,19 @@ describe('English', function() {
 				day: 1
 			});
 
+			test('2018-01-02 - 1 day', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2018,
+				month: 0,
+				day: 1
+			});
+
+			test('2018-01-02 minus 1 day', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2018,
+				month: 0,
+				day: 1
+			});
 
 			test('in 2 months and 3 days', { now: new Date(2010, 0, 1) }, {
 				period: 'day',

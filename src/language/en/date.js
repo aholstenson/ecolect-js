@@ -70,6 +70,18 @@ export default function(language) {
 		.add([ dateDuration, 'before', GraphBuilder.result() ], v => combine(reverse(v[0]), {
 			relativeTo: v[1]
 		}))
+		.add([ GraphBuilder.result(), 'plus', dateDuration ], v => combine(v[1], {
+			relativeTo: v[0]
+		}))
+		.add([ GraphBuilder.result(), '+', dateDuration ], v => combine(v[1], {
+			relativeTo: v[0]
+		}))
+		.add([ GraphBuilder.result(), 'minus', dateDuration ], v => combine(reverse(v[1]), {
+			relativeTo: v[0]
+		}))
+		.add([ GraphBuilder.result(), '-', dateDuration ], v => combine(reverse(v[1]), {
+			relativeTo: v[0]
+		}))
 
 		// This Sunday, Next Monday or On Tuesday
 		.add(dayOfWeek, nextDayOfWeek)
