@@ -17,7 +17,7 @@ export default function(language) {
 		.add([ 'previous week' ], previousWeek)
 
 		.add([ 'week', ordinal ], v => ({ week: v[0].value }))
-		.add([ ordinal, 'week' ], v => ({ week: v[0].value }))
+		.add([ GraphBuilder.result(ordinal, v => v.type === 'specific'), 'week' ], v => ({ week: v[0].value }))
 
 		.mapResults(map)
 		.onlyBest()

@@ -490,7 +490,6 @@ describe('English', function() {
 				day: 15
 			});
 
-
 			test('in 2wks', { now: new Date(2010, 0, 1) }, {
 				period: 'week',
 				year: 2010,
@@ -498,6 +497,12 @@ describe('English', function() {
 				day: 15
 			});
 
+			test('1 week', { now: new Date(2010, 0, 1) }, {
+				period: 'week',
+				year: 2010,
+				month: 0,
+				day: 8
+			});
 
 			test('2nd this month', { now: new Date(2010, 0, 1) }, {
 				period: 'day',
