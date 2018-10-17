@@ -1,9 +1,6 @@
-'use strict';
+import { expect } from 'chai';
 
-const chai = require('chai');
-const expect = chai.expect;
-
-const utils = require('../language/utils');
+import { tokenize } from '../src/language/utils';
 
 function checkTokens(tokens, raw) {
 	expect(tokens.length).to.equal(raw.length, 'Wrong number of tokens extracted');
@@ -16,7 +13,7 @@ function checkTokens(tokens, raw) {
 describe('Language', function() {
 	describe('Utils: Tokenization', function() {
 		it('Single token', function() {
-			const tokens = utils.tokenize('hello', t => t);
+			const tokens = tokenize('hello', t => t);
 			expect(tokens.length).to.equal(1);
 			expect(tokens[0].raw).to.equal('hello');
 			expect(tokens[0].start).to.equal(0);
@@ -24,14 +21,14 @@ describe('Language', function() {
 		});
 
 		it('Multiple tokens', function() {
-			const tokens = utils.tokenize('hello world', t => t);
+			const tokens = tokenize('hello world', t => t);
 			expect(tokens.length).to.equal(2);
 			expect(tokens[0].raw).to.equal('hello');
 			expect(tokens[1].raw).to.equal('world');
 		});
 
 		it('Single to multiple tokens', function() {
-			const tokens = utils.tokenize('can\'t', t => {
+			const tokens = tokenize('can\'t', t => {
 				return [
 					{
 						raw: 'ca',
@@ -55,96 +52,96 @@ describe('Language', function() {
 
 		describe('Spliting', function() {
 			it('Parenthesies', function() {
-				const tokens = utils.tokenize('(abc)', t => t);
+				const tokens = tokenize('(abc)', t => t);
 				checkTokens(tokens, [ '(', 'abc', ')']);
 			});
 
 			it('Brackets', function() {
-				const tokens = utils.tokenize('[abc]', t => t);
+				const tokens = tokenize('[abc]', t => t);
 				checkTokens(tokens, [ '[', 'abc', ']']);
 			});
 
 			it('Exclamation marks', function() {
 				checkTokens(
-					utils.tokenize('abc!', t => t),
+					tokenize('abc!', t => t),
 					[ 'abc', '!']
 				);
 
 				checkTokens(
-					utils.tokenize('a!bc', t => t),
+					tokenize('a!bc', t => t),
 					[ 'a', '!', 'bc' ]
 				);
 			});
 
 			it('Question marks', function() {
 				checkTokens(
-					utils.tokenize('abc?', t => t),
+					tokenize('abc?', t => t),
 					[ 'abc', '?']
 				);
 
 				checkTokens(
-					utils.tokenize('a?bc', t => t),
+					tokenize('a?bc', t => t),
 					[ 'a', '?', 'bc' ]
 				);
 			});
 
 			it('Period', function() {
 				checkTokens(
-					utils.tokenize('abc.', t => t),
+					tokenize('abc.', t => t),
 					[ 'abc', '.']
 				);
 
 				checkTokens(
-					utils.tokenize('a.bc', t => t),
+					tokenize('a.bc', t => t),
 					[ 'a', '.', 'bc' ]
 				);
 			});
 
 			it('Comma', function() {
 				checkTokens(
-					utils.tokenize('abc,', t => t),
+					tokenize('abc,', t => t),
 					[ 'abc', ',']
 				);
 
 				checkTokens(
-					utils.tokenize('a,bc', t => t),
+					tokenize('a,bc', t => t),
 					[ 'a', ',', 'bc' ]
 				);
 			});
 
 			it('Numbers', function() {
 				checkTokens(
-					utils.tokenize('12', t => t),
+					tokenize('12', t => t),
 					[ '12' ]
 				);
 
 				checkTokens(
-					utils.tokenize('12.20', t => t),
+					tokenize('12.20', t => t),
 					[ '12', '.', '20' ]
 				);
 
 				checkTokens(
-					utils.tokenize('12.20SEK', t => t),
+					tokenize('12.20SEK', t => t),
 					[ '12', '.', '20', 'SEK' ]
 				);
 
 				checkTokens(
-					utils.tokenize('12SEK', t => t),
+					tokenize('12SEK', t => t),
 					[ '12', 'SEK' ]
 				);
 
 				checkTokens(
-					utils.tokenize('SEK12', t => t),
+					tokenize('SEK12', t => t),
 					[ 'SEK', '12' ]
 				);
 
 				checkTokens(
-					utils.tokenize('$12.20', t => t),
+					tokenize('$12.20', t => t),
 					[ '$', '12', '.', '20' ]
 				);
 
 				checkTokens(
-					utils.tokenize('€12.20', t => t),
+					tokenize('€12.20', t => t),
 					[ '€', '12', '.', '20' ]
 				);
 			});
@@ -153,14 +150,14 @@ describe('Language', function() {
 
 	describe('Utils: Raw Value', function() {
 		it('Single token', function() {
-			const tokens = utils.tokenize('hello', t => t);
-			const raw = utils.raw(tokens);
+			const tokens = tokenize('hello', t => t);
+			const raw = tokens.raw();
 			expect(raw).to.equal('hello');
 		});
 
 		it('Multiple tokens', function() {
-			const tokens = utils.tokenize('hello world', t => t);
-			const raw = utils.raw(tokens);
+			const tokens = tokenize('hello world', t => t);
+			const raw = tokens.raw();
 			expect(raw).to.equal('hello world');
 		});
 	});

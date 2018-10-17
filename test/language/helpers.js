@@ -1,7 +1,4 @@
-'use strict';
-
-const chai = require('chai');
-const expect = chai.expect;
+import { expect } from 'chai';
 
 function createTester(f, matcher) {
 	return function(expr, opts, v) {
@@ -13,11 +10,12 @@ function createTester(f, matcher) {
 		});
 	};
 }
-module.exports.testRunner = function(matcher) {
+
+export function testRunner(matcher) {
 	const r = (text, options) => matcher.match(text, options);
 
 	const func = createTester(it, r);
 	func.only = createTester(it.only, r);
 	func.skip = createTester(it.skip, r);
 	return func;
-};
+}

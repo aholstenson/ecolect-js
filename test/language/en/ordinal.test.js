@@ -1,41 +1,18 @@
-'use strict';
+import en from '../../../src/language/en';
+import { testRunner } from '../helpers';
 
-const chai = require('chai');
-const expect = chai.expect;
-
-const en = require('../../../language/en');
-const ordinal = text => en.ordinal.match(text);
+const test = testRunner(en.ordinal);
 
 describe('English', function() {
 
 	describe('Ordinal', function() {
-		it('one', function() {
-			return ordinal('one')
-				.then(v =>
-					expect(v).to.deep.equal({ value: 1 })
-				);
-		});
+		test('1', {}, { value: 1 });
 
-		it('1st', function() {
-			return ordinal('1st')
-				.then(v =>
-					expect(v).to.deep.equal({ value: 1 })
-				);
-		});
+		test('1st', {}, { value: 1 });
 
-		it('2 1st', function() {
-			return ordinal('2 1st')
-				.then(v =>
-					expect(v).to.deep.equal({ value: 21 })
-				);
-		});
+		test('2 1st', {}, { value: 21 });
 
-		it('stuff st', function() {
-			return ordinal('stuff st')
-				.then(v =>
-					expect(v).to.deep.equal(null)
-				);
-		});
+		test('stuff st', {}, null);
 	});
 
 });

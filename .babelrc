@@ -1,0 +1,22 @@
+{
+	"presets": [
+		[
+			"env",
+			{
+				"targets": {
+					"node": "current"
+				}
+			}
+		]
+	],
+
+	"plugins": [
+		"add-module-exports"
+	],
+
+	"env": {
+		"test": {
+			"plugins": [ "istanbul" ]
+		}
+	}
+}

@@ -1,9 +1,6 @@
-'use strict';
+import { expect } from 'chai';
 
-const chai = require('chai');
-const expect = chai.expect;
-
-const { time12h, time24h, map } = require('../../time/times');
+import { time12h, time24h, map } from '../../src/time/times';
 
 describe('Time', () => {
 	describe('times', () => {

@@ -1,10 +1,8 @@
-'use strict';
+import { expect } from 'chai';
 
-const chai = require('chai');
-const expect = chai.expect;
+import en from '../src/language/en';
+import GraphBuilder from '../src/graph/builder';
 
-const en = require('../language/en');
-const GraphBuilder = require('../graph/builder');
 const map = results => results.map(r => r.data);
 
 describe('Graph Builder', function() {

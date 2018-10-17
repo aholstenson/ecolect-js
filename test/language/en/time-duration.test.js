@@ -1,7 +1,7 @@
-'use strict';
+import en from '../../../src/language/en';
+import { testRunner } from '../helpers';
 
-const en = require('../../../language/en');
-const test = require('../helpers').testRunner(en.timeDuration);
+const test = testRunner(en.timeDuration);
 
 describe('English', function() {
 

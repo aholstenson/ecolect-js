@@ -1,2 +1,6 @@
 coverage/*
 examples/*
+node_modules/*
+docs/*
+cjs/*
+src/language/matchers.js

@@ -1,110 +1,38 @@
-'use strict';
+import en from '../../../src/language/en';
+import { testRunner } from '../helpers';
 
-const chai = require('chai');
-const expect = chai.expect;
+const test = testRunner(en.integer);
 
-const en = require('../../../language/en');
-const integer = text => en.integer.match(text);
 
 describe('English', function() {
 
 	describe('Integer', function() {
-		it('one', function() {
-			return integer('one')
-				.then(v =>
-					expect(v).to.deep.equal({ value: 1 })
-				);
-		});
+		test('one', {}, { value: 1 });
 
-		it('1', function() {
-			return integer('1')
-				.then(v =>
-					expect(v).to.deep.equal({ value: 1 })
-				);
-		});
+		test('1', {}, { value: 1 });
 
-		it('1 4', function() {
-			return integer('1 4')
-				.then(v =>
-					expect(v).to.deep.equal({ value: 14 })
-				);
-		});
+		test('1 4', {}, { value: 14 });
 
-		it('thousand', function() {
-			return integer('thousand')
-				.then(v =>
-					expect(v).to.deep.equal({ value: 1000 })
-				);
-		});
+		test('thousand', {}, { value: 1000 });
 
-		it('one thousand', function() {
-			return integer('one thousand')
-				.then(v =>
-					expect(v).to.deep.equal({ value: 1000 })
-				);
-		});
+		test('one thousand', {}, { value: 1000 });
 
-		it('1 thousand', function() {
-			return integer('1 thousand')
-				.then(v =>
-					expect(v).to.deep.equal({ value: 1000 })
-				);
-		});
+		test('1 thousand', {}, { value: 1000 });
 
-		it('1 400', function() {
-			return integer('1 400')
-				.then(v =>
-					expect(v).to.deep.equal({ value: 1400 })
-				);
-		});
+		test('1 400', {}, { value: 1400 });
 
-		it('two dozen', function() {
-			return integer('two dozen')
-				.then(v =>
-					expect(v).to.deep.equal({ value: 24 })
-				);
-		});
+		test('two dozen', {}, { value: 24 });
 
-		it('100k', function() {
-			return integer('100k')
-				.then(v =>
-					expect(v).to.deep.equal({ value: 100000 })
-				);
-		});
+		test('100k', {}, { value: 100000 });
 
-		it('-100', function() {
-			return integer('-100')
-				.then(v =>
-					expect(v).to.equal(null)
-				);
-		});
+		test('-100', {}, null);
 
-		it('-1 000', function() {
-			return integer('-1 000')
-				.then(v =>
-					expect(v).to.equal(null)
-				);
-		});
+		test('-1 000', {}, null);
 
-		it('minus one million', function() {
-			return integer('minus one million')
-				.then(v =>
-					expect(v).to.equal(null)
-				);
-		});
+		test('minus one million', {}, null);
 
-		it('1 thousand thousand', function() {
-			return integer('1 thousand thousand')
-				.then(v =>
-					expect(v).to.deep.equal({ value: 1000000 })
-				);
-		});
+		test('1 thousand thousand', {}, { value: 1000000 });
 
-		it('one 000', function() {
-			return integer('one 000')
-				.then(v =>
-					expect(v).to.deep.equal(null)
-				);
-		});
+		test('one 000', {}, null);
 	});
 });

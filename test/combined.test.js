@@ -1,30 +1,27 @@
-'use strict';
+import { expect } from 'chai';
 
-const chai = require('chai');
-const expect = chai.expect;
-
-const ecolect = require('../');
-const en = require('../language/en');
-const any = require('../values/any');
+const { intentsBuilder } = require('../src');
+import en from '../src/language/en';
+import { any } from '../src/values';
 
 describe('Intents', function() {
 	describe('Basic', function() {
 		it('Throws error when no language', () => {
 			expect(() => {
-				ecolect.intents();
+				intentsBuilder();
 			}).to.throw();
 		});
 
 		it('Throws error when no intent id', () => {
 			expect(() => {
-				ecolect.intents(en)
+				intentsBuilder(en)
 					.intent();
 			}).to.throw();
 		});
 	});
 
 	describe('Orders', function() {
-		const intents = ecolect.intents(en)
+		const intents = intentsBuilder(en)
 			.intent('orders')
 				.add('Orders')
 				.add('Show orders')

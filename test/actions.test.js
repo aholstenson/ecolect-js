@@ -1,14 +1,11 @@
-'use strict';
+import { expect } from 'chai';
 
-const chai = require('chai');
-const expect = chai.expect;
-
-const ecolect = require('../');
-const en = require('../language/en');
+import { actionsBuilder } from '../src';
+import en from '../src/language/en';
 
 describe('Actions', function() {
 	describe('Orders', function() {
-		const actions = ecolect.actions(en)
+		const actions = actionsBuilder(en)
 			.action('orders')
 				.add('Orders')
 				.add('Show orders')

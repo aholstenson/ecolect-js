@@ -1,0 +1,4 @@
+{
+  "main": "../../cjs/language/en/index.js",
+  "module": "../../src/language/en/index.js"
+}

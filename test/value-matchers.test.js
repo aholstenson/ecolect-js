@@ -1,10 +1,7 @@
-'use strict';
+import { expect } from 'chai';
 
-const chai = require('chai');
-const expect = chai.expect;
-
-const lang = require('../language/en');
-const boolean = require('../values/boolean');
+import lang from '../src/language/en';
+import { boolean } from '../src/values';
 
 describe('Value: Matchers', () => {
 

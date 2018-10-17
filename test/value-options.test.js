@@ -1,13 +1,9 @@
-'use strict';
+import { expect } from 'chai';
 
-const chai = require('chai');
-const expect = chai.expect;
+import lang from '../src/language/en';
+import Builder from '../src/resolver/builder';
 
-const lang = require('../language/en');
-const Builder = require('../resolver/builder');
-
-const options = require('../values/options');
-const dateInterval = require('../values/date-interval');
+import { options, dateInterval } from '../src/values';
 
 describe('Value: Options', function() {
 

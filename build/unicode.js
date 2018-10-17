@@ -1,5 +1,3 @@
-'use strict';
-
 const fs = require('fs');
 const path = require('path');
 
@@ -37,7 +35,11 @@ matchers['punctuation'] = regenerate()
 	.add(require('unicode-9.0.0/General_Category/Punctuation/code-points.js'))
 	.toString();
 
+const source = Object.keys(matchers).map(m =>
+	'export const ' + m + ' = ' + JSON.stringify(matchers[m]) + ';'
+).join('');
+
 fs.writeFileSync(
-	path.join(__dirname, '..', 'language', 'matchers.js'),
-	'/* eslint-disable */ module.exports = ' + JSON.stringify(matchers) + ';'
+	path.join(__dirname, '..', 'src', 'language', 'matchers.js'),
+	source
 );

@@ -1,1045 +1,679 @@
-'use strict';
+import en from '../../../src/language/en';
+import { testRunner } from '../helpers';
 
-const chai = require('chai');
-const expect = chai.expect;
-
-const en = require('../../../language/en');
-const date = (text, options) => en.date.match(text, options);
+const test = testRunner(en.date);
 
 describe('English', function() {
 	describe('Date', function() {
 		describe('Weekdays', function() {
-			it('this tuesday', function() {
-				const now = new Date(2017, 0, 24);
-				return date('this tuesday', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2017,
-							month: 0,
-							day: 31
-						})
-					);
+			test('this tuesday', { now: new Date(2017, 0, 24) }, {
+					period: 'day',
+					year: 2017,
+					month: 0,
+					day: 31
 			});
 
-			it('this Fri', function() {
-				const now = new Date(2017, 0, 24);
-				return date('this Fri', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2017,
-							month: 0,
-							day: 27
-						})
-					);
+			test('this Fri', { now: new Date(2017, 0, 24) }, {
+				period: 'day',
+				year: 2017,
+				month: 0,
+				day: 27
 			});
 
-			it('this Monday', function() {
-				const now = new Date(2017, 0, 24);
-				return date('this Monday', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2017,
-							month: 0,
-							day: 30
-						})
-					);
+
+			test('this Monday', { now: new Date(2017, 0, 24) }, {
+				period: 'day',
+				year: 2017,
+				month: 0,
+				day: 30
 			});
 
-			it('on Monday', function() {
-				const now = new Date(2017, 0, 24);
-				return date('on Monday', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2017,
-							month: 0,
-							day: 30
-						})
-					);
+
+			test('on Monday', { now: new Date(2017, 0, 24) }, {
+					period: 'day',
+					year: 2017,
+					month: 0,
+					day: 30
 			});
 		});
 
 		describe('Day', function() {
-			it('12th', function() {
-				const now = new Date(2017, 0, 24);
-				return date('12th', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2017,
-							month: 1,
-							day: 12
-						})
-					);
+
+			test('12th', { now: new Date(2017, 0, 24) }, {
+				period: 'day',
+				year: 2017,
+				month: 1,
+				day: 12
 			});
 
-			it('12', function() {
-				const now = new Date(2017, 0, 24);
-				return date('12', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2017,
-							month: 1,
-							day: 12
-						})
-					);
+			test('12', { now: new Date(2017, 0, 24) }, {
+				period: 'day',
+				year: 2017,
+				month: 1,
+				day: 12
 			});
 
-			it('32nd', function() {
-				const now = new Date(2017, 0, 24);
-				return date('32nd', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal(null)
-					);
-			});
+
+			test('32nd', { now: new Date(2017, 0, 24) }, null);
 		});
 
 		describe('Month + day', function() {
-			it('jan 12', function() {
-				const now = new Date(2017, 0, 24);
-				return date('jan 12', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2017,
-							month: 0,
-							day: 12
-						})
-					);
+			test('jan 12', { now: new Date(2017, 0, 24) }, {
+				period: 'day',
+				year: 2017,
+				month: 0,
+				day: 12
 			});
 
-			it('12 jan', function() {
-				const now = new Date(2017, 0, 24);
-				return date('12 jan', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2017,
-							month: 0,
-							day: 12
-						})
-					);
+
+			test('12 jan', { now: new Date(2017, 0, 24) }, {
+				period: 'day',
+				year: 2017,
+				month: 0,
+				day: 12
 			});
 
-			it('jan 12th', function() {
-				const now = new Date(2017, 2, 24);
-				return date('jan 12th', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2018,
-							month: 0,
-							day: 12
-						})
-					);
+
+			test('jan 12th', { now: new Date(2017, 2, 24) }, {
+				period: 'day',
+				year: 2018,
+				month: 0,
+				day: 12
 			});
 
-			it('12th november', function() {
-				const now = new Date(2017, 0, 24);
-				return date('12th november', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2017,
-							month: 10,
-							day: 12
-						})
-					);
+
+			test('12th november', { now: new Date(2017, 0, 24) }, {
+				period: 'day',
+				year: 2017,
+				month: 10,
+				day: 12
 			});
 
-			it('12th of november', function() {
-				const now = new Date(2017, 0, 24);
-				return date('12th of november', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2017,
-							month: 10,
-							day: 12
-						})
-					);
+
+			test('12th of november', { now: new Date(2017, 0, 24) }, {
+				period: 'day',
+				year: 2017,
+				month: 10,
+				day: 12
 			});
 
-			it('4/12', function() {
-				const now = new Date(2017, 0, 24);
-				return date('4/12', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2017,
-							month: 3,
-							day: 12
-						})
-					);
+			test('4/12', { now: new Date(2017, 0, 24) }, {
+					period: 'day',
+					year: 2017,
+					month: 3,
+					day: 12
 			});
 		});
 
 		describe('Year', function() {
-			it('2018', function() {
-				const now = new Date(2017, 0, 24);
-				return date('2018', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'year',
-							year: 2018,
-							month: 0,
-							day: 1
-						})
-					);
+
+			test('2018', { now: new Date(2017, 0, 24) }, {
+				period: 'year',
+				year: 2018,
+				month: 0,
+				day: 1
 			});
 
-			it('this year', function() {
-				const now = new Date(2017, 0, 24);
-				return date('this year', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'year',
-							year: 2017,
-							month: 0,
-							day: 1
-						})
-					);
+
+			test('this year', { now: new Date(2017, 0, 24) }, {
+				period: 'year',
+				year: 2017,
+				month: 0,
+				day: 1
 			});
 		});
 
 		describe('Relative day of week in month', function() {
-			it('first Friday May', function() {
-				return date('first Friday May', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 4,
-							day: 7
-						})
-					);
+
+			test('first Friday May', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2010,
+				month: 4,
+				day: 7
 			});
 
-			it('first Friday in May', function() {
-				return date('first Friday in May', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 4,
-							day: 7
-						})
-					);
+
+			test('first Friday in May', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2010,
+				month: 4,
+				day: 7
 			});
 
-			it('3rd Friday in May', function() {
-				return date('3rd Friday in May', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 4,
-							day: 21
-						})
-					);
+
+			test('3rd Friday in May', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2010,
+				month: 4,
+				day: 21
 			});
 
-			it('3rd Friday in May 2010', function() {
-				return date('3rd Friday in May 2010', { now: new Date(2005, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 4,
-							day: 21
-						})
-					);
+
+			test('3rd Friday in May 2010', { now: new Date(2005, 0, 1) }, {
+				period: 'day',
+				year: 2010,
+				month: 4,
+				day: 21
 			});
 
-			it('Friday in May', function() {
-				return date('Friday in May', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 4,
-							day: 7
-						})
-					);
+			test('Friday in May', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2010,
+				month: 4,
+				day: 7
 			});
 
 		});
 
 		describe('Month + Year', function() {
-			it('may 2018', function() {
-				return date('may 2018')
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'month',
-							year: 2018,
-							month: 4,
-							day: 1
-						})
-					);
+
+			test('may 2018', {}, {
+				period: 'month',
+				year: 2018,
+				month: 4,
+				day: 1
 			});
 
-			it('last month 2018', function() {
-				const now = new Date(2010, 2, 1);
-				return date('last month 2018', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'month',
-							year: 2018,
-							month: 11,
-							day: 1
-						})
-					);
+
+			test('last month 2018', { now: new Date(2010, 2, 1) }, {
+				period: 'month',
+				year: 2018,
+				month: 11,
+				day: 1
 			});
 
-			it('first month 2018', function() {
-				const now = new Date(2010, 2, 1);
-				return date('last month 2018', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'month',
-							year: 2018,
-							month: 11,
-							day: 1
-						})
-					);
+			test('last month 2018', { now: new Date(2010, 2, 1) }, {
+				period: 'month',
+				year: 2018,
+				month: 11,
+				day: 1
 			});
 
 		});
 
 		describe('Weeks', function() {
-			it('this week', function() {
-				return date('this week', { now: new Date(2010, 1, 5), weekStartsOn: 1, firstWeekContainsDate: 4 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2010,
-							month: 1,
-							day: 1
-						})
-					);
+
+			test('this week', { now: new Date(2010, 1, 5), weekStartsOn: 1, firstWeekContainsDate: 4 }, {
+				period: 'week',
+				year: 2010,
+				month: 1,
+				day: 1
 			});
 
-			it('week 2 2018', function() {
-				return date('week 2 2018')
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2018,
-							month: 0,
-							day: 7
-						})
-					);
+
+			test('week 2 2018', {}, {
+				period: 'week',
+				year: 2018,
+				month: 0,
+				day: 7
 			});
 
-			it('week 2 2018 - Monday start', function() {
-				return date('week 2 2018', { weekStartsOn: 1 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2018,
-							month: 0,
-							day: 8
-						})
-					);
+
+			test('week 2 2018', { weekStartsOn: 1 }, {
+				period: 'week',
+				year: 2018,
+				month: 0,
+				day: 8
 			});
 
-			it('Wednesday week 2 2018', function() {
-				return date('Wednesday week 2 2018', { weekStartsOn: 1 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2018,
-							month: 0,
-							day: 10
-						})
-					);
+
+			test('Wednesday week 2 2018', { weekStartsOn: 1 }, {
+				period: 'day',
+				year: 2018,
+				month: 0,
+				day: 10
 			});
 
-			it('this week - Sunday start', function() {
-				return date('this week', { now: new Date(2010, 0, 1), weekStartsOn: 0 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2009,
-							month: 11,
-							day: 27
-						})
-					);
+
+			test('this week', { now: new Date(2010, 0, 1), weekStartsOn: 0 }, {
+				period: 'week',
+				year: 2009,
+				month: 11,
+				day: 27
 			});
 
-			it('end of week - Sunday start', function() {
-				return date('end of week', { now: new Date(2010, 0, 1), weekStartsOn: 0 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2010,
-							month: 0,
-							day: 2
-						})
-					);
+
+			test('end of week', { now: new Date(2010, 0, 1), weekStartsOn: 0 }, {
+				period: 'week',
+				year: 2010,
+				month: 0,
+				day: 2
 			});
 
-			it('end of week - Monday start', function() {
-				return date('end of week', { now: new Date(2010, 0, 1), weekStartsOn: 1 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2010,
-							month: 0,
-							day: 3
-						})
-					);
+
+			test('end of week', { now: new Date(2010, 0, 1), weekStartsOn: 1 }, {
+				period: 'week',
+				year: 2010,
+				month: 0,
+				day: 3
 			});
 
-			it('start of week', function() {
-				return date('start of week', { now: new Date(2010, 0, 1), weekStartsOn: 1 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2009,
-							month: 11,
-							day: 28
-						})
-					);
+
+			test('start of week', { now: new Date(2010, 0, 1), weekStartsOn: 1 }, {
+				period: 'week',
+				year: 2009,
+				month: 11,
+				day: 28
 			});
 
-			it('Tuesday this week', function() {
-				return date('Tuesday this week', { now: new Date(2010, 1, 5), weekStartsOn: 1, firstWeekContainsDate: 4 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 1,
-							day: 2
-						})
-					);
+
+			test('Tuesday this week', { now: new Date(2010, 1, 5), weekStartsOn: 1, firstWeekContainsDate: 4 }, {
+				period: 'day',
+				year: 2010,
+				month: 1,
+				day: 2
 			});
 
-			it('this week Tuesday', function() {
-				return date('this week Tuesday', { now: new Date(2010, 1, 5), weekStartsOn: 1, firstWeekContainsDate: 4 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 1,
-							day: 2
-						})
-					);
+			test('this week Tuesday', { now: new Date(2010, 1, 5), weekStartsOn: 1, firstWeekContainsDate: 4 }, {
+				period: 'day',
+				year: 2010,
+				month: 1,
+				day: 2
 			});
 		});
 
 		describe('Quarters', function() {
-			it('this quarter', function() {
-				return date('this quarter', { now: new Date(2010, 1, 5) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'quarter',
-							year: 2010,
-							month: 0,
-							day: 1
-						})
-					);
+
+			test('this quarter', { now: new Date(2010, 1, 5) }, {
+				period: 'quarter',
+				year: 2010,
+				month: 0,
+				day: 1
 			});
 
-			it('quarter 2 2018', function() {
-				return date('quarter 2 2018')
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'quarter',
-							year: 2018,
-							month: 3,
-							day: 1
-						})
-					);
+			test('quarter 2 2018', {}, {
+				period: 'quarter',
+				year: 2018,
+				month: 3,
+				day: 1
 			});
 
-			it('2018Q3', function() {
-				return date('2018Q3')
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'quarter',
-							year: 2018,
-							month: 6,
-							day: 1
-						})
-					);
+
+			test('2018Q3', {},{
+				period: 'quarter',
+				year: 2018,
+				month: 6,
+				day: 1
 			});
 
-			it('end of Q1', function() {
-				return date('end of Q1', { now: new Date(2018, 0, 2) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'quarter',
-							year: 2018,
-							month: 2,
-							day: 31
-						})
-					);
+
+			test('end of Q1', { now: new Date(2018, 0, 2) }, {
+				period: 'quarter',
+				year: 2018,
+				month: 2,
+				day: 31
 			});
 
-			it('last quarter', function() {
-				return date('last quarter', { now: new Date(2018, 0, 2) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'quarter',
-							year: 2017,
-							month: 9,
-							day: 1
-						})
-					);
+
+			test('last quarter', { now: new Date(2018, 0, 2) }, {
+				period: 'quarter',
+				year: 2017,
+				month: 9,
+				day: 1
 			});
 
-			it('previous quarter', function() {
-				return date('previous quarter', { now: new Date(2018, 0, 2) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'quarter',
-							year: 2017,
-							month: 9,
-							day: 1
-						})
-					);
+
+			test('previous quarter', { now: new Date(2018, 0, 2) }, {
+				period: 'quarter',
+				year: 2017,
+				month: 9,
+				day: 1
 			});
 
-			it('next quarter', function() {
-				return date('next quarter', { now: new Date(2018, 0, 2) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'quarter',
-							year: 2018,
-							month: 3,
-							day: 1
-						})
-					);
+
+			test('next quarter', { now: new Date(2018, 0, 2) }, {
+				period: 'quarter',
+				year: 2018,
+				month: 3,
+				day: 1
 			});
 		});
 
 		describe('Full dates', function() {
-			it('12 jan 2018', function() {
-				return date('12 jan 2018')
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2018,
-							month: 0,
-							day: 12
-						})
-					);
+
+			test('12 jan 2018', {}, {
+				period: 'day',
+				year: 2018,
+				month: 0,
+				day: 12
 			});
 
-			it('12 jan, 2018', function() {
-				return date('12 jan, 2018')
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2018,
-							month: 0,
-							day: 12
-						})
-					);
+
+			test('12 jan, 2018', {}, {
+				period: 'day',
+				year: 2018,
+				month: 0,
+				day: 12
 			});
 
-			it('12 jan in 2018', function() {
-				return date('12 jan in 2018')
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2018,
-							month: 0,
-							day: 12
-						})
-					);
+
+			test('12 jan in 2018', {}, {
+				period: 'day',
+				year: 2018,
+				month: 0,
+				day: 12
 			});
 
-			it('12 jan in 4 years', function() {
-				return date('12 jan in 4 years', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2014,
-							month: 0,
-							day: 12
-						})
-					);
+
+			test('12 jan in 4 years', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2014,
+				month: 0,
+				day: 12
 			});
 
-			it('2010 02 01', function() {
-				return date('2010 02 01')
-					.then(v => {
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 1,
-							day: 1
-						});
-					});
+
+			test('2010 02 01', {}, {
+				period: 'day',
+				year: 2010,
+				month: 1,
+				day: 1
 			});
 
-			it('2010-01-05', function() {
-				return date('2010-01-05')
-					.then(v => {
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 0,
-							day: 5
-						});
-					});
+
+			test('2010-01-05', {}, {
+				period: 'day',
+				year: 2010,
+				month: 0,
+				day: 5
 			});
 
-			it('01 02 2010', function() {
-				return date('01 02 2010')
-					.then(v => {
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 0,
-							day: 2
-						});
-					});
+
+			test('01 02 2010', {}, {
+				period: 'day',
+				year: 2010,
+				month: 0,
+				day: 2
 			});
 
-			it('01/02/2010', function() {
-				return date('01/02/2010')
-					.then(v => {
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 0,
-							day: 2
-						});
-					});
+
+			test('01/02/2010', {}, {
+				period: 'day',
+				year: 2010,
+				month: 0,
+				day: 2
 			});
 		});
 
 		describe('Relative dates', function() {
-			it('today', function() {
-				return date('today', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 0,
-							day: 1
-						})
-					);
+			test('today', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2010,
+				month: 0,
+				day: 1
 			});
 
-			it('tomorrow', function() {
-				return date('tomorrow', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 0,
-							day: 2
-						})
-					);
+
+			test('tomorrow', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2010,
+				month: 0,
+				day: 2
 			});
 
-			it('yesterday', function() {
-				return date('yesterday', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2009,
-							month: 11,
-							day: 31
-						})
-					);
+
+			test('yesterday', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2009,
+				month: 11,
+				day: 31
 			});
 
-			it('day after tomorrow', function() {
-				return date('day after tomorrow', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 0,
-							day: 3
-						})
-					);
+
+			test('day after tomorrow', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2010,
+				month: 0,
+				day: 3
 			});
 
-			it('in 3 days', function() {
-				return date('in 3 days', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 0,
-							day: 4
-						})
-					);
+
+			test('in 3 days', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2010,
+				month: 0,
+				day: 4
 			});
 
-			it('in 1 d', function() {
-				return date('in 1 d', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 0,
-							day: 2
-						})
-					);
+
+			test('in 1 d', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2010,
+				month: 0,
+				day: 2
 			});
 
-			it('1 day after 2018-01-02', function() {
-				return date('1 day after 2018-01-02', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2018,
-							month: 0,
-							day: 3
-						})
-					);
+
+			test('1 day after 2018-01-02', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2018,
+				month: 0,
+				day: 3
 			});
 
-			it('1 day before 2018-01-02', function() {
-				return date('1 day before 2018-01-02', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2018,
-							month: 0,
-							day: 1
-						})
-					);
+
+			test('1 day before 2018-01-02', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2018,
+				month: 0,
+				day: 1
 			});
 
-			it('in 2 months and 3 days', function() {
-				return date('in 2 months and 3 days', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 2,
-							day: 4
-						})
-					);
+
+			test('in 2 months and 3 days', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2010,
+				month: 2,
+				day: 4
 			});
 
-			it('in 1 week', function() {
-				return date('in 1 week', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2010,
-							month: 0,
-							day: 8
-						})
-					);
+
+			test('in 1 week', { now: new Date(2010, 0, 1) }, {
+				period: 'week',
+				year: 2010,
+				month: 0,
+				day: 8
 			});
 
-			it('in two weeks', function() {
-				return date('in two weeks', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2010,
-							month: 0,
-							day: 15
-						})
-					);
+			test('in two weeks', { now: new Date(2010, 0, 1) }, {
+				period: 'week',
+				year: 2010,
+				month: 0,
+				day: 15
 			});
 
-			it('in 2w', function() {
-				return date('in 2w', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2010,
-							month: 0,
-							day: 15
-						})
-					);
+
+			test('in 2w', { now: new Date(2010, 0, 1) }, {
+				period: 'week',
+				year: 2010,
+				month: 0,
+				day: 15
 			});
 
-			it('in 2wks', function() {
-				return date('in 2wks', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2010,
-							month: 0,
-							day: 15
-						})
-					);
+
+			test('in 2wks', { now: new Date(2010, 0, 1) }, {
+				period: 'week',
+				year: 2010,
+				month: 0,
+				day: 15
 			});
 
-			it('2nd this month', function() {
-				return date('2nd this month', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 0,
-							day: 2
-						})
-					);
+
+			test('2nd this month', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2010,
+				month: 0,
+				day: 2
 			});
 
-			it('the 2nd of this month', function() {
-				return date('the 2nd this month', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2010,
-							month: 0,
-							day: 2
-						})
-					);
+
+			test('the 2nd this month', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2010,
+				month: 0,
+				day: 2
 			});
 
-			it('in 1 year', function() {
-				return date('in 1 year', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'year',
-							year: 2011,
-							month: 0,
-							day: 1
-						})
-					);
+
+			test('in 1 year', { now: new Date(2010, 0, 1) }, {
+				period: 'year',
+				year: 2011,
+				month: 0,
+				day: 1
 			});
 
-			it('in 1y', function() {
-				return date('in 1y', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'year',
-							year: 2011,
-							month: 0,
-							day: 1
-						})
-					);
+
+			test('in 1y', { now: new Date(2010, 0, 1) }, {
+				period: 'year',
+				year: 2011,
+				month: 0,
+				day: 1
 			});
 
-			it('in 1 yr', function() {
-				return date('in 1 yr', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'year',
-							year: 2011,
-							month: 0,
-							day: 1
-						})
-					);
+
+			test('in 1 yr', { now: new Date(2010, 0, 1) }, {
+				period: 'year',
+				year: 2011,
+				month: 0,
+				day: 1
 			});
 
-			it('2 yrs from today', function() {
-				return date('2 yrs from today', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'year',
-							year: 2012,
-							month: 0,
-							day: 1
-						})
-					);
+
+			test('2 yrs from today', { now: new Date(2010, 0, 1) }, {
+				period: 'year',
+				year: 2012,
+				month: 0,
+				day: 1
 			});
 
-			it('week 12 in 1 year', function() {
-				return date('week 12 in 1 year', { now: new Date(2010, 0, 1), weekStartsOn: 1, firstWeekContainsDate: 4 })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2011,
-							month: 2,
-							day: 21
-						})
-					);
+
+			test('week 12 in 1 year', { now: new Date(2010, 0, 1), weekStartsOn: 1, firstWeekContainsDate: 4 }, {
+				period: 'week',
+				year: 2011,
+				month: 2,
+				day: 21
 			});
 
-			it('3 days ago', function() {
-				return date('3 days ago', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2009,
-							month: 11,
-							day: 29
-						})
-					);
+
+			test('3 days ago', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2009,
+				month: 11,
+				day: 29
 			});
 
-			it('3 weeks ago', function() {
-				return date('3 weeks ago', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2009,
-							month: 11,
-							day: 11
-						})
-					);
+
+			test('3 weeks ago', { now: new Date(2010, 0, 1) }, {
+				period: 'week',
+				year: 2009,
+				month: 11,
+				day: 11
 			});
 
-			it('1 month and 3 days ago', function() {
-				return date('1 month and 3 days ago', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2009,
-							month: 10,
-							day: 28
-						})
-					);
+			test('1 month and 3 days ago', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2009,
+				month: 10,
+				day: 28
 			});
 
-			it('1 mon 3 d ago', function() {
-				return date('1 mon 3 d ago', { now: new Date(2010, 0, 1) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2009,
-							month: 10,
-							day: 28
-						})
-					);
+			test('1 mon 3 d ago', { now: new Date(2010, 0, 1) }, {
+				period: 'day',
+				year: 2009,
+				month: 10,
+				day: 28
 			});
 		});
 
 		describe('Relative dates within year', function() {
-			it('12 jan next year', function() {
-				return date('12 jan next year')
-				.then(v =>
-					expect(v).to.deep.equal({
-						period: 'day',
-						year: new Date().getFullYear() + 1,
-						month: 0,
-						day: 12
-					})
-				);
+
+			test('12 jan next year', {}, {
+				period: 'day',
+				year: new Date().getFullYear() + 1,
+				month: 0,
+				day: 12
 			});
 
-			it('this month 2018', function() {
-				const now = new Date(2010, 0, 1);
-				return date('this month 2018', { now: now })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'month',
-							year: 2018,
-							month: 0,
-							day: 1
-						})
-					);
+
+			test('this month 2018', { now: new Date(2010, 0, 1) }, {
+				period: 'month',
+				year: 2018,
+				month: 0,
+				day: 1
 			});
 
-			it('first friday in 2018', function() {
-				return date('first friday in 2018')
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2018,
-							month: 0,
-							day: 5
-						})
-					);
+
+			test('first friday in 2018', {}, {
+				period: 'day',
+				year: 2018,
+				month: 0,
+				day: 5
 			});
 
-			it('first friday in 4 years', function() {
-				return date('first friday in 4 years', { now: new Date(2014, 2, 22) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2018,
-							month: 2,
-							day: 23
-						})
-					);
+
+			test('first friday in 4 years', { now: new Date(2014, 2, 22) }, {
+				period: 'day',
+				year: 2018,
+				month: 2,
+				day: 23
 			});
 
-			it('first friday in may 2018', function() {
-				return date('first friday in may 2018')
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2018,
-							month: 4,
-							day: 4
-						})
-					);
+
+			test('first friday in may 2018', {}, {
+				period: 'day',
+				year: 2018,
+				month: 4,
+				day: 4
 			});
 
-			it('first friday in may in 4 years', function() {
-				return date('first friday in may in 4 years', { now: new Date(2014, 2, 22) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2018,
-							month: 4,
-							day: 4
-						})
-					);
+
+			test('first friday in may in 4 years', { now: new Date(2014, 2, 22) }, {
+				period: 'day',
+				year: 2018,
+				month: 4,
+				day: 4
 			});
 
-			it('2 days after first friday in may in 4 years', function() {
-				return date('2 days after first friday in may in 4 years', { now: new Date(2014, 2, 22) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'day',
-							year: 2018,
-							month: 4,
-							day: 6
-						})
-					);
+
+			test('2 days after first friday in may in 4 years', { now: new Date(2014, 2, 22) }, {
+				period: 'day',
+				year: 2018,
+				month: 4,
+				day: 6
 			});
 		});
 
 		describe('Interval modifiers', function() {
-			it('end of jan next year', function() {
-				return date('end of jan next year', { now: new Date(2014, 2, 22) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'month',
-							year: 2015,
-							month: 0,
-							day: 31
-						})
-					);
+
+			test('end of jan next year', { now: new Date(2014, 2, 22) }, {
+				period: 'month',
+				year: 2015,
+				month: 0,
+				day: 31
 			});
 
-			it('end of next year', function() {
-				return date('end of next year', { now: new Date(2014, 2, 22) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'year',
-							year: 2015,
-							month: 11,
-							day: 31
-						})
-					);
+
+			test('end of next year', { now: new Date(2014, 2, 22) }, {
+				period: 'year',
+				year: 2015,
+				month: 11,
+				day: 31
 			});
 
-			it('start of week 12', function() {
-				return date('start of week 12', { now: new Date(2014, 2, 22) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2014,
-							month: 2,
-							day: 16
-						})
-					);
+
+			test('start of week 12', { now: new Date(2014, 2, 22) }, {
+				period: 'week',
+				year: 2014,
+				month: 2,
+				day: 16
 			});
 
-			it('end of week 12', function() {
-				return date('end of week 12', { now: new Date(2014, 2, 22) })
-					.then(v =>
-						expect(v).to.deep.equal({
-							period: 'week',
-							year: 2014,
-							month: 2,
-							day: 22
-						})
-					);
+
+			test('end of week 12', { now: new Date(2014, 2, 22) }, {
+					period: 'week',
+					year: 2014,
+					month: 2,
+					day: 22
 			});
 		});
 	});

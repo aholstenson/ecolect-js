@@ -1,12 +1,9 @@
-'use strict';
+import { expect } from 'chai';
 
-const chai = require('chai');
-const expect = chai.expect;
+import lang from '../src/language/en';
+import Builder from '../src/resolver/builder';
 
-const lang = require('../language/en');
-const Builder = require('../resolver/builder');
-
-const enumeration = require('../values/enumeration');
+import { enumeration } from '../src/values';
 
 describe('Value: Enumeration', function() {
 	describe('No mapping', function() {

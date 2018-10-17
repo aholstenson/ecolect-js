@@ -1,15 +1,9 @@
-'use strict';
+import { expect } from 'chai';
 
-const chai = require('chai');
-const expect = chai.expect;
+import lang from '../src/language/en';
 
-const lang = require('../language/en');
-const Builder = require('../resolver/builder');
-
-const any = require('../values/any');
-const date = require('../values/date');
-const number = require('../values/number');
-const boolean = require('../values/boolean');
+import Builder from '../src/resolver/builder';
+import { any, date, number, boolean } from '../src/values';
 
 function checkExpression(expression, expected) {
 	expect(expression.length, 'expression length should be the same').to.equal(expected.length);

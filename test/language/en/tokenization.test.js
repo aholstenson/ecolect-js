@@ -1,9 +1,5 @@
-'use strict';
-
-const chai = require('chai');
-const expect = chai.expect;
-
-const en = require('../../../language/en');
+import { expect } from 'chai';
+import en from '../../../src/language/en';
 
 describe('English', function() {
 	describe('Tokenization', function() {

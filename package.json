@@ -2,12 +2,12 @@
   "name": "ecolect",
   "version": "0.5.2",
   "description": "Natural language handling for commands and intents",
-  "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha --recursive test/",
-    "coverage": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec --recursive test",
+    "test": "NODE_ENV=test mocha --require @babel/register --recursive test/",
+    "coverage": "NODE_ENV=test nyc mocha --recursive test/",
     "lint": "node_modules/.bin/eslint .",
-    "build": "node ./build/unicode.js"
+    "build": "node ./build/unicode.js && babel src --out-dir cjs",
+    "prepublish": "npm run build"
   },
   "license": "MIT",
   "repository": "aholstenson/ecolect-js",
@@ -18,26 +18,43 @@
     "commands",
     "parsing"
   ],
+  "main": "./cjs/index.js",
+  "module": "./src/index.js",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=8.0.0"
   },
   "dependencies": {
-    "date-fns": "^2.0.0-alpha.20",
+    "date-fns": "^2.0.0-alpha.22",
     "fast-clone": "^1.5.3",
     "fast-deep-equal": "^2.0.1",
     "talisman": "^0.21.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/register": "^7.0.0",
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^10.0.1",
+    "babel-plugin-add-module-exports": "^1.0.0",
+    "babel-plugin-istanbul": "^5.1.0",
+    "babel-preset-env": "^1.7.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chalk": "^2.4.1",
     "cli-autocomplete": "^0.4.1",
     "coveralls": "^3.0.2",
     "eslint": "^5.6.1",
+    "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-node": "^7.0.1",
-    "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
     "regenerate": "^1.4.0",
     "unicode-9.0.0": "^0.7.5"
+  },
+  "nyc": {
+    "require": [
+      "@babel/register"
+    ],
+    "sourceMap": false,
+    "instrument": false
   }
 }

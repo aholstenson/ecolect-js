@@ -1,0 +1,4 @@
+{
+  "main": "../cjs/values/index.js",
+  "module": "../src/values/index.js"
+}
