@@ -3,14 +3,11 @@
 const autocompletePrompt = require('cli-autocomplete');
 const chalk = require('chalk');
 
-const ecolect = require('../');
+const { intentsBuilder } = require('../');
 const en = require('../language/en');
-const any = require('../values/any');
-const date = require('../values/date');
-const number = require('../values/number');
-const enumeration = require('../values/enumeration');
+const { any, date, number, enumeration } = require('../values');
 
-const intents = ecolect.intents(en)
+const intents = intentsBuilder(en)
 	.intent('todo:list')
 		.add('all todos')
 		.add('show me my todos')

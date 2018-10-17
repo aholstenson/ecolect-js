@@ -1,7 +1,7 @@
 'use strict';
 
 const en = require('../language/en');
-const date = require('../values/date');
+const { date } = require('../values');
 
 (async function() {
 	const dateMatcher = date().matcher(en);
