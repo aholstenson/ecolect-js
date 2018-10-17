@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Dates and times &mdash; Ecolect</title>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Montserrat">
+		<link rel="stylesheet" href="/ecolect/assets/main.css">
+		<script src="/ecolect/assets/main.js" defer></script>
+	</head>
+	<body class="no-header-hero">
+		<header>
+			<div class="page-section">
+				<section id="header-main-nav">
+					<a href="/ecolect/" class="primary-logo">
+						Ecolect
+					</a>
+					<div class="header-main-nav-spacer"></div>
+					<a href="https://www.npmjs.com/package/ecolect">NPM</a>
+					<a href="https://github.com/aholstenson/ecolect-js">Github</a>
+				</section>
+				
+				
+			</div>
+		</header>
+
+		<main>
+			
+	<div class="page-section">
+		<div class="article-container">
+			
+			<div class="article-aside">
+				
+<ul class="site-toc">
+
+	<li>
+		<a href="/ecolect/phrases/">Phrases</a>
+		
+	</li>
+
+	<li>
+		<a href="/ecolect/date-time/">Dates and times</a>
+		
+			<ul>
+				
+					<li>
+						<a href="/ecolect/date-time/date/">Date</a>
+					</li>
+				
+					<li>
+						<a href="/ecolect/date-time/date-interval/">Date Interval</a>
+					</li>
+				
+					<li>
+						<a href="/ecolect/date-time/time/">Time</a>
+					</li>
+				
+			</ul>
+		
+	</li>
+
+</ul>
+
+			</div>
+			<article>
+				
+
+				<h1>Dates and times</h1>
+<p>Ecolect supports capturing many different formats of dates and times,
+including durations and intervals.</p>
+<h2>Options</h2>
+<p>All date and time related values share a few options that can be used to
+customize the parsing.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>now</code></td>
+<td><code>new Date()</code></td>
+<td>Date to use as a base for times and dates parsed</td>
+</tr>
+<tr>
+<td><code>weekStartsOn</code></td>
+<td><code>0</code> (Sunday)</td>
+<td>The day the week starts on</td>
+</tr>
+<tr>
+<td><code>firstWeekContainsDate</code></td>
+<td><code>1</code></td>
+<td>The day of January which is always in the first week of the year</td>
+</tr>
+</tbody>
+</table>
+<h2>Handling weeks</h2>
+<p>It's important to set <code>weekStartsOn</code> and <code>firstWeekContainsDate</code> to something
+expected by the user. The default value for <code>weekStartsOn</code> is <code>0</code> which
+indicates that weeks start on Sunday.</p>
+<p><code>firstWeekContainsDate</code> defaults to <code>1</code> which is commonly used in North America
+and Islamic date systems. Countries that use this week numbering include
+Canada, United States, India, Japan, Taiwan, Hong Kong, Macau, Israel,
+Egypt, South Africa, the Phillippines and most of Latin America.</p>
+<p>For EU countries most of them use Mondays as the start of the week and the ISO
+week system. Settings <code>weekStartsOn</code> to <code>1</code> and <code>firstWeekContainsDate</code> to <code>4</code>
+will set weeks to a style used in EU and most other European countries, most
+of Acia and Oceania.</p>
+<p>Middle Eastern countries commonly use Saturday as their first day of week and
+a week numbering system where the first week of the year contains January 1st.
+Set <code>weekStartsOn</code> to <code>6</code> and <code>firstWeekContainsDate</code> to <code>1</code> to use this
+style of week.</p>
+<p>For more information about week numbering see the <a href="https://en.wikipedia.org/wiki/Week#Week_numbering">Week article on Wikipedia</a>.</p>
+
+			</article>
+		</div>
+	</div>
+
+		</main>
+
+		<footer></footer>
+	</body>
+</html>

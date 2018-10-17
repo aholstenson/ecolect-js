@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Ecolect</title>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Montserrat">
+		<link rel="stylesheet" href="/ecolect/assets/main.css">
+		<script src="/ecolect/assets/main.js" defer></script>
+	</head>
+	<body class="no-header-hero">
+		<header>
+			<div class="page-section">
+				<section id="header-main-nav">
+					<a href="/ecolect/" class="primary-logo">
+						Ecolect
+					</a>
+					<div class="header-main-nav-spacer"></div>
+					<a href="https://www.npmjs.com/package/ecolect">NPM</a>
+					<a href="https://github.com/aholstenson/ecolect-js">Github</a>
+				</section>
+				
+				
+			</div>
+		</header>
+
+		<main>
+			
+	<div class="page-section">
+		<div class="article-container">
+			
+			<div class="article-aside">
+				
+<ul class="site-toc">
+
+	<li>
+		<a href="/ecolect/phrases/">Phrases</a>
+		
+	</li>
+
+	<li>
+		<a href="/ecolect/date-time/">Dates and times</a>
+		
+	</li>
+
+</ul>
+
+			</div>
+			<article>
+				
+
+				<h1>Ecolect</h1>
+<p>Ecolect is a JavaScript library for matching natural language expressions such
+as dates, times, numbers and phrases. Ecolect works both in Node and the
+browser and currently supports English, but is extendable to new languages.</p>
+<h2>Phrase matching</h2>
+<p>Phrase matching can be done via.</p>
+<h2>Values</h2>
+<p>Values in Ecolect are built-in types that capture values in a natural language
+format. They can either be used stand-alone or as part of <a href="/phrases/">phrases</a>.</p>
+<p>Phrases in Ecolect can also contain values, there are several built in types and
+it's easy to provide custom value validation. Values are used to capture
+information, such as dates, numbers, names and freeform text.</p>
+<h3>Stand-alone use</h3>
+<p>Most values can be turned into a matching function for a <a href="/language/">language</a>
+via the <code>matcher(language)</code> function:</p>
+<pre class="language-javascript"><code class="language-javascript"><span class="highlight-line"><span class="token keyword">const</span> matcherFunction <span class="token operator">=</span> value<span class="token punctuation">.</span><span class="token function">matcher</span><span class="token punctuation">(</span>language<span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+<p>Example matcher for a <a href="/date-time/date/">date</a> using English:</p>
+<pre class="language-javascript"><code class="language-javascript"><span class="highlight-line"><span class="token keyword">const</span> en <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'ecolect/language/en'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"><span class="token keyword">const</span> <span class="token punctuation">{</span> date <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'ecolect/values'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"></span><br><span class="highlight-line"><span class="token comment">// Create a matcher for the date value</span></span><br><span class="highlight-line"><span class="token keyword">const</span> dateMatcher <span class="token operator">=</span> <span class="token function">date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">matcher</span><span class="token punctuation">(</span>en<span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"></span><br><span class="highlight-line"><span class="token comment">// Call the matcher</span></span><br><span class="highlight-line"><span class="token function">dateMatcher</span><span class="token punctuation">(</span><span class="token string">'2018'</span><span class="token punctuation">)</span></span><br><span class="highlight-line">  <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>value <span class="token operator">=></span> <span class="token comment">/* do something with the value */</span><span class="token punctuation">)</span></span><br><span class="highlight-line">  <span class="token punctuation">.</span><span class="token keyword">catch</span><span class="token punctuation">(</span>err <span class="token operator">=></span> <span class="token comment">/* handle errors */</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"></span><br><span class="highlight-line"><span class="token comment">// Optionally specify options for parsing, such as what day the week starts on</span></span><br><span class="highlight-line"><span class="token function">dateMatcher</span><span class="token punctuation">(</span><span class="token string">'start of week 12'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> weekStartsOn<span class="token punctuation">:</span> <span class="token number">1</span> <span class="token comment">/* Monday*/</span> <span class="token punctuation">}</span><span class="token punctuation">)</span></span><br><span class="highlight-line">  <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>value <span class="token operator">=></span> <span class="token comment">/* do something with the value */</span><span class="token punctuation">)</span></span><br><span class="highlight-line">  <span class="token punctuation">.</span><span class="token keyword">catch</span><span class="token punctuation">(</span>err <span class="token operator">=></span> <span class="token comment">/* handle errors */</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+<h3>Use in phrases</h3>
+<p>Values can be used in phrases by adding them to the builder and then using
+them via the <code>{namedValue}</code> syntax:</p>
+<pre class="language-javascript"><code class="language-javascript"><span class="highlight-line"><span class="token keyword">const</span> <span class="token punctuation">{</span> dateInterval <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'ecolect/values'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"></span><br><span class="highlight-line">builder</span><br><span class="highlight-line">	<span class="token punctuation">.</span><span class="token function">value</span><span class="token punctuation">(</span><span class="token string">'interval'</span><span class="token punctuation">,</span> <span class="token function">dateInterval</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></span><br><span class="highlight-line">	<span class="token punctuation">.</span><span class="token function">phrase</span><span class="token punctuation">(</span><span class="token string">'Completed {interval}'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+
+			</article>
+		</div>
+	</div>
+
+		</main>
+
+		<footer></footer>
+	</body>
+</html>

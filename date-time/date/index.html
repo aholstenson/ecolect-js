@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Date &mdash; Ecolect</title>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Montserrat">
+		<link rel="stylesheet" href="/ecolect/assets/main.css">
+		<script src="/ecolect/assets/main.js" defer></script>
+	</head>
+	<body class="no-header-hero">
+		<header>
+			<div class="page-section">
+				<section id="header-main-nav">
+					<a href="/ecolect/" class="primary-logo">
+						Ecolect
+					</a>
+					<div class="header-main-nav-spacer"></div>
+					<a href="https://www.npmjs.com/package/ecolect">NPM</a>
+					<a href="https://github.com/aholstenson/ecolect-js">Github</a>
+				</section>
+				
+				
+			</div>
+		</header>
+
+		<main>
+			
+	<div class="page-section">
+		<div class="article-container">
+			
+			<div class="article-aside">
+				
+<ul class="site-toc">
+
+	<li>
+		<a href="/ecolect/phrases/">Phrases</a>
+		
+	</li>
+
+	<li>
+		<a href="/ecolect/date-time/">Dates and times</a>
+		
+			<ul>
+				
+					<li>
+						<a href="/ecolect/date-time/date/">Date</a>
+					</li>
+				
+					<li>
+						<a href="/ecolect/date-time/date-interval/">Date Interval</a>
+					</li>
+				
+					<li>
+						<a href="/ecolect/date-time/time/">Time</a>
+					</li>
+				
+			</ul>
+		
+	</li>
+
+</ul>
+
+			</div>
+			<article>
+				
+					<a href="/date-time/" class="page-link-section">Dates and times</a>
+				
+
+				<h1>Date</h1>
+<p>The date value captures the date of a single day and maps to a <code>DateValue</code>
+object.</p>
+<p>Usage:</p>
+<pre class="language-javascript"><code class="language-javascript"><span class="highlight-line"><span class="token keyword">const</span> <span class="token punctuation">{</span> date <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'ecolect/values'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"></span><br><span class="highlight-line"><span class="token comment">// In a phrase</span></span><br><span class="highlight-line">builder<span class="token punctuation">.</span><span class="token function">value</span><span class="token punctuation">(</span><span class="token string">'idOfValue'</span><span class="token punctuation">,</span> <span class="token function">date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"></span><br><span class="highlight-line"><span class="token comment">// As a matcher</span></span><br><span class="highlight-line"><span class="token keyword">const</span> matcher <span class="token operator">=</span> <span class="token function">date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">matcher</span><span class="token punctuation">(</span>language<span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"><span class="token keyword">await</span> result <span class="token operator">=</span> <span class="token function">matcher</span><span class="token punctuation">(</span><span class="token string">'today'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+<h2>Playground</h2>
+<div class="playground-date"></div>
+<h2>Examples</h2>
+<ul>
+<li><code>today</code></li>
+<li><code>tomorrow</code></li>
+<li><code>yesterday</code></li>
+<li><code>may 8th 2020</code></li>
+</ul>
+
+			</article>
+		</div>
+	</div>
+
+		</main>
+
+		<footer></footer>
+	</body>
+</html>

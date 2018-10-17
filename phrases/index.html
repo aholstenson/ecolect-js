@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Phrases &mdash; Ecolect</title>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Montserrat">
+		<link rel="stylesheet" href="/ecolect/assets/main.css">
+		<script src="/ecolect/assets/main.js" defer></script>
+	</head>
+	<body class="no-header-hero">
+		<header>
+			<div class="page-section">
+				<section id="header-main-nav">
+					<a href="/ecolect/" class="primary-logo">
+						Ecolect
+					</a>
+					<div class="header-main-nav-spacer"></div>
+					<a href="https://www.npmjs.com/package/ecolect">NPM</a>
+					<a href="https://github.com/aholstenson/ecolect-js">Github</a>
+				</section>
+				
+				
+			</div>
+		</header>
+
+		<main>
+			
+	<div class="page-section">
+		<div class="article-container">
+			
+			<div class="article-aside">
+				
+<ul class="site-toc">
+
+	<li>
+		<a href="/ecolect/phrases/">Phrases</a>
+		
+			<ul>
+				
+					<li>
+						<a href="/ecolect/phrases/any/">Any (catch-all)</a>
+					</li>
+				
+					<li>
+						<a href="/ecolect/phrases/custom/">Custom value</a>
+					</li>
+				
+					<li>
+						<a href="/ecolect/phrases/enumeration/">Enumeration</a>
+					</li>
+				
+			</ul>
+		
+	</li>
+
+	<li>
+		<a href="/ecolect/date-time/">Dates and times</a>
+		
+	</li>
+
+</ul>
+
+			</div>
+			<article>
+				
+
+				<h1>Phrases</h1>
+<p>In addition to matching on various values Ecolect can help with matching
+several phrases and mapping them to intents or actions. This functionality can
+be used to build things such as:</p>
+<ul>
+<li>Voice interfaces</li>
+<li>Natural language command lines</li>
+<li>Search query builders</li>
+</ul>
+<p>In Ecolect phrases are matched in a fuzzy way, meaning that some phrases will
+match even if an exact match is not found. For example that if a phrase for
+examples contains the word <code>cookies</code> it will match even if <code>cookie</code> is entered.</p>
+<p>Phrase matching can also be run in two modes:</p>
+<ul>
+<li>Normal mode - Match a full expression to an intent, which is best used when
+building a bot or a voice interface.</li>
+<li>Partial mode - Match most of the expression, for example when building an
+action launcher or a auto-complete for a search engine</li>
+</ul>
+<h2>Intents</h2>
+<pre class="language-javascript"><code class="language-javascript"><span class="highlight-line"><span class="token keyword">const</span> <span class="token punctuation">{</span> intentsBuilder <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'ecolect'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"></span><br><span class="highlight-line"><span class="token keyword">const</span> en <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'ecolect/languages/en'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"><span class="token keyword">const</span> <span class="token punctuation">{</span> any <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'ecolect/values'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+<h2>Actions</h2>
+<p>Actions are an extension to intents that makes it easier to register a handler
+for per intent.</p>
+<pre class="language-javascript"><code class="language-javascript"><span class="highlight-line"><span class="token keyword">const</span> <span class="token punctuation">{</span> actionsBuilder <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'ecolect'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"></span><br><span class="highlight-line"><span class="token keyword">const</span> en <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'ecolect/languages/en'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"><span class="token keyword">const</span> <span class="token punctuation">{</span> any <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'ecolect/values'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"></span><br><span class="highlight-line"><span class="token keyword">const</span> actions <span class="token operator">=</span> <span class="token function">actionsBuilder</span><span class="token punctuation">(</span>en<span class="token punctuation">)</span></span><br><span class="highlight-line">	<span class="token punctuation">.</span><span class="token function">action</span><span class="token punctuation">(</span><span class="token punctuation">)</span></span><br><span class="highlight-line">		<span class="token punctuation">.</span><span class="token function">handler</span><span class="token punctuation">(</span>match <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Executed action values were'</span><span class="token punctuation">,</span> match<span class="token punctuation">.</span>values<span class="token punctuation">)</span><span class="token punctuation">)</span></span><br><span class="highlight-line">		<span class="token punctuation">.</span><span class="token function">value</span><span class="token punctuation">(</span><span class="token string">'any'</span><span class="token punctuation">,</span> <span class="token function">any</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></span><br><span class="highlight-line">		<span class="token punctuation">.</span><span class="token function">phrase</span><span class="token punctuation">(</span><span class="token string">'Hello {any}'</span><span class="token punctuation">)</span></span><br><span class="highlight-line">		<span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token punctuation">)</span></span><br><span class="highlight-line">	<span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"></span><br><span class="highlight-line"><span class="token comment">// To get all matches use match:</span></span><br><span class="highlight-line"><span class="token keyword">const</span> matches <span class="token operator">=</span> <span class="token keyword">await</span> actions<span class="token punctuation">.</span><span class="token function">match</span><span class="token punctuation">(</span><span class="token string">'Hello World!'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"><span class="token keyword">if</span><span class="token punctuation">(</span>matches<span class="token punctuation">.</span>best<span class="token punctuation">)</span> <span class="token punctuation">{</span></span><br><span class="highlight-line">	matches<span class="token punctuation">.</span>best<span class="token punctuation">.</span><span class="token function">activate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span><br><span class="highlight-line"><span class="token punctuation">}</span></span><br><span class="highlight-line"></span><br><span class="highlight-line"><span class="token comment">// To run the best match automatically use handle:</span></span><br><span class="highlight-line"><span class="token keyword">await</span> match <span class="token operator">=</span> actions<span class="token punctuation">.</span><span class="token function">handle</span><span class="token punctuation">(</span><span class="token string">'Hello World!'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span></code></pre>
+
+			</article>
+		</div>
+	</div>
+
+		</main>
+
+		<footer></footer>
+	</body>
+</html>
