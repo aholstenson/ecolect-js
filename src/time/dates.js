@@ -27,6 +27,42 @@ import DateValue from './date-value';
 
 import { toStart, toEnd } from './intervals';
 
+export function today(r, e) {
+	const time = currentTime(e);
+	return {
+		day: time.getDate(),
+		month: time.getMonth(),
+		year: time.getFullYear()
+	};
+}
+
+export function tomorrow(r, e) {
+	const time = addDays(currentTime(e), 1);
+	return {
+		day: time.getDate(),
+		month: time.getMonth(),
+		year: time.getFullYear()
+	};
+}
+
+export function dayAfterTomorrow(r, e) {
+	const time = addDays(currentTime(e), 2);
+	return {
+		day: time.getDate(),
+		month: time.getMonth(),
+		year: time.getFullYear()
+	};
+}
+
+export function yesterday(r, e) {
+	const time = addDays(currentTime(e), -1);
+	return {
+		day: time.getDate(),
+		month: time.getMonth(),
+		year: time.getFullYear()
+	};
+}
+
 const QUARTER = {
 	field: 'quarter',
 

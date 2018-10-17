@@ -12,7 +12,7 @@ import {
 } from '../../time/matching';
 import { thisWeek } from '../../time/weeks';
 import { thisQuarter } from '../../time/quarters';
-import { map } from '../../time/dates';
+import { map, today, yesterday, tomorrow, dayAfterTomorrow } from '../../time/dates';
 
 function value(v) {
 	if(Array.isArray(v)) {
@@ -78,11 +78,11 @@ export default function(language) {
 		.add([ 'on', dayOfWeek ], nextDayOfWeek)
 
 		// Expressions for describing the day, such as today and tomorrow
-		.add('today', () => ({ relativeDays: 0 }))
-		.add('tomorrow', () => ({ relativeDays: 1 }))
-		.add('day after tomorrow', () => ({ relativeDays: 2 }))
-		.add('the day after tomorrow', () => ({ relativeDays: 2 }))
-		.add('yesterday', () => ({ relativeDays: -1 }))
+		.add('today', today)
+		.add('tomorrow', tomorrow)
+		.add('day after tomorrow', dayAfterTomorrow)
+		.add('the day after tomorrow', dayAfterTomorrow)
+		.add('yesterday', yesterday)
 
 		// Month followed by day - Jan 12, February 1st
 		.add([ month, day ], v => withDay(v[0], v[1]))

@@ -215,5 +215,50 @@ describe('English', () => {
 				day: 15
 			}
 		});
+
+		test('today', { now: new Date(2012, 8, 1) }, {
+			start: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 1
+			},
+			end: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 1
+			}
+		});
+
+		test('tomorrow', { now: new Date(2012, 8, 1) }, {
+			start: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 2
+			},
+			end: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 2
+			}
+		});
+
+		test('yesterday', { now: new Date(2012, 8, 3) }, {
+			start: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 2
+			},
+			end: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 2
+			}
+		});
 	});
 });
