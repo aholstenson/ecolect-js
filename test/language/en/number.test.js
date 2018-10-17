@@ -127,6 +127,13 @@ describe('English', function() {
 					expect(v).to.deep.equal({ value: 0.001 })
 				);
 		});
+
+		it('1.4e3', function() {
+			return number('1.4e3')
+				.then(v =>
+					expect(v).to.deep.equal({ value: 1400 })
+				);
+		});
 	});
 
 });
