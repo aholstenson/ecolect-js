@@ -33,7 +33,7 @@ Matching can also be run in two modes:
 ```javascript
 const ecolect = require('ecolect');
 const en = require('ecolect/language/en');
-const any = require('ecolect/values/any');
+const { any } = require('ecolect/values');
 
 const intents = ecolect.intents(en)
   .intent('lights:on')
@@ -108,7 +108,7 @@ Values can either be used within intents or standalone as matchers:
 
 ```javascript
 const en = require('ecolect/language/en');
-const date = require('ecolect/values/date');
+const { date } = require('ecolect/values');
 
 // Create a matcher for the date value
 const dateMatcher = date().matcher(en);
@@ -145,7 +145,7 @@ The returned value is a simple object with one key named `value`.
 #### Example
 
 ```javascript
-const integer = require('ecolect/values/integer');
+const { integer } = require('ecolect/values');
 
 builder.intent('list')
   .value('count', integer())
@@ -173,7 +173,7 @@ The returned value is a simple object with one key named `value`.
 #### Example
 
 ```javascript
-const number = require('ecolect/values/number');
+const { number } = require('ecolect/values');
 
 builder.intent('add')
   .value('amount', number())
@@ -200,7 +200,7 @@ The returned value is a simple object with one key named `value`.
 #### Example
 
 ```javascript
-const ordinal = require('ecolect/values/ordinal');
+const { ordinal } = require('ecolect/values');
 
 builder.intent('pick')
   .value('position', ordinal())
@@ -228,7 +228,7 @@ const date = value.toDate();
 #### Example
 
 ```javascript
-const date = require('ecolect/values/date');
+const { date } = require('ecolect/values');
 
 builder.intent('deadline')
   .value('date', date())
@@ -256,7 +256,7 @@ const date = value.toDate();
 #### Example
 
 ```javascript
-const time = require('ecolect/values/time');
+const { time } = require('ecolect/values');
 
 builder.intent('alarm')
   .value('time', time())
@@ -273,7 +273,7 @@ Language         | Examples
 English          | `3pm on Jan 12th`, `in 2 days and 2 hours`, `14:00`
 
 ```javascript
-const dateTime = require('ecolect/values/date-time');
+const { dateTime } = require('ecolect/values');
 
 builder.intent('schedule')
   .value('when', dateTime())
@@ -302,7 +302,7 @@ const end = value.toEndDate();
 #### Example
 
 ```javascript
-const dateInterval = require('ecolect/values/date-interval');
+const { dateInterval } = require('ecolect/values');
 
 builder.intent('add')
   .value('interval', dateInterval())
@@ -335,7 +335,7 @@ const fromSpecific = value.toDate(new Date(2015, 0, 2));
 #### Example
 
 ```javascript
-const dateDuration = require('ecolect/values/date-duration');
+const { dateDuration } = require('ecolect/values');
 
 builder.intent('listPending')
   .value('dateDuration', dateDuration())
@@ -368,7 +368,7 @@ const fromSpecific = value.toDate(new Date(2015, 0, 2, 10, 0));
 #### Example
 
 ```javascript
-const timeDuration = require('ecolect/values/time-duration');
+const { timeDuration } = require('ecolect/values');
 
 builder.intent('timer')
   .value('timeDuration', timeDuration())
@@ -403,11 +403,11 @@ const fromSpecific = value.toDate(new Date(2015, 0, 2, 10, 0));
 #### Example
 
 ```javascript
-const timeDuration = require('ecolect/values/time-duration');
+const { dateTimeDuration } = require('ecolect/values');
 
 builder.intent('timer')
-  .value('timeDuration', timeDuration())
-  .add('Set a timer for {timeDuration}')
+  .value('dateTimeDuration', dateTimeDuration())
+  .add('Set a timer for {dateTimeDuration}')
   .done();
 ```
 
@@ -417,7 +417,7 @@ Capture one of the specified values. Used to specify one or more values that
 should match.
 
 ```javascript
-const enumeration = require('ecolect/values/enumeration');
+const { enumeration } = require('ecolect/values');
 
 builder.intent('list')
   .value('type', enumeration([
@@ -436,7 +436,7 @@ search queries, todo items and calendar events. Values of type `any` will
 always try to capture as much as they can and will not validate the result.
 
 ```javascript
-const any = require('ecolect/values/any');
+const { any } = require('ecolect/values');
 
 builder.intent('echo')
   .value('text', any())
