@@ -1,0 +1,28 @@
+{% extends "layouts/base.njk" %}
+{% set bodyClass = 'no-header-hero' %}
+{% import "helpers.njk" as helpers %}
+
+{% set sectionObject = null %}
+{% for s in collections.sections %}
+	{% if s.data.id == section %}
+		{% set sectionObject = s %}
+	{% endif %}
+{% endfor %}
+
+{% block main %}
+	<div class="page-section">
+		<div class="article-container">
+			{% set html = layoutContent %}
+			<div class="article-aside">
+				{% include 'toc.njk' %}
+			</div>
+			<article>
+				{% if sectionObject %}
+					<a href="{{ sectionObject.url }}" class="page-link-section">{{ sectionObject.data.title }}</a>
+				{% endif %}
+
+				{{ html | safe }}
+			</article>
+		</div>
+	</div>
+{% endblock %}

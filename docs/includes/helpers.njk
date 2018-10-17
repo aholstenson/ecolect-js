@@ -1,0 +1,24 @@
+
+{% macro warning() %}
+<div class="call-out call-out--warning">
+<span class="call-out__heading">Warning</span>
+
+{{ caller() }}
+
+</div>
+{% endmacro%}
+
+{% macro info() %}
+<div class="call-out call-out--info">
+<span class="call-out__heading">Note</span>
+
+{{ caller() }}
+
+</div>
+{% endmacro%}
+
+{% macro examples(lang) %}
+
+{{ caller() }}
+
+{% endmacro %}

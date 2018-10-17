@@ -1,0 +1,21 @@
+:root {
+	--text-color: #3a4145;
+
+	/* Basic typography */
+	--line-height: 1.5625rem;
+	--line-height-x2: calc(var(--line-height) * 2);
+	--line-height-half: calc(var(--line-height) / 2);
+	--font-size: 1rem;
+
+	--normal-font-family: Roboto, Helvetica, Arial, sans-serif;
+	--heading-font-family: Montserrat, Helvetica, Arial, sans-serif;
+
+	--pre-font-size: 0.9rem;
+
+	--h1-font-size: 2.375rem;
+	--h2-font-size: 1.8125rem;
+	--h3-font-size: 1.3215rem;
+	--h4-font-size: 1rem;
+	--h5-font-size: 1rem;
+
+}

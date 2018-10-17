@@ -1,0 +1,42 @@
+@import "variables.css";
+@import "typography.css";
+
+@import "layout.css";
+@import "article.css";
+
+@import "code.css";
+@import "calendar.css";
+@import "playground.css";
+
+@custom-selector :--focused :focus, [focused];
+
+/* Selector for heading elements */
+@custom-selector :--headings h1, h2, h3, h4, h5, h6;
+
+/* Selector for inputs that are "texty" */
+@custom-selector :--input
+	input[type="text"],
+	input[type="search"],
+	input[type="number"],
+	input[type="email"],
+	input[type="date"],
+	input[type="datetime"],
+	input[type="datetime-local"],
+	input[type="month"],
+	input[type="tel"],
+	input[type="range"],
+	input[type="time"],
+	input[type="url"],
+	input[type="week"],
+	input[type="password"],
+	textarea,
+	select
+	;
+
+/* Media queries used throughout the CSS */
+@custom-media --small screen and (max-width: 699px);
+@custom-media --medium screen and (min-width: 700px) and (max-width: 1023px);
+@custom-media --medium-and-up screen and (min-width: 700px);
+@custom-media --large screen and (min-width: 1024px) and (max-width: 1479px);
+@custom-media --large-and-up screen and (min-width: 1024px);
+@custom-media --extra-large-and-up screen and (min-width: 1480px);

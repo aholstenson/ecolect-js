@@ -1,0 +1,35 @@
+
+.playground__editor {
+	> input {
+		width: 100%;
+		box-sizing: border-box;
+
+		border: 1px solid #ddd;
+
+		line-height: calc(var(--line-height) * 1);
+		padding: 0.5em;
+	}
+}
+
+.playground__date {
+	width: 50%;
+
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.playground__date-interval {
+	display: flex;
+
+	> * {
+		flex: 1 50%;
+
+		&:first-child {
+			padding-right: 0.5em;
+		}
+
+		&:last-child {
+			padding-left: 0.5em;
+		}
+	}
+}
