@@ -1,8 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "build": "NODE_ENV=production concurrently \"webpack\" \"eleventy\"",
-    "start": "NODE_ENV=development concurrently \"webpack-dev-server\" \"eleventy --watch\""
+    "build": "NODE_ENV=production concurrently \"webpack\" \"eleventy --pathprefix '/ecolect-js/'\"",
+    "start": "NODE_ENV=development concurrently \"webpack-dev-server\" \"eleventy --watch\"",
+    "deploy": "npm run build && gh-pages -d build"
   },
   "devDependencies": {
     "@11ty/eleventy": "^0.5.4",
@@ -21,6 +22,7 @@
     "css-hot-loader": "^1.4.2",
     "css-loader": "^1.0.0",
     "extract-text-webpack-plugin": "^3.0.2",
+    "gh-pages": "^2.0.1",
     "mini-css-extract-plugin": "^0.4.4",
     "postcss-clean": "^1.1.0",
     "postcss-import": "^12.0.0",
