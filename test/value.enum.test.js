@@ -88,7 +88,7 @@ describe('Value: Enumeration', function() {
 				partial: true
 			})
 				.then(results => {
-					expect(results.matches.length).to.equal(0);
+					expect(results.matches.length).to.equal(1);
 				});
 		});
 
@@ -97,7 +97,7 @@ describe('Value: Enumeration', function() {
 				partial: true
 			})
 				.then(results => {
-					expect(results.matches.length).to.equal(1);
+					expect(results.matches.length).to.equal(2);
 					expect(results.best.values.company).to.equal('Cookie Co');
 
 					const expr = results.best.expression;
@@ -119,7 +119,7 @@ describe('Value: Enumeration', function() {
 				partial: true
 			})
 				.then(results => {
-					expect(results.matches.length).to.equal(2);
+					expect(results.matches.length).to.equal(3);
 				});
 		});
 	});

@@ -2,7 +2,8 @@ import Match from './match';
 import MatchSet from './match-set';
 
 function scorePartial(tokens, depth, maxDepth, score) {
-	return (1 / depth) * 0.8 + Math.min(1, score / depth) * 0.2;
+	const m = Math.max(tokens, depth);
+	return score / m;
 }
 
 /**

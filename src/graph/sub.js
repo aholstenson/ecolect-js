@@ -75,20 +75,31 @@ export default class SubNode extends Node {
 
 		const variants = [];
 		const branchIntoVariants = variants0 => {
-			let promise = Promise.resolve();
-			for(let i=0; i<variants0.length; i++) {
-				const v = variants0[i];
-				if(v.data !== null && ! this.filter(v.data)) {
-					continue;
-				}
+			let promise;
 
-				promise = promise.then(() => {
-					return encounter.next(
-						v.score - encounter.currentScore - PARSER_PENALTY,
-						v.index - encounter.currentIndex,
-						v.data
-					);
-				});
+			if(variants0.length === 0) {
+				if(encounter.partial && this.partialFallback) {
+					promise = encounter.next(0.0, encounter.tokens.length - encounter.currentIndex, this.partialFallback);
+				} else {
+					promise = Promise.resolve();
+				}
+			} else {
+				promise = Promise.resolve();
+
+				for(let i=0; i<variants0.length; i++) {
+					const v = variants0[i];
+					if(v.data !== null && ! this.filter(v.data)) {
+						continue;
+					}
+
+					promise = promise.then(() => {
+						return encounter.next(
+							v.score - encounter.currentScore - PARSER_PENALTY,
+							v.index - encounter.currentIndex,
+							v.data
+						);
+					});
+				}
 			}
 
 			return promise.then(() => {

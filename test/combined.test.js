@@ -89,6 +89,7 @@ describe('Intents', function() {
 			return intents.match('orders for', { partial: true })
 				.then(results => {
 					expect(results.matches.length).to.equal(1);
+					expect(results.best.intent).to.equal('customer:orders');
 				});
 		});
 
@@ -96,6 +97,7 @@ describe('Intents', function() {
 			return intents.match('orders for Test', { partial: true })
 				.then(results => {
 					expect(results.matches.length).to.equal(1);
+					expect(results.best.intent).to.equal('customer:orders');
 					expect(results.best.values.customer).to.equal('Test');
 				});
 		});

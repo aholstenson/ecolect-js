@@ -17,6 +17,9 @@ export default class ValueParser extends Node {
 		 * on.
 		 */
 		const mapper = matcher.options.mapper;
+		this.node.partialFallback = {
+			id: this.id,
+		};
 		this.node.mapper = (r, encounter) => {
 			if(mapper) {
 				// Perform the mapping using the graphs mapper
@@ -42,9 +45,7 @@ export default class ValueParser extends Node {
 			 * If there are no more tokens and the value does not support
 			 * partial matches push a partial value.
 			 */
-			return encounter.next(0, 0, {
-				id: this.id,
-			});
+			return encounter.next(0, 0, this.node.partialFallback);
 		}
 
 		return this.node.match(encounter);

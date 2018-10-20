@@ -325,7 +325,7 @@ describe('Value: Options', function() {
 				});
 		});
 
-		it.skip('Partial match: thing completed ja', () => {
+		it('Partial match: thing completed ja', () => {
 			return resolver.match('thing completed ja', { partial: true, now: new Date(2018, 0, 2) })
 				.then(r => {
 					expect(r.best).to.not.be.null;

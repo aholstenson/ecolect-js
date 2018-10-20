@@ -139,6 +139,14 @@ describe('Resolver', function() {
 			return resolver.match('stuff jan 12th', { partial: true })
 				.then(r => {
 					expect(r.best).to.not.be.null;
+					expect(r.matches.length).to.equal(2);
+				});
+		});
+
+		it('end - partial, trailing th', function() {
+			return resolver.match('stuff j', { partial: true })
+				.then(r => {
+					expect(r.best).to.not.be.null;
 					expect(r.matches.length).to.equal(1);
 				});
 		});
