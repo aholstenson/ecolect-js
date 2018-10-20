@@ -37,6 +37,16 @@ export default class ValueParser extends Node {
 	}
 
 	match(encounter) {
+		if(! encounter.token() && encounter.initialPartial && ! this.node.supportsPartial) {
+			/*
+			 * If there are no more tokens and the value does not support
+			 * partial matches push a partial value.
+			 */
+			return encounter.next(0, 0, {
+				id: this.id,
+			});
+		}
+
 		return this.node.match(encounter);
 	}
 

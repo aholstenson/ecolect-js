@@ -7,7 +7,7 @@ import { options, dateInterval } from '../src/values';
 
 describe('Value: Options', function() {
 
-	describe('Standalone option', () => {
+	describe('Standalone option: No values', () => {
 		const matcher = options()
 			.option('deadline')
 				.add('with deadline')
@@ -113,6 +113,38 @@ describe('Value: Options', function() {
 						]
 					}
 				]);
+			})
+		);
+	});
+
+	describe('Standalone option: With value', () => {
+		const matcher = options()
+			.option('deadline')
+				.value('deadline', dateInterval())
+				.add('with deadline {deadline}')
+				.done()
+			.build()
+			.matcher(lang);
+
+		it('with deadline [partial=false]', () => matcher('with deadline jan 12th', { now: new Date(2010, 0, 1) })
+			.then(v => {
+				expect(v).to.not.be.null;
+				expect(v.length).to.equal(1);
+
+				const a = v[0];
+				expect(a.option).to.equal('deadline');
+				expect(a.values.deadline).to.deep.equal({
+					start: { period: 'day', year: 2010, month: 0, day: 12 },
+					end: { period: 'day', year: 2010, month: 0, day: 12 }
+				});
+			})
+		);
+
+		it('with deadline [partial=true]', () => matcher('with deadline', { partial: true })
+			.then(v => {
+				expect(v).to.not.be.null;
+				expect(v.length).to.equal(1);
+
 			})
 		);
 	});
@@ -245,6 +277,7 @@ describe('Value: Options', function() {
 			.option('completed')
 				.value('completed', dateInterval())
 				.add('completed {completed}')
+				.add('c {completed}')
 				.done()
 			.build();
 
@@ -264,6 +297,42 @@ describe('Value: Options', function() {
 					expect(v.values).to.deep.equal({
 						name: 'one'
 					});
+				});
+		});
+
+		it('Partial match: thing', () => {
+			return resolver.match('thing', { partial: true, now: new Date(2018, 0, 2) })
+				.then(r => {
+					expect(r.best).to.not.be.null;
+					expect(r.best.values.queryOptions).to.be.instanceOf(Array);
+
+					const v = r.best.values.queryOptions[0];
+					expect(v.option).to.equal('value');
+
+					const v2 = r.matches[1].values.queryOptions[0];
+					expect(v2.option).to.equal('completed');
+				});
+		});
+
+		it('Partial match: thing com', () => {
+			return resolver.match('thing com', { partial: true, now: new Date(2018, 0, 2) })
+				.then(r => {
+					expect(r.best).to.not.be.null;
+					expect(r.best.values.queryOptions).to.be.instanceOf(Array);
+
+					const v = r.best.values.queryOptions[0];
+					expect(v.option).to.equal('completed');
+				});
+		});
+
+		it.skip('Partial match: thing completed ja', () => {
+			return resolver.match('thing completed ja', { partial: true, now: new Date(2018, 0, 2) })
+				.then(r => {
+					expect(r.best).to.not.be.null;
+					expect(r.best.values.queryOptions).to.be.instanceOf(Array);
+
+					const v = r.best.values.queryOptions[0];
+					expect(v.option).to.equal('completed');
 				});
 		});
 

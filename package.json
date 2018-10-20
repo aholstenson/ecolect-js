@@ -3,7 +3,7 @@
   "version": "0.5.2",
   "description": "Natural language handling for commands and intents",
   "scripts": {
-    "test": "NODE_ENV=test mocha --require @babel/register --recursive test/",
+    "test": "mocha --require @babel/register --recursive test/",
     "coverage": "NODE_ENV=test nyc mocha --recursive test/",
     "lint": "node_modules/.bin/eslint .",
     "build": "node ./build/unicode.js && babel src --out-dir cjs",

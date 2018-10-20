@@ -242,7 +242,7 @@ export default class GraphBuilder extends Node {
 				let name = matcher ? matcher.options.name : builder.options.name;
 				if(validator.name) {
 					if(name) {
-						name += ' - ' + validator.name;
+						name += ':' + validator.name;
 					} else {
 						name = validator.name;
 					}

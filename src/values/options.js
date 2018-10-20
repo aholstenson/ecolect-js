@@ -49,7 +49,7 @@ class Builder {
 				const instance = new ResolverBuilder(language, id);
 
 				// Set the name of the parser - for easier debugging
-				instance.parser._name = (parent._name || 'options') + '[' + id + ']';
+				instance.parser.options.name = parent.options.name + '[' + id + ']';
 
 				// Transfer all of the values
 				for(const valueKey of Object.keys(option.values)) {

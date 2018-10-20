@@ -58,22 +58,9 @@ export default class Builder {
 	}
 
 	build() {
-		function makePrettyResult(result, data) {
-			if(result.isPartialData()) {
-				result.data = new ResolvedIntent(data);
-
-			} else {
-				result.data._refreshExpression();
-			}
-
-			result.data.score = result.score;
-			return result.data;
-		}
-
 		this.parser.finalizer((results, encounter) => {
 			// Map so that only the data is made available
-			results = results
-				.map(match => makePrettyResult(match, this.data));
+			results = results.map(finalizeIntent);
 
 			return {
 				best: results[0] || null,
@@ -83,4 +70,10 @@ export default class Builder {
 
 		return this.parser.toMatcher();
 	}
+}
+
+function finalizeIntent(result) {
+	result.data.score = result.score;
+	result.data._refreshExpression();
+	return result.data;
 }

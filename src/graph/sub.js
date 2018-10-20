@@ -1,6 +1,5 @@
 import Node from './node';
 import Matcher from './matching/matcher';
-import Match from './matching/match';
 
 const ALWAYS_TRUE = () => true;
 
@@ -66,7 +65,7 @@ export default class SubNode extends Node {
 				* Partial match for nothing without support for it. Assume
 				* we will match in the future.
 				*/
-				return encounter.match(Match.PARTIAL);
+				return;
 			}
 		}
 
@@ -79,7 +78,7 @@ export default class SubNode extends Node {
 			let promise = Promise.resolve();
 			for(let i=0; i<variants0.length; i++) {
 				const v = variants0[i];
-				if(v.data !== Match.PARTIAL && ! this.filter(v.data)) {
+				if(v.data !== null && ! this.filter(v.data)) {
 					continue;
 				}
 
@@ -106,8 +105,12 @@ export default class SubNode extends Node {
 
 		const onMatch = match => {
 			let result = match.data;
-			if(this.mapper && ! match.isPartialData() && result !== null && typeof result !== 'undefined') {
-				result = this.mapper(result, encounter);
+			if(result !== null && typeof result !== 'undefined') {
+				if(this.mapper) {
+					result = this.mapper(result, encounter);
+				}
+			} else {
+				result = null;
 			}
 
 			variants.push({

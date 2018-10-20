@@ -7,13 +7,7 @@ export default class Match {
 		this.data = data;
 	}
 
-	isPartialData() {
-		return this.data === Match.PARTIAL;
-	}
-
 	copy() {
 		return new Match(this.index, this.score, clone(this.data));
 	}
 }
-
-Match.PARTIAL = '##PARTIAL##';
