@@ -49,7 +49,7 @@ class Builder {
 				const instance = new ResolverBuilder(language, id);
 
 				// Set the name of the parser - for easier debugging
-				instance.parser._name = (this.name || 'options') + ':opt:' + id;
+				instance.parser._name = (parent._name || 'options') + '[' + id + ']';
 
 				// Transfer all of the values
 				for(const valueKey of Object.keys(option.values)) {
@@ -62,21 +62,20 @@ class Builder {
 				}
 
 				const parser = instance.build();
-				parent.add(parser, v => [ v[0] ]);
+				parent.add(parser, v => v[0]);
 			}
 
-			parent.add([ GraphBuilder.result(), GraphBuilder.result() ], v => v[0].concat(v[1]));
-			parent.add([ GraphBuilder.result(), 'and', GraphBuilder.result() ], v => v[0].concat(v[1]));
+			parent.mapResults(v => ({
+				option: v.intent,
+				values: v.values,
+				expression: v.expression
+			}));
 
-			parent.mapResults(v => {
-				return v.filter(v => !! v).map(o => ({
-					option: o.intent,
-					values: o.values,
-					expression: o.expression
-				}));
-			});
+			const repeating = language.repeating(parent.toMatcher())
+				.onlyBest()
+				.toMatcher();
 
-			return new ParsingValue(parent.toMatcher(), Object.assign({
+			return new ParsingValue(repeating, Object.assign({
 				supportsPartial: true
 			}, this.options));
 		});

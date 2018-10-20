@@ -7,6 +7,116 @@ import { options, dateInterval } from '../src/values';
 
 describe('Value: Options', function() {
 
+	describe('Standalone option', () => {
+		const matcher = options()
+			.option('deadline')
+				.add('with deadline')
+				.done()
+			.build()
+			.matcher(lang);
+
+		it('with deadline [partial=false]', () => matcher('with deadline')
+			.then(v => {
+				expect(v).to.deep.equal([
+					{
+						option: 'deadline',
+						values: {},
+						expression: [
+							{
+								type: 'text',
+								value: 'with deadline',
+								source: { start: 0, end: 13 }
+							}
+						]
+					}
+				]);
+			})
+		);
+
+		it('with deadline [partial=true]', () => matcher('with deadline', { partial: true })
+			.then(v => {
+				expect(v).to.deep.equal([
+					{
+						option: 'deadline',
+						values: {},
+						expression: [
+							{
+								type: 'text',
+								value: 'with deadline',
+								source: { start: 0, end: 13 }
+							}
+						]
+					}
+				]);
+			})
+		);
+
+		it('with [partial=true]', () => matcher('with', { partial: true })
+			.then(v => {
+				expect(v).to.deep.equal([
+					{
+						option: 'deadline',
+						values: {},
+						expression: [
+							{
+								type: 'text',
+								value: 'with deadline',
+								source: { start: 0, end: 4 }
+							}
+						]
+					}
+				]);
+			})
+		);
+
+		it('with d [partial=true]', () => matcher('with d', { partial: true })
+			.then(v => {
+				expect(v).to.deep.equal([
+					{
+						option: 'deadline',
+						values: {},
+						expression: [
+							{
+								type: 'text',
+								value: 'with deadline',
+								source: { start: 0, end: 6 }
+							}
+						]
+					}
+				]);
+			})
+		);
+
+		it('with deadline and wi [partial=true]', () => matcher('with deadline and wi', { partial: true })
+			.then(v => {
+				expect(v).to.deep.equal([
+					{
+						option: 'deadline',
+						values: {},
+						expression: [
+							{
+								type: 'text',
+								value: 'with deadline',
+								source: { start: 0, end: 13 }
+							}
+						]
+					},
+					{
+						option: 'deadline',
+						values: {},
+						expression: [
+							{
+								type: 'text',
+								value: 'with deadline',
+								source: { start: 18, end: 20 }
+							}
+						]
+					}
+				]);
+			})
+		);
+	});
+
 	describe('Single option - no value', () => {
 		const queryOptions = options()
 			.option('deadline')

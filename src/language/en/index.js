@@ -23,6 +23,8 @@ import dateTime from './date-time';
 
 import dateInterval from './date-interval';
 
+import repeating from './repeating';
+
 import stemmer from 'talisman/stemmers/porter';
 import { similarity } from 'talisman/metrics/distance/jaro-winkler';
 import treebank from 'talisman/tokenizers/words/treebank';
@@ -133,5 +135,7 @@ language.dateTime = dateTime(language);
 language.dateInterval = dateInterval(language);
 
 language.temperature = temperature(language);
+
+language.repeating = repeating(language);
 
 export default language;
