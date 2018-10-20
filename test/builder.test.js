@@ -146,7 +146,7 @@ describe('Graph Builder', function() {
 				return parser.match('one two', { partial: true })
 					.then(map)
 					.then(results => {
-						expect(results).to.deep.equal([ 4, 2 ]);
+						expect(results).to.deep.equal([ 2 ]);
 					});
 			});
 

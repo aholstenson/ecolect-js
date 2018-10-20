@@ -8,12 +8,22 @@ export default class ValueParser extends Node {
 		super();
 
 		this.id = id;
-		this.node = new SubNode(matcher);
+		this.node = new SubNode(matcher, matcher.options);
 		this.options = options;
 
-		const mapper = matcher.mapper;
+		/*
+		 * Make sure that the result of evaluating this sub-graph is mapped
+		 * using the same mapper as would be used if graph is directly matched
+		 * on.
+		 */
+		const mapper = matcher.options.mapper;
 		this.node.mapper = (r, encounter) => {
-			r = mapper ? mapper(r, encounter) : r;
+			if(mapper) {
+				// Perform the mapping using the graphs mapper
+				r = mapper(r, encounter);
+			}
+
+			// Map it into a value format
 			return {
 				id: id,
 				value: options.mapper ? options.mapper(r) : r

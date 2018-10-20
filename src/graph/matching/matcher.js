@@ -7,13 +7,8 @@ export default class Matcher {
 	constructor(language, nodes, options={}) {
 		this.language = language;
 		this.nodes = nodes;
-		this.name = options.name;
-		this.fuzzy = options.fuzzy || false;
-		this.skipPunctuation = options.skipPunctuation || false;
-		this.finalizer = options.finalizer || null;
-		this.supportsPartial = options.supportsPartial || false;
-		this.mapper = options.mapper || null;
 
+		this.options = options;
 		this._cache = {};
 	}
 
@@ -31,24 +26,16 @@ export default class Matcher {
 
 		const encounter = new Encounter(this.language, expression, Object.assign({
 			onlyComplete: true
-		}, options));
+		}, this.options, options));
 		encounter.outgoing = this.nodes;
-
-		if(this.skipPunctuation) {
-			encounter.skipPunctuation = true;
-		}
-
-		if(this.fuzzy) {
-			encounter.fuzzy = true;
-		}
 
 		let promise = encounter.next(0, 0)
 			.then(() => {
 				return encounter.matches.toArray();
 			});
 
-		if(this.finalizer) {
-			promise = promise.then(results => this.finalizer(results, encounter));
+		if(this.options.finalizer) {
+			promise = promise.then(results => this.options.finalizer(results, encounter));
 		}
 
 		return promise;

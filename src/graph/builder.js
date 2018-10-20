@@ -18,9 +18,11 @@ export default class GraphBuilder extends Node {
 
 		this.language = language;
 
-		this.supportsPartial = false;
-		this._skipPunctuation = false;
-		this._fuzzy = false;
+		this.options = {
+			supportsPartial: false,
+			skipPunctuation: false,
+			fuzzy: false
+		};
 	}
 
 	/**
@@ -32,7 +34,7 @@ export default class GraphBuilder extends Node {
 	 *   self
 	 */
 	name(name) {
-		this._name = this.language.id + ':' + name;
+		this.options.name = this.language.id + ':' + name;
 		return this;
 	}
 
@@ -42,8 +44,8 @@ export default class GraphBuilder extends Node {
 	 * @return
 	 *   self
 	 */
-	allowPartial() {
-		this.supportsPartial = true;
+	allowPartial(active=true) {
+		this.options.supportsPartial = active;
 		return this;
 	}
 
@@ -53,8 +55,8 @@ export default class GraphBuilder extends Node {
 	 * @return
 	 *   self
 	 */
-	skipPunctuation() {
-		this._skipPunctuation = true;
+	skipPunctuation(active=true) {
+		this.options.skipPunctuation = active;
 		return this;
 	}
 
@@ -64,8 +66,8 @@ export default class GraphBuilder extends Node {
 	 * @return
 	 *   self
 	 */
-	fuzzy() {
-		this._fuzzy = true;
+	fuzzy(active=true) {
+		this.options.active = active;
 		return this;
 	}
 
@@ -132,7 +134,7 @@ export default class GraphBuilder extends Node {
 			} else if(n instanceof RegExp) {
 				return push(new RegExpNode(n));
 			} else if(n instanceof Matcher) {
-				return push(new SubNode(n));
+				return push(new SubNode(n, n.options));
 			} else if(n instanceof Node) {
 				return push(n);
 			} else if(typeof n === 'string') {
@@ -176,19 +178,20 @@ export default class GraphBuilder extends Node {
 	}
 
 	mapResults(mapper) {
-		this._mapper = mapper;
+		this.options.mapper = mapper;
 
 		return this;
 	}
 
 	finalizer(func) {
-		if(this._finalizer) {
-			const previous = this._finalizer;
-			this._finalizer = function(results, encounter) {
+		if(this.options.finalizer) {
+			// Chain finalizer if several are requested
+			const previous = this.options.finalizer;
+			this.options.finalizer = function(results, encounter) {
 				return func(previous(results, encounter));
 			};
 		} else {
-			this._finalizer = func;
+			this.options.finalizer = func;
 		}
 		return this;
 	}
@@ -196,42 +199,47 @@ export default class GraphBuilder extends Node {
 	onlyBest() {
 		return this.finalizer((results, encounter) => {
 			let data = results[0] ? results[0].data : null;
-			if(data && this._mapper) {
-				data = this._mapper(data, encounter);
+			if(data && this.options.mapper) {
+				data = this.options.mapper(data, encounter);
 			}
 			return data;
 		});
 	}
 
+	/**
+	 * Build this graph and turn it into a matcher.
+	 */
 	toMatcher() {
-		return this.createMatcher(this.language, this.outgoing, {
-			name: this._name,
-			fuzzy: this._fuzzy,
-			supportsPartial: this.supportsPartial,
-			skipPunctuation: this._skipPunctuation,
-			mapper: this._mapper,
-			finalizer: this._finalizer
-		});
+		return this.createMatcher(this.language, this.outgoing, this.options);
 	}
 
 	createMatcher(lang, nodes, options) {
 		return new Matcher(lang, nodes, options);
 	}
 
-	static result(node, validator) {
+	static result(matcher, validator) {
 		if(typeof validator === 'undefined') {
-			validator = node;
-			node = null;
+			if(typeof matcher === 'function') {
+				validator = matcher;
+				matcher = null;
+			} else if(matcher) {
+				throw new Error('Expected graph or a validation function, got ' + matcher);
+			}
+		}
+
+		if(matcher && ! (matcher instanceof Matcher)) {
+			throw new Error('matcher is not actually an instance of Matcher');
 		}
 
 		return function(builder) {
-			const sub = new SubNode(node ? node : builder.outgoing, validator);
-			if(validator) {
-				let name = node && node.name;
-				if(typeof name === 'function') {
-					name = node._name;
-				}
+			const sub = matcher
+				? new SubNode(matcher, matcher.options, validator)
+				: new SubNode(builder.outgoing, builder.options, validator);
 
+			sub.recursive = ! matcher;
+
+			if(validator) {
+				let name = matcher ? matcher.options.name : builder.options.name;
 				if(validator.name) {
 					if(name) {
 						name += ' - ' + validator.name;
@@ -240,8 +248,8 @@ export default class GraphBuilder extends Node {
 					}
 				}
 				sub.name = name;
-			} else {
-				sub.name = builder._name + ':self';
+			} else if(! matcher) {
+				sub.name = builder.options.name + ':self';
 			}
 			return sub;
 		};

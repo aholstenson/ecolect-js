@@ -1,5 +1,6 @@
 import Node from './node';
 import Matcher from './matching/matcher';
+import Match from './matching/match';
 
 const ALWAYS_TRUE = () => true;
 
@@ -22,7 +23,7 @@ const PARSER_PENALTY = 0.001;
  * once starting from `T3` and once from `T4`.
  */
 export default class SubNode extends Node {
-	constructor(roots, filter) {
+	constructor(roots, options, filter) {
 		super();
 
 		this.filter = filter || ALWAYS_TRUE;
@@ -30,18 +31,16 @@ export default class SubNode extends Node {
 		if(roots instanceof Matcher) {
 			// Roots is actually a matcher, copy the graph from the matcher
 			this.roots = roots.nodes;
-			this.supportsPartial = typeof roots.supportsPartial !== 'undefined' ? roots.supportsPartial : null;
-			this.name = roots.name || null;
-			this.skipPunctuation = typeof roots.skipPunctuation !== 'undefined' ? roots.skipPunctuation : null;
-			this.fuzzy = typeof roots.fuzzy !== 'undefined' ? roots.fuzzy : null;
 			this.state = roots._cache;
 		} else {
 			this.roots = roots;
-			this.state = this;
-			this.supportsPartial = null;
-			this.fuzzy = null;
-			this.skipPunctuation = null;
+			this.state = options.state || this;
 		}
+
+		this.supportsPartial = options.supportsPartial || false;
+		this.name = options.name || null;
+		this.skipPunctuation = options.skipPunctuation || false;
+		this.fuzzy = options.fuzzy || false;
 	}
 
 	match(encounter) {
@@ -53,20 +52,21 @@ export default class SubNode extends Node {
 			return;
 		}
 
-		if(! encounter.token()) {
-			if(encounter.partial) {
-				if(! this.supportsPartial) {
-					/**
-					* Partial match for nothing without support for it. Assume
-					* we will match in the future.
-					*/
-					return encounter.next(1.0, 0);
-				}
-			} else if(this.supportsPartial) {
+		if(! encounter.token() && encounter.initialPartial) {
+			if(this.recursive) {
 				/**
-				 * No tokens means we can't match.
+				 * If this evaluating a recursive match on a partial encounter
+				 * skip it.
 				 */
 				return;
+			}
+
+			if(! this.supportsPartial) {
+				/**
+				* Partial match for nothing without support for it. Assume
+				* we will match in the future.
+				*/
+				return encounter.match(Match.PARTIAL);
 			}
 		}
 
@@ -79,7 +79,9 @@ export default class SubNode extends Node {
 			let promise = Promise.resolve();
 			for(let i=0; i<variants0.length; i++) {
 				const v = variants0[i];
-				if(! this.filter(v.data)) continue;
+				if(v.data !== Match.PARTIAL && ! this.filter(v.data)) {
+					continue;
+				}
 
 				promise = promise.then(() => {
 					return encounter.next(
@@ -104,7 +106,7 @@ export default class SubNode extends Node {
 
 		const onMatch = match => {
 			let result = match.data;
-			if(this.mapper && result !== null && typeof result !== 'undefined') {
+			if(this.mapper && ! match.isPartialData() && result !== null && typeof result !== 'undefined') {
 				result = this.mapper(result, encounter);
 			}
 
@@ -131,17 +133,9 @@ export default class SubNode extends Node {
 		const fuzzy = encounter.fuzzy;
 
 		return encounter.branchWithOnMatch(onMatch, () => {
-			if(partial && this.supportsPartial !== null) {
-				encounter.partial = this.supportsPartial;
-			}
-
-			if(this.skipPunctuation !== null) {
-				encounter.skipPunctuation = this.skipPunctuation;
-			}
-
-			if(this.fuzzy !== null) {
-				encounter.fuzzy = this.fuzzy;
-			}
+			encounter.partial = encounter.initialPartial && this.supportsPartial;
+			encounter.skipPunctuation = this.skipPunctuation;
+			encounter.fuzzy = this.fuzzy;
 
 			return encounter.next(this.roots);
 		}).then(() => {

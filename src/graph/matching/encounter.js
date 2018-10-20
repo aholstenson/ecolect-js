@@ -24,10 +24,12 @@ export default class Encounter {
 		});
 		this.maxDepth = 0;
 
-		this.partial = options.partial || false;
+		this.initialPartial = this.partial = options.partial || false;
 		this.onMatch = options.onMatch;
 		this.verbose = options.verbose;
 		this.onlyComplete = options.onlyComplete || false;
+		this.skipPunctuation = options.skipPunctuation || false;
+		this.fuzzy = options.fuzzy || false;
 
 		this.options = options;
 
