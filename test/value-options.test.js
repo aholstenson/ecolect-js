@@ -21,13 +21,14 @@ describe('Value: Options', function() {
 					{
 						option: 'deadline',
 						values: {},
-						expression: [
-							{
-								type: 'text',
-								value: 'with deadline',
-								source: { start: 0, end: 13 }
-							}
-						]
+					}
+				]);
+
+				expect(v[0].expression).to.deep.equal([
+					{
+						type: 'text',
+						value: 'with deadline',
+						source: { start: 0, end: 13 }
 					}
 				]);
 			})
@@ -39,13 +40,14 @@ describe('Value: Options', function() {
 					{
 						option: 'deadline',
 						values: {},
-						expression: [
-							{
-								type: 'text',
-								value: 'with deadline',
-								source: { start: 0, end: 13 }
-							}
-						]
+					}
+				]);
+
+				expect(v[0].expression).to.deep.equal([
+					{
+						type: 'text',
+						value: 'with deadline',
+						source: { start: 0, end: 13 }
 					}
 				]);
 			})
@@ -57,13 +59,14 @@ describe('Value: Options', function() {
 					{
 						option: 'deadline',
 						values: {},
-						expression: [
-							{
-								type: 'text',
-								value: 'with deadline',
-								source: { start: 0, end: 4 }
-							}
-						]
+					}
+				]);
+
+				expect(v[0].expression).to.deep.equal([
+					{
+						type: 'text',
+						value: 'with deadline',
+						source: { start: 0, end: 4 }
 					}
 				]);
 			})
@@ -75,13 +78,14 @@ describe('Value: Options', function() {
 					{
 						option: 'deadline',
 						values: {},
-						expression: [
-							{
-								type: 'text',
-								value: 'with deadline',
-								source: { start: 0, end: 6 }
-							}
-						]
+					}
+				]);
+
+				expect(v[0].expression).to.deep.equal([
+					{
+						type: 'text',
+						value: 'with deadline',
+						source: { start: 0, end: 6 }
 					}
 				]);
 			})
@@ -93,24 +97,26 @@ describe('Value: Options', function() {
 					{
 						option: 'deadline',
 						values: {},
-						expression: [
-							{
-								type: 'text',
-								value: 'with deadline',
-								source: { start: 0, end: 13 }
-							}
-						]
 					},
 					{
 						option: 'deadline',
-						values: {},
-						expression: [
-							{
-								type: 'text',
-								value: 'with deadline',
-								source: { start: 18, end: 20 }
-							}
-						]
+						values: {}
+					}
+				]);
+
+				expect(v[0].expression).to.deep.equal([
+					{
+						type: 'text',
+						value: 'with deadline',
+						source: { start: 0, end: 13 }
+					}
+				]);
+
+				expect(v[1].expression).to.deep.equal([
+					{
+						type: 'text',
+						value: 'with deadline',
+						source: { start: 18, end: 20 }
 					}
 				]);
 			})

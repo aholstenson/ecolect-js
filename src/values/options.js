@@ -65,11 +65,7 @@ class Builder {
 				parent.add(parser, v => v[0]);
 			}
 
-			parent.mapResults(v => ({
-				option: v.intent,
-				values: v.values,
-				expression: v.expression
-			}));
+			parent.mapResults(v => new Option(v.intent, v.values, v.expression));
 
 			const repeating = language.repeating(parent.toMatcher())
 				.onlyBest()
@@ -84,4 +80,23 @@ class Builder {
 
 export default function(options={}) {
 	return new Builder(options);
+}
+
+/**
+ * Custom option value to hide enumeration for equality checks.
+ */
+class Option {
+
+	constructor(option, values, expression) {
+		this.option = option;
+		this.values = values;
+
+		Object.defineProperty(this, 'expression', {
+			enumerable: false,
+			writable: true
+		});
+
+		this.expression = expression;
+	}
+
 }
