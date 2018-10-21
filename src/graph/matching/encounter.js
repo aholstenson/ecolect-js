@@ -54,6 +54,10 @@ export default class Encounter {
 		return this.currentIndex === this.tokens.length - 1;
 	}
 
+	get isJustAfterLastToken() {
+		return this.currentIndex === this.tokens.length;
+	}
+
 	/**
 	 * Branch out this encounter and try to match all of the given nodes.
 	 *

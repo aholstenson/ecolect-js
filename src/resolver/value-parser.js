@@ -11,6 +11,8 @@ export default class ValueParser extends Node {
 		this.node = new SubNode(matcher, matcher.options);
 		this.options = options;
 
+		this.partialBlankWhenNoToken = ! this.node.supportsPartial || options.partialBlankWhenNoToken;
+
 		/*
 		 * Make sure that the result of evaluating this sub-graph is mapped
 		 * using the same mapper as would be used if graph is directly matched
@@ -40,11 +42,12 @@ export default class ValueParser extends Node {
 	}
 
 	match(encounter) {
-		if(! encounter.token() && encounter.initialPartial && ! this.node.supportsPartial) {
+		if(! encounter.token() && encounter.initialPartial && this.partialBlankWhenNoToken
+			&& (! this.node.supportsPartial || ! encounter.isJustAfterLastToken)) {
 			/*
-			 * If there are no more tokens and the value does not support
-			 * partial matches push a partial value.
-			 */
+			* If there are no more tokens and the value does not support
+			* partial matches push a partial value.
+			*/
 			return encounter.next(0, 0, this.node.partialFallback);
 		}
 

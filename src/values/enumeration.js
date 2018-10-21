@@ -16,7 +16,8 @@ export default function(values, textMapper) {
 		});
 
 		return new ParsingValue(builder.toMatcher(), {
-			supportsPartial: true
+			supportsPartial: true,
+			partialBlankWhenNoToken: true
 		});
 	});
 }

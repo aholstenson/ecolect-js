@@ -78,7 +78,7 @@ export default class SubNode extends Node {
 			let promise;
 
 			if(variants0.length === 0) {
-				if(encounter.partial && this.partialFallback) {
+				if(encounter.initialPartial && ! this.supportsPartial && this.partialFallback) {
 					promise = encounter.next(0.0, encounter.tokens.length - encounter.currentIndex, this.partialFallback);
 				} else {
 					promise = Promise.resolve();

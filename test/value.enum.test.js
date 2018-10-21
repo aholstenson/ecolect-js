@@ -83,12 +83,37 @@ describe('Value: Enumeration', function() {
 			.add('orders for {company}')
 			.build();
 
+
+		it('Single token', function() {
+			return resolver.match('orders ', { partial: true })
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.values.company).to.be.undefined;
+				});
+		});
+
+		it('At start of value', function() {
+			return resolver.match('orders for ', { partial: true })
+				.then(results => {
+					// Expect all of the matches when at the start of the value
+					expect(results.matches.length).to.equal(3);
+				});
+		});
+
+		it('Typing `B`', function() {
+			return resolver.match('orders for b', { partial: true })
+				.then(results => {
+					expect(results.matches.length).to.equal(2);
+					expect(results.best.values.company).to.equal('Banana Inc');
+				});
+		});
+
 		it('Invalid company', function() {
 			return resolver.match('orders for A', {
 				partial: true
 			})
 				.then(results => {
-					expect(results.matches.length).to.equal(1);
+					expect(results.matches.length).to.equal(0);
 				});
 		});
 
@@ -97,7 +122,7 @@ describe('Value: Enumeration', function() {
 				partial: true
 			})
 				.then(results => {
-					expect(results.matches.length).to.equal(2);
+					expect(results.matches.length).to.equal(1);
 					expect(results.best.values.company).to.equal('Cookie Co');
 
 					const expr = results.best.expression;
@@ -111,15 +136,6 @@ describe('Value: Enumeration', function() {
 							end: 12
 						}
 					});
-				});
-		});
-
-		it('Multiple matches', function() {
-			return resolver.match('orders for B', {
-				partial: true
-			})
-				.then(results => {
-					expect(results.matches.length).to.equal(3);
 				});
 		});
 	});
