@@ -4,7 +4,7 @@ import Matcher from '../graph/matching/matcher';
 import TokenNode from '../graph/token';
 import ValueNode from './value';
 
-import { LanguageSpecificValue, ParsingValue, ValueMatcher } from '../values/base';
+import { LanguageSpecificValue } from '../values/base';
 import { isDeepEqual } from '../utils/equality';
 
 const VALUE = /{([a-zA-Z0-9]+)}/g;
@@ -78,7 +78,7 @@ export default class ResolverParser extends Builder {
 				throw new Error('No type registered for ' + id);
 			}
 
-			let nextNode = value instanceof ParsingValue || value instanceof ValueMatcher
+			let nextNode = value.toNode
 				? value.toNode(id)
 				: new ValueNode(id, value);
 

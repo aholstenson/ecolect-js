@@ -14,6 +14,7 @@ export { default as integer } from './integer';
 export { default as number } from './number';
 export { default as options } from './options';
 export { default as ordinal } from './ordinal';
+export { default as staticValue } from './static';
 export { default as temperature } from './temperature';
 export { default as timeDuration } from './time-duration';
 export { default as time } from './time';
