@@ -41,5 +41,22 @@ await result = matcher('today');
 * `tomorrow`
 * `yesterday`
 * `may 8th 2020`
+* `5/8 2020`
+* `2018-02-01`
+* `in 2 days`
+* `in 5 weeks`
+* `2 months ago`
+* `2 months from 2018-10-10`
+* `2 weeks before today`
+* `2m 1d`
+* `in 2 years`
+* `oct 10 in 2 years`
+* `this Saturday`
+* `first Sunday in Aug 2020`
+* `jun of 2002`
+* `this month in 2008`
+* `last month of 2018`
+* `end of September`
+* `start of August 2010`
 
 {% endcall %}

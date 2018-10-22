@@ -17,9 +17,10 @@ Custom values are supported and can be used to do things such as remote lookups.
 function matcher(encounter) {
 	const text = encounter.text();
 	if(encounter.partial) {
-		// Partial matching
+		// Partial matching, only implement if you want to support
 	} else {
 		// Full matching
+		encounter.match('matched value');
 	}
 }
 ```
