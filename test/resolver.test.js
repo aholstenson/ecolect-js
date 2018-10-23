@@ -547,6 +547,62 @@ describe('Resolver', function() {
 					});
 			});
 		});
+
+		describe('Single enumeration-like, greedy', function() {
+			const values = [
+				'one',
+				'one value',
+				'two',
+				'three',
+				'four five'
+			];
+			const resolver = new Builder(lang)
+				.value('name', {
+					greedy: true,
+
+					match: function(encounter) {
+						let text = encounter.text();
+						if(encounter.partial) {
+							for(const v of values) {
+								if(v.indexOf(text) === 0) {
+									encounter.match(v);
+								}
+							}
+						} else {
+							if(values.indexOf(text) >= 0) {
+								encounter.match(text);
+							}
+						}
+					}
+				})
+				.add('{name} end')
+				.add('{name} value end')
+				.build();
+
+			it('Match', function() {
+				return resolver.match('one value end')
+					.then(results => {
+						expect(results.matches.length).to.equal(1);
+						expect(results.best.values.name).to.equal('one');
+					});
+			});
+
+			it('No match', function() {
+				return resolver.match('four value')
+					.then(results => {
+						expect(results.matches.length).to.equal(0);
+					});
+			});
+
+			it('Partial', function() {
+				return resolver.match('one value', {
+					partial: true
+				})
+					.then(results => {
+						expect(results.matches.length).to.equal(2);
+					});
+			});
+		});
 	});
 
 	describe('Graph contains matching expression', function() {

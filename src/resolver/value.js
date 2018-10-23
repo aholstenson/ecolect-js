@@ -5,13 +5,23 @@ import Node from '../graph/node';
  * is greedy and matches as much as it can. This is done by checking if the
  * rest of the expression can match and then after that asking the value if
  * it matches.
+ *
+ * This type of node supports a few options:
+ *
+ * *
+ * 	`greedy` - make the node try to match as much as possible and then work
+ *   backward until it finds the smallest possible match.
+ * *
+ * 	`onlySingle` - make the value short circuit after it has first found a
+ *   value. Useful when remotely validating values and using them in
+ *   conjunction with repeating things such as options.
  */
 export default class Value extends Node {
-	constructor(id, value) {
+	constructor(id, options) {
 		super();
 
 		this.id = id;
-		this.value = value;
+		this.options = options;
 	}
 
 	match(encounter) {
@@ -36,7 +46,7 @@ export default class Value extends Node {
 		}
 
 		const onMatch = match => {
-			return Promise.resolve(this.value.match(valueEncounter))
+			return Promise.resolve(this.options.match(valueEncounter))
 				.then(() => {
 					if(valueEncounter._matches.length === 0) return;
 
@@ -51,18 +61,29 @@ export default class Value extends Node {
 		const match = idx => {
 			const len = idx - currentIndex;
 
-			if(len === 0) return Promise.resolve();
+			if((this.options.greedy && len === 0)
+				|| (! this.options.greedy && idx > tokens.length)
+			) return Promise.resolve();
 
 			valueEncounter._adjust(currentIndex, idx);
 			return encounter.branchWithOnMatch(onMatch, () => encounter.next(len * 0.9, len))
 				.then(() => {
-					if(len > 1) {
-						return match(idx - 1);
+					// If request to only match to keep
+					if(this.options.onlySingle && results.length > 0) return;
+
+					if(this.options.greedy) {
+						if(len > 1) {
+							return match(idx - 1);
+						}
+					} else {
+						if(idx < tokens.length) {
+							return match(idx + 1);
+						}
 					}
 				});
 		};
 
-		return match(stop)
+		return match(this.options.greedy ? stop : currentIndex + 1)
 			.then(() => {
 				for(const result of results) {
 					encounter.match(result);
