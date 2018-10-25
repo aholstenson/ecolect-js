@@ -53,6 +53,7 @@ export default class Value extends Node {
 					for(const v of valueEncounter._matches) {
 						const matchCopy = match.copy();
 						matchCopy.data.values[this.id] = v.value;
+						matchCopy.scoreData.score += 0.9 * v.score;
 						results.push(matchCopy);
 					}
 				});
@@ -66,7 +67,7 @@ export default class Value extends Node {
 			) return Promise.resolve();
 
 			valueEncounter._adjust(currentIndex, idx);
-			return encounter.branchWithOnMatch(onMatch, () => encounter.next(len * 0.9, len))
+			return encounter.branchWithOnMatch(onMatch, () => encounter.next(0, len))
 				.then(() => {
 					// If request to only match to keep
 					if(this.options.onlySingle && results.length > 0) return;
@@ -113,7 +114,7 @@ class ValueEncounter {
 		return this.tokens.raw();
 	}
 
-	match(value, score=undefined) {
+	match(value, score=1) {
 		if(! this._encounter.partial && this._matches.length >= 1) {
 			throw new Error('Multiple matches are only supported when in partial mode');
 		}
