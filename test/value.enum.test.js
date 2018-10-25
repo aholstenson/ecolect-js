@@ -104,7 +104,6 @@ describe('Value: Enumeration', function() {
 			return resolver.match('orders for b', { partial: true })
 				.then(results => {
 					expect(results.matches.length).to.equal(2);
-					expect(results.best.values.company).to.equal('Banana Inc');
 				});
 		});
 

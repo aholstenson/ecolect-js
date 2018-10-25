@@ -1,11 +1,6 @@
 import Match from './match';
 import MatchSet from './match-set';
 
-function scorePartial(tokens, depth, maxDepth, score) {
-	const m = Math.max(tokens, depth);
-	return score / m;
-}
-
 /**
  * Encounter used when trying to match an expression. Contains all the tokens
  * and functions for accessinng tokens, the current index and the current
@@ -214,14 +209,14 @@ export default class Encounter {
 		if(data instanceof Match) {
 			match = data;
 		} else {
-			let score;
-			if(this.partial) {
-				score = scorePartial(this.tokens.length, this.currentIndex, this.maxDepth, this.currentScore);
-			} else {
-				score = this.currentScore / this.tokens.length;
-			}
+			let scoreData = {
+				partial: this.initialPartial,
+				tokens: this.tokens.length,
+				depth: this.currentIndex,
+				score: this.currentScore
+			};
 
-			match = new Match(this.currentIndex, score, data);
+			match = new Match(this.currentIndex, data, scoreData);
 		}
 
 		if(this.onMatch) {
