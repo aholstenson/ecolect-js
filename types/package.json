@@ -1,0 +1,4 @@
+{
+  "main": "../cjs/types/index.js",
+  "module": "../src/types/index.js"
+}
