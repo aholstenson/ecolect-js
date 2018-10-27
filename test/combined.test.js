@@ -102,6 +102,24 @@ describe('Intents', function() {
 				});
 		});
 
+		it('Partial (with skippable): orders Test', function() {
+			return intents.match('orders Test', { partial: true })
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.intent).to.equal('customer:orders');
+					expect(results.best.values.customer).to.equal('Test');
+				});
+		});
+
+		it('Partial and fuzzy: orders for Test', function() {
+			return intents.match('o Test', { partial: true, fuzzy: true })
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.intent).to.equal('customer:orders');
+					expect(results.best.values.customer).to.equal('Test');
+				});
+		});
+
 		it('Partial: assign', function() {
 			return intents.match('assign', { partial: true })
 				.then(results => {
