@@ -42,7 +42,7 @@ export default class ValueParser extends Node {
 	}
 
 	match(encounter) {
-		if(! encounter.token() && encounter.initialPartial && this.partialBlankWhenNoToken
+		if(! encounter.token() && encounter.options.partial && this.partialBlankWhenNoToken
 			&& (! this.node.supportsPartial || ! encounter.isJustAfterLastToken)) {
 			/*
 			* If there are no more tokens and the value does not support

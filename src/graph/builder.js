@@ -21,7 +21,7 @@ export default class GraphBuilder extends Node {
 		this.options = {
 			supportsPartial: false,
 			skipPunctuation: false,
-			fuzzy: false
+			supportsFuzzy: false
 		};
 	}
 
@@ -66,8 +66,8 @@ export default class GraphBuilder extends Node {
 	 * @return
 	 *   self
 	 */
-	fuzzy(active=true) {
-		this.options.active = active;
+	supportsFuzzy(active=true) {
+		this.options.supportsFuzzy = active;
 		return this;
 	}
 

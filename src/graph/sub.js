@@ -39,7 +39,7 @@ export default class SubNode extends Node {
 		this.supportsPartial = options.supportsPartial || false;
 		this.name = options.name || null;
 		this.skipPunctuation = options.skipPunctuation || false;
-		this.fuzzy = options.fuzzy || false;
+		this.supportsFuzzy = options.supportsFuzzy || false;
 	}
 
 	match(encounter) {
@@ -51,7 +51,7 @@ export default class SubNode extends Node {
 			return;
 		}
 
-		if(! encounter.token() && encounter.initialPartial) {
+		if(! encounter.token() && encounter.options.partial) {
 			if(this.recursive) {
 				/**
 				 * If this evaluating a recursive match on a partial encounter
@@ -78,7 +78,7 @@ export default class SubNode extends Node {
 			let promise;
 
 			if(variants0.length === 0) {
-				if(encounter.initialPartial && ! this.supportsPartial && this.partialFallback) {
+				if(encounter.options.partial && ! this.supportsPartial && this.partialFallback) {
 					promise = encounter.next(0.0, encounter.tokens.length - encounter.currentIndex, this.partialFallback);
 				} else {
 					promise = Promise.resolve();
@@ -142,21 +142,21 @@ export default class SubNode extends Node {
 		};
 
 		// Memorize if we are running a partial match
-		const partial = encounter.partial;
+		const supportsPartial = encounter.supportsPartial;
+		const supportsFuzzy = encounter.supportsFuzzy;
 		const skipPunctuation = encounter.skipPunctuation;
-		const fuzzy = encounter.fuzzy;
 
 		return encounter.branchWithOnMatch(onMatch, () => {
-			encounter.partial = encounter.initialPartial && this.supportsPartial;
+			encounter.supportsPartial = this.supportsPartial;
+			encounter.supportsFuzzy = this.supportsFuzzy;
 			encounter.skipPunctuation = this.skipPunctuation;
-			encounter.fuzzy = this.fuzzy;
 
 			return encounter.next(this.roots);
 		}).then(() => {
-			// Restore partial flag
-			encounter.partial = partial;
+			// Switch back to previous supported values
+			encounter.supportsPartial = supportsPartial;
+			encounter.supportsFuzzy = supportsFuzzy;
 			encounter.skipPunctuation = skipPunctuation;
-			encounter.fuzzy = fuzzy;
 
 			cache.set(this.roots, variants);
 			return branchIntoVariants(variants);

@@ -20,12 +20,16 @@ export default class Encounter {
 		});
 		this.maxDepth = 0;
 
-		this.initialPartial = this.partial = options.partial || false;
 		this.onMatch = options.onMatch;
 		this.verbose = options.verbose;
 		this.onlyComplete = options.onlyComplete || false;
 		this.skipPunctuation = options.skipPunctuation || false;
-		this.fuzzy = options.fuzzy || false;
+		this.supportsPartial = options.supportsPartial || false;
+		this.supportsFuzzy = options.supportsFuzzy || false;
+
+		// Turn some options into booleans
+		options.partial = !! options.partial;
+		options.fuzzy = !! options.fuzzy;
 
 		this.options = options;
 
@@ -51,6 +55,14 @@ export default class Encounter {
 
 	get isJustAfterLastToken() {
 		return this.currentIndex === this.tokens.length;
+	}
+
+	get isFuzzy() {
+		return this.options.fuzzy && this.supportsFuzzy;
+	}
+
+	get isPartial() {
+		return this.options.partial && this.supportsPartial;
 	}
 
 	/**
@@ -140,18 +152,6 @@ export default class Encounter {
 
 		return promise.then(() => {
 			if(pushedData) this.data.pop();
-
-			let token = this.tokens[nextIndexAfterPunctuation];
-			if(this.fuzzy && token && token.punctuation) {
-				/*
-				 * The encounter is currently in fuzzy mode and we did not match,
-				 * consume the next token if it's punctuation.
-				 *
-				 * The token will not count towards the score of any match later
-				 * down the expression.
-				 */
-				return this.next(nodes, 0.0, (consumedTokens || 0) + 1, data);
-			}
 		});
 	}
 
@@ -210,7 +210,7 @@ export default class Encounter {
 			match = data;
 		} else {
 			let scoreData = {
-				partial: this.initialPartial,
+				partial: this.options.partial,
 				tokens: this.tokens.length,
 				depth: this.currentIndex,
 				score: this.currentScore

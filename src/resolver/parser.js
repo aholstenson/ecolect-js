@@ -21,7 +21,7 @@ export default class ResolverParser extends Builder {
 
 		this.values = {};
 
-		this.fuzzy();
+		this.supportsFuzzy();
 		this.allowPartial();
 	}
 

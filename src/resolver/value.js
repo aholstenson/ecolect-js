@@ -42,7 +42,7 @@ export default class Value extends Node {
 			 * assume this will match in the future if this is partial or
 			 * short circuit without looking ahead in the graph.
 			 */
-			return encounter.partial ? encounter.next(0.0, 0) : Promise.resolve();
+			return encounter.isPartial ? encounter.next(0.0, 0) : Promise.resolve();
 		}
 
 		const onMatch = match => {
@@ -101,7 +101,7 @@ export default class Value extends Node {
 class ValueEncounter {
 	constructor(encounter) {
 		this._encounter = encounter;
-		this.partial = encounter.partial;
+		this.partial = encounter.options.partial;
 		this._matches = [];
 	}
 
@@ -115,7 +115,7 @@ class ValueEncounter {
 	}
 
 	match(value, score=1) {
-		if(! this._encounter.partial && this._matches.length >= 1) {
+		if(! this.partial && this._matches.length >= 1) {
 			throw new Error('Multiple matches are only supported when in partial mode');
 		}
 

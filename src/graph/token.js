@@ -17,15 +17,22 @@ export default class Token extends Node {
 			 * nodes for both full and partial matches.
 			 */
 			if(this.token.punctuation) {
-				// Punctuation nodes must match directly
 				if(this.token.normalized === token.normalized) {
+					// Punctuation nodes must match directly
 					return encounter.next(0.1, 1);
 				} else if(encounter.skipPunctuation) {
 					// This token is punctuation and the encounter allows skipping
 					return encounter.next(0.0, 0);
 				}
 			} else {
-				const score = encounter.partial && encounter.isLastToken
+				/*
+				 * Select a way to compare the tokens. If this is a partial
+				 * match, use partial comparison if:
+				 *
+				 * 1) This is the last token of the input
+				 * 2) We are also performing fuzzy matching
+				 */
+				const score = (encounter.isPartial && (encounter.isFuzzy || encounter.isLastToken))
 					? this.language.comparePartialTokens(this.token, token)
 					: this.language.compareTokens(this.token, token);
 
@@ -33,7 +40,7 @@ export default class Token extends Node {
 					return encounter.next(score, 1);
 				}
 			}
-		} else if(encounter.partial) {
+		} else if(encounter.isPartial) {
 			/*
 			 * We are matching partial intents and have no token so we should
 			 * always match as this node is a potential continuation of the
@@ -42,14 +49,19 @@ export default class Token extends Node {
 			return encounter.next(1.0, 1);
 		}
 
-		if(encounter.fuzzy && (this.token.skippable || this.token.punctuation)) {
+		/*
+		 * Extra skips based on this token node. If this token is
+		 *
+		 * 1) Skippable or punctuation and the current graph supports fuzzying
+		 * 2) Puncutation and the current graph supports punctuation skipping
+		 */
+		if(((this.token.skippable || this.token.punctuation) && encounter.supportsFuzzy)
+			|| (encounter.skipPunctuation && this.token.punctuation)) {
 			/*
 			 * This token is skippable, skip it without adding any score.
 			 */
 			return encounter.next(0.0, 0);
 		}
-
-		return;
 	}
 
 	equals(other) {
