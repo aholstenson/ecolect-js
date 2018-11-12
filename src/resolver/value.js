@@ -15,6 +15,11 @@ import Node from '../graph/node';
  * 	`onlySingle` - make the value short circuit after it has first found a
  *   value. Useful when remotely validating values and using them in
  *   conjunction with repeating things such as options.
+ *
+ * *
+ *  `max` - the maximum number of hits to match, defaults to 10. If a value
+ *   generates more matches during a partial match the top scoring matches
+ *   will be returned.
  */
 export default class Value extends Node {
 	constructor(id, options) {
@@ -86,7 +91,12 @@ export default class Value extends Node {
 
 		return match(this.options.greedy ? stop : currentIndex + 1)
 			.then(() => {
-				for(const result of results) {
+				// Sort and limit the matches
+				const sorted = results.sort((a, b) => b.score - a.score);
+				const limited = sorted.slice(0, Math.min(sorted.length, this.options.max || 10));
+
+				// Match all of the top matches
+				for(const result of limited) {
 					encounter.match(result);
 				}
 			});
