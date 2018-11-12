@@ -32,7 +32,9 @@ export default class Token extends Node {
 				 * 1) This is the last token of the input
 				 * 2) We are also performing fuzzy matching
 				 */
-				const score = (encounter.isPartial && (encounter.isFuzzy || encounter.isLastToken))
+				const partialAndLastToken = encounter.isPartial && encounter.isLastToken;
+				const rootPartialAndFuzzy = encounter.isFuzzy && encounter.options.partial;
+				const score = (partialAndLastToken || rootPartialAndFuzzy)
 					? this.language.comparePartialTokens(this.token, token)
 					: this.language.compareTokens(this.token, token);
 
