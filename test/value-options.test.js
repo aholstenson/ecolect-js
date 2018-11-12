@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import lang from '../src/language/en';
 import Builder from '../src/resolver/builder';
 
-import { options, dateInterval } from '../src/values';
+import { options, dateInterval, enumeration } from '../src/values';
 
 describe('Value: Options', function() {
 
@@ -292,6 +292,12 @@ describe('Value: Options', function() {
 			.add('Things {queryOptions}')
 			.build();
 
+		const resolver2 = new Builder(lang)
+			.value('enum', enumeration([ 'test', 'abc' ]))
+			.value('queryOptions', queryOptions)
+			.add('{enum} {queryOptions}')
+			.build();
+
 		it('Full match', () => {
 			return resolver.match('things named one', { now: new Date(2018, 0, 2) })
 				.then(r => {
@@ -339,6 +345,51 @@ describe('Value: Options', function() {
 
 					const v = r.best.values.queryOptions[0];
 					expect(v.option).to.equal('completed');
+				});
+		});
+
+		it('Match with enum first', () => {
+			return resolver2.match('test named one', { now: new Date(2018, 0, 2) })
+				.then(r => {
+					expect(r.best).to.not.be.null;
+					expect(r.best.values.queryOptions).to.be.instanceOf(Array);
+
+					const v = r.best.values.queryOptions[0];
+					expect(v.option).to.equal('value');
+					expect(v.values).to.deep.equal({
+						name: 'one'
+					});
+				});
+		});
+
+		it('Partial match with enum first', () => {
+			return resolver2.match('test named one', { now: new Date(2018, 0, 2), partial: true })
+				.then(r => {
+					expect(r.best).to.not.be.null;
+					expect(r.matches.length).to.equal(1);
+				});
+		});
+
+		it('Partial match with enum first', () => {
+			return resolver2.match('test n', { now: new Date(2018, 0, 2), partial: true })
+				.then(r => {
+					expect(r.best).to.not.be.null;
+					expect(r.matches.length).to.equal(1);
+
+					expect(r.best.values.queryOptions).to.deep.equal([
+						{
+							option: 'value',
+							values: {}
+						}
+					]);
+				});
+		});
+
+		it('Partial match with enum first', () => {
+			return resolver2.match('test', { now: new Date(2018, 0, 2), partial: true })
+				.then(r => {
+					expect(r.best).to.not.be.null;
+					expect(r.matches.length).to.equal(2);
 				});
 		});
 
