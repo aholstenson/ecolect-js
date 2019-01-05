@@ -78,12 +78,7 @@ export default class Encounter {
 	 * For every outgoing node:
 	 *   - Run the match method, checking if it matches
 	 */
-	next(nodes, score, consumedTokens, data) {
-		if(! Array.isArray(nodes)) {
-			// If the first argument is not a list of nodes assume outgoing
-			return this.next(this.outgoing, nodes, score, consumedTokens);
-		}
-
+	next(score, consumedTokens, data) {
 		let nextIndex = this.currentIndex + (consumedTokens || 0);
 		const nextScore = this.currentScore + (score || 0);
 
@@ -152,6 +147,7 @@ export default class Encounter {
 			}
 		};
 
+		const nodes = this.outgoing;
 		let promise = Promise.resolve();
 		for(let i=0; i<nodes.length; i++) {
 			promise = promise.then(branchInto(nodes[i]));
@@ -174,9 +170,21 @@ export default class Encounter {
 				&& this.supportsFuzzy
 				&& nextIndex !== this.tokens.length - 1
 			) {
-				return this.next(nodes, (score || 0), (consumedTokens || 0) + 1, data);
+				return this.next((score || 0), (consumedTokens || 0) + 1, data);
 			}
 		});
+	}
+
+	/**
+	 * Branch into and evaluate the expression against the given nodes.
+	 *
+	 * @param {array} nodes
+	 */
+	branchInto(nodes) {
+		const outgoing = this.outgoing;
+		this.outgoing = nodes;
+		return this.next()
+			.then(() => this.outgoing = outgoing);
 	}
 
 	branchWithOnMatch(newOnMatch, func) {

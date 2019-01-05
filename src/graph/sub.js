@@ -152,7 +152,7 @@ export default class SubNode extends Node {
 			encounter.supportsFuzzy = this.supportsFuzzy;
 			encounter.skipPunctuation = this.skipPunctuation;
 
-			return encounter.next(this.roots);
+			return encounter.branchInto(this.roots);
 		}).then(() => {
 			// Switch back to previous supported values
 			encounter.supportsPartial = supportsPartial;
