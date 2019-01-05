@@ -70,7 +70,7 @@ export default class SubNode extends Node {
 		}
 
 		// Set the index we were called at
-		let previousIndex = this.state.currentIndex;
+		const previousIndex = this.state.currentIndex;
 		this.state.currentIndex = encounter.currentIndex;
 
 		const variants = [];
@@ -94,7 +94,7 @@ export default class SubNode extends Node {
 
 					promise = promise.then(() => {
 						return encounter.next(
-							v.score - encounter.currentScore - PARSER_PENALTY,
+							v.score - PARSER_PENALTY,
 							v.index - encounter.currentIndex,
 							v.data
 						);
@@ -114,6 +114,7 @@ export default class SubNode extends Node {
 			return branchIntoVariants(cached);
 		}
 
+		const baseScore = encounter.currentScore;
 		const onMatch = match => {
 			let result = match.data;
 			if(result !== null && typeof result !== 'undefined') {
@@ -126,7 +127,7 @@ export default class SubNode extends Node {
 
 			variants.push({
 				index: match.index,
-				score: encounter.currentScore,
+				score: encounter.currentScore - baseScore,
 				data: result
 			});
 
@@ -135,7 +136,7 @@ export default class SubNode extends Node {
 			if(previousNonSkipped !== match.index) {
 				variants.push({
 					index: previousNonSkipped,
-					score: encounter.currentScore,
+					score: encounter.currentScore - baseScore,
 					data: result
 				});
 			}

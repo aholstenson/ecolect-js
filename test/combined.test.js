@@ -50,6 +50,23 @@ describe('Intents', function() {
 				});
 		});
 
+		it('Match (skippable in input): show for orders', function() {
+			return intents.match('show for orders', { fuzzy: true })
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.intent).to.equal('orders');
+				});
+		});
+
+		it('Match (skippable in expression): orders Test', function() {
+			// Test that skipping `for` works fine
+			return intents.match('orders Test')
+				.then(results => {
+					expect(results.matches.length).to.equal(1);
+					expect(results.best.intent).to.equal('customer:orders');
+				});
+		});
+
 		it('No match: show', function() {
 			return intents.match('show')
 				.then(results => {

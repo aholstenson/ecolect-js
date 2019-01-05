@@ -159,6 +159,23 @@ export default class Encounter {
 
 		return promise.then(() => {
 			if(pushedData) this.currentData.pop();
+
+			/*
+			 * If the input token is skippable also evaluate the expression
+			 * with the token skipped.
+			 *
+			 * This is done if:
+			 * 1) The token is skippable
+			 * 2) The current graph supports fuzzy matching
+			 * 3) The token is not the last one
+			 */
+			const token = this.token(nextIndex);
+			if(token && token.skippable
+				&& this.supportsFuzzy
+				&& nextIndex !== this.tokens.length - 1
+			) {
+				return this.next(nodes, (score || 0), (consumedTokens || 0) + 1, data);
+			}
 		});
 	}
 
