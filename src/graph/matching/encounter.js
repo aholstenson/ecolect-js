@@ -14,7 +14,8 @@ export default class Encounter {
 		this.currentScore = 0;
 		this.currentNodes = [];
 		this.currentTokens = [];
-		this.data = [];
+		this.currentData = [];
+		this.currentDataDepth = 0;
 		this.matches = new MatchSet({
 			isEqual: options.matchIsEqual
 		});
@@ -65,6 +66,12 @@ export default class Encounter {
 		return this.options.partial && this.supportsPartial;
 	}
 
+	data() {
+		return this.currentDataDepth > 0
+			? this.currentData.slice(this.currentDataDepth)
+			: this.currentData;
+	}
+
 	/**
 	 * Branch out this encounter and try to match all of the given nodes.
 	 *
@@ -94,7 +101,7 @@ export default class Encounter {
 		let pushedData = false;
 		if(data !== null && typeof data !== 'undefined') {
 			pushedData = true;
-			this.data.push(data);
+			this.currentData.push(data);
 		}
 
 		const currentIndex = this.currentIndex;
@@ -151,19 +158,25 @@ export default class Encounter {
 		}
 
 		return promise.then(() => {
-			if(pushedData) this.data.pop();
+			if(pushedData) this.currentData.pop();
 		});
 	}
 
 	branchWithOnMatch(newOnMatch, func) {
 		const onMatch = this.onMatch;
+		const currentDataDepth = this.currentDataDepth;
 		this.onMatch = newOnMatch;
+		this.currentDataDepth = this.currentData.length;
 
 		let r = func();
 		if(r && r.then) {
-			r = r.then(() => this.onMatch = onMatch);
+			r = r.then(() => {
+				this.currentDataDepth = currentDataDepth;
+				this.onMatch = onMatch;
+			});
 		} else {
 			this.onMatch = onMatch;
+			this.currentDataDepth = currentDataDepth;
 		}
 
 		return r;

@@ -19,8 +19,9 @@ export default class Builder {
 			const result = new ResolvedIntent(this.data);
 
 			// Transfer any values that have been pushed by other parsers
-			for(let i=0; i<encounter.data.length; i++) {
-				const value = encounter.data[i];
+			const data = encounter.data();
+			for(let i=0; i<data.length; i++) {
+				const value = data[i];
 				if(value.id && typeof value.value !== 'undefined') {
 					result.values[value.id] = value.value;
 				}

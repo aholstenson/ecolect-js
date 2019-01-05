@@ -20,8 +20,8 @@ export default class Collector extends Node {
 			 * the data based on the number of nodes used. This allows the
 			 * parsers to use zero-based indexing instead of length - idx.
 			 */
-			let data = encounter.data;
-			if(data.length > this.depth && encounter.data.length > 0) {
+			let data = encounter.data();
+			if(data.length > this.depth && data.length > 0) {
 				data = data.slice(data.length - this.depth);
 			}
 			value = value(data, encounter);
