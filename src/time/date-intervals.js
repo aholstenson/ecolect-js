@@ -1,6 +1,41 @@
-import { map as mapDate } from './dates';
+import { map as mapDate, today } from './dates';
 import { cloneObject } from '../utils/cloning';
 import IntervalValue from './interval-value';
+import { adjusted } from './matching';
+
+/**
+ * Create an interval that matches dates in the past.
+ */
+export function inThePast(r, encounter) {
+	return {
+		start: null,
+		end: adjusted(today(null, encounter), -1)
+	};
+}
+
+/**
+ * Create an interval that matches dates in the future.
+ */
+export function inTheFuture(r, encounter) {
+	return {
+		start: adjusted(today(null, encounter), 1),
+		end: null
+	};
+}
+
+/**
+ * Create an open ended interval that matches any time.
+ */
+export function anyTime() {
+	return {
+		start: null,
+		end: null
+	};
+}
+
+export function hasSingle(v) {
+	return v && typeof v.start !== 'undefined' && v.start === v.end;
+}
 
 function applyRelationAndEdge(r, edge) {
 	if(! r.intervalEdge) r.intervalEdge = edge;
@@ -32,8 +67,7 @@ export function map(r, e) {
 			// There is a start available - map it
 			start = mapDate(applyRelationAndEdge(r.start, 'start'), e);
 		} else {
-			// No start and no end - can't map this
-			return null;
+			// No start and no end, represents all time
 		}
 	}
 

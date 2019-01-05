@@ -156,6 +156,21 @@ describe('English', () => {
 			}
 		});
 
+		test('between February and March 2009', { now: new Date(2010, 8, 1) }, {
+			start: {
+				period: 'month',
+				year: 2009,
+				month: 1,
+				day: 1
+			},
+			end: {
+				period: 'month',
+				year: 2009,
+				month: 2,
+				day: 31
+			}
+		});
+
 		test('2018-05-02', {}, {
 			start: {
 				period: 'day',
@@ -187,6 +202,21 @@ describe('English', () => {
 		});
 
 		test('Friday to Tuesday', { now: new Date(2012, 8, 1) }, {
+			start: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 7
+			},
+			end: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 11
+			}
+		});
+
+		test('from Friday to Tuesday', { now: new Date(2012, 8, 1) }, {
 			start: {
 				period: 'day',
 				year: 2012,
@@ -258,6 +288,96 @@ describe('English', () => {
 				year: 2012,
 				month: 8,
 				day: 2
+			}
+		});
+
+		test('any time', { now: new Date(2012, 8, 3) }, {
+			start: null,
+			end: null
+		});
+
+		test('in the future', { now: new Date(2012, 8, 3) }, {
+			start: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 4
+			},
+			end: null
+		});
+
+		test('in the past', { now: new Date(2012, 8, 3) }, {
+			start: null,
+			end: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 2
+			}
+		});
+
+		test('after today', { now: new Date(2012, 8, 3) }, {
+			start: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 4
+			},
+			end: null
+		});
+
+		test('from today', { now: new Date(2012, 8, 3) }, {
+			start: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 3
+			},
+			end: null
+		});
+
+		test('from 2020', { now: new Date(2012, 8, 3) }, {
+			start: {
+				period: 'year',
+				year: 2020,
+				month: 0,
+				day: 1
+			},
+			end: null
+		});
+
+		test('from 2020 to 2030', { now: new Date(2012, 8, 3) }, {
+			start: {
+				period: 'year',
+				year: 2020,
+				month: 0,
+				day: 1
+			},
+			end: {
+				period: 'year',
+				year: 2030,
+				month: 11,
+				day: 31
+			}
+		});
+
+		test('before today', { now: new Date(2012, 8, 3) }, {
+			start: null,
+			end: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 2
+			}
+		});
+
+		test('until today', { now: new Date(2012, 8, 3) }, {
+			start: null,
+			end: {
+				period: 'day',
+				year: 2012,
+				month: 8,
+				day: 3
 			}
 		});
 	});

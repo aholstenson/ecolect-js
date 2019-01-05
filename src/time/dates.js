@@ -266,6 +266,11 @@ export function map(r, e, options={}) {
 		time = toStart(time, result.period, e.options);
 	}
 
+	if(r.intervalAdjustment) {
+		// If there is an adjustment to move the interval forward or back
+		time = addDays(time, r.intervalAdjustment, e.options);
+	}
+
 	// Move the time into the result
 	result.year = time.getFullYear();
 	result.month = time.getMonth();

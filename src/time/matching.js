@@ -78,6 +78,16 @@ export function startOf(v) {
 	return v;
 }
 
+export function adjusted(v, change) {
+	if(Array.isArray(v)) {
+		v = v[0];
+	}
+
+	v = cloneObject(v);
+	v.intervalAdjustment = change;
+	return v;
+}
+
 /**
  * Create an interval between the two values. Handles the case where one or
  * both values are already an interval.
@@ -90,6 +100,63 @@ export function between(start, end) {
 	return {
 		start: start.start ? start.start : start,
 		end: (end && end.start ? end.start : end) || start
+	};
+}
+
+/**
+ * Create an interval that matches anything before the given value.
+ */
+export function before(value) {
+	if(Array.isArray(value)) {
+		return before(value[0]);
+	}
+
+	return {
+		start: null,
+		end: adjusted(value, -1)
+	};
+}
+
+/**
+ * Create an interval that matches anything before up to and including the
+ * given value.
+ */
+export function until(value) {
+	if(Array.isArray(value)) {
+		return until(value[0]);
+	}
+
+	return {
+		start: null,
+		end: value
+	};
+}
+
+/**
+ * Create an interval that matches anything after the given value.
+ */
+export function after(value) {
+	if(Array.isArray(value)) {
+		return after(value[0]);
+	}
+
+	return {
+		start: adjusted(value, 1),
+		end: null
+	};
+}
+
+/**
+ * Create an interval that matches the value and anything after it.
+ */
+export function from(value) {
+	if(Array.isArray(value)) {
+		return from(value[0]);
+	}
+
+	return {
+		start: value,
+		end: null
 	};
 }
 
