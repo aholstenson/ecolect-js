@@ -3,11 +3,14 @@
   "version": "0.6.0",
   "description": "Natural language handling for commands and intents",
   "scripts": {
-    "test": "mocha --require @babel/register --recursive test/",
-    "coverage": "NODE_ENV=test nyc mocha --recursive test/",
-    "lint": "node_modules/.bin/eslint .",
-    "build": "node ./build/unicode.js && babel src --out-dir cjs",
-    "prepublish": "npm run build"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "ci": "npm run coverage",
+    "coverage": "jest --coverage",
+    "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "build": "tsc --module commonjs --target es5 --outDir dist/cjs && tsc --module es6 --target es6 --outDir dist/esm",
+    "prebuild": "rimraf dist",
+    "prepublishOnly": "npm run build"
   },
   "license": "MIT",
   "repository": "aholstenson/ecolect-js",
@@ -18,43 +21,33 @@
     "commands",
     "parsing"
   ],
-  "main": "./cjs/index.js",
-  "module": "./src/index.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "sideEffects": false,
   "engines": {
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "date-fns": "^2.0.0-alpha.22",
-    "fast-clone": "^1.5.3",
-    "fast-deep-equal": "^2.0.1",
+    "date-fns": "^2.4.0",
+    "fast-clone": "^1.5.13",
+    "fast-deep-equal": "^3.0.0-beta.2",
     "talisman": "^0.21.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.2",
-    "@babel/register": "^7.0.0",
-    "babel-cli": "^6.26.0",
-    "babel-eslint": "^10.0.1",
-    "babel-plugin-add-module-exports": "^1.0.0",
-    "babel-plugin-istanbul": "^5.1.0",
-    "babel-preset-env": "^1.7.0",
-    "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
-    "chalk": "^2.4.1",
+    "@types/jest": "^24.0.18",
+    "@types/jest-expect-message": "^1.0.0",
+    "chalk": "^2.4.2",
     "cli-autocomplete": "^0.4.1",
-    "coveralls": "^3.0.2",
-    "eslint": "^5.6.1",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^7.0.1",
-    "mocha": "^5.2.0",
-    "nyc": "^13.1.0",
+    "coveralls": "^3.0.6",
+    "jest": "^24.9.0",
+    "jest-config": "^24.9.0",
+    "jest-expect-message": "^1.0.2",
     "regenerate": "^1.4.0",
+    "rimraf": "^3.0.0",
+    "ts-jest": "^24.1.0",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.3",
     "unicode-9.0.0": "^0.7.5"
-  },
-  "nyc": {
-    "require": [
-      "@babel/register"
-    ],
-    "sourceMap": false,
-    "instrument": false
   }
 }

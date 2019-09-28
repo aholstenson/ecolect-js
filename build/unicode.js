@@ -40,6 +40,6 @@ const source = Object.keys(matchers).map(m =>
 ).join('');
 
 fs.writeFileSync(
-	path.join(__dirname, '..', 'src', 'language', 'matchers.js'),
+	path.join(__dirname, '..', 'src', 'language', 'matchers.ts'),
 	source
 );

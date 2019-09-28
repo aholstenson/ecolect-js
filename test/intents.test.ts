@@ -1,0 +1,137 @@
+import { en } from '../src/language/en';
+import { IntentsBuilder } from '../src/intents';
+import { anyStringValue } from '../src/values';
+
+describe('Intents', function() {
+	describe('Orders', function() {
+		const intents = new IntentsBuilder(en)
+			.intent('orders')
+				.add('Orders')
+				.add('Show orders')
+				.done()
+			.intent('orders:active')
+				.add('Orders that are active')
+				.add('Show orders that are active')
+				.done()
+			.intent('customer:orders')
+				.value('customer', anyStringValue())
+				.add('Orders for {customer}')
+				.add('Find orders for {customer}')
+				.add('Show orders for {customer}')
+				.done()
+			.intent('employee:assignments')
+				.value('employee', anyStringValue())
+				.add('Assignments for {employee}')
+				.done()
+			.build();
+
+		it('Match: orders', function() {
+			return intents.match('orders')
+				.then(results => {
+					expect(results.matches.length).toEqual(1);
+					expect(results.best.intent).toEqual('orders');
+				});
+		});
+
+		it('Match (skippable in input): show for orders', function() {
+			return intents.match('show for orders', { fuzzy: true })
+				.then(results => {
+					expect(results.matches.length).toEqual(1);
+					expect(results.best.intent).toEqual('orders');
+				});
+		});
+
+		it('Match (skippable in expression): orders Test', function() {
+			// Test that skipping `for` works fine
+			return intents.match('orders Test')
+				.then(results => {
+					expect(results.matches.length).toEqual(1);
+					expect(results.best.intent).toEqual('customer:orders');
+				});
+		});
+
+		it('No match: show', function() {
+			return intents.match('show')
+				.then(results => {
+					expect(results.matches.length).toEqual(0);
+				});
+		});
+
+		it('Partial: orders', function() {
+			return intents.match('orders', { partial: true })
+				.then(results => {
+					expect(results.matches.length).toEqual(3);
+				});
+		});
+
+		it('Partial: or', function() {
+			return intents.match('or', { partial: true })
+				.then(results => {
+					expect(results.matches.length).toEqual(3);
+				});
+		});
+
+		it('Partial: show orders', function() {
+			return intents.match('show orders', { partial: true })
+				.then(results => {
+					expect(results.matches.length).toEqual(3);
+				});
+		});
+
+		it('Partial: sh order', function() {
+			return intents.match('sh order', { partial: true })
+				.then(results => {
+					expect(results.matches.length).toEqual(0);
+				});
+		});
+
+		it('Partial: orders for', function() {
+			return intents.match('orders for', { partial: true })
+				.then(results => {
+					expect(results.matches.length).toEqual(1);
+					expect(results.best.intent).toEqual('customer:orders');
+				});
+		});
+
+		it('Partial: orders for Test', function() {
+			return intents.match('orders for Test', { partial: true })
+				.then(results => {
+					expect(results.matches.length).toEqual(1);
+					expect(results.best.intent).toEqual('customer:orders');
+					expect(results.best.values.get('customer')).toEqual('Test');
+				});
+		});
+
+		it('Partial (with skippable): orders Test', function() {
+			return intents.match('orders Test', { partial: true })
+				.then(results => {
+					expect(results.matches.length).toEqual(1);
+					expect(results.best.intent).toEqual('customer:orders');
+					expect(results.best.values.get('customer')).toEqual('Test');
+				});
+		});
+
+		it('Partial and fuzzy: orders for Test', function() {
+			return intents.match('o Test', { partial: true, fuzzy: true })
+				.then(results => {
+					expect(results.matches.length).toEqual(1);
+					expect(results.best.intent).toEqual('customer:orders');
+					expect(results.best.values.get('customer')).toEqual('Test');
+				});
+		});
+
+		it('Partial: assign', function() {
+			return intents.match('assign', { partial: true })
+				.then(results => {
+					expect(results.matches.length).toEqual(1);
+				});
+		});
+
+		it('Partial: assignments', function() {
+			return intents.match('assignments', { partial: true })
+				.then(results => {
+					expect(results.matches.length).toEqual(1);
+				});
+		});
+	});
+});

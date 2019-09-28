@@ -1,6 +1,8 @@
+import { IntentsBuilder } from './intents';
+import { ActionsBuilder } from './actions';
 
-import { Builder as IntentsBuilder } from './intents';
-import { Builder as ActionsBuilder } from './actions';
+export * from './intents';
+export * from './actions';
 
 export function intentsBuilder(lang) {
 	return new IntentsBuilder(lang);
