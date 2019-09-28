@@ -82,7 +82,7 @@ export class ResolverParser<V, M=V[]> extends GraphBuilder<V, M> {
 				throw new Error('No type registered for ' + id);
 			}
 
-			let nextNode = value.toNode(id);
+			const nextNode = value.toNode(id);
 
 			if(node) {
 				node.outgoing.push(nextNode);

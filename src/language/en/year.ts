@@ -40,4 +40,4 @@ export const yearMatcher: ValueMatcherFactory<DateValue> = {
 			.onlyBest()
 			.toMatcher();
 	}
-}
+};

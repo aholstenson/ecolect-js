@@ -163,7 +163,7 @@ export class GraphBuilder<V, M=V, R=M[]> {
 		};
 
 		for(const n of nodes) {
-			let r = createNode(n);
+			const r = createNode(n);
 			if(r && ! (r instanceof TokenNode)) {
 				values++;
 			}

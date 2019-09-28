@@ -14,19 +14,19 @@ import { GraphBuildable } from '../graph/builder';
  */
 export class ResolverBuilder {
 	private language: Language;
-	private data: string;
+	private id: string;
 
 	private parser: ResolverParser<ResolvedIntent>;
 	private resultHandler: Collectable<ResolvedIntent>;
 
-	constructor(language: Language, data?: string) {
+	constructor(language: Language, id?: string) {
 		this.language = language;
 
 		this.parser = new ResolverParser(language);
-		this.data = data || 'unknown';
+		this.id = id || 'unknown';
 
 		this.resultHandler = (values, encounter) => {
-			const result = new ResolvedIntent(this.data);
+			const result = new ResolvedIntent(this.id);
 
 			// Transfer any values that have been pushed by other parsers
 			const data = encounter.data();

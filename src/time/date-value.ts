@@ -37,9 +37,6 @@ export class MutableDateValue implements DateValue {
 	public second?: number;
 	public millisecond?: number;
 
-	constructor() {
-	}
-
 	public toDate(now?: Date): Date {
 		return toDate(this, now || new Date());
 	}

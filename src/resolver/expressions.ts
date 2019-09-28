@@ -39,8 +39,8 @@ export function refresh(v: ResolvedIntent) {
  */
 export function describe(encounter: Encounter): ExpressionPart[] {
 	// Partial matching so expose the full expression that would match
-	let path: (TextPart | ValuePart)[] = [];
-	let text: string[] = [];
+	const path: (TextPart | ValuePart)[] = [];
+	const text: string[] = [];
 
 	const nodes = encounter.currentNodes;
 	const tokens = encounter.currentTokens;
@@ -67,16 +67,16 @@ export function describe(encounter: Encounter): ExpressionPart[] {
 	 * Scan backward to find the SubNode (if any) that has requested
 	 * this expression.
 	 */
-	let start = 0;
+	let tokenStart = 0;
 	for(let i=nodes.length-3 /* collector -> sub */; i>=0; i--) {
 		if(nodes[i] instanceof SubNode) {
-			start = i + 1;
+			tokenStart = i + 1;
 			break;
 		}
 	}
 
-	let startToken = tokens[start];
-	for(let i=start; i<nodes.length; i++) {
+	let startToken = tokens[tokenStart];
+	for(let i=tokenStart; i<nodes.length; i++) {
 		const node = nodes[i];
 
 		if(node instanceof TokenNode) {

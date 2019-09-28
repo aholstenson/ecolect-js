@@ -26,8 +26,8 @@ export class ActionsBuilder {
 
 		const self = this;
 		return {
-			value(id, type) {
-				builder.value(id, type);
+			value(valueId, type) {
+				builder.value(valueId, type);
 				return this;
 			},
 

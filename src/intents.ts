@@ -24,8 +24,8 @@ export class IntentsBuilder {
 		const self = this;
 		const instance = new ResolverBuilder(this.language, id);
 		return {
-			value(id: string, type: Value) {
-				instance.value(id, type);
+			value(valueId: string, type: Value) {
+				instance.value(valueId, type);
 				return this;
 			},
 

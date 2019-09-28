@@ -42,7 +42,7 @@
 		"no-any": false,
 		"no-arg": true,
 		"no-bitwise": false,
-		"no-conditional-assignment": true,
+		"no-conditional-assignment": false,
 		"no-console": true,
 		"no-construct": true,
 		"no-debugger": true,
@@ -67,7 +67,7 @@
 		"no-unused-expression": true,
 		"no-var-keyword": true,
 		"no-var-requires": true,
-		"object-literal-key-quotes": { "options": "consistent-as-needed" },
+		"object-literal-key-quotes": { "options": "consistent" },
 		"one-variable-per-declaration": { "options": [ "ignore-for-loop" ] },
 		"quotemark": {
 			"options": [ "single", "avoid-escape" ]

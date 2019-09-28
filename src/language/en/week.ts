@@ -31,4 +31,4 @@ export const weekMatcher: ValueMatcherFactory<IntervalValue> = {
 			.onlyBest()
 			.toMatcher();
 	}
-}
+};

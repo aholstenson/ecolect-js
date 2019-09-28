@@ -36,7 +36,7 @@ matchers['punctuation'] = regenerate()
 	.toString();
 
 const source = Object.keys(matchers).map(m =>
-	'export const ' + m + ' = ' + JSON.stringify(matchers[m]) + ';'
+	'/* tslint:disable */ export const ' + m + ' = ' + JSON.stringify(matchers[m]) + ';'
 ).join('');
 
 fs.writeFileSync(

@@ -36,4 +36,4 @@ export const timeDurationMatcher: ValueMatcherFactory<Duration> = {
 			.onlyBest()
 			.toMatcher();
 	}
-}
+};
