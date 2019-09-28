@@ -98,7 +98,7 @@ describe('Value: Enumeration', function() {
 				});
 		});
 
-		it.only('Typing `B`', function() {
+		it('Typing `B`', function() {
 			return resolver.match('orders for b', { partial: true })
 				.then(results => {
 					expect(results.matches.length).toEqual(2);
