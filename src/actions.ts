@@ -1,6 +1,6 @@
 import { IntentsBuilder } from './intents';
 import { Language } from './language/language';
-import { LanguageSpecificValue, NodeConvertable } from './values/base';
+import { Value } from './values/base';
 import { Matcher, EncounterOptions } from './graph/matching';
 import { ResolvedIntent } from './resolver/resolved-intent';
 import { ResolvedIntents } from './resolver/ResolvedIntents';
@@ -54,7 +54,7 @@ export class ActionsBuilder {
 }
 
 export interface ActionBuilder {
-	value(id: string, type: LanguageSpecificValue | NodeConvertable): this;
+	value(id: string, type: Value): this;
 
 	add(...args: string[]): this;
 

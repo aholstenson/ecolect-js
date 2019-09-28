@@ -1,6 +1,8 @@
 /**
  * Re-export all of the types of values available.
  */
+export * from './base';
+
 export * from './any';
 export * from './boolean';
 export * from './custom';

@@ -2,7 +2,7 @@ import { ValueParserNode, ValueParserOptions } from '../resolver/value-parser';
 import { ValueNode, ValueNodeOptions } from '../resolver/value';
 import { Language } from '../language/language';
 import { Node } from '../graph/node';
-import { Matcher } from '../graph/matching';
+import { Matcher, EncounterOptions } from '../graph/matching';
 
 /**
  * Object that can be converted into a node within a graph.
@@ -14,12 +14,14 @@ export interface NodeConvertable {
 /**
  * Function that creates a convertable item for the given language.
  */
-export type LanguageSpecificFactory = (language: Language) => NodeConvertable;
+export type LanguageSpecificFactory<V> = (language: Language) => ParsingValue<V>;
 
-export class LanguageSpecificValue {
-	private factory: LanguageSpecificFactory;
+export type Value = LanguageSpecificValue<any> | NodeConvertable;
 
-	constructor(factory: LanguageSpecificFactory) {
+export class LanguageSpecificValue<V> {
+	private factory: LanguageSpecificFactory<V>;
+
+	constructor(factory: LanguageSpecificFactory<V>) {
 		this.factory = factory;
 	}
 
@@ -33,29 +35,25 @@ export class LanguageSpecificValue {
 	 * @param {Language} language
 	 */
 	public matcher(language: Language) {
-		/*
-		const parser = this.factory(language).parser;
+		const value = this.factory(language);
 
-		return function(text, options) {
-			if(typeof text !== 'string') return Promise.resolve(null);
-
-			return parser.match(text, options);
+		return function(text: string, options?: EncounterOptions) {
+			return value.matcher.match(text, options);
 		};
-		*/
 	}
 }
 
-export class ParsingValue {
-	private parser: Matcher<any>;
+export class ParsingValue<V> {
+	public matcher: Matcher<V>;
 	private options: ValueParserOptions;
 
-	constructor(parser: Matcher<any>, options?: ValueParserOptions) {
-		this.parser = parser;
+	constructor(parser: Matcher<V>, options?: ValueParserOptions) {
+		this.matcher = parser;
 		this.options = options || {};
 	}
 
 	public toNode(id: string) {
-		return new ValueParserNode(id, this.parser, this.options);
+		return new ValueParserNode(id, this.matcher, this.options);
 	}
 }
 

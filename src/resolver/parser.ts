@@ -4,7 +4,7 @@ import { Matcher, MatcherOptions, EncounterOptions } from '../graph/matching';
 import { TokenNode } from '../graph/token';
 import { ValueNode } from './value';
 
-import { LanguageSpecificValue, NodeConvertable } from '../values/base';
+import { LanguageSpecificValue, NodeConvertable, Value } from '../values/base';
 import { isDeepEqual } from '../utils/equality';
 import { Node } from '../graph/node';
 import { Language } from '../language/language';
@@ -29,7 +29,7 @@ export class ResolverParser<V, M=V[]> extends GraphBuilder<V, M> {
 		this.allowPartial();
 	}
 
-	public value(id: string, type: LanguageSpecificValue | NodeConvertable): this {
+	public value(id: string, type: Value): this {
 		let factory = type;
 		if(factory instanceof LanguageSpecificValue) {
 			factory = factory.create(this.language);

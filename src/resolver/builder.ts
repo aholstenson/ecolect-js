@@ -46,7 +46,7 @@ export class ResolverBuilder {
 		};
 	}
 
-	public value(id: string, type: LanguageSpecificValue | NodeConvertable) {
+	public value(id: string, type: LanguageSpecificValue<any> | NodeConvertable) {
 		this.parser.value(id, type);
 		return this;
 	}

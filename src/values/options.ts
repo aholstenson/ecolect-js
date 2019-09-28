@@ -1,7 +1,7 @@
 import { GraphBuilder } from '../graph/builder';
 import { ResolverBuilder } from '../resolver/builder';
 
-import { LanguageSpecificValue, ParsingValue, NodeConvertable } from './base';
+import { LanguageSpecificValue, ParsingValue, NodeConvertable, Value } from './base';
 import { ValueParserOptions } from '../resolver/value-parser';
 import { ResolvedIntent } from '../resolver/resolved-intent';
 import { ExpressionPart } from '../resolver/expression/ExpressionPart';
@@ -96,7 +96,7 @@ export function optionsValue(options: OptionBuilderOptions={}) {
 }
 
 export interface OptionBuilder {
-	value(id: string, type: LanguageSpecificValue | NodeConvertable): this;
+	value(id: string, type: Value): this;
 
 	add(...args: string[]): this;
 
@@ -104,7 +104,7 @@ export interface OptionBuilder {
 }
 
 interface OptionData {
-	values: Record<string, LanguageSpecificValue | NodeConvertable>;
+	values: Record<string, Value>;
 	phrases: any[];
 }
 

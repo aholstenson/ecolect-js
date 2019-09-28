@@ -1,6 +1,6 @@
 import { ResolverBuilder } from './resolver/builder';
 import { Language } from './language/language';
-import { NodeConvertable, LanguageSpecificValue } from './values/base';
+import { Value } from './values/base';
 
 export class IntentsBuilder {
 	private language: Language;
@@ -24,7 +24,7 @@ export class IntentsBuilder {
 		const self = this;
 		const instance = new ResolverBuilder(this.language, id);
 		return {
-			value(id: string, type: LanguageSpecificValue | NodeConvertable) {
+			value(id: string, type: Value) {
 				instance.value(id, type);
 				return this;
 			},
@@ -47,7 +47,7 @@ export class IntentsBuilder {
 }
 
 export interface IntentBuilder {
-	value(id: string, type: LanguageSpecificValue | NodeConvertable): this;
+	value(id: string, type: Value): this;
 
 	add(...args: string[]): this;
 
