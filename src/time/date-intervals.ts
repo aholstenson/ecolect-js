@@ -1,4 +1,4 @@
-import { map as mapDate, today } from './dates';
+import { mapDate, today } from './dates';
 import { cloneObject } from '../utils/cloning';
 import { IntervalValue } from './interval-value';
 import { adjusted } from './matching';
@@ -48,7 +48,7 @@ function applyRelationAndEdge(r: DateTimeData, edge: IntervalEdge) {
 	return r;
 }
 
-export function map(r: IntervalData, e: DateTimeEncounter): IntervalValue {
+export function mapDateInterval(r: IntervalData, e: DateTimeEncounter): IntervalValue {
 	let start = null;
 	let end = null;
 

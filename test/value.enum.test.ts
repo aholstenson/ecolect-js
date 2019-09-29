@@ -9,7 +9,7 @@ describe('Value: Enumeration', function() {
 			.value('company', enumerationValue([ 'Balloons', 'Cookie Co', 'Banana Inc' ]))
 			.add('{company} orders')
 			.add('orders for {company}')
-			.build();
+			.toMatcher();
 
 		it('Invalid company', function() {
 			return resolver.match('orders for ABC')
@@ -22,7 +22,7 @@ describe('Value: Enumeration', function() {
 			return resolver.match('orders for Ballons')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('company')).toEqual('Balloons');
+					expect(results.best.values.company).toEqual('Balloons');
 				});
 		});
 
@@ -30,7 +30,7 @@ describe('Value: Enumeration', function() {
 			return resolver.match('orders for Cookie Co')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('company')).toEqual('Cookie Co');
+					expect(results.best.values.company).toEqual('Cookie Co');
 				});
 		});
 	});
@@ -44,7 +44,7 @@ describe('Value: Enumeration', function() {
 			], v => v.name))
 			.add('{company} orders')
 			.add('orders for {company}')
-			.build();
+			.toMatcher();
 
 		it('Invalid company', function() {
 			return resolver.match('orders for ABC')
@@ -57,7 +57,7 @@ describe('Value: Enumeration', function() {
 			return resolver.match('orders for Ballons')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('company')).toEqual({
+					expect(results.best.values.company).toEqual({
 						name: 'Balloons'
 					});
 				});
@@ -67,7 +67,7 @@ describe('Value: Enumeration', function() {
 			return resolver.match('orders for Cookie Co')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('company')).toEqual({
+					expect(results.best.values.company).toEqual({
 						name: 'Cookie Co'
 					});
 				});
@@ -79,14 +79,13 @@ describe('Value: Enumeration', function() {
 			.value('company', enumerationValue([ 'Balloons', 'Cookie Co', 'Banana Inc' ]))
 			.add('{company} orders')
 			.add('orders for {company}')
-			.build();
-
+			.toMatcher();
 
 		it('Single token', function() {
 			return resolver.match('orders ', { partial: true })
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('company')).toBeUndefined();
+					expect(results.best.values.company).toBeUndefined();
 				});
 		});
 
@@ -120,7 +119,7 @@ describe('Value: Enumeration', function() {
 			})
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('company')).toEqual('Cookie Co');
+					expect(results.best.values.company).toEqual('Cookie Co');
 
 					const expr = results.best.expression;
 					expect(expr[expr.length - 1]).toEqual({

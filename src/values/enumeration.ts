@@ -7,15 +7,17 @@ export function enumerationValue<V>(values: V[], textMapper?: (value: V) => stri
 	const mapper = textMapper ? textMapper : DEFAULT_MAPPER;
 
 	return new LanguageSpecificValue(language => {
-		const builder = new GraphBuilder(language)
+		let builder = new GraphBuilder<V>(language)
 			.allowPartial();
 
-			values.forEach(value => {
-			builder.add(mapper(value), value);
+		values.forEach(value => {
+			builder = builder.add(mapper(value), value);
 		});
 
-		return new ParsingValue(builder.toMatcher(), {
-			partialBlankWhenNoToken: true
+		return new ParsingValue(builder.build(), {
+			partialBlankWhenNoToken: true,
+
+			mapper: value => value
 		});
 	});
 }

@@ -1,25 +1,25 @@
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
 import { GraphBuilder } from '../../graph/GraphBuilder';
+
 import { DateTimeData } from '../../time/DateTimeData';
 
-import { integerMatcher } from './integer';
+import { integerGraph } from './integerGraph';
 
 import { reverse } from '../../time/matching';
-import { map, thisYear, nextYear, previousYear } from '../../time/years';
-import { DateValue } from '../../time/date-value';
+import { thisYear, nextYear, previousYear } from '../../time/years';
 
-export const yearMatcher: ValueMatcherFactory<DateValue> = {
+export const yearGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'year',
 
 	create(language) {
-		const integer = language.matcher(integerMatcher);
+		const integer = language.graph(integerGraph);
 
 		const relative = new GraphBuilder<DateTimeData>(language)
 			.name('relativeYears')
 
 			.add([ integer, 'years' ], v => ({ relativeYears: v[0].value }))
 
-			.toMatcher();
+			.build();
 
 		return new GraphBuilder<DateTimeData>(language)
 			.name('year')
@@ -36,8 +36,6 @@ export const yearMatcher: ValueMatcherFactory<DateValue> = {
 			.add([ 'of', GraphBuilder.result() ], v => v[0])
 			.add([ relative, 'ago' ], v => reverse(v[0]))
 
-			.mapResults(map)
-			.onlyBest()
-			.toMatcher();
+			.build();
 	}
 };

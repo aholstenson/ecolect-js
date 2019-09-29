@@ -3,13 +3,16 @@ import { Tokens, Token } from './tokens';
 import { ValueMatcherFactory } from './ValueMatcherFactory';
 import { Matcher } from '../graph/matching';
 import { GraphBuilder } from '../graph/GraphBuilder';
+import { Graph } from '../graph/Graph';
+import { LanguageGraphFactory } from './LanguageGraphFactory';
+import { KnownGraphs, KnownGraphsDataTypes } from '../graph/KnownGraphs';
 
 /**
  * Abstract implementation of Language. This is the root that languages should
  * extend.
  */
 export abstract class AbstractLanguage implements Language {
-	private cachedMatchers: Map<string, Matcher<any>> = new Map();
+	private cachedGraphs: Map<string, Graph<any>> = new Map();
 
 	/**
 	 * The identifier of the language.
@@ -44,45 +47,30 @@ export abstract class AbstractLanguage implements Language {
 	 *
 	 * @param matcher
 	 */
-	public abstract repeating<V>(matcher: Matcher<V>): GraphBuilder<V[]>;
+	public abstract repeating<V>(graph: Graph<V>): GraphBuilder<V[]>;
 
 	/**
 	 * Create and return a matcher for the given factory.
 	 *
 	 * @param factory
 	 */
-	public matcher<V>(factory: ValueMatcherFactory<V>): Matcher<V | null> {
-		const result = this.cachedMatchers.get(factory.id);
+	public graph<V>(factory: LanguageGraphFactory<V>): Graph<V> {
+		const result = this.cachedGraphs.get(factory.id);
 		if(result) {
 			return result;
 		}
 
 		const created = factory.create(this);
-		this.cachedMatchers.set(factory.id, created);
+		this.cachedGraphs.set(factory.id, created);
 		return created;
 	}
 
-	/**
-	 * Find a matcher based on its identifier. The matcher must be available
-	 * for the language.
-	 *
-	 * @param id
-	 */
-	public findMatcher<V>(id: string): Matcher<V> | null {
-		return this.cachedMatchers.get(id) || null;
-	}
-
-	/**
-	 * Get a matcher, throwing an error if it is not available.
-	 *
-	 * @param id
-	 */
-	public getMatcher<V>(id: string): Matcher<V> {
-		const result = this.cachedMatchers.get(id);
-		if(! result) {
-			throw new Error('No matcher with id `' + id + '` available');
+	public findGraph<K extends KnownGraphs>(id: K): Graph<KnownGraphsDataTypes[K]> {
+		const cached = this.cachedGraphs.get(id);
+		if(! cached) {
+			throw new Error('Graph with id `' + id + '` not available for language');
 		}
 
-		return result;
+		return cached as any;
 	}
 }

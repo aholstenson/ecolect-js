@@ -1,3 +1,6 @@
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
+import { Language } from '../Language';
+
 import { GraphBuilder } from '../../graph/GraphBuilder';
 
 import {
@@ -5,23 +8,18 @@ import {
 	digitNumber,
 
 	combine,
-	map,
 
 	isDigits,
 	isDigitsCompatible,
 	isLiteral,
 } from '../../numbers/numbers';
 
-import { Language } from '../Language';
-import { Matcher } from '../../graph/matching';
 import { NumberData } from '../../numbers/NumberData';
-import { NumberValue } from '../../numbers/NumberValue';
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
 
-export const integerMatcher: ValueMatcherFactory<NumberValue> = {
+export const integerGraph: LanguageGraphFactory<NumberData> = {
 	id: 'integer',
 
-	create(language: Language): Matcher<NumberValue | null> {
+	create(language: Language) {
 		return new GraphBuilder<NumberData>(language)
 			.name('integer')
 
@@ -85,8 +83,6 @@ export const integerMatcher: ValueMatcherFactory<NumberValue> = {
 			// Thousands separator
 			.add([ GraphBuilder.result(isDigits), ',', GraphBuilder.result(isDigits) ], v => combine(v[0], v[1]))
 
-			.mapResults(map)
-			.onlyBest()
-			.toMatcher();
+			.build();
 	}
 };

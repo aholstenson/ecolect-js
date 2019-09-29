@@ -1,4 +1,4 @@
-import { map } from '../../src/time/years';
+import { mapYear } from '../../src/time/years';
 
 describe('Time', () => {
 	describe('years', () => {
@@ -10,7 +10,7 @@ describe('Time', () => {
 			};
 
 			it('relativeYears resolves to current year', () => {
-				const r = map({ relativeYears: 0 }, e);
+				const r = mapYear({ relativeYears: 0 }, e);
 
 				expect(r).toEqual({
 					period: 'year',
@@ -21,7 +21,7 @@ describe('Time', () => {
 			});
 
 			it('relativeYears resolves positive years', () => {
-				const r = map({ relativeYears: 2 }, e);
+				const r = mapYear({ relativeYears: 2 }, e);
 
 				expect(r).toEqual({
 					period: 'year',
@@ -32,7 +32,7 @@ describe('Time', () => {
 			});
 
 			it('relativeYears resolves negative years', () => {
-				const r = map({ relativeYears: -2 }, e);
+				const r = mapYear({ relativeYears: -2 }, e);
 
 				expect(r).toEqual({
 					period: 'year',
@@ -43,7 +43,7 @@ describe('Time', () => {
 			});
 
 			it('Absolute year', () => {
-				const r = map({ year: 2015 }, e);
+				const r = mapYear({ year: 2015 }, e);
 
 				expect(r).toEqual({
 					period: 'year',

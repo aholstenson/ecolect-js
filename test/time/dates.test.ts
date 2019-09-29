@@ -1,10 +1,10 @@
-import { map } from '../../src/time/dates';
-import { TimeRelationship } from '../../src/time/relationship';
+import { mapDate } from '../../src/time/dates';
+import { TimeRelationship } from '../../src/time/TimeRelationship';
 
 describe('Time', () => {
 	describe('dates', () => {
 
-		describe('map', () => {
+		describe('mapDate', () => {
 			const e = {
 				options: {
 					now: new Date(2017, 2, 24)
@@ -12,7 +12,7 @@ describe('Time', () => {
 			};
 
 			it('relativeYears keeps month and day', () => {
-				const r = map({ relativeYears: 0 }, e);
+				const r = mapDate({ relativeYears: 0 }, e);
 
 				expect(r).toEqual({
 					period: 'year',
@@ -23,7 +23,7 @@ describe('Time', () => {
 			});
 
 			it('relativeYears works with positive years', () => {
-				const r = map({ relativeYears: 2 }, e);
+				const r = mapDate({ relativeYears: 2 }, e);
 
 				expect(r).toEqual({
 					period: 'year',
@@ -34,7 +34,7 @@ describe('Time', () => {
 			});
 
 			it('relativeYears works with negative years', () => {
-				const r = map({ relativeYears: -2 }, e);
+				const r = mapDate({ relativeYears: -2 }, e);
 
 				expect(r).toEqual({
 					period: 'year',
@@ -45,7 +45,7 @@ describe('Time', () => {
 			});
 
 			it('year resets month and day', () => {
-				const r = map({ year: 2018 }, e);
+				const r = mapDate({ year: 2018 }, e);
 
 				expect(r).toEqual({
 					period: 'year',
@@ -56,7 +56,7 @@ describe('Time', () => {
 			});
 
 			it('relativeQuarters keeps day', () => {
-				const r = map({ relativeQuarters: 0 }, e);
+				const r = mapDate({ relativeQuarters: 0 }, e);
 
 				expect(r).toEqual({
 					period: 'quarter',
@@ -67,7 +67,7 @@ describe('Time', () => {
 			});
 
 			it('relativeQuarters changes quarter', () => {
-				const r = map({ relativeQuarters: 1 }, e);
+				const r = mapDate({ relativeQuarters: 1 }, e);
 
 				expect(r).toEqual({
 					period: 'quarter',
@@ -78,7 +78,7 @@ describe('Time', () => {
 			});
 
 			it('quarter after current keeps year', () => {
-				const r = map({ quarter: 3 }, e);
+				const r = mapDate({ quarter: 3 }, e);
 
 				expect(r).toEqual({
 					period: 'quarter',
@@ -89,7 +89,7 @@ describe('Time', () => {
 			});
 
 			it('quarter before current changes year', () => {
-				const r = map({ quarter: 1 }, { options: {
+				const r = mapDate({ quarter: 1 }, { options: {
 					now: new Date(2017, 4, 24)
 				}});
 
@@ -102,7 +102,7 @@ describe('Time', () => {
 			});
 
 			it('relativeWeeks keeps day', () => {
-				const r = map({ relativeWeeks: 0 }, e);
+				const r = mapDate({ relativeWeeks: 0 }, e);
 
 				expect(r).toEqual({
 					period: 'week',
@@ -113,7 +113,7 @@ describe('Time', () => {
 			});
 
 			it('relativeWeeks changes week', () => {
-				const r = map({ relativeWeeks: 2 }, e);
+				const r = mapDate({ relativeWeeks: 2 }, e);
 
 				expect(r).toEqual({
 					period: 'week',
@@ -124,7 +124,7 @@ describe('Time', () => {
 			});
 
 			it('week after current week keeps year', () => {
-				const r = map({ week: 13 }, e);
+				const r = mapDate({ week: 13 }, e);
 
 				expect(r).toEqual({
 					period: 'week',
@@ -135,7 +135,7 @@ describe('Time', () => {
 			});
 
 			it('week before current week is next year', () => {
-				const r = map({ week: 11}, e);
+				const r = mapDate({ week: 11}, e);
 
 				expect(r).toEqual({
 					period: 'week',
@@ -146,7 +146,7 @@ describe('Time', () => {
 			});
 
 			it('week before current week with past=true keeps year', () => {
-				const r = map({ week: 11, relationToCurrent: TimeRelationship.Past }, e);
+				const r = mapDate({ week: 11, relationToCurrent: TimeRelationship.Past }, e);
 
 				expect(r).toEqual({
 					period: 'week',
@@ -157,7 +157,7 @@ describe('Time', () => {
 			});
 
 			it('relativeMonths keeps day', () => {
-				const r = map({ relativeMonths: 2 }, e);
+				const r = mapDate({ relativeMonths: 2 }, e);
 
 				expect(r).toEqual({
 					period: 'month',
@@ -168,7 +168,7 @@ describe('Time', () => {
 			});
 
 			it('month after current month is same year', () => {
-				const r = map({ month: 4 }, e);
+				const r = mapDate({ month: 4 }, e);
 
 				expect(r).toEqual({
 					period: 'month',
@@ -179,7 +179,7 @@ describe('Time', () => {
 			});
 
 			it('month before current month is next year', () => {
-				const r = map({ month: 1 }, e);
+				const r = mapDate({ month: 1 }, e);
 
 				expect(r).toEqual({
 					period: 'month',
@@ -190,7 +190,7 @@ describe('Time', () => {
 			});
 
 			it('month before current month with past=true is same year', () => {
-				const r = map({ month: 1, relationToCurrent: TimeRelationship.Past }, e);
+				const r = mapDate({ month: 1, relationToCurrent: TimeRelationship.Past }, e);
 
 				expect(r).toEqual({
 					period: 'month',
@@ -201,7 +201,7 @@ describe('Time', () => {
 			});
 
 			it('month before current month with year', () => {
-				const r = map({ month: 1, year: 2017 }, e);
+				const r = mapDate({ month: 1, year: 2017 }, e);
 
 				expect(r).toEqual({
 					period: 'month',
@@ -212,7 +212,7 @@ describe('Time', () => {
 			});
 
 			it('month after current month with year', () => {
-				const r = map({ month: 6, year: 2017 }, e);
+				const r = mapDate({ month: 6, year: 2017 }, e);
 
 				expect(r).toEqual({
 					period: 'month',
@@ -223,7 +223,7 @@ describe('Time', () => {
 			});
 
 			it('day after the current day is same month', () => {
-				const r = map({ day: 28 }, e);
+				const r = mapDate({ day: 28 }, e);
 
 				expect(r).toEqual({
 					period: 'day',
@@ -234,7 +234,7 @@ describe('Time', () => {
 			});
 
 			it('day before the current day is next month', () => {
-				const r = map({ day: 2 }, e);
+				const r = mapDate({ day: 2 }, e);
 
 				expect(r).toEqual({
 					period: 'day',
@@ -245,7 +245,7 @@ describe('Time', () => {
 			});
 
 			it('relativeYears and relativeMonths keeps day', () => {
-				const r = map({ relativeYears: 1, relativeMonths: 2 }, e);
+				const r = mapDate({ relativeYears: 1, relativeMonths: 2 }, e);
 
 				expect(r).toEqual({
 					period: 'month',
@@ -256,7 +256,7 @@ describe('Time', () => {
 			});
 
 			it('relativeYears, relativeMonths and relativeDays', () => {
-				const r = map({ relativeYears: 1, relativeMonths: 2 }, e);
+				const r = mapDate({ relativeYears: 1, relativeMonths: 2 }, e);
 
 				expect(r).toEqual({
 					period: 'month',
@@ -267,7 +267,7 @@ describe('Time', () => {
 			});
 
 			it('year, month and day', () => {
-				const r = map({ year: 2019, month: 1, day: 2 }, e);
+				const r = mapDate({ year: 2019, month: 1, day: 2 }, e);
 
 				expect(r).toEqual({
 					period: 'day',

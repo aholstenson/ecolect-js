@@ -1,17 +1,17 @@
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
-import { IntervalValue } from '../../time/interval-value';
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
 import { GraphBuilder } from '../../graph/GraphBuilder';
+
 import { DateTimeData } from '../../time/DateTimeData';
 
-import { ordinalMatcher } from './ordinal';
-import { map, thisWeek, nextWeek, previousWeek } from '../../time/weeks';
+import { ordinalGraph } from './ordinalGraph';
+import { thisWeek, nextWeek, previousWeek } from '../../time/weeks';
 import { isSpecific } from '../../numbers/ordinals';
 
-export const weekMatcher: ValueMatcherFactory<IntervalValue> = {
+export const weekGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'week',
 
 	create(language) {
-		const ordinal = language.matcher(ordinalMatcher);
+		const ordinal = language.graph(ordinalGraph);
 
 		return new GraphBuilder<DateTimeData>(language)
 			.name('week')
@@ -27,8 +27,6 @@ export const weekMatcher: ValueMatcherFactory<IntervalValue> = {
 			.add([ 'week', ordinal ], v => ({ week: v[0].value }))
 			.add([ GraphBuilder.result(ordinal, isSpecific), 'week' ], v => ({ week: v[0].value }))
 
-			.mapResults(map)
-			.onlyBest()
-			.toMatcher();
+			.build();
 	}
 };

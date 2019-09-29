@@ -1,7 +1,9 @@
 import { en } from '../../../src/language/en';
 import { testRunner } from '../helpers';
+import { dateGraph } from '../../../src/language/en/dateGraph';
+import { mapDate } from '../../../src/time/dates';
 
-const test = testRunner(en, 'date');
+const test = testRunner(en, dateGraph, mapDate);
 
 describe('English', function() {
 	describe('Date', function() {

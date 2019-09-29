@@ -4,28 +4,29 @@ import stemmer from 'talisman/stemmers/porter';
 import { similarity } from 'talisman/metrics/distance/jaro-winkler';
 import treebank from 'talisman/tokenizers/words/treebank';
 
-import { Matcher } from '../../graph/matching';
 import { GraphBuilder } from '../../graph/GraphBuilder';
+import { Graph } from '../../graph/Graph';
 
 import { AbstractLanguage } from '../AbstractLanguage';
 import { Token } from '../tokens';
-import { integerMatcher } from './integer';
-import { numberMatcher } from './number';
-import { ordinalMatcher } from './ordinal';
-import { booleanMatcher } from './boolean';
-import { dayOfWeekMatcher } from './day-of-week';
-import { yearMatcher } from './year';
-import { quarterMatcher } from './quarter';
-import { monthMatcher } from './month';
-import { weekMatcher } from './week';
-import { dateDurationMatcher } from './date-duration';
-import { dateMatcher } from './date';
-import { timeDurationMatcher } from './time-duration';
-import { timeMatcher } from './time';
-import { dateTimeDurationMatcher } from './date-time-duration';
-import { dateTimeMatcher } from './date-time';
-import { dateIntervalMatcher } from './date-interval';
 import { createRepeating } from './repeating';
+
+import { integerGraph } from './integerGraph';
+import { numberGraph } from './numberGraph';
+import { ordinalGraph } from './ordinalGraph';
+import { booleanGraph } from './booleanGraph';
+import { dayOfWeekGraph } from './dayOfWeekGraph';
+import { yearGraph } from './yearGraph';
+import { quarterGraph } from './quarterGraph';
+import { monthGraph } from './monthGraph';
+import { weekGraph } from './weekGraph';
+import { dateDurationGraph } from './dateDurationGraph';
+import { dateGraph } from './dateGraph';
+import { timeDurationGraph } from './timeDurationGraph';
+import { timeGraph } from './timeGraph';
+import { dateTimeDurationGraph } from './dateTimeDurationGraph';
+import { dateTimeGraph } from './dateTimeGraph';
+import { dateIntervalGraph } from './dateIntervalGraph';
 
 function normalize(word: string, next?: string) {
 	word = word.toLowerCase();
@@ -111,33 +112,29 @@ export class EnglishLanguage extends AbstractLanguage {
 		return 0;
 	}
 
-	public repeating<V>(matcher: Matcher<V>): GraphBuilder<V[]> {
-		return createRepeating<V>(this)(matcher);
+	public repeating<V>(graph: Graph<V>): GraphBuilder<V[]> {
+		return createRepeating<V>(this)(graph);
 	}
 }
 
 export const en = new EnglishLanguage();
-en.matcher(integerMatcher);
-en.matcher(numberMatcher);
-en.matcher(ordinalMatcher);
-en.matcher(booleanMatcher);
+en.graph(integerGraph);
+en.graph(numberGraph);
+en.graph(ordinalGraph);
+en.graph(booleanGraph);
 
-en.matcher(dayOfWeekMatcher);
-en.matcher(yearMatcher);
-en.matcher(quarterMatcher);
-en.matcher(monthMatcher);
-en.matcher(weekMatcher);
-en.matcher(dateDurationMatcher);
-en.matcher(dateMatcher);
+en.graph(dayOfWeekGraph);
+en.graph(yearGraph);
+en.graph(quarterGraph);
+en.graph(monthGraph);
+en.graph(weekGraph);
+en.graph(dateDurationGraph);
+en.graph(dateGraph);
 
-en.matcher(timeDurationMatcher);
-en.matcher(timeMatcher);
+en.graph(timeDurationGraph);
+en.graph(timeGraph);
 
-en.matcher(dateTimeDurationMatcher);
-en.matcher(dateTimeMatcher);
+en.graph(dateTimeDurationGraph);
+en.graph(dateTimeGraph);
 
-en.matcher(dateIntervalMatcher);
-
-//language.temperature = temperature(language);
-
-//language.repeating = repeating(language);
+en.graph(dateIntervalGraph);

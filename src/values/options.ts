@@ -1,18 +1,17 @@
 import { GraphBuilder } from '../graph/GraphBuilder';
 import { ResolverBuilder } from '../resolver/ResolverBuilder';
 
-import { LanguageSpecificValue, ParsingValue, NodeConvertable, Value } from './base';
-import { ValueParserOptions } from '../resolver/ValueParserNode';
+import { LanguageSpecificValue, ParsingValue, Value } from './base';
 import { ResolvedIntent } from '../resolver/ResolvedIntent';
 import { ExpressionPart } from '../resolver/expression/ExpressionPart';
 
-export interface OptionBuilderOptions extends ValueParserOptions {
+export interface OptionBuilderOptions {
 	name?: string;
 }
 
-export class OptionsBuilder {
+export class OptionsBuilder<CurrentOptions extends object> {
 	private name: string;
-	private options: ValueParserOptions;
+	private options: OptionBuilderOptions;
 	private data: Record<string, OptionData>;
 
 	constructor(options: OptionBuilderOptions) {
@@ -21,7 +20,7 @@ export class OptionsBuilder {
 		this.data = {};
 	}
 
-	public option(id: string): OptionBuilder {
+	public option<Id extends string>(id: Id): OptionBuilder<CurrentOptions, Id, {}> {
 		if(typeof id !== 'string') {
 			throw new Error('Options require identifiers that are strings');
 		}
@@ -35,7 +34,7 @@ export class OptionsBuilder {
 		return {
 			value(valueId, type) {
 				result.values[valueId] = type;
-				return this;
+				return this as any;
 			},
 
 			add(...args) {
@@ -45,14 +44,14 @@ export class OptionsBuilder {
 
 			done() {
 				self.data[id] = result;
-				return self;
+				return self as any;
 			}
 		};
 	}
 
 	public build() {
 		return new LanguageSpecificValue(language => {
-			const parent = new GraphBuilder<ResolvedIntent>(language)
+			const parent = new GraphBuilder<ResolvedIntent<any>>(language)
 				.name(this.name)
 				.allowPartial();
 
@@ -77,46 +76,101 @@ export class OptionsBuilder {
 				parent.add(parser, v => v[0]);
 			}
 
-			const matcher = parent.mapResults(v => new Option(v.intent, v.values, v.expression))
-				.toMatcher();
+			const graph = parent.build();
 
-			const repeating = language.repeating(matcher)
-				.onlyBest()
-				.toMatcher();
+			const repeating = language.repeating(graph).build();
 
-			return new ParsingValue(repeating, Object.assign({
-				supportsPartial: true
-			}, this.options));
+			return new ParsingValue(repeating, {
+				mapper: value => {
+					const allResults: Option<any>[] = [];
+					for(const option of value) {
+						allResults.push(new Option(option.intent, option.values, option.expression));
+					}
+
+					return new OptionsSet<CurrentOptions>(allResults);
+				},
+				...this.options
+			});
 		});
 	}
 }
 
 export function optionsValue(options: OptionBuilderOptions={}) {
-	return new OptionsBuilder(options);
+	return new OptionsBuilder<{}>(options);
 }
 
-export interface OptionBuilder {
-	value(id: string, type: Value): this;
+export interface OptionBuilder<CurrentOptions, Key extends string, Values extends object> {
+	value<I extends string, V>(id: I, type: Value<V>): OptionBuilder<CurrentOptions, Key, Values & { [K in I]: V }>;
 
 	add(...args: string[]): this;
 
-	done(): OptionsBuilder;
+	done(): OptionsBuilder<CurrentOptions & { [K in Key]: Values }>;
 }
 
 interface OptionData {
-	values: Record<string, Value>;
+	values: Record<string, Value<any>>;
 	phrases: any[];
+}
+
+/**
+ * Options interface, used to access options as they are found in the matched
+ * expression.
+ */
+export interface Options<OptionTypes extends object> {
+	/**
+	 * Get the first option with the given id.
+	 *
+	 * @param option
+	 *   the option to fetch
+	 */
+	get<Id extends keyof OptionTypes>(option: Id): Option<OptionTypes[Id]> | null;
+
+	/**
+	 * Get all options with the given id.
+	 */
+	getAll<Id extends keyof OptionTypes>(option: Id): Option<OptionTypes[Id]>[];
+
+	/**
+	 * Get all of the options as an array.
+	 */
+	toArray(): ReadonlyArray<Option<any>>;
+}
+
+class OptionsSet<OptionTypes extends object> implements Options<OptionTypes> {
+	private readonly matches: Option<any>[];
+
+	constructor(matches: Option<any>[]) {
+		this.matches = matches;
+	}
+
+	public get<Id extends keyof OptionTypes>(option: Id): Option<OptionTypes[Id]> | null {
+		for(const match of this.matches) {
+			if(match.option === option) {
+				return match as any;
+			}
+		}
+
+		return null;
+	}
+
+	public getAll<Id extends keyof OptionTypes>(option: Id): Option<OptionTypes[Id]>[] {
+		return this.matches.filter(match => match.option === option);
+	}
+
+	public toArray() {
+		return this.matches;
+	}
 }
 
 /**
  * Custom option value to hide enumeration for equality checks.
  */
-export class Option {
+export class Option<Values> {
 	public readonly option: string;
-	public readonly values: Map<string, any>;
+	public readonly values: Values;
 	public readonly expression: ExpressionPart[];
 
-	constructor(option: string, values: Map<string, any>, expression: ExpressionPart[]) {
+	constructor(option: string, values: Values, expression: ExpressionPart[]) {
 		this.option = option;
 		this.values = values;
 

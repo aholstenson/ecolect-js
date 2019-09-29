@@ -19,7 +19,7 @@ module.exports = {
 	globals: {
 		"ts-jest": {
 			"diagnostics": {
-				"ignoreCodes": "TS2531"
+				"ignoreCodes": [ "TS2531", "TS2532" ]
 			}
 		}
 	}

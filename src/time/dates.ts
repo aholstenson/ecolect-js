@@ -185,7 +185,7 @@ function adjust(r: DateTimeData, options: DateTimeOptions, time: Date, def: Adju
 	return time;
 }
 
-export function map(r: DateTimeData, e: DateTimeEncounter, options: DateTimeOptions={}): MutableDateValue | null {
+export function mapDate(r: DateTimeData, e: DateTimeEncounter, options: DateTimeOptions={}): MutableDateValue | null {
 	if(! r.relationToCurrent) {
 		r.relationToCurrent = TimeRelationship.Auto;
 	}
@@ -198,7 +198,7 @@ export function map(r: DateTimeData, e: DateTimeEncounter, options: DateTimeOpti
 		sub.relationToCurrent = r.relationToCurrent;
 		sub.intervalEdge = r.intervalEdge;
 
-		const resolvedTime = map(sub, e, options);
+		const resolvedTime = mapDate(sub, e, options);
 		if(! resolvedTime) return null;
 
 		time = resolvedTime.toDate();

@@ -5,11 +5,11 @@ import { SubNode } from './SubNode';
 import { CollectorNode, Collectable } from './CollectorNode';
 import { CustomNode, TokenValidator } from './CustomNode';
 
-import { Matcher } from './matching/Matcher';
-import { DefaultMatcher, MatcherOptions, MatchReductionEncounter } from './matching/DefaultMatcher';
 import { Language } from '../language/Language';
-import { Encounter, Match } from './matching';
+import { emptyState } from './matching';
 import { Predicate } from '../utils/predicates';
+import { Graph } from './Graph';
+import { GraphOptions } from './GraphOptions';
 
 /**
  * Object that can be mapped into another one.
@@ -18,7 +18,7 @@ export interface MappableObject<V> {
 	[x: string]: V;
 }
 
-export type GraphBuildable<V> = string | RegExp | Node | Matcher<any> | ((builder: GraphBuilder<any, any, any>) => Node);
+export type GraphBuildable<V> = string | RegExp | Node | Graph<any> | ((builder: GraphBuilder<any>) => Node);
 
 export type GraphBuildableArray<V> = GraphBuildable<V> | GraphBuildable<V>[];
 
@@ -27,10 +27,10 @@ export type GraphBuildableArray<V> = GraphBuildable<V> | GraphBuildable<V>[];
  * be used within the graph or standalone to match expressions.
  *
  */
-export class GraphBuilder<V, M=V, R=M[]> {
+export class GraphBuilder<V> {
 	protected language: Language;
 	private nodes: Node[];
-	private options: MatcherOptions<R>;
+	protected options: GraphOptions;
 
 	constructor(language: Language) {
 		this.language = language;
@@ -152,12 +152,12 @@ export class GraphBuilder<V, M=V, R=M[]> {
 				return push(result);
 			} else if(n instanceof RegExp) {
 				return push(new RegExpNode(n));
-			} else if(n instanceof DefaultMatcher) {
-				return push(new SubNode(n, n.options));
 			} else if(n instanceof Node) {
 				return push(n);
 			} else if(typeof n === 'string') {
 				return push(this.parse(n));
+			} else if('nodes' in n) {
+				return push(new SubNode(n, n.options));
 			} else {
 				throw new Error('Invalid node');
 			}
@@ -204,77 +204,37 @@ export class GraphBuilder<V, M=V, R=M[]> {
 		return this;
 	}
 
-	/**
-	 * Setup a mapper that turns the intermediate representation into the
-	 * public facing value type.
-	 */
-	public mapResults<N>(mapper: (result: V, encounter: Encounter) => N): GraphBuilder<V, N> {
-		const self = this as unknown as GraphBuilder<V, N>;
-		self.options.mapper = mapper;
-		return self;
+	public build(): Graph<V> {
+		return {
+			nodes: this.nodes,
+			options: this.options,
+			matchingState: emptyState()
+		};
 	}
 
-	/**
-	 * Reduce the results down to a new object. This can be used to perform
-	 * a transformation on all of the results at once.
-	 *
-	 * @param func
-	 */
-	public reducer<NewR>(func: (results: MatchReductionEncounter<V, M>) => NewR): GraphBuilder<V, M, NewR> {
-		const self = this as unknown as GraphBuilder<V, M, NewR>;
-		self.options.reducer = func;
-		return self;
-	}
-
-	/**
-	 * Reduce the results down so only the best match is returned when this
-	 * matcher is queried.
-	 */
-	public onlyBest(): GraphBuilder<V, M, M | null> {
-		return this.reducer(({ results, map }) => {
-			const match = results.first();
-			if(match) {
-				return map(match.data);
-			} else {
-				return null;
-			}
-		});
-	}
-
-	/**
-	 * Build this graph and turn it into a matcher.
-	 */
-	public toMatcher(): Matcher<R> {
-		return this.createMatcher(this.language, this.nodes, this.options);
-	}
-
-	protected createMatcher<C>(lang: Language, nodes: Node[], options: MatcherOptions<C>): Matcher<C> {
-		return new DefaultMatcher(lang, nodes, options);
-	}
-
-	public static result<V>(matcher?: Matcher<any> | Predicate<V>, validator?: Predicate<V>): (builder: GraphBuilder<V, any>) => Node {
+	public static result<V>(graph?: Graph<any> | Predicate<V>, validator?: Predicate<V>): (builder: GraphBuilder<V>) => Node {
 		if(typeof validator === 'undefined') {
-			if(typeof matcher === 'function') {
-				validator = matcher;
-				matcher = undefined;
-			} else if(matcher) {
-				throw new Error('Expected graph or a validation function, got ' + matcher);
+			if(typeof graph === 'function') {
+				validator = graph;
+				graph = undefined;
+			} else if(graph) {
+				throw new Error('Expected graph or a validation function, got ' + graph);
 			}
 		}
 
-		if(matcher && ! (matcher instanceof DefaultMatcher)) {
-			throw new Error('matcher is not actually an instance of Matcher');
+		if(graph && ! ('nodes' in graph)) {
+			throw new Error('Given graph is not valid');
 		}
 
 		return function(builder: GraphBuilder<V>) {
-			const sub = matcher instanceof DefaultMatcher
-				? new SubNode(matcher, matcher.options, validator)
+			const sub = graph && 'nodes' in graph
+				? new SubNode(graph, graph.options, validator)
 				: new SubNode(builder.nodes, builder.options as any, validator);
 
-			sub.recursive = ! matcher;
+			sub.recursive = ! graph;
 
 			if(validator) {
-				let name = matcher instanceof DefaultMatcher ? matcher.options.name : builder.options.name;
+				let name = (graph && 'nodes' in graph) ? graph.options.name : builder.options.name;
 				if(validator.name) {
 					if(name) {
 						name += ':' + validator.name;
@@ -283,7 +243,7 @@ export class GraphBuilder<V, M=V, R=M[]> {
 					}
 				}
 				sub.name = name || 'unknown';
-			} else if(! matcher) {
+			} else if(! graph) {
 				sub.name = builder.options.name + ':self';
 			}
 

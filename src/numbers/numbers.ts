@@ -96,6 +96,6 @@ export function float(a: NumberData, b: NumberData): NumberData {
 	};
 }
 
-export function map(data: NumberData) {
+export function mapNumber(data: NumberData) {
 	return new NumberValue(data);
 }

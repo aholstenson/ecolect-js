@@ -1,4 +1,4 @@
-import { ValueMatcher } from './base';
+import { ValueMatcher, NodeConvertable } from './base';
 import { ValueNodeOptions } from '../resolver/ValueNode';
 import { ValueEncounter } from '../resolver/ValueEncounter';
 
@@ -7,7 +7,7 @@ import { ValueEncounter } from '../resolver/ValueEncounter';
  *
  * @param options
  */
-export function customValue<V>(options: ValueNodeOptions<V> | ((encounter: ValueEncounter<V>) => Promise<void>)) {
+export function customValue<V>(options: ValueNodeOptions<V> | ((encounter: ValueEncounter<V>) => Promise<void>)): NodeConvertable<V> {
 	if(typeof options === 'undefined') {
 		throw new Error('Value matcher must be specified');
 	}

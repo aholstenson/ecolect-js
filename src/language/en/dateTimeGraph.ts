@@ -1,19 +1,19 @@
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
 import { GraphBuilder } from '../../graph/GraphBuilder';
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
-import { DateValue } from '../../time/date-value';
+
 import { DateTimeData } from '../../time/DateTimeData';
 
 import { combine, isRelative } from '../../time/matching';
-import { map } from '../../time/date-times';
-import { dateMatcher } from './date';
-import { timeMatcher } from './time';
 
-export const dateTimeMatcher: ValueMatcherFactory<DateValue> = {
+import { dateGraph } from './dateGraph';
+import { timeGraph } from './timeGraph';
+
+export const dateTimeGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'date-time',
 
 	create(language) {
-		const time = language.matcher(timeMatcher);
-		const date = language.matcher(dateMatcher);
+		const time = language.graph(timeGraph);
+		const date = language.graph(dateGraph);
 
 		return new GraphBuilder<DateTimeData>(language)
 			.name('date-time')
@@ -31,8 +31,6 @@ export const dateTimeMatcher: ValueMatcherFactory<DateValue> = {
 
 			.add(GraphBuilder.result(date, isRelative), (v, e) => v[0])
 
-			.mapResults(map)
-			.onlyBest()
-			.toMatcher();
+			.build();
 	}
 };

@@ -1,15 +1,14 @@
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
 import { GraphBuilder } from '../../graph/GraphBuilder';
-import { DateTimeData } from '../../time/DateTimeData';
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
 
-import { integerMatcher } from './integer';
-import { timeDurationMatcher } from './time-duration';
+import { DateTimeData } from '../../time/DateTimeData';
+
+import { integerGraph } from './integerGraph';
+import { timeDurationGraph } from './timeDurationGraph';
 
 import { combine, reverse, hasHour, isHour } from '../../time/matching';
-import { map, time12h, time24h, toAM, toPM } from '../../time/times';
-import { DateValue } from '../../time/date-value';
+import { time12h, time24h, toAM, toPM } from '../../time/times';
 import { Precision } from '../../time/Precision';
-
 
 function adjustMinutes(time: DateTimeData, minutes: number) {
 	return combine(time, {
@@ -17,12 +16,12 @@ function adjustMinutes(time: DateTimeData, minutes: number) {
 	});
 }
 
-export const timeMatcher: ValueMatcherFactory<DateValue> = {
+export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'time',
 
 	create(language) {
-		const integer = language.matcher(integerMatcher);
-		const timeDuration = language.matcher(timeDurationMatcher);
+		const integer = language.graph(integerGraph);
+		const timeDuration = language.graph(timeDurationGraph);
 
 		const relativeMinutes = new GraphBuilder<number>(language)
 			.name('relativeMinutes')
@@ -33,7 +32,7 @@ export const timeMatcher: ValueMatcherFactory<DateValue> = {
 			.add(integer, v => v[0].value)
 			.add([ integer, 'minutes' ], v => v[0].value)
 
-			.toMatcher();
+			.build();
 
 		return new GraphBuilder<DateTimeData>(language)
 			.name('time')
@@ -106,8 +105,6 @@ export const timeMatcher: ValueMatcherFactory<DateValue> = {
 			.add([ timeDuration, 'ago' ], v => reverse(v[0]))
 			.add([ 'at', GraphBuilder.result() ], v => v[0])
 
-			.mapResults(map)
-			.onlyBest()
-			.toMatcher();
+			.build();
 	}
 };

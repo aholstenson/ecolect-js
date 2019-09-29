@@ -1,11 +1,10 @@
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
 import { GraphBuilder } from '../../graph/GraphBuilder';
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
-import { Language } from '../Language';
 
-export const booleanMatcher: ValueMatcherFactory<boolean> = {
+export const booleanGraph: LanguageGraphFactory<boolean> = {
 	id: 'boolean',
 
-	create(language: Language) {
+	create(language) {
 		return new GraphBuilder<boolean>(language)
 			.name('boolean')
 
@@ -17,8 +16,6 @@ export const booleanMatcher: ValueMatcherFactory<boolean> = {
 			.add('off', false)
 			.add('no', false)
 
-			.onlyBest()
-
-			.toMatcher();
+			.build();
 	}
 };

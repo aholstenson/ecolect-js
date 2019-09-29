@@ -5,20 +5,22 @@ import { Matcher, EncounterOptions } from './graph/matching';
 import { ResolvedIntent } from './resolver/ResolvedIntent';
 import { ResolvedIntents } from './resolver/ResolvedIntents';
 
-export type Action = (item: ResolvedIntent) => void;
+export type Action<Values extends object> = (item: ResolvedIntent<Values>) => void;
 
 export class ActionsBuilder {
+	private language: Language;
 	private builder: IntentsBuilder;
 	private handlers: Map<string, any>;
 	private id: number;
 
 	constructor(lang: Language) {
+		this.language = lang;
 		this.builder = new IntentsBuilder(lang);
 		this.handlers = new Map();
 		this.id = 0;
 	}
 
-	public action(id?: string): ActionBuilder {
+	public action(id?: string): ActionBuilder<{}> {
 		// Auto assign an id
 		const actualId = id ? id : id = ('__auto__' + ++this.id);
 
@@ -28,7 +30,7 @@ export class ActionsBuilder {
 		return {
 			value(valueId, type) {
 				builder.value(valueId, type);
-				return this;
+				return this as any;
 			},
 
 			add(...args) {
@@ -49,35 +51,37 @@ export class ActionsBuilder {
 	}
 
 	public build() {
-		return new Actions(this.builder.build(), this.handlers);
+		return new Actions(this.language, this.builder.build(), this.handlers);
 	}
 }
 
-export interface ActionBuilder {
-	value(id: string, type: Value): this;
+export interface ActionBuilder<Values extends object> {
+	value<I extends string, V>(id: I, type: Value<V>): ActionBuilder<Values & { [K in I]: V }>;
 
 	add(...args: string[]): this;
 
-	handler(func: Action): this;
+	handler(func: Action<Values>): this;
 
 	done(): ActionsBuilder;
 }
 
 export class Actions {
+	public readonly language: Language;
 	private handlers: Map<string, any>;
-	private matcher: Matcher<ResolvedIntents>;
+	private matcher: Matcher<ResolvedIntents<any>>;
 
-	constructor(matcher: Matcher<ResolvedIntents>, handlers: Map<string, any>) {
+	constructor(
+		language: Language,
+		matcher: Matcher<ResolvedIntents<any>>,
+		handlers: Map<string, any>
+	) {
+		this.language = language;
 		this.matcher = matcher;
 		this.handlers = handlers;
 	}
 
-	get language() {
-		return this.matcher.language;
-	}
-
 	public match(expression: string, options: EncounterOptions): Promise<ResolvedActions> {
-		const map = (item: ResolvedIntent): ResolvedAction => {
+		const map = (item: ResolvedIntent<any>): ResolvedAction => {
 			const result = item as any;
 			result.activate = (...args: any[]) => {
 				const handler = this.handlers.get(item.intent);
@@ -98,7 +102,7 @@ export class Actions {
 	}
 }
 
-export interface ResolvedAction extends ResolvedIntent {
+export interface ResolvedAction extends ResolvedIntent<any> {
 	activate: () => void;
 }
 

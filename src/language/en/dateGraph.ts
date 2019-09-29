@@ -1,6 +1,5 @@
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
 import { GraphBuilder } from '../../graph/GraphBuilder';
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
-import { DateValue } from '../../time/date-value';
 
 import {
 	combine,
@@ -17,31 +16,31 @@ import { IntervalEdge } from '../../time/IntervalEdge';
 import { DateTimeData } from '../../time/DateTimeData';
 import { thisWeek } from '../../time/weeks';
 import { thisQuarter } from '../../time/quarters';
-import { map, today, yesterday, tomorrow, dayAfterTomorrow, nextDayOfWeek, withDay, withYear } from '../../time/dates';
+import { today, yesterday, tomorrow, dayAfterTomorrow, nextDayOfWeek, withDay, withYear } from '../../time/dates';
 
-import { OrdinalValue } from '../../numbers/OrdinalValue';
+import { OrdinalData } from '../../numbers/OrdinalData';
 
-import { ordinalMatcher } from './ordinal';
-import { dayOfWeekMatcher } from './day-of-week';
-import { yearMatcher } from './year';
-import { quarterMatcher } from './quarter';
-import { weekMatcher } from './week';
-import { monthMatcher } from './month';
-import { dateDurationMatcher } from './date-duration';
+import { ordinalGraph } from './ordinalGraph';
+import { dayOfWeekGraph } from './dayOfWeekGraph';
+import { yearGraph } from './yearGraph';
+import { quarterGraph } from './quarterGraph';
+import { weekGraph } from './weekGraph';
+import { monthGraph } from './monthGraph';
+import { dateDurationGraph } from './dateDurationGraph';
 
-export const dateMatcher: ValueMatcherFactory<DateValue> = {
+export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'date',
 
 	create(language) {
-		const ordinal = language.matcher(ordinalMatcher);
-		const dayOfWeek = language.matcher(dayOfWeekMatcher);
-		const year = language.matcher(yearMatcher);
-		const quarter = language.matcher(quarterMatcher);
-		const week = language.matcher(weekMatcher);
-		const month = language.matcher(monthMatcher);
-		const dateDuration = language.matcher(dateDurationMatcher);
+		const ordinal = language.graph(ordinalGraph);
+		const dayOfWeek = language.graph(dayOfWeekGraph);
+		const year = language.graph(yearGraph);
+		const quarter = language.graph(quarterGraph);
+		const week = language.graph(weekGraph);
+		const month = language.graph(monthGraph);
+		const dateDuration = language.graph(dateDurationGraph);
 
-		const day = GraphBuilder.result(ordinal, (v: OrdinalValue) => v.value >= 0 && v.value < 31);
+		const day = GraphBuilder.result(ordinal, (v: OrdinalData) => v.value >= 0 && v.value < 31);
 
 		return new GraphBuilder<DateTimeData>(language)
 			.name('date')
@@ -223,8 +222,6 @@ export const dateMatcher: ValueMatcherFactory<DateValue> = {
 			.add([ 'beginning of', GraphBuilder.result() ], v => startOf(v[0]))
 			.add([ 'end of', GraphBuilder.result() ], v => endOf(v[0]))
 
-			.mapResults(map)
-			.onlyBest()
-			.toMatcher();
+			.build();
 	}
 };

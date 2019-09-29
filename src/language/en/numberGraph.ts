@@ -1,22 +1,22 @@
 import { GraphBuilder } from '../../graph/GraphBuilder';
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
 
-import { float, combine, negative, map, digitNumber, isNegative } from '../../numbers/numbers';
-import { NumberData } from '../../numbers/NumberData';
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
-import { NumberValue } from '../../numbers/NumberValue';
 import { Language } from '../Language';
-import { Matcher } from '../../graph/matching';
-import { integerMatcher } from './integer';
+
+import { float, combine, negative, digitNumber, isNegative } from '../../numbers/numbers';
+import { NumberData } from '../../numbers/NumberData';
+
+import { integerGraph } from './integerGraph';
 
 function isNumber(o: NumberData) {
 	return typeof o.value !== 'undefined';
 }
 
-export const numberMatcher: ValueMatcherFactory<NumberValue> = {
+export const numberGraph: LanguageGraphFactory<NumberData> = {
 	id: 'number',
 
-	create(language: Language): Matcher<NumberValue | null> {
-		const integer = language.matcher(integerMatcher);
+	create(language: Language) {
+		const integer = language.graph(integerGraph);
 		return new GraphBuilder<NumberData>(language)
 			.name('number')
 
@@ -40,8 +40,6 @@ export const numberMatcher: ValueMatcherFactory<NumberValue> = {
 			.add([ 'minus', GraphBuilder.result(isNumber) ], v => negative(v[0]))
 			.add([ 'negative', GraphBuilder.result(isNumber) ], v => negative(v[0]))
 
-			.mapResults(map)
-			.onlyBest()
-			.toMatcher();
+			.build();
 	}
 };

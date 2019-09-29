@@ -1,7 +1,10 @@
-import { en } from '../../../src/language/en';
 import { testRunner } from '../helpers';
 
-const test = testRunner(en, 'date-time-duration');
+import { en } from '../../../src/language/en';
+import { dateTimeDurationGraph } from '../../../src/language/en/dateTimeDurationGraph';
+import { mapDuration } from '../../../src/time/durations';
+
+const test = testRunner(en, dateTimeDurationGraph, mapDuration);
 
 describe('English', function() {
 

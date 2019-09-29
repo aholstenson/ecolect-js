@@ -1,7 +1,10 @@
-import { en } from '../../../src/language/en';
 import { testRunner } from '../helpers';
 
-const test = testRunner(en, 'integer');
+import { en } from '../../../src/language/en';
+import { integerGraph } from '../../../src/language/en/integerGraph';
+import { mapNumber } from '../../../src/numbers/numbers';
+
+const test = testRunner(en, integerGraph, mapNumber);
 
 describe('English', function() {
 

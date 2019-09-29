@@ -3,14 +3,14 @@ import { ResolvedIntent } from './ResolvedIntent';
 /**
  *
  */
-export interface ResolvedIntents {
+export interface ResolvedIntents<Values extends object> {
 	/**
 	 * The best intent that matches.
 	 */
-	readonly best: ResolvedIntent | null;
+	readonly best: ResolvedIntent<Values> | null;
 
 	/**
 	 * All of the matches.
 	 */
-	readonly matches: ReadonlyArray<ResolvedIntent>;
+	readonly matches: ReadonlyArray<ResolvedIntent<Values>>;
 }

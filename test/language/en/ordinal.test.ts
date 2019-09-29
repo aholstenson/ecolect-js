@@ -1,7 +1,10 @@
-import { en } from '../../../src/language/en';
 import { testRunner } from '../helpers';
 
-const test = testRunner(en, 'ordinal');
+import { en } from '../../../src/language/en';
+import { ordinalGraph } from '../../../src/language/en/ordinalGraph';
+import { mapOrdinal } from '../../../src/numbers/ordinals';
+
+const test = testRunner(en, ordinalGraph, mapOrdinal);
 
 describe('English', function() {
 

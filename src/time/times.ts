@@ -70,7 +70,7 @@ export function toAM(time: DateTimeData) {
 	return time;
 }
 
-export function map(r: DateTimeData, e: DateTimeEncounter, options?: DateTimeOptions, result?: MutableDateValue) {
+export function mapTime(r: DateTimeData, e: DateTimeEncounter, options?: DateTimeOptions, result?: MutableDateValue) {
 	result = result || new MutableDateValue();
 
 	const current = currentTime(e.options);

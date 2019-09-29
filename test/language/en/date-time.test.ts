@@ -1,7 +1,10 @@
-import { en } from '../../../src/language/en';
 import { testRunner } from '../helpers';
 
-const test = testRunner(en, 'date-time');
+import { en } from '../../../src/language/en';
+import { dateTimeGraph } from '../../../src/language/en/dateTimeGraph';
+import { mapDateTime } from '../../../src/time/date-times';
+
+const test = testRunner(en, dateTimeGraph, mapDateTime);
 
 describe('English', function() {
 

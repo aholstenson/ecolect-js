@@ -21,7 +21,7 @@ describe('Value: Custom', function() {
 			.value('company', customValue(match))
 			.add('{company}')
 			.add('{company} company')
-			.build();
+			.toMatcher();
 
 		it('Invalid company', function() {
 			return resolver.match('ABC')
@@ -34,7 +34,7 @@ describe('Value: Custom', function() {
 			return resolver.match('Balloons')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('company')).toEqual('Balloons');
+					expect(results.best.values.company).toEqual('Balloons');
 				});
 		});
 
@@ -42,7 +42,7 @@ describe('Value: Custom', function() {
 			return resolver.match('Cookie Co')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('company')).toEqual('Cookie Co');
+					expect(results.best.values.company).toEqual('Cookie Co');
 				});
 		});
 
@@ -50,7 +50,7 @@ describe('Value: Custom', function() {
 			return resolver.match('Cookie Co company')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('company')).toEqual('Cookie Co');
+					expect(results.best.values.company).toEqual('Cookie Co');
 				});
 		});
 	});
@@ -60,7 +60,7 @@ describe('Value: Custom', function() {
 			.value('company',  customValue(match))
 			.add('{company}')
 			.add('{company} company')
-			.build();
+			.toMatcher();
 
 		it('Invalid company', function() {
 			return resolver.match('A', { partial: true })
@@ -73,7 +73,7 @@ describe('Value: Custom', function() {
 			return resolver.match('Ba', { partial: true })
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('company')).toEqual('Balloons');
+					expect(results.best.values.company).toEqual('Balloons');
 				});
 		});
 
@@ -81,7 +81,7 @@ describe('Value: Custom', function() {
 			return resolver.match('C', { partial: true })
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('company')).toEqual('Cookie Co');
+					expect(results.best.values.company).toEqual('Cookie Co');
 				});
 		});
 
@@ -89,7 +89,7 @@ describe('Value: Custom', function() {
 			return resolver.match('Cookie company', { partial: true })
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('company')).toEqual('Cookie Co');
+					expect(results.best.values.company).toEqual('Cookie Co');
 				});
 		});
 

@@ -98,7 +98,7 @@ describe('Intents', function() {
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
 					expect(results.best.intent).toEqual('customer:orders');
-					expect(results.best.values.get('customer')).toEqual('Test');
+					expect(results.best.values.customer).toEqual('Test');
 				});
 		});
 
@@ -107,7 +107,7 @@ describe('Intents', function() {
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
 					expect(results.best.intent).toEqual('customer:orders');
-					expect(results.best.values.get('customer')).toEqual('Test');
+					expect(results.best.values.customer).toEqual('Test');
 				});
 		});
 
@@ -116,7 +116,7 @@ describe('Intents', function() {
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
 					expect(results.best.intent).toEqual('customer:orders');
-					expect(results.best.values.get('customer')).toEqual('Test');
+					expect(results.best.values.customer).toEqual('Test');
 				});
 		});
 

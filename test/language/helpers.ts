@@ -1,6 +1,9 @@
 import { format } from 'date-fns';
-import { EncounterOptions, Matcher } from '../../src/graph/matching';
-import { Language } from '../../src/language/language';
+import { Language } from '../../src/language/Language';
+
+import { EncounterOptions, Matcher, GraphMatcher, Encounter } from '../../src/graph/matching';
+import { Graph } from '../../src/graph/Graph';
+import { LanguageGraphFactory } from '../../src/language/LanguageGraphFactory';
 
 function formatDate(d?: Date) {
 	if(! d) return 'current time';
@@ -33,16 +36,29 @@ function createTester(f: (name: string, runner: any) => any, matcher: MatchingFu
 	};
 }
 
-export function testRunner(lang: Language, matcherId: string): TestRunner {
-	const matcher = lang.findMatcher(matcherId);
-	if(! matcher) {
-		throw new Error('Matcher has not been registered on language');
-	}
-
-	return testRunnerViaMatcher(matcher);
+export function testRunner<V, O>(
+	lang: Language,
+	graphFactory: LanguageGraphFactory<V>,
+	mapper: (value: V, encounter: Encounter) => O
+): TestRunner {
+	const graph = lang.graph(graphFactory);
+	return testRunnerViaGraph(lang, graph, mapper);
 }
 
-export function testRunnerViaMatcher(matcher: Matcher<any>): TestRunner {
+export function testRunnerViaGraph<V, O>(
+	lang: Language,
+	graph: Graph<V>,
+	mapper: (value: V, encounter: Encounter) => O
+): TestRunner {
+	const matcher = new GraphMatcher(lang, graph, {
+		reducer: ({ encounter, results }) => {
+			const first = results.first();
+			if(! first) return null;
+
+			return mapper(first.data, encounter);
+		}
+	});
+
 	const r = (text: string, options: EncounterOptions) => matcher.match(text, options);
 
 	const func = createTester(it, r) as TestRunner;

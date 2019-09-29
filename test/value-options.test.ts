@@ -5,7 +5,6 @@ import { optionsValue, dateIntervalValue, enumerationValue, customValue } from '
 
 describe('Value: Options', function() {
 
-	/*
 	describe('Standalone option: No values', () => {
 		const matcher = optionsValue()
 			.option('deadline')
@@ -14,16 +13,17 @@ describe('Value: Options', function() {
 			.build()
 			.matcher(en);
 
-		it('with deadline [partial=false]', () => matcher('with deadline')
+		it('with deadline [partial=false]', () => matcher.match('with deadline')
 			.then(v => {
-				expect(v).toEqual([
+				expect(v.toArray()).toEqual([
 					{
 						option: 'deadline',
 						values: {},
 					}
 				]);
 
-				expect(v[0].expression).toEqual([
+				const option = v.get('deadline');
+				expect(option.expression).toEqual([
 					{
 						type: 'text',
 						value: 'with deadline',
@@ -33,16 +33,17 @@ describe('Value: Options', function() {
 			})
 		);
 
-		it('with deadline [partial=true]', () => matcher('with deadline', { partial: true })
+		it('with deadline [partial=true]', () => matcher.match('with deadline', { partial: true })
 			.then(v => {
-				expect(v).toEqual([
+				expect(v.toArray()).toEqual([
 					{
 						option: 'deadline',
 						values: {},
 					}
 				]);
 
-				expect(v[0].expression).toEqual([
+				const option = v.get('deadline');
+				expect(option.expression).toEqual([
 					{
 						type: 'text',
 						value: 'with deadline',
@@ -52,16 +53,17 @@ describe('Value: Options', function() {
 			})
 		);
 
-		it('with [partial=true]', () => matcher('with', { partial: true })
+		it('with [partial=true]', () => matcher.match('with', { partial: true })
 			.then(v => {
-				expect(v).toEqual([
+				expect(v.toArray()).toEqual([
 					{
 						option: 'deadline',
 						values: {},
 					}
 				]);
 
-				expect(v[0].expression).toEqual([
+				const option = v.get('deadline');
+				expect(option.expression).toEqual([
 					{
 						type: 'text',
 						value: 'with deadline',
@@ -71,16 +73,17 @@ describe('Value: Options', function() {
 			})
 		);
 
-		it('with d [partial=true]', () => matcher('with d', { partial: true })
+		it('with d [partial=true]', () => matcher.match('with d', { partial: true })
 			.then(v => {
-				expect(v).toEqual([
+				expect(v.toArray()).toEqual([
 					{
 						option: 'deadline',
 						values: {},
 					}
 				]);
 
-				expect(v[0].expression).toEqual([
+				const option = v.get('deadline');
+				expect(option.expression).toEqual([
 					{
 						type: 'text',
 						value: 'with deadline',
@@ -90,9 +93,9 @@ describe('Value: Options', function() {
 			})
 		);
 
-		it('with deadline and wi [partial=true]', () => matcher('with deadline and wi', { partial: true })
+		it('with deadline and wi [partial=true]', () => matcher.match('with deadline and wi', { partial: true })
 			.then(v => {
-				expect(v).toEqual([
+				expect(v.toArray()).toEqual([
 					{
 						option: 'deadline',
 						values: {},
@@ -103,7 +106,9 @@ describe('Value: Options', function() {
 					}
 				]);
 
-				expect(v[0].expression).toEqual([
+				const options = v.getAll('deadline');
+
+				expect(options[0].expression).toEqual([
 					{
 						type: 'text',
 						value: 'with deadline',
@@ -111,7 +116,7 @@ describe('Value: Options', function() {
 					}
 				]);
 
-				expect(v[1].expression).toEqual([
+				expect(options[1].expression).toEqual([
 					{
 						type: 'text',
 						value: 'with deadline',
@@ -131,29 +136,30 @@ describe('Value: Options', function() {
 			.build()
 			.matcher(en);
 
-		it('with deadline [partial=false]', () => matcher('with deadline jan 12th', { now: new Date(2010, 0, 1) })
+		it('with deadline [partial=false]', () => matcher.match('with deadline jan 12th', { now: new Date(2010, 0, 1) })
 			.then(v => {
 				expect(v).not.toBeNull();
-				expect(v.length).toEqual(1);
 
-				const a = v[0];
-				expect(a.option).toEqual('deadline');
-				expect(a.values.deadline).toEqual({
+				const option = v.get('deadline');
+				expect(option).not.toBeNull();
+				expect(option.option).toEqual('deadline');
+				expect(option.values.deadline).toEqual({
 					start: { period: 'day', year: 2010, month: 0, day: 12 },
 					end: { period: 'day', year: 2010, month: 0, day: 12 }
 				});
 			})
 		);
 
-		it('with deadline [partial=true]', () => matcher('with deadline', { partial: true })
+		it('with deadline [partial=true]', () => matcher.match('with deadline', { partial: true })
 			.then(v => {
 				expect(v).not.toBeNull();
-				expect(v.length).toEqual(1);
 
+				const option = v.get('deadline');
+				expect(option).not.toBeNull();
+				expect(option.option).toEqual('deadline');
 			})
 		);
 	});
-	*/
 
 	describe('Single option - no value', () => {
 		const queryOptions = optionsValue()
@@ -165,17 +171,16 @@ describe('Value: Options', function() {
 		const resolver = new ResolverBuilder(en)
 			.value('queryOptions', queryOptions)
 			.add('Things {queryOptions}')
-			.build();
+			.toMatcher();
 
 		it('Full match', () => {
 			return resolver.match('things with deadline', { partial: false })
 				.then(r => {
 					expect(r.best).not.toBeNull();
-					expect(r.best.values.get('queryOptions')).toBeInstanceOf(Array);
 
-					const v = r.best.values.get('queryOptions')[0];
+					const v = r.best.values.queryOptions.get('deadline');
 					expect(v.option).toEqual('deadline');
-					expect(v.values).toEqual(new Map());
+					expect(v.values).toEqual({});
 				});
 		});
 
@@ -183,11 +188,10 @@ describe('Value: Options', function() {
 			return resolver.match('things with d', { partial: true })
 				.then(r => {
 					expect(r.best).not.toBeNull();
-					expect(r.best.values.get('queryOptions')).toBeInstanceOf(Array);
 
-					const v = r.best.values.get('queryOptions')[0];
+					const v = r.best.values.queryOptions.get('deadline');
 					expect(v.option).toEqual('deadline');
-					expect(v.values).toEqual(new Map());
+					expect(v.values).toEqual({});
 				});
 		});
 	});
@@ -208,17 +212,16 @@ describe('Value: Options', function() {
 		const resolver = new ResolverBuilder(en)
 			.value('queryOptions', queryOptions)
 			.add('Things {queryOptions}')
-			.build();
+			.toMatcher();
 
 		it('Full match', () => {
 			return resolver.match('things with deadline jan 12th', { now: new Date(2018, 0, 2) })
 				.then(r => {
 					expect(r.best).not.toBeNull();
-					expect(r.best.values.get('queryOptions')).toBeInstanceOf(Array);
 
-					const v = r.best.values.get('queryOptions')[0];
+					const v = r.best.values.queryOptions.get('deadline');
 					expect(v.option).toEqual('deadline');
-					expect(v.values.get('deadline')).toEqual({
+					expect(v.values.deadline).toEqual({
 						start: { period: 'day', year: 2018, month: 0, day: 12 },
 						end: { period: 'day', year: 2018, month: 0, day: 12 }
 					});
@@ -229,18 +232,17 @@ describe('Value: Options', function() {
 			return resolver.match('things with deadline jan 12th and completed today', { now: new Date(2018, 0, 2) })
 				.then(r => {
 					expect(r.best).not.toBeNull();
-					expect(r.best.values.get('queryOptions')).toBeInstanceOf(Array);
 
-					const v0 = r.best.values.get('queryOptions')[0];
+					const v0 = r.best.values.queryOptions.get('deadline');
 					expect(v0.option).toEqual('deadline');
-					expect(v0.values.get('deadline')).toEqual({
+					expect(v0.values.deadline).toEqual({
 						start: { period: 'day', year: 2018, month: 0, day: 12 },
 						end: { period: 'day', year: 2018, month: 0, day: 12 }
 					});
 
-					const v1 = r.best.values.get('queryOptions')[1];
+					const v1 = r.best.values.queryOptions.get('completed');
 					expect(v1.option).toEqual('completed');
-					expect(v1.values.get('completed')).toEqual({
+					expect(v1.values.completed).toEqual({
 						start: { period: 'day', year: 2018, month: 0, day: 2 },
 						end: { period: 'day', year: 2018, month: 0, day: 2 }
 					});
@@ -258,7 +260,7 @@ describe('Value: Options', function() {
 
 		const queryOptions = optionsValue()
 			.option('value')
-				.value('name', customValue(async function(encounter) {
+				.value('name', customValue<string>(async function(encounter) {
 					let text = encounter.text;
 					if(encounter.partial) {
 						for(const v of values) {
@@ -284,23 +286,22 @@ describe('Value: Options', function() {
 		const resolver = new ResolverBuilder(en)
 			.value('queryOptions', queryOptions)
 			.add('Things {queryOptions}')
-			.build();
+			.toMatcher();
 
 		const resolver2 = new ResolverBuilder(en)
 			.value('enum', enumerationValue([ 'test', 'abc' ]))
 			.value('queryOptions', queryOptions)
 			.add('{enum} {queryOptions}')
-			.build();
+			.toMatcher();
 
 		it('Full match', () => {
 			return resolver.match('things named one', { now: new Date(2018, 0, 2) })
 				.then(r => {
 					expect(r.best).not.toBeNull();
-					expect(r.best.values.get('queryOptions')).toBeInstanceOf(Array);
 
-					const v = r.best.values.get('queryOptions')[0];
+					const v = r.best.values.queryOptions.get('value');
 					expect(v.option).toEqual('value');
-					expect(v.values.get('name')).toEqual('one');
+					expect(v.values.name).toEqual('one');
 				});
 		});
 
@@ -308,12 +309,11 @@ describe('Value: Options', function() {
 			return resolver.match('thing', { partial: true, now: new Date(2018, 0, 2) })
 				.then(r => {
 					expect(r.best).not.toBeNull();
-					expect(r.best.values.get('queryOptions')).toBeInstanceOf(Array);
 
-					const v = r.best.values.get('queryOptions')[0];
+					const v = r.best.values.queryOptions.get('value');
 					expect(v.option).toEqual('value');
 
-					const v2 = r.matches[1].values.get('queryOptions')[0];
+					const v2 = r.matches[1].values.queryOptions.get('completed');
 					expect(v2.option).toEqual('completed');
 				});
 		});
@@ -322,9 +322,8 @@ describe('Value: Options', function() {
 			return resolver.match('thing com', { partial: true, now: new Date(2018, 0, 2) })
 				.then(r => {
 					expect(r.best).not.toBeNull();
-					expect(r.best.values.get('queryOptions')).toBeInstanceOf(Array);
 
-					const v = r.best.values.get('queryOptions')[0];
+					const v = r.best.values.queryOptions.get('completed');
 					expect(v.option).toEqual('completed');
 				});
 		});
@@ -333,9 +332,8 @@ describe('Value: Options', function() {
 			return resolver.match('thing completed ja', { partial: true, now: new Date(2018, 0, 2) })
 				.then(r => {
 					expect(r.best).not.toBeNull();
-					expect(r.best.values.get('queryOptions')).toBeInstanceOf(Array);
 
-					const v = r.best.values.get('queryOptions')[0];
+					const v = r.best.values.queryOptions.get('completed');
 					expect(v.option).toEqual('completed');
 				});
 		});
@@ -344,11 +342,10 @@ describe('Value: Options', function() {
 			return resolver2.match('test named one', { now: new Date(2018, 0, 2) })
 				.then(r => {
 					expect(r.best).not.toBeNull();
-					expect(r.best.values.get('queryOptions')).toBeInstanceOf(Array);
 
-					const v = r.best.values.get('queryOptions')[0];
+					const v = r.best.values.queryOptions.get('value');
 					expect(v.option).toEqual('value');
-					expect(v.values.get('name')).toEqual('one');
+					expect(v.values.name).toEqual('one');
 				});
 		});
 
@@ -366,10 +363,10 @@ describe('Value: Options', function() {
 					expect(r.best).not.toBeNull();
 					expect(r.matches.length).toEqual(1);
 
-					expect(r.best.values.get('queryOptions')).toEqual([
+					expect(r.best.values.queryOptions.toArray()).toEqual([
 						{
 							option: 'value',
-							values: new Map()
+							values: {}
 						}
 					]);
 				});

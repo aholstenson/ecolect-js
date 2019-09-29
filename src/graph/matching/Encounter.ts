@@ -53,7 +53,7 @@ export class Encounter {
 		this.currentData = [];
 		this.currentDataDepth = 0;
 		this.matches = new MatchSet({
-			isEqual: options.matchIsEqual
+			isEqual: options.matchIsEqual && options.matchIsEqual(options)
 		});
 		this.maxDepth = 0;
 
@@ -306,7 +306,7 @@ export class Encounter {
 	 * a graph. This is used by sub-nodes to cache their results based on the
 	 * start index.
 	 *
-	 * @param {number} index
+	 * @param index
 	 */
 	public cache(index=this.currentIndex): Map<any, any> {
 		let map = this._cache[index];

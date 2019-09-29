@@ -1,10 +1,9 @@
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
 import { Language } from '../Language';
+
 import { GraphBuilder } from '../../graph/GraphBuilder';
 
-import { Weekday } from '../../time/Weekday';
-
-export const dayOfWeekMatcher: ValueMatcherFactory<Weekday> = {
+export const dayOfWeekGraph: LanguageGraphFactory<number> = {
 	id: 'day-of-week',
 
 	create(language: Language) {
@@ -41,8 +40,6 @@ export const dayOfWeekMatcher: ValueMatcherFactory<Weekday> = {
 
 			.add([ 'on', GraphBuilder.result() ], v => v[0])
 
-			.mapResults(m => m as Weekday)
-			.onlyBest()
-			.toMatcher();
+			.build();
 	}
 };

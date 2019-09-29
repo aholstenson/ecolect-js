@@ -1,7 +1,10 @@
-import { en } from '../../../src/language/en';
 import { testRunner } from '../helpers';
 
-const test = testRunner(en, 'month');
+import { en } from '../../../src/language/en';
+import { monthGraph } from '../../../src/language/en/monthGraph';
+import { mapMonth } from '../../../src/time/months';
+
+const test = testRunner(en, monthGraph, mapMonth);
 
 describe('English', function() {
 

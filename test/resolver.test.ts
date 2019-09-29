@@ -24,7 +24,7 @@ describe('Resolver', function() {
 		const resolver = new ResolverBuilder(en)
 			.add('one')
 			.add('one two three')
-			.build();
+			.toMatcher();
 
 		it('#1', function() {
 			return resolver.match('one')
@@ -48,13 +48,13 @@ describe('Resolver', function() {
 			.add('{a}')
 			.add('one {a}')
 			.add('{a} one')
-			.build();
+			.toMatcher();
 
 		it('#1', function() {
 			return resolver.match('one')
 				.then(r => {
 					expect(r.best).not.toBeNull();
-					expect(r.best.values.get('a')).toEqual('one');
+					expect(r.best.values.a).toEqual('one');
 					expect(r.matches.length).toEqual(1);
 				});
 		});
@@ -63,7 +63,7 @@ describe('Resolver', function() {
 			return resolver.match('one test')
 				.then(r => {
 					expect(r.best).not.toBeNull();
-					expect(r.best.values.get('a')).toEqual('test');
+					expect(r.best.values.a).toEqual('test');
 					expect(r.matches.length).toEqual(1);
 				});
 		});
@@ -72,7 +72,7 @@ describe('Resolver', function() {
 			return resolver.match('test one')
 			.then(r => {
 				expect(r.best).not.toBeNull();
-				expect(r.best.values.get('a')).toEqual('test');
+				expect(r.best.values.a).toEqual('test');
 				expect(r.matches.length).toEqual(1);
 			});
 		});
@@ -81,7 +81,7 @@ describe('Resolver', function() {
 			return resolver.match('one one')
 			.then(r => {
 				expect(r.best).not.toBeNull();
-				expect(r.best.values.get('a')).toEqual('one');
+				expect(r.best.values.a).toEqual('one');
 				expect(r.matches.length).toEqual(1);
 			});
 		});
@@ -93,7 +93,7 @@ describe('Resolver', function() {
 			.add('stuff {date}')
 			.add('{date} stuff')
 			.add('stuff {date} cookie')
-			.build();
+			.toMatcher();
 
 		it('start', function() {
 			return resolver.match('today stuff')
@@ -161,7 +161,7 @@ describe('Resolver', function() {
 	describe('Partial matching', function() {
 		const resolver = new ResolverBuilder(en)
 			.add('hello world')
-			.build();
+			.toMatcher();
 
 		it('Full token', function() {
 
@@ -190,7 +190,7 @@ describe('Resolver', function() {
 				}
 			}))
 			.add('hello {test}')
-			.build();
+			.toMatcher();
 
 		it('No value', function() {
 
@@ -223,13 +223,13 @@ describe('Resolver', function() {
 			.value('number', numberValue())
 			.add('stuff {number}')
 			.add('a {number} c')
-			.build();
+			.toMatcher();
 
 		it('With a number', function() {
 			return resolver.match('stuff 2')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('number')).toEqual({
+					expect(results.best.values.number).toEqual({
 						value: 2
 					});
 				});
@@ -253,7 +253,7 @@ describe('Resolver', function() {
 			return resolver.match('stuff 2 thousand')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('number')).toEqual({
+					expect(results.best.values.number).toEqual({
 						value: 2000
 					});
 				});
@@ -263,7 +263,7 @@ describe('Resolver', function() {
 			return resolver.match('a two hundred c')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('number')).toEqual({
+					expect(results.best.values.number).toEqual({
 						value: 200
 					});
 				});
@@ -275,13 +275,13 @@ describe('Resolver', function() {
 			.value('boolean', booleanValue())
 			.add('stuff {boolean}')
 			.add('a {boolean} c')
-			.build();
+			.toMatcher();
 
 		it('With a boolean', function() {
 			return resolver.match('stuff off')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('boolean')).toEqual(false);
+					expect(results.best.values.boolean).toEqual(false);
 				});
 		});
 
@@ -303,7 +303,7 @@ describe('Resolver', function() {
 			return resolver.match('stuff yes')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('boolean')).toEqual(true);
+					expect(results.best.values.boolean).toEqual(true);
 				});
 		});
 
@@ -311,7 +311,7 @@ describe('Resolver', function() {
 			return resolver.match('a false c')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.get('boolean')).toEqual(false);
+					expect(results.best.values.boolean).toEqual(false);
 				});
 		});
 	});
@@ -341,13 +341,13 @@ describe('Resolver', function() {
 					}
 				}))
 				.add('do {name}')
-				.build();
+				.toMatcher();
 
 			it('Match', function() {
 				return resolver.match('do one')
 					.then(results => {
 						expect(results.matches.length).toEqual(1);
-						expect(results.best.values.get('name')).toEqual('one');
+						expect(results.best.values.name).toEqual('one');
 
 						// Check that the expression matches
 						const expression = results.best.expression;
@@ -374,7 +374,7 @@ describe('Resolver', function() {
 				return resolver.match('do four five')
 					.then(results => {
 						expect(results.matches.length).toEqual(1);
-						expect(results.best.values.get('name')).toEqual('four five');
+						expect(results.best.values.name).toEqual('four five');
 
 						// Check that the expression matches
 						const expression = results.best.expression;
@@ -472,13 +472,13 @@ describe('Resolver', function() {
 					}
 				}))
 				.add('{name} value')
-				.build();
+				.toMatcher();
 
 			it('Match', function() {
 				return resolver.match('one value')
 					.then(results => {
 						expect(results.matches.length).toEqual(1);
-						expect(results.best.values.get('name')).toEqual('one');
+						expect(results.best.values.name).toEqual('one');
 
 						// Check that the expression matches
 						const expression = results.best.expression;
@@ -505,7 +505,7 @@ describe('Resolver', function() {
 				return resolver.match('four five value')
 					.then(results => {
 						expect(results.matches.length).toEqual(1);
-						expect(results.best.values.get('name')).toEqual('four five');
+						expect(results.best.values.name).toEqual('four five');
 
 						// Check that the expression matches
 						const expression = results.best.expression;
@@ -574,13 +574,13 @@ describe('Resolver', function() {
 				}))
 				.add('{name} end')
 				.add('{name} value end')
-				.build();
+				.toMatcher();
 
 			it('Match', function() {
 				return resolver.match('one value end')
 					.then(results => {
 						expect(results.matches.length).toEqual(1);
-						expect(results.best.values.get('name')).toEqual('one');
+						expect(results.best.values.name).toEqual('one');
 					});
 			});
 
@@ -609,7 +609,7 @@ describe('Resolver', function() {
 			.add('stuff {boolean}')
 			.add('a {boolean} c')
 			.add('longer {free} message')
-			.build();
+			.toMatcher();
 
 		it('Expression has source offsets', function() {
 			return resolver.match('a yes c')

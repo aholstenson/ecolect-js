@@ -1,18 +1,18 @@
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
 import { GraphBuilder } from '../../graph/GraphBuilder';
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
 
 import { combine } from '../../time/matching';
-import { map, Duration } from '../../time/durations';
-import { timeDurationMatcher } from './time-duration';
-import { dateDurationMatcher } from './date-duration';
 import { DateTimeData } from '../../time/DateTimeData';
 
-export const dateTimeDurationMatcher: ValueMatcherFactory<Duration> = {
+import { timeDurationGraph } from './timeDurationGraph';
+import { dateDurationGraph } from './dateDurationGraph';
+
+export const dateTimeDurationGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'date-time-duration',
 
 	create(language) {
-		const timeDuration = language.matcher(timeDurationMatcher);
-		const dateDuration = language.matcher(dateDurationMatcher);
+		const timeDuration = language.graph(timeDurationGraph);
+		const dateDuration = language.graph(dateDurationGraph);
 
 		return new GraphBuilder<DateTimeData>(language)
 			.name('date-time-duration')
@@ -25,8 +25,6 @@ export const dateTimeDurationMatcher: ValueMatcherFactory<Duration> = {
 			.add([ GraphBuilder.result(), GraphBuilder.result() ], v => combine(v[0], v[1]))
 			.add([ GraphBuilder.result(), 'and', GraphBuilder.result() ], v => combine(v[0], v[1]))
 
-			.mapResults(map)
-			.onlyBest()
-			.toMatcher();
+			.build();
 	}
 };

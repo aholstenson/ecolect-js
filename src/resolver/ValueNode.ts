@@ -97,7 +97,7 @@ export class ValueNode<V> extends Node {
 
 					for(const v of valueEncounter.matches) {
 						const matchCopy = m.copy();
-						matchCopy.data.values.set(this.id, v.value);
+						matchCopy.data.values[this.id] = v.value;
 						matchCopy.scoreData.score += 0.9 * v.score;
 						results.push(matchCopy);
 					}

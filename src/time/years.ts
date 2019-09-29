@@ -28,7 +28,7 @@ export function previousYear(r: any, e: DateTimeEncounter): DateTimeData {
 	};
 }
 
-export function map(r: DateTimeData, e: DateTimeEncounter): MutableDateValue | null {
+export function mapYear(r: DateTimeData, e: DateTimeEncounter): MutableDateValue | null {
 	const now = currentTime(e.options);
 
 	let time;

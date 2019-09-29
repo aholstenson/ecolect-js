@@ -1,6 +1,9 @@
 import { Node } from './Node';
-import { DefaultMatcher, Matcher, MatcherOptions, Encounter, Match, MatchingState, emptyState } from './matching';
+import { Encounter, Match, MatchingState, emptyState } from './matching';
 import { Predicate, alwaysTruePredicate } from '../utils/predicates';
+
+import { Graph } from './Graph';
+import { GraphOptions } from './GraphOptions';
 
 /*
  * Small penalty applied when a SubNode matches. This helps the algorithm
@@ -41,7 +44,7 @@ export class SubNode<V> extends Node {
 	private supportsFuzzy: boolean;
 
 	private filter: Predicate<V>;
-	public mapper: ((result: any, encounter: Encounter) => any) | undefined;
+	public mapper: ((result: V, encounter: Encounter) => any) | undefined;
 
 	/**
 	 * Fallback value to apply in case this is a partial match and the graph
@@ -49,13 +52,13 @@ export class SubNode<V> extends Node {
 	 */
 	public partialFallback?: any;
 
-	constructor(roots: DefaultMatcher<V> | Node[], options: MatcherOptions<V>, filter?: Predicate<V>) {
+	constructor(roots: Graph<V> | Node[], options: GraphOptions, filter?: Predicate<V>) {
 		super();
 
 		this.recursive = false;
 		this.filter = filter || alwaysTruePredicate;
 
-		if(roots instanceof DefaultMatcher) {
+		if('nodes' in roots) {
 			// Roots is actually a matcher, copy the graph from the matcher
 			this.roots = roots.nodes;
 			this.state = roots.matchingState;

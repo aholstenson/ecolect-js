@@ -1,7 +1,6 @@
 import { OrdinalData } from './OrdinalData';
 import { OrdinalValue } from './OrdinalValue';
 import { OrdinalPrecision } from './OrdinalPrecision';
-import { Precision } from '../time/Precision';
 
 export function specificOrdinal(value: number): OrdinalData {
 	return {
@@ -10,7 +9,7 @@ export function specificOrdinal(value: number): OrdinalData {
 	};
 }
 
-export function ambigiousOrdinal(value: number): OrdinalData {
+export function ambiguousOrdinal(value: number): OrdinalData {
 	return {
 		value: value,
 		precision: OrdinalPrecision.Ambiguous
@@ -22,7 +21,7 @@ export function ambigiousOrdinal(value: number): OrdinalData {
  *
  * @param r
  */
-export function map(r: OrdinalData): OrdinalValue | null {
+export function mapOrdinal(r: OrdinalData): OrdinalValue | null {
 	if(typeof r.value === 'undefined') return null;
 
 	return {

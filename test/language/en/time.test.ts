@@ -1,7 +1,9 @@
 import { en } from '../../../src/language/en';
 import { testRunner } from '../helpers';
+import { timeGraph } from '../../../src/language/en/timeGraph';
+import { mapTime } from '../../../src/time/times';
 
-const test = testRunner(en, 'time');
+const test = testRunner(en, timeGraph, mapTime);
 
 describe('English', function() {
 

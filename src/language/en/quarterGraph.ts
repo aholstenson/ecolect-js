@@ -1,16 +1,17 @@
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
+
 import { GraphBuilder } from '../../graph/GraphBuilder';
 
-import { map, thisQuarter, nextQuarter, previousQuarter } from '../../time/quarters';
-import { ordinalMatcher } from './ordinal';
-import { IntervalValue } from '../../time/interval-value';
+import { ordinalGraph } from './ordinalGraph';
+
+import { thisQuarter, nextQuarter, previousQuarter } from '../../time/quarters';
 import { DateTimeData } from '../../time/DateTimeData';
 
-export const quarterMatcher: ValueMatcherFactory<IntervalValue> = {
+export const quarterGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'quarter',
 
 	create(language) {
-		const ordinal = language.matcher(ordinalMatcher);
+		const ordinal = language.graph(ordinalGraph);
 
 		return new GraphBuilder<DateTimeData>(language)
 			.name('quarter')
@@ -28,8 +29,6 @@ export const quarterMatcher: ValueMatcherFactory<IntervalValue> = {
 			.add([ ordinal, 'quarter' ], v => ({ quarter: v[0].value }))
 			.add([ ordinal, 'q' ], v => ({ quarter: v[0].value }))
 
-			.mapResults(map)
-			.onlyBest()
-			.toMatcher();
+			.build();
 	}
 };

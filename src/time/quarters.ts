@@ -7,7 +7,7 @@ import { DateTimeEncounter } from './DateTimeEncounter';
 import { DateTimeData } from './DateTimeData';
 
 import { currentTime } from './currentTime';
-import { map as mapInterval } from './date-intervals';
+import { mapDateInterval } from './date-intervals';
 
 export function thisQuarter(r: any, e: DateTimeEncounter): DateTimeData {
 	const time = currentTime(e.options);
@@ -35,6 +35,6 @@ export function previousQuarter(r: any, e: DateTimeEncounter): DateTimeData {
 /**
  * Map quarters as intervals.
  */
-export function map(r: DateTimeData, e: DateTimeEncounter) {
-	return mapInterval({ start: r, end: r }, e);
+export function mapQuarter(r: DateTimeData, e: DateTimeEncounter) {
+	return mapDateInterval({ start: r, end: r }, e);
 }

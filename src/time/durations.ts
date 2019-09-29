@@ -15,7 +15,7 @@ import { DateTimeData } from './DateTimeData';
 /**
  * Map a duration of time into a usable object.
  */
-export function map(r: DateTimeData): Duration {
+export function mapDuration(r: DateTimeData): Duration {
 	const result = new MutableDuration();
 	result.years = r.relativeYears;
 	result.quarters = r.relativeQuarters;

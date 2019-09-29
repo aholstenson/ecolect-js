@@ -1,6 +1,8 @@
 import { ResolverBuilder } from './resolver/ResolverBuilder';
 import { Language } from './language/Language';
 import { Value } from './values/base';
+import { Matcher } from './graph/matching';
+import { ResolvedIntents } from './resolver/ResolvedIntents';
 
 export class IntentsBuilder {
 	private language: Language;
@@ -24,7 +26,7 @@ export class IntentsBuilder {
 		const self = this;
 		const instance = new ResolverBuilder(this.language, id);
 		return {
-			value(valueId: string, type: Value) {
+			value(valueId: string, type: Value<any>) {
 				instance.value(valueId, type);
 				return this;
 			},
@@ -41,13 +43,13 @@ export class IntentsBuilder {
 		};
 	}
 
-	public build() {
-		return this.builder.build();
+	public build(): Matcher<ResolvedIntents<any>> {
+		return this.builder.toMatcher();
 	}
 }
 
 export interface IntentBuilder {
-	value(id: string, type: Value): this;
+	value(id: string, type: Value<any>): this;
 
 	add(...args: string[]): this;
 

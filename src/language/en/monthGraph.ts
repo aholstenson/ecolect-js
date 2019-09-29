@@ -1,23 +1,25 @@
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
+import { Language } from '../Language';
+
 import { GraphBuilder } from '../../graph/GraphBuilder';
 
-import { ordinalMatcher } from './ordinal';
-import { integerMatcher } from './integer';
+import { ordinalGraph } from './ordinalGraph';
+import { integerGraph } from './integerGraph';
+
+import { DateTimeData } from '../../time/DateTimeData';
+import { OrdinalData } from '../../numbers/OrdinalData';
 
 import { reverse } from '../../time/matching';
-import { map, thisMonth, nextMonth, previousMonth } from '../../time/months';
-import { Language } from '../Language';
-import { DateTimeData } from '../../time/DateTimeData';
-import { isSpecific } from '../../numbers/ordinals';
-import { OrdinalData } from '../../numbers/OrdinalData';
-import { DateValue } from '../../time/date-value';
+import { thisMonth, nextMonth, previousMonth } from '../../time/months';
 
-export const monthMatcher: ValueMatcherFactory<DateValue> = {
+import { isSpecific } from '../../numbers/ordinals';
+
+export const monthGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'month',
 
 	create(language: Language) {
-		const integer = language.matcher(integerMatcher);
-		const ordinal = language.matcher(ordinalMatcher);
+		const integer = language.graph(integerGraph);
+		const ordinal = language.graph(ordinalGraph);
 		const ordinalMonth = GraphBuilder.result<OrdinalData>(ordinal, v => isSpecific(v) && v.value >= 1 && v.value <= 12);
 
 		const relative = new GraphBuilder<DateTimeData>(language)
@@ -25,7 +27,7 @@ export const monthMatcher: ValueMatcherFactory<DateValue> = {
 
 			.add([ integer, 'months' ], v => ({ relativeMonths: v[0].value }))
 
-			.toMatcher();
+			.build();
 
 		return new GraphBuilder<DateTimeData>(language)
 			.name('month')
@@ -89,8 +91,6 @@ export const monthMatcher: ValueMatcherFactory<DateValue> = {
 			.add([ 'in', GraphBuilder.result() ], v => v[0])
 			.add([ relative, 'ago' ], v => reverse(v[0]))
 
-			.mapResults(map)
-			.onlyBest()
-			.toMatcher();
+			.build();
 	}
 };

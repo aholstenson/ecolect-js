@@ -2,28 +2,31 @@ import { isDeepEqual } from '../utils/equality';
 
 import { Node } from '../graph/Node';
 import { SubNode } from '../graph/SubNode';
-import { Matcher, Encounter } from '../graph/matching';
+import { Encounter } from '../graph/matching';
+import { Graph } from '../graph/Graph';
 
-export interface ValueParserOptions {
+export interface ValueParserOptions<V, O> {
 	/**
 	 * If the partial should be presented as a blank value if it is being
 	 * matched and no more tokens are available.
 	 */
 	partialBlankWhenNoToken?: boolean;
+
+	mapper: (data: V, encounter: Encounter) => O;
 }
 
 export class ValueParserNode<V> extends Node {
 	public readonly id: string;
 	private node: SubNode<V>;
-	private options: ValueParserOptions;
+	private options: ValueParserOptions<V, any>;
 
 	private partialBlankWhenNoToken: boolean;
 
-	constructor(id: string, matcher: Matcher<V>, options: ValueParserOptions={}) {
+	constructor(id: string, graph: Graph<V>, options: ValueParserOptions<V, any>) {
 		super();
 
 		this.id = id;
-		this.node = new SubNode(matcher, matcher.options);
+		this.node = new SubNode(graph, graph.options);
 		this.options = options;
 
 		this.partialBlankWhenNoToken = ! this.node.supportsPartial || options.partialBlankWhenNoToken || false;
@@ -33,20 +36,14 @@ export class ValueParserNode<V> extends Node {
 		 * using the same mapper as would be used if graph is directly matched
 		 * on.
 		 */
-		const mapper = matcher.options.mapper;
 		this.node.partialFallback = {
 			id: this.id,
 		};
 		this.node.mapper = (r, encounter) => {
-			if(mapper) {
-				// Perform the mapping using the graphs mapper
-				r = mapper(r, encounter);
-			}
-
 			// Map it into a value format
 			return {
 				id: id,
-				value: r//options.mapper ? options.mapper(r) : r
+				value: options.mapper(r, encounter)
 			};
 		};
 	}

@@ -1,8 +1,10 @@
-import { en } from '../../../src/language/en';
 import { testRunner } from '../helpers';
+
+import { en } from '../../../src/language/en';
+import { dayOfWeekGraph } from '../../../src/language/en/dayOfWeekGraph';
 import { Weekday } from '../../../src/time/Weekday';
 
-const test = testRunner(en, 'day-of-week');
+const test = testRunner(en, dayOfWeekGraph, d => d as Weekday);
 
 describe('English', function() {
 

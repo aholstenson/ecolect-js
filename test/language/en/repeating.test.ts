@@ -1,8 +1,8 @@
 import { en } from '../../../src/language/en';
-import { testRunnerViaMatcher } from '../helpers';
+import { testRunnerViaGraph } from '../helpers';
 import { GraphBuilder } from '../../../src/graph/GraphBuilder';
 
-const phrase = new GraphBuilder(en)
+const phrase = new GraphBuilder<number>(en)
 	.name('phrase')
 
 	.allowPartial()
@@ -10,12 +10,9 @@ const phrase = new GraphBuilder(en)
 	.add('Hello', () => 1)
 	.add('World', () => 2)
 
-	.toMatcher();
+	.build();
 
-const test = testRunnerViaMatcher(en.repeating(phrase)
-	.onlyBest()
-	.toMatcher()
-);
+const test = testRunnerViaGraph(en, en.repeating(phrase).build(), r => r);
 
 describe('English', function() {
 

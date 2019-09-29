@@ -13,11 +13,11 @@ import { ResolvedIntent } from './ResolvedIntent';
  * Refresh the expression by copying back values from the matches into the
  * expression and sub-expressions.
  */
-export function refresh(v: ResolvedIntent) {
+export function refresh(v: ResolvedIntent<any>) {
 	for(const e of v.expression) {
 		if(e.type === ExpressionPartType.Value) {
 			const part: ValuePart = e as ValuePart;
-			part.value = v.values.get(part.id);
+			part.value = v.values[part.id];
 
 			if(part.value && part.value.expression) {
 				// The value has an expression - refresh it

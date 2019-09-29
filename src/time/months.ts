@@ -34,7 +34,7 @@ export function previousMonth(r: any, e: DateTimeEncounter): DateTimeData {
 	};
 }
 
-export function map(r: DateTimeData, e: DateTimeEncounter): MutableDateValue | null {
+export function mapMonth(r: DateTimeData, e: DateTimeEncounter): MutableDateValue | null {
 	let time = currentTime(e.options);
 
 	if(typeof r.year !== 'undefined') {

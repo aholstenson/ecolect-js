@@ -1,17 +1,18 @@
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
 import { GraphBuilder } from '../../graph/GraphBuilder';
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
 
-import { between, until, before, from, after } from '../../time/matching';
-import { hasSingle, map, inThePast, inTheFuture, anyTime } from '../../time/date-intervals';
-import { IntervalValue } from '../../time/interval-value';
-import { dateMatcher } from './date';
 import { IntervalData } from '../../time/IntervalData';
 
-export const dateIntervalMatcher: ValueMatcherFactory<IntervalValue> = {
+import { between, until, before, from, after } from '../../time/matching';
+import { hasSingle, inThePast, inTheFuture, anyTime } from '../../time/date-intervals';
+
+import { dateGraph } from './dateGraph';
+
+export const dateIntervalGraph: LanguageGraphFactory<IntervalData> = {
 	id: 'date-interval',
 
 	create(language) {
-		const date = language.matcher(dateMatcher);
+		const date = language.graph(dateGraph);
 
 		return new GraphBuilder<IntervalData>(language)
 			.name('date-interval')
@@ -47,8 +48,6 @@ export const dateIntervalMatcher: ValueMatcherFactory<IntervalValue> = {
 			.add([ 'from', GraphBuilder.result() ], v => v[0])
 			.add([ 'between', GraphBuilder.result() ], v => v[0])
 
-			.mapResults(map)
-			.onlyBest()
-			.toMatcher();
+			.build();
 	}
 };

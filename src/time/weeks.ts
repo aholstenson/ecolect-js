@@ -6,7 +6,7 @@ import {
 import { DateTimeEncounter } from './DateTimeEncounter';
 import { DateTimeData } from './DateTimeData';
 
-import { map as mapInterval } from './date-intervals';
+import { mapDateInterval } from './date-intervals';
 import { currentTime } from './currentTime';
 
 export function thisWeek(r: any, e: DateTimeEncounter): DateTimeData {
@@ -35,6 +35,6 @@ export function previousWeek(r: any, e: DateTimeEncounter): DateTimeData {
 /**
  * Map weeks as intervals.
  */
-export function map(r: DateTimeData, e: DateTimeEncounter) {
-	return mapInterval({ start: r, end: r }, e);
+export function mapWeek(r: DateTimeData, e: DateTimeEncounter) {
+	return mapDateInterval({ start: r, end: r }, e);
 }

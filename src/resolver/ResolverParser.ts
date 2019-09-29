@@ -1,5 +1,5 @@
 import { GraphBuilder } from '../graph/GraphBuilder';
-import { MatcherOptions, EncounterOptions, DefaultMatcher } from '../graph/matching';
+import { EncounterOptions } from '../graph/matching';
 
 import { TokenNode } from '../graph/TokenNode';
 import { ValueNode } from './ValueNode';
@@ -17,8 +17,8 @@ const VALUE = /{([a-zA-Z0-9]+)}/g;
  *
  * TODO: Extended grammar for optional tokens and OR between tokens?
  */
-export class ResolverParser<V, M=V[]> extends GraphBuilder<V, M> {
-	private values: Map<string, NodeConvertable>;
+export class ResolverParser<V> extends GraphBuilder<V> {
+	private values: Map<string, NodeConvertable<any>>;
 
 	constructor(language: Language) {
 		super(language);
@@ -29,7 +29,7 @@ export class ResolverParser<V, M=V[]> extends GraphBuilder<V, M> {
 		this.allowPartial();
 	}
 
-	public value(id: string, type: Value): this {
+	public value(id: string, type: Value<any>): this {
 		let factory = type;
 		if(factory instanceof LanguageSpecificValue) {
 			factory = factory.create(this.language);
@@ -102,19 +102,11 @@ export class ResolverParser<V, M=V[]> extends GraphBuilder<V, M> {
 		return firstNode;
 	}
 
-	protected createMatcher<C>(language: Language, nodes: Node[], options: MatcherOptions<C>) {
-		return new ResolvingMatcher(language, nodes, options);
-	}
-}
-
-class ResolvingMatcher<V> extends DefaultMatcher<V> {
-
-	public match(expression: string, options: EncounterOptions={}) {
-		options.matchIsEqual = options.partial
+	public build() {
+		this.options.matchIsEqual = (e) => e.partial
 			? (a, b) => a.intent === b.intent && isDeepEqual(a.values, b.values)
 			: (a, b) => a.intent === b.intent;
 
-		return super.match(expression, options);
+		return super.build();
 	}
-
 }

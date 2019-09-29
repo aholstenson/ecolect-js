@@ -1,7 +1,9 @@
 import { en } from '../../../src/language/en';
 import { testRunner } from '../helpers';
+import { dateIntervalGraph } from '../../../src/language/en/dateIntervalGraph';
+import { mapDateInterval } from '../../../src/time/date-intervals';
 
-const test = testRunner(en, 'date-interval');
+const test = testRunner(en, dateIntervalGraph, mapDateInterval);
 
 describe('English', () => {
 	describe('Date Interval', () => {

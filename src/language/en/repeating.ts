@@ -1,23 +1,17 @@
-import { GraphBuilder } from '../../graph/GraphBuilder';
-import { Matcher } from '../../graph/matching';
 import { Language } from '../Language';
 
-export function createRepeating<V>(language: Language) {
-	return function(graph: Matcher<V>) {
-		const builder = new GraphBuilder<V[]>(language)
-			.name('repeating[' + graph.options.name + ']')
+import { GraphBuilder } from '../../graph/GraphBuilder';
+import { Graph } from '../../graph/Graph';
 
-			.skipPunctuation();
+export function createRepeating<V>(language: Language) {
+	return function(graph: Graph<V>) {
+		const builder: GraphBuilder<V[]> = new GraphBuilder<V[]>(language)
+			.skipPunctuation()
+			.name('repeating[' + graph.options.name + ']');
 
 		// If the value supports partial matching so does this repeating value
 		if(graph.options.supportsPartial) {
 			builder.allowPartial();
-		}
-
-		if(graph.options.mapper) {
-			// If the graph has requested that matches are mapped - map each match
-			const mapper = graph.options.mapper;
-			builder.mapResults((values, encounter) => values.map(v => mapper(v, encounter)));
 		}
 
 		// Add the value and how it can be repeated

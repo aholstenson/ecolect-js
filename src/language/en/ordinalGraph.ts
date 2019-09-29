@@ -1,26 +1,26 @@
 import { Language } from '../Language';
-import { ValueMatcherFactory } from '../ValueMatcherFactory';
+
+import { LanguageGraphFactory } from '../LanguageGraphFactory';
 import { GraphBuilder } from '../../graph/GraphBuilder';
-import { Matcher } from '../../graph/matching';
+import { Graph } from '../../graph/Graph';
 
-import { integerMatcher } from './integer';
+import { integerGraph } from './integerGraph';
 
-import { OrdinalValue } from '../../numbers/OrdinalValue';
 import { OrdinalData } from '../../numbers/OrdinalData';
-import { map, specificOrdinal, ambigiousOrdinal } from '../../numbers/ordinals';
+import { specificOrdinal, ambiguousOrdinal } from '../../numbers/ordinals';
 
 const specific = (v: any) => specificOrdinal(v[0].value);
 
-export const ordinalMatcher: ValueMatcherFactory<OrdinalValue> = {
+export const ordinalGraph: LanguageGraphFactory<OrdinalData> = {
 	id: 'ordinal',
 
-	create(language: Language): Matcher<OrdinalValue | null> {
-		const integer = language.matcher(integerMatcher);
+	create(language: Language): Graph<OrdinalData> {
+		const integer = language.graph(integerGraph);
 
 		return new GraphBuilder<OrdinalData>(language)
 			.name('ordinal')
 
-			.add(integer, v => ambigiousOrdinal(v[0].value))
+			.add(integer, v => ambiguousOrdinal(v[0].value))
 			.add([ integer, 'st' ], specific)
 			.add([ integer, 'nd' ], specific)
 			.add([ integer, 'rd' ], specific)
@@ -44,8 +44,6 @@ export const ordinalMatcher: ValueMatcherFactory<OrdinalValue> = {
 
 			.add([ 'the', GraphBuilder.result() ], v => v[0])
 
-			.mapResults(map)
-			.onlyBest()
-			.toMatcher();
+			.build();
 	}
 };

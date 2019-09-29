@@ -1,5 +1,5 @@
-import { time12h, time24h, map } from '../../src/time/times';
-import { Meridiem } from '../../src/time/meridiem';
+import { time12h, time24h, mapTime } from '../../src/time/times';
+import { Meridiem } from '../../src/time/Meridiem';
 
 describe('Time', () => {
 	describe('times', () => {
@@ -105,7 +105,7 @@ describe('Time', () => {
 			};
 
 			it('Hour 14 with fixed meridiem', () => {
-				const r = map({ hour: 15, meridiem: Meridiem.Fixed }, defaultE);
+				const r = mapTime({ hour: 15, meridiem: Meridiem.Fixed }, defaultE);
 
 				expect(r).toEqual({
 					period: 'hour',
@@ -118,7 +118,7 @@ describe('Time', () => {
 			});
 
 			it('Hour 8 with fixed meridiem', () => {
-				const r = map({ hour: 8, meridiem: Meridiem.Fixed }, defaultE);
+				const r = mapTime({ hour: 8, meridiem: Meridiem.Fixed }, defaultE);
 
 				expect(r).toEqual({
 					period: 'hour',
@@ -131,7 +131,7 @@ describe('Time', () => {
 			});
 
 			it('Hour 8 with am meridiem', () => {
-				const r = map({ hour: 8, meridiem: Meridiem.Am }, defaultE);
+				const r = mapTime({ hour: 8, meridiem: Meridiem.Am }, defaultE);
 
 				expect(r).toEqual({
 					period: 'hour',
@@ -144,7 +144,7 @@ describe('Time', () => {
 			});
 
 			it('Hour 12 with am meridiem', () => {
-				const r = map({ hour: 12, meridiem: Meridiem.Am }, defaultE);
+				const r = mapTime({ hour: 12, meridiem: Meridiem.Am }, defaultE);
 
 				expect(r).toEqual({
 					period: 'hour',
@@ -157,7 +157,7 @@ describe('Time', () => {
 			});
 
 			it('Hour 8 with pm meridiem', () => {
-				const r = map({ hour: 8, meridiem: Meridiem.Pm }, defaultE);
+				const r = mapTime({ hour: 8, meridiem: Meridiem.Pm }, defaultE);
 
 				expect(r).toEqual({
 					period: 'hour',
@@ -170,7 +170,7 @@ describe('Time', () => {
 			});
 
 			it('Hour 12 with pm meridiem', () => {
-				const r = map({ hour: 12, meridiem: Meridiem.Pm }, defaultE);
+				const r = mapTime({ hour: 12, meridiem: Meridiem.Pm }, defaultE);
 
 				expect(r).toEqual({
 					period: 'hour',
@@ -188,7 +188,7 @@ describe('Time', () => {
 						now: new Date(2010, 1, 6, 10, 0)
 					}
 				};
-				const r = map({ hour: 8, meridiem: Meridiem.Auto }, e);
+				const r = mapTime({ hour: 8, meridiem: Meridiem.Auto }, e);
 
 				expect(r).toEqual({
 					period: 'hour',
@@ -206,7 +206,7 @@ describe('Time', () => {
 						now: new Date(2010, 1, 6, 4, 0)
 					}
 				};
-				const r = map({ hour: 8, meridiem: Meridiem.Auto }, e);
+				const r = mapTime({ hour: 8, meridiem: Meridiem.Auto }, e);
 
 				expect(r).toEqual({
 					period: 'hour',
@@ -224,7 +224,7 @@ describe('Time', () => {
 						now: new Date(2010, 1, 6, 16, 0)
 					}
 				};
-				const r = map({ hour: 8, meridiem: Meridiem.Auto }, e);
+				const r = mapTime({ hour: 8, meridiem: Meridiem.Auto }, e);
 
 				expect(r).toEqual({
 					period: 'hour',
@@ -242,7 +242,7 @@ describe('Time', () => {
 						now: new Date(2010, 1, 6, 4, 0)
 					}
 				};
-				const r = map({ hour: 12, meridiem: Meridiem.Auto }, e);
+				const r = mapTime({ hour: 12, meridiem: Meridiem.Auto }, e);
 
 				expect(r).toEqual({
 					period: 'hour',
@@ -260,7 +260,7 @@ describe('Time', () => {
 						now: new Date(2010, 1, 6, 16, 0)
 					}
 				};
-				const r = map({ hour: 12, meridiem: Meridiem.Auto }, e);
+				const r = mapTime({ hour: 12, meridiem: Meridiem.Auto }, e);
 
 				expect(r).toEqual({
 					period: 'hour',
