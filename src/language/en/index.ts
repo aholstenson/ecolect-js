@@ -1,11 +1,11 @@
-import { tokenize } from '../tokens/utils';
+import { tokenize } from '../tokens/tokenize';
 
 import stemmer from 'talisman/stemmers/porter';
 import { similarity } from 'talisman/metrics/distance/jaro-winkler';
 import treebank from 'talisman/tokenizers/words/treebank';
 
 import { Matcher } from '../../graph/matching';
-import { GraphBuilder } from '../../graph/builder';
+import { GraphBuilder } from '../../graph/GraphBuilder';
 
 import { AbstractLanguage } from '../abstract-language';
 import { Token } from '../tokens';

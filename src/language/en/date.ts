@@ -1,5 +1,5 @@
-import { GraphBuilder } from '../../graph/builder';
-import { ValueMatcherFactory } from '../value-matcher-factory';
+import { GraphBuilder } from '../../graph/GraphBuilder';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
 import { DateValue } from '../../time/date-value';
 
 import {
@@ -13,13 +13,13 @@ import {
 	reverse
 } from '../../time/matching';
 
-import { IntervalEdge } from '../../time/edge';
-import { DateTimeData } from '../../time/date-time-data';
+import { IntervalEdge } from '../../time/IntervalEdge';
+import { DateTimeData } from '../../time/DateTimeData';
 import { thisWeek } from '../../time/weeks';
 import { thisQuarter } from '../../time/quarters';
 import { map, today, yesterday, tomorrow, dayAfterTomorrow, nextDayOfWeek, withDay, withYear } from '../../time/dates';
 
-import { OrdinalValue } from '../../numbers/ordinal-value';
+import { OrdinalValue } from '../../numbers/OrdinalValue';
 
 import { ordinalMatcher } from './ordinal';
 import { dayOfWeekMatcher } from './day-of-week';

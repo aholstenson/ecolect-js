@@ -1,9 +1,9 @@
-import { GraphBuilder } from '../graph/builder';
-import { ResolverBuilder } from '../resolver/builder';
+import { GraphBuilder } from '../graph/GraphBuilder';
+import { ResolverBuilder } from '../resolver/ResolverBuilder';
 
 import { LanguageSpecificValue, ParsingValue, NodeConvertable, Value } from './base';
-import { ValueParserOptions } from '../resolver/value-parser';
-import { ResolvedIntent } from '../resolver/resolved-intent';
+import { ValueParserOptions } from '../resolver/ValueParserNode';
+import { ResolvedIntent } from '../resolver/ResolvedIntent';
 import { ExpressionPart } from '../resolver/expression/ExpressionPart';
 
 export interface OptionBuilderOptions extends ValueParserOptions {

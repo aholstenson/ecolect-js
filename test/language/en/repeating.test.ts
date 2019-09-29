@@ -1,6 +1,6 @@
 import { en } from '../../../src/language/en';
 import { testRunnerViaMatcher } from '../helpers';
-import { GraphBuilder } from '../../../src/graph/builder';
+import { GraphBuilder } from '../../../src/graph/GraphBuilder';
 
 const phrase = new GraphBuilder(en)
 	.name('phrase')

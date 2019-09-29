@@ -1,4 +1,4 @@
-import { GraphBuilder } from '../../graph/builder';
+import { GraphBuilder } from '../../graph/GraphBuilder';
 
 import {
 	literalNumber,
@@ -12,11 +12,11 @@ import {
 	isLiteral,
 } from '../../numbers/numbers';
 
-import { Language } from '../language';
+import { Language } from '../Language';
 import { Matcher } from '../../graph/matching';
-import { NumberData } from '../../numbers/number-data';
-import { NumberValue } from '../../numbers/number-value';
-import { ValueMatcherFactory } from '../value-matcher-factory';
+import { NumberData } from '../../numbers/NumberData';
+import { NumberValue } from '../../numbers/NumberValue';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
 
 export const integerMatcher: ValueMatcherFactory<NumberValue> = {
 	id: 'integer',

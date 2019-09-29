@@ -1,6 +1,6 @@
-import { ValueMatcherFactory } from '../value-matcher-factory';
-import { GraphBuilder } from '../../graph/builder';
-import { DateTimeData } from '../../time/date-time-data';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
+import { GraphBuilder } from '../../graph/GraphBuilder';
+import { DateTimeData } from '../../time/DateTimeData';
 
 import { integerMatcher } from './integer';
 import { combine } from '../../time/matching';

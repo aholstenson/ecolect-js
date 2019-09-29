@@ -1,4 +1,4 @@
-import { DateTimeOptions } from './options';
+import { DateTimeOptions } from './DateTimeOptions';
 
 /**
  * Interface that defines a time encounter as something that has date and

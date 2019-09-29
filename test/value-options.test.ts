@@ -1,5 +1,5 @@
 import { en } from '../src/language/en';
-import { ResolverBuilder } from '../src/resolver/builder';
+import { ResolverBuilder } from '../src/resolver/ResolverBuilder';
 
 import { optionsValue, dateIntervalValue, enumerationValue, customValue } from '../src/values';
 
@@ -259,7 +259,7 @@ describe('Value: Options', function() {
 		const queryOptions = optionsValue()
 			.option('value')
 				.value('name', customValue(async function(encounter) {
-					let text = encounter.text();
+					let text = encounter.text;
 					if(encounter.partial) {
 						for(const v of values) {
 							if(v.indexOf(text) === 0) {

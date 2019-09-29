@@ -1,13 +1,13 @@
-import { TokenNode } from '../graph/token';
-import { SubNode } from '../graph/sub';
-import { ValueNode } from './value';
-import { ValueParserNode } from './value-parser';
+import { TokenNode } from '../graph/TokenNode';
+import { SubNode } from '../graph/SubNode';
+import { ValueNode } from './ValueNode';
+import { ValueParserNode } from './ValueParserNode';
 import { Encounter } from '../graph/matching';
 import { ExpressionPart } from './expression/ExpressionPart';
 import { ExpressionPartType } from './expression/ExpressionPartType';
 import { TextPart } from './expression/TextPart';
 import { ValuePart } from './expression/ValuePart';
-import { ResolvedIntent } from './resolved-intent';
+import { ResolvedIntent } from './ResolvedIntent';
 
 /**
  * Refresh the expression by copying back values from the matches into the

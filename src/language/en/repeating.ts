@@ -1,6 +1,6 @@
-import { GraphBuilder } from '../../graph/builder';
+import { GraphBuilder } from '../../graph/GraphBuilder';
 import { Matcher } from '../../graph/matching';
-import { Language } from '../language';
+import { Language } from '../Language';
 
 export function createRepeating<V>(language: Language) {
 	return function(graph: Matcher<V>) {

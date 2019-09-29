@@ -1,12 +1,12 @@
-import { Language } from '../language';
-import { ValueMatcherFactory } from '../value-matcher-factory';
-import { GraphBuilder } from '../../graph/builder';
+import { Language } from '../Language';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
+import { GraphBuilder } from '../../graph/GraphBuilder';
 import { Matcher } from '../../graph/matching';
 
 import { integerMatcher } from './integer';
 
-import { OrdinalValue } from '../../numbers/ordinal-value';
-import { OrdinalData } from '../../numbers/ordinal-data';
+import { OrdinalValue } from '../../numbers/OrdinalValue';
+import { OrdinalData } from '../../numbers/OrdinalData';
 import { map, specificOrdinal, ambigiousOrdinal } from '../../numbers/ordinals';
 
 const specific = (v: any) => specificOrdinal(v[0].value);

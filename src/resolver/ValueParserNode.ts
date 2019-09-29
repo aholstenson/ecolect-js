@@ -1,7 +1,7 @@
 import { isDeepEqual } from '../utils/equality';
 
-import { Node } from '../graph/node';
-import { SubNode } from '../graph/sub';
+import { Node } from '../graph/Node';
+import { SubNode } from '../graph/SubNode';
 import { Matcher, Encounter } from '../graph/matching';
 
 export interface ValueParserOptions {

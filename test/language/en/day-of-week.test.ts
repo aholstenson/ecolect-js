@@ -1,6 +1,6 @@
 import { en } from '../../../src/language/en';
 import { testRunner } from '../helpers';
-import { Weekday } from '../../../src/time/weekday';
+import { Weekday } from '../../../src/time/Weekday';
 
 const test = testRunner(en, 'day-of-week');
 

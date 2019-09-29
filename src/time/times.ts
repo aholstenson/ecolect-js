@@ -11,16 +11,16 @@ import {
 	startOfMinute
 } from 'date-fns';
 
-import { DateTimeEncounter } from './encounter';
-import { DateTimeData } from './date-time-data';
+import { DateTimeEncounter } from './DateTimeEncounter';
+import { DateTimeData } from './DateTimeData';
 import { MutableDateValue } from './date-value';
 
 import { currentTime } from './currentTime';
-import { Meridiem } from './meridiem';
-import { DateTimeOptions } from './options';
-import { Period } from './period';
-import { TimeRelationship } from './relationship';
-import { Precision } from './precision';
+import { Meridiem } from './Meridiem';
+import { DateTimeOptions } from './DateTimeOptions';
+import { Period } from './Period';
+import { TimeRelationship } from './TimeRelationship';
+import { Precision } from './Precision';
 
 /**
  * Create a time in a 12-hour clock, which will guess the AM or PM.

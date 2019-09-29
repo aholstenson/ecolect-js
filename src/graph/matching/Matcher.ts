@@ -1,9 +1,11 @@
-import { Encounter, EncounterOptions } from './encounter';
-import { Language } from '../../language/language';
-import { Node } from '../node';
+import { Encounter } from './Encounter';
+import { Language } from '../../language/Language';
+import { Node } from '../Node';
 
-import { MatchingState, emptyState } from './matching-state';
-import { MatchSet } from './match-set';
+import { MatchingState, emptyState } from './MatchingState';
+import { MatchSet } from './MatchSet';
+import { MatchOptions } from './MatchOptions';
+import { EncounterOptions } from './EncounterOptions';
 
 export interface MatchReductionEncounter<RawData, MappedData> {
 	encounter: Encounter;
@@ -50,7 +52,7 @@ export class Matcher<V> {
 	 * @param {object} options
 	 * @return {Promise}
 	 */
-	public match(expression: string, options: EncounterOptions={}): Promise<V> {
+	public match(expression: string, options: MatchOptions={}): Promise<V> {
 		if(typeof expression !== 'string') {
 			throw new Error('Can only match against string expressions');
 		}

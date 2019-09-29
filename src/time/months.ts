@@ -5,11 +5,11 @@ import {
 	startOfMonth
 } from 'date-fns';
 
-import { DateTimeEncounter } from './encounter';
-import { DateTimeData } from './date-time-data';
+import { DateTimeEncounter } from './DateTimeEncounter';
+import { DateTimeData } from './DateTimeData';
 import { MutableDateValue } from './date-value';
 
-import { Period } from './period';
+import { Period } from './Period';
 import { currentTime } from './currentTime';
 
 export function thisMonth(r: any, e: DateTimeEncounter): DateTimeData {

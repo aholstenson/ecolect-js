@@ -1,5 +1,5 @@
 import { en } from '../src/language/en';
-import { GraphBuilder } from '../src/graph/builder';
+import { GraphBuilder } from '../src/graph/GraphBuilder';
 
 describe('Graph Builder', function() {
 	describe('Linear', function() {

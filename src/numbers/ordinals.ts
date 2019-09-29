@@ -1,7 +1,7 @@
-import { OrdinalData } from './ordinal-data';
-import { OrdinalValue } from './ordinal-value';
-import { OrdinalPrecision } from './ordinal-precision';
-import { Precision } from '../time/precision';
+import { OrdinalData } from './OrdinalData';
+import { OrdinalValue } from './OrdinalValue';
+import { OrdinalPrecision } from './OrdinalPrecision';
+import { Precision } from '../time/Precision';
 
 export function specificOrdinal(value: number): OrdinalData {
 	return {

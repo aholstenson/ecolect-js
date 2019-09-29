@@ -24,19 +24,19 @@ import {
 	startOfMonth
 } from 'date-fns';
 
-import { DateTimeEncounter } from './encounter';
-import { DateTimeData } from './date-time-data';
-import { DateTimeOptions } from './options';
+import { DateTimeEncounter } from './DateTimeEncounter';
+import { DateTimeData } from './DateTimeData';
+import { DateTimeOptions } from './DateTimeOptions';
 import { MutableDateValue } from './date-value';
 
-import { TimeRelationship } from './relationship';
-import { Period } from './period';
-import { IntervalEdge } from './edge';
+import { TimeRelationship } from './TimeRelationship';
+import { Period } from './Period';
+import { IntervalEdge } from './IntervalEdge';
 
 import { currentTime } from './currentTime';
 import { toStart, toEnd } from './intervals';
 import { combine } from './matching';
-import { Weekday } from './weekday';
+import { Weekday } from './Weekday';
 
 export function today(r: any, e: DateTimeEncounter) {
 	const time = currentTime(e.options);

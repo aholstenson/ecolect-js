@@ -1,7 +1,7 @@
-import { ValueParserNode, ValueParserOptions } from '../resolver/value-parser';
-import { ValueNode, ValueNodeOptions } from '../resolver/value';
-import { Language } from '../language/language';
-import { Node } from '../graph/node';
+import { ValueParserNode, ValueParserOptions } from '../resolver/ValueParserNode';
+import { ValueNode, ValueNodeOptions } from '../resolver/ValueNode';
+import { Language } from '../language/Language';
+import { Node } from '../graph/Node';
 import { Matcher, EncounterOptions } from '../graph/matching';
 
 /**

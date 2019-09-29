@@ -1,4 +1,4 @@
-import { NumberData } from './number-data';
+import { NumberData } from './NumberData';
 
 export class NumberValue {
 	private value: number;

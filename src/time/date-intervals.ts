@@ -2,11 +2,11 @@ import { map as mapDate, today } from './dates';
 import { cloneObject } from '../utils/cloning';
 import { IntervalValue } from './interval-value';
 import { adjusted } from './matching';
-import { DateTimeEncounter } from './encounter';
-import { IntervalData } from './interval-data';
-import { DateTimeData } from './date-time-data';
-import { IntervalEdge } from './edge';
-import { TimeRelationship } from './relationship';
+import { DateTimeEncounter } from './DateTimeEncounter';
+import { IntervalData } from './IntervalData';
+import { DateTimeData } from './DateTimeData';
+import { IntervalEdge } from './IntervalEdge';
+import { TimeRelationship } from './TimeRelationship';
 
 /**
  * Create an interval that matches dates in the past.

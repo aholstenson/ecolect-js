@@ -1,7 +1,7 @@
 import { toStart, toEnd } from './intervals';
 import { fromDate } from './fromDate';
 import { DateValue } from './date-value';
-import { Period } from './period';
+import { Period } from './Period';
 
 export class IntervalValue {
 	public start?: DateValue;

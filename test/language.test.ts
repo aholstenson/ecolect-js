@@ -1,4 +1,4 @@
-import { tokenize } from '../src/language/tokens/utils';
+import { tokenize } from '../src/language/tokens/tokenize';
 import { TokenizerInput, TokenData, Tokens } from '../src/language/tokens';
 
 function checkTokens(tokens: Tokens, raw: string[]) {

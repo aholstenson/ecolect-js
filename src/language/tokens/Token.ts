@@ -1,4 +1,4 @@
-import { TokenData } from './token-data';
+import { TokenData } from './TokenData';
 
 export interface Token extends TokenData {
 	/**

@@ -1,7 +1,7 @@
-import { ValueMatcherFactory } from '../value-matcher-factory';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
 import { IntervalValue } from '../../time/interval-value';
-import { GraphBuilder } from '../../graph/builder';
-import { DateTimeData } from '../../time/date-time-data';
+import { GraphBuilder } from '../../graph/GraphBuilder';
+import { DateTimeData } from '../../time/DateTimeData';
 
 import { ordinalMatcher } from './ordinal';
 import { map, thisWeek, nextWeek, previousWeek } from '../../time/weeks';

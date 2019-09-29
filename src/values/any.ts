@@ -1,9 +1,10 @@
 import { ValueMatcher } from './base';
-import { ValueNodeOptions, ValueEncounter } from '../resolver/value';
+import { ValueNodeOptions } from '../resolver/ValueNode';
+import { ValueEncounter } from '../resolver/ValueEncounter';
 
 const instance: ValueNodeOptions<string> = {
 	async match(encounter: ValueEncounter<string>) {
-		encounter.match(encounter.text());
+		encounter.match(encounter.text);
 	}
 };
 

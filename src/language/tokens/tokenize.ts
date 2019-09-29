@@ -6,10 +6,10 @@ import {
 	emojiModifier
 } from '../matchers';
 
-import { TokenData } from './token-data';
-import { Token } from './token';
-import { Tokenizer } from './tokenizer';
-import { Tokens } from './tokens';
+import { TokenData } from './TokenData';
+import { Token } from './Token';
+import { Tokenizer } from './Tokenizer';
+import { Tokens } from './Tokens';
 
 const MATCHER_PUNCTUATION = new RegExp('^(' + punctuation + ')+$');
 function isPunctuation(text: string) {

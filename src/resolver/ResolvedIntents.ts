@@ -1,4 +1,4 @@
-import { ResolvedIntent } from './resolved-intent';
+import { ResolvedIntent } from './ResolvedIntent';
 
 /**
  *

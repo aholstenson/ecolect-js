@@ -1,10 +1,10 @@
-import { Language } from './language/language';
+import { Language } from './language/Language';
 
-import { IntentsBuilder } from './intents';
-import { ActionsBuilder } from './actions';
+import { IntentsBuilder } from './IntentsBuilder';
+import { ActionsBuilder } from './ActionsBuilder';
 
-export * from './intents';
-export * from './actions';
+export * from './IntentsBuilder';
+export * from './ActionsBuilder';
 
 export function intentsBuilder(lang: Language) {
 	return new IntentsBuilder(lang);

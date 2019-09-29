@@ -1,10 +1,10 @@
-import { ValueMatcherFactory } from '../value-matcher-factory';
-import { Language } from '../language';
-import { GraphBuilder } from '../../graph/builder';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
+import { Language } from '../Language';
+import { GraphBuilder } from '../../graph/GraphBuilder';
 
 import { integerMatcher } from './integer';
 
-import { DateTimeData } from '../../time/date-time-data';
+import { DateTimeData } from '../../time/DateTimeData';
 import { combine } from '../../time/matching';
 import { map, Duration } from '../../time/durations';
 

@@ -1,6 +1,6 @@
 import { isDeepEqual } from '../utils/equality';
 
-import { Node } from '../graph/node';
+import { Node } from '../graph/Node';
 import { Encounter } from '../graph/matching';
 
 /**

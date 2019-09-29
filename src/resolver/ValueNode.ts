@@ -1,7 +1,8 @@
-import { Node } from '../graph/node';
+import { Node } from '../graph/Node';
 import { Encounter, Match } from '../graph/matching';
 import { isDeepEqual } from '../utils/equality';
-import { Token, Tokens } from '../language/tokens';
+import { Tokens } from '../language/tokens';
+import { ValueEncounter } from './ValueEncounter';
 
 /**
  * Options for a ValueNode.
@@ -27,6 +28,11 @@ export interface ValueNodeOptions<V> {
 	 */
 	max?: number;
 
+	/**
+	 * Function used to match the textual value. May be called many times
+	 * during matching so it is recommended to use caching to reduce network
+	 * traffic and latency for the user.
+	 */
 	match: (encounter: ValueEncounter<V>) => Promise<void>;
 }
 
@@ -71,7 +77,7 @@ export class ValueNode<V> extends Node {
 		 * Values always try to match as much as they can so we loop backwards
 		 * from the largest amount of tokens we could consume to only 1.
 		 */
-		const valueEncounter = new ValueEncounter<V>(encounter);
+		const valueEncounter = new ValueEncounterImpl<V>(encounter);
 		const results: Match<any>[] = [];
 
 		if(currentIndex >= stop) {
@@ -147,7 +153,7 @@ export class ValueNode<V> extends Node {
 }
 
 
-export class ValueEncounter<V> {
+class ValueEncounterImpl<V> implements ValueEncounter<V> {
 	public matches: ValueMatch<V>[];
 	private encounter: Encounter;
 	public partial: boolean;
@@ -168,7 +174,7 @@ export class ValueEncounter<V> {
 	/**
 	 * Get the text of the value.
 	 */
-	public text() {
+	get text() {
 		return this.tokens.raw();
 	}
 

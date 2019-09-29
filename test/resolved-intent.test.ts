@@ -1,4 +1,4 @@
-import { ResolvedIntent } from '../src/resolver/resolved-intent';
+import { ResolvedIntent } from '../src/resolver/ResolvedIntent';
 import { isDeepEqual } from '../src/utils/equality';
 import { ExpressionPartType } from '../src/resolver/expression/ExpressionPartType';
 

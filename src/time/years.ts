@@ -4,11 +4,11 @@ import {
 	startOfYear
 } from 'date-fns';
 
-import { DateTimeEncounter } from './encounter';
+import { DateTimeEncounter } from './DateTimeEncounter';
 import { currentTime } from './currentTime';
-import { DateTimeData } from './date-time-data';
+import { DateTimeData } from './DateTimeData';
 import { MutableDateValue } from './date-value';
-import { Period } from './period';
+import { Period } from './Period';
 
 export function thisYear(r: any, e: DateTimeEncounter): DateTimeData {
 	return {

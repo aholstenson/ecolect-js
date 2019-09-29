@@ -1,5 +1,5 @@
 import { isDeepEqual } from '../../utils/equality';
-import { Match } from './match';
+import { Match } from './Match';
 
 function binarySearch(items: Match<any>[], fromIndex: number, toIndex: number, key: number) {
 	let low = fromIndex;

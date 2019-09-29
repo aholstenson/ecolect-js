@@ -3,8 +3,8 @@ import {
 	getQuarter
 } from 'date-fns';
 
-import { DateTimeEncounter } from './encounter';
-import { DateTimeData } from './date-time-data';
+import { DateTimeEncounter } from './DateTimeEncounter';
+import { DateTimeData } from './DateTimeData';
 
 import { currentTime } from './currentTime';
 import { map as mapInterval } from './date-intervals';

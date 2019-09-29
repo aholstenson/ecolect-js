@@ -1,7 +1,7 @@
 import { Token, Tokens } from './tokens';
 import { Matcher } from '../graph/matching';
-import { ValueMatcherFactory } from './value-matcher-factory';
-import { GraphBuilder } from '../graph/builder';
+import { ValueMatcherFactory } from './ValueMatcherFactory';
+import { GraphBuilder } from '../graph/GraphBuilder';
 
 /**
  * Language usable with Ecolect.

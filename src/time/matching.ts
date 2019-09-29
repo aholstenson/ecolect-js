@@ -1,7 +1,7 @@
 import { cloneObject } from '../utils/cloning';
-import { DateTimeData } from './date-time-data';
-import { IntervalEdge } from './edge';
-import { IntervalData, isIntervalData } from './interval-data';
+import { DateTimeData } from './DateTimeData';
+import { IntervalEdge } from './IntervalEdge';
+import { IntervalData, isIntervalData } from './IntervalData';
 
 /**
  * Check if a given result is currently relative.

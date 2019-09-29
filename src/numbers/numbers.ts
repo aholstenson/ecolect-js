@@ -1,5 +1,5 @@
-import { NumberData } from './number-data';
-import { NumberValue } from './number-value';
+import { NumberData } from './NumberData';
+import { NumberValue } from './NumberValue';
 
 export function isDigits(o: NumberData): boolean {
 	return ! o.literal;

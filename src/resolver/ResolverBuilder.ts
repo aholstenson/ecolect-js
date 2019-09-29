@@ -1,12 +1,12 @@
-import { Matcher } from '../graph/matching/matcher';
-import { ResolverParser }  from './parser';
-import { ResolvedIntent } from './resolved-intent';
-import { Language } from '../language/language';
+import { Matcher } from '../graph/matching/Matcher';
+import { ResolverParser }  from './ResolverParser';
+import { ResolvedIntent } from './ResolvedIntent';
+import { Language } from '../language/Language';
 import { LanguageSpecificValue, NodeConvertable } from '../values/base';
-import { Collectable } from '../graph/collector';
+import { Collectable } from '../graph/CollectorNode';
 import { Match } from '../graph/matching';
 import { ResolvedIntents } from './ResolvedIntents';
-import { GraphBuildable } from '../graph/builder';
+import { GraphBuildable } from '../graph/GraphBuilder';
 
 /**
  * This is a basic naive builder for instances of Resolver on top of the

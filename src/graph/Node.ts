@@ -1,4 +1,4 @@
-import { Encounter } from './matching/encounter';
+import { Encounter } from './matching/Encounter';
 
 /**
  * The base class for nodes.

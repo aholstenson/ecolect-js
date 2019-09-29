@@ -1,6 +1,6 @@
-import { GraphBuilder } from '../../graph/builder';
-import { ValueMatcherFactory } from '../value-matcher-factory';
-import { Language } from '../language';
+import { GraphBuilder } from '../../graph/GraphBuilder';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
+import { Language } from '../Language';
 
 export const booleanMatcher: ValueMatcherFactory<boolean> = {
 	id: 'boolean',

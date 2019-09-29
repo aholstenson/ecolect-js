@@ -1,4 +1,4 @@
-import { DateTimeOptions } from './options';
+import { DateTimeOptions } from './DateTimeOptions';
 
 /**
  * Resolve the current time from the given options. This is used so that the

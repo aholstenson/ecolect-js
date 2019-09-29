@@ -1,11 +1,11 @@
-import { GraphBuilder } from '../../graph/builder';
-import { ValueMatcherFactory } from '../value-matcher-factory';
+import { GraphBuilder } from '../../graph/GraphBuilder';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
 
 import { combine } from '../../time/matching';
 import { map, Duration } from '../../time/durations';
 import { timeDurationMatcher } from './time-duration';
 import { dateDurationMatcher } from './date-duration';
-import { DateTimeData } from '../../time/date-time-data';
+import { DateTimeData } from '../../time/DateTimeData';
 
 export const dateTimeDurationMatcher: ValueMatcherFactory<Duration> = {
 	id: 'date-time-duration',

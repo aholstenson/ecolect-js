@@ -1,12 +1,12 @@
-import { Node } from './node';
-import { RegExpNode } from './regexp';
-import { TokenNode } from './token';
-import { SubNode } from './sub';
-import { CollectorNode, Collectable } from './collector';
-import { CustomNode, TokenValidator } from './custom';
+import { Node } from './Node';
+import { RegExpNode } from './RegExpNode';
+import { TokenNode } from './TokenNode';
+import { SubNode } from './SubNode';
+import { CollectorNode, Collectable } from './CollectorNode';
+import { CustomNode, TokenValidator } from './CustomNode';
 
-import { Matcher, MatcherOptions, MatchReductionEncounter } from './matching/matcher';
-import { Language } from '../language/language';
+import { Matcher, MatcherOptions, MatchReductionEncounter } from './matching/Matcher';
+import { Language } from '../language/Language';
 import { Encounter, Match } from './matching';
 import { Predicate } from '../utils/predicates';
 

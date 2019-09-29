@@ -1,11 +1,11 @@
-import { GraphBuilder } from '../../graph/builder';
-import { ValueMatcherFactory } from '../value-matcher-factory';
+import { GraphBuilder } from '../../graph/GraphBuilder';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
 
 import { between, until, before, from, after } from '../../time/matching';
 import { hasSingle, map, inThePast, inTheFuture, anyTime } from '../../time/date-intervals';
 import { IntervalValue } from '../../time/interval-value';
 import { dateMatcher } from './date';
-import { IntervalData } from '../../time/interval-data';
+import { IntervalData } from '../../time/IntervalData';
 
 export const dateIntervalMatcher: ValueMatcherFactory<IntervalValue> = {
 	id: 'date-interval',

@@ -1,5 +1,5 @@
 import { en } from '../src/language/en';
-import { ResolverBuilder } from '../src/resolver/builder';
+import { ResolverBuilder } from '../src/resolver/ResolverBuilder';
 
 import { enumerationValue } from '../src/values';
 

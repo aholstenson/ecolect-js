@@ -1,8 +1,8 @@
-import { IntentsBuilder } from './intents';
-import { Language } from './language/language';
+import { IntentsBuilder } from './IntentsBuilder';
+import { Language } from './language/Language';
 import { Value } from './values/base';
 import { Matcher, EncounterOptions } from './graph/matching';
-import { ResolvedIntent } from './resolver/resolved-intent';
+import { ResolvedIntent } from './resolver/ResolvedIntent';
 import { ResolvedIntents } from './resolver/ResolvedIntents';
 
 export type Action = (item: ResolvedIntent) => void;

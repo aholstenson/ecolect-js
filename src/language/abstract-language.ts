@@ -1,8 +1,8 @@
-import { Language } from './language';
+import { Language } from './Language';
 import { Tokens, Token } from './tokens';
-import { ValueMatcherFactory } from './value-matcher-factory';
+import { ValueMatcherFactory } from './ValueMatcherFactory';
 import { Matcher } from '../graph/matching';
-import { GraphBuilder } from '../graph/builder';
+import { GraphBuilder } from '../graph/GraphBuilder';
 
 export abstract class AbstractLanguage implements Language {
 	private cachedMatchers: Map<string, Matcher<any>> = new Map();

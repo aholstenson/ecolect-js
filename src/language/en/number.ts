@@ -1,10 +1,10 @@
-import { GraphBuilder } from '../../graph/builder';
+import { GraphBuilder } from '../../graph/GraphBuilder';
 
 import { float, combine, negative, map, digitNumber, isNegative } from '../../numbers/numbers';
-import { NumberData } from '../../numbers/number-data';
-import { ValueMatcherFactory } from '../value-matcher-factory';
-import { NumberValue } from '../../numbers/number-value';
-import { Language } from '../language';
+import { NumberData } from '../../numbers/NumberData';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
+import { NumberValue } from '../../numbers/NumberValue';
+import { Language } from '../Language';
 import { Matcher } from '../../graph/matching';
 import { integerMatcher } from './integer';
 

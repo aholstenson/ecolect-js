@@ -1,27 +1,12 @@
-import { Match } from './match';
-import { MatchSet } from './match-set';
-import { Token } from '../../language/tokens/token';
-import { Node } from '../node';
+import { Match } from './Match';
+import { MatchSet } from './MatchSet';
+import { Token } from '../../language/tokens/Token';
+import { Node } from '../Node';
 
-import { DateTimeOptions } from '../../time/options';
 import { Tokens } from '../../language/tokens';
 
-export interface EncounterOptions extends DateTimeOptions {
-	verbose?: boolean;
-
-	partial?: boolean;
-	fuzzy?: boolean;
-
-	onlyComplete?: boolean;
-	skipPunctuation?: boolean;
-	supportsPartial?: boolean;
-	supportsFuzzy?: boolean;
-
-	matchIsEqual?: (a: any, b: any) => boolean;
-	onMatch?: (match: Match<any>) => void;
-}
-
-export type MatchHandler = (match: Match<any>) => void;
+import { EncounterOptions } from './EncounterOptions';
+import { MatchHandler } from './MatchHandler';
 
 /**
  * Encounter used when trying to match an expression. Contains all the tokens
@@ -44,7 +29,6 @@ export class Encounter {
 	public matches: MatchSet<any>;
 	private maxDepth: number;
 
-	private verbose: boolean;
 	private onlyComplete: boolean;
 
 	public skipPunctuation: boolean;
@@ -74,7 +58,6 @@ export class Encounter {
 		this.maxDepth = 0;
 
 		this.onMatch = options.onMatch;
-		this.verbose = options.verbose || false;
 		this.onlyComplete = options.onlyComplete || false;
 		this.skipPunctuation = options.skipPunctuation || false;
 		this.supportsPartial = options.supportsPartial || false;

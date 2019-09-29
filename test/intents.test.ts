@@ -1,5 +1,5 @@
 import { en } from '../src/language/en';
-import { IntentsBuilder } from '../src/intents';
+import { IntentsBuilder } from '../src/IntentsBuilder';
 import { anyStringValue } from '../src/values';
 
 describe('Intents', function() {

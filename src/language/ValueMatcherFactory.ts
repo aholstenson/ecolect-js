@@ -1,4 +1,4 @@
-import { Language } from './language';
+import { Language } from './Language';
 import { Matcher } from '../graph/matching';
 
 /**

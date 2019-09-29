@@ -1,11 +1,11 @@
 import { en } from '../src/language/en';
-import { ResolverBuilder } from '../src/resolver/builder';
-import { ValueEncounter } from '../src/resolver/value';
+import { ResolverBuilder } from '../src/resolver/ResolverBuilder';
+import { ValueEncounter } from '../src/resolver/ValueEncounter';
 import { customValue } from '../src/values';
 
 const items = [ 'Balloons', 'Cookie Co' ];
 async function match(encounter: ValueEncounter<string>) {
-	const text = encounter.text().toLowerCase();
+	const text = encounter.text.toLowerCase();
 	for(const v of items) {
 		if(v.toLowerCase().startsWith(text)) {
 			encounter.match(v);

@@ -1,15 +1,15 @@
-import { ValueMatcherFactory } from '../value-matcher-factory';
-import { GraphBuilder } from '../../graph/builder';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
+import { GraphBuilder } from '../../graph/GraphBuilder';
 
 import { ordinalMatcher } from './ordinal';
 import { integerMatcher } from './integer';
 
 import { reverse } from '../../time/matching';
 import { map, thisMonth, nextMonth, previousMonth } from '../../time/months';
-import { Language } from '../language';
-import { DateTimeData } from '../../time/date-time-data';
+import { Language } from '../Language';
+import { DateTimeData } from '../../time/DateTimeData';
 import { isSpecific } from '../../numbers/ordinals';
-import { OrdinalData } from '../../numbers/ordinal-data';
+import { OrdinalData } from '../../numbers/OrdinalData';
 import { DateValue } from '../../time/date-value';
 
 export const monthMatcher: ValueMatcherFactory<DateValue> = {

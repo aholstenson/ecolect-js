@@ -1,4 +1,4 @@
-import { Node } from './node';
+import { Node } from './Node';
 import { Matcher, MatcherOptions, Encounter, Match, MatchingState, emptyState } from './matching';
 import { Predicate, alwaysTruePredicate } from '../utils/predicates';
 

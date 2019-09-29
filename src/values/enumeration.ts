@@ -1,4 +1,4 @@
-import { GraphBuilder } from '../graph/builder';
+import { GraphBuilder } from '../graph/GraphBuilder';
 import { LanguageSpecificValue, ParsingValue } from './base';
 
 const DEFAULT_MAPPER = <V>(v: V) => String(v);

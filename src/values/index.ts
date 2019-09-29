@@ -19,3 +19,6 @@ export * from './ordinal';
 export * from './static';
 export * from './time-duration';
 export * from './time';
+
+export * from '../resolver/ValueEncounter';
+export { ValueNodeOptions } from '../resolver/ValueNode';

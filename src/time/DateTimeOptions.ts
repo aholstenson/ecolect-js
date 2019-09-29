@@ -1,4 +1,4 @@
-import { Weekday } from './weekday';
+import { Weekday } from './Weekday';
 
 /**
  * Options that can be used with date and times.

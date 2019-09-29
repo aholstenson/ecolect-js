@@ -1,5 +1,6 @@
 import { ValueMatcher } from './base';
-import { ValueNodeOptions, ValueEncounter } from '../resolver/value';
+import { ValueNodeOptions } from '../resolver/ValueNode';
+import { ValueEncounter } from '../resolver/ValueEncounter';
 
 /**
  * Create a custom value that performs its own parsing of a raw textual value.

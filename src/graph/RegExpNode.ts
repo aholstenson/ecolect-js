@@ -1,5 +1,5 @@
-import { Node } from './node';
-import { Encounter } from './matching/encounter';
+import { Node } from './Node';
+import { Encounter } from './matching/Encounter';
 
 /**
  * Node that matches a token against a regular expression.

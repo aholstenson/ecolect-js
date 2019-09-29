@@ -1,8 +1,8 @@
-import { ValueMatcherFactory } from '../value-matcher-factory';
-import { Language } from '../language';
-import { GraphBuilder } from '../../graph/builder';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
+import { Language } from '../Language';
+import { GraphBuilder } from '../../graph/GraphBuilder';
 
-import { Weekday } from '../../time/weekday';
+import { Weekday } from '../../time/Weekday';
 
 export const dayOfWeekMatcher: ValueMatcherFactory<Weekday> = {
 	id: 'day-of-week',

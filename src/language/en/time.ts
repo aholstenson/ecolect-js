@@ -1,6 +1,6 @@
-import { GraphBuilder } from '../../graph/builder';
-import { DateTimeData } from '../../time/date-time-data';
-import { ValueMatcherFactory } from '../value-matcher-factory';
+import { GraphBuilder } from '../../graph/GraphBuilder';
+import { DateTimeData } from '../../time/DateTimeData';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
 
 import { integerMatcher } from './integer';
 import { timeDurationMatcher } from './time-duration';
@@ -8,7 +8,7 @@ import { timeDurationMatcher } from './time-duration';
 import { combine, reverse, hasHour, isHour } from '../../time/matching';
 import { map, time12h, time24h, toAM, toPM } from '../../time/times';
 import { DateValue } from '../../time/date-value';
-import { Precision } from '../../time/precision';
+import { Precision } from '../../time/Precision';
 
 
 function adjustMinutes(time: DateTimeData, minutes: number) {

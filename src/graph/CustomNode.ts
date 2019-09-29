@@ -1,6 +1,6 @@
-import { Node } from './node';
-import { Token } from '../language/tokens/token';
-import { Encounter } from './matching/encounter';
+import { Node } from './Node';
+import { Token } from '../language/tokens/Token';
+import { Encounter } from './matching/Encounter';
 
 export type TokenValidator = (token: Token) => Promise<boolean | null> | boolean | null;
 

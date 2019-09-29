@@ -1,5 +1,5 @@
-import { ResolverBuilder } from './resolver/builder';
-import { Language } from './language/language';
+import { ResolverBuilder } from './resolver/ResolverBuilder';
+import { Language } from './language/Language';
 import { Value } from './values/base';
 
 export class IntentsBuilder {

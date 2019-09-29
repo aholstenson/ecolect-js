@@ -1,5 +1,5 @@
-import { DateTimeData } from './date-time-data';
-import { DateTimeEncounter } from './encounter';
+import { DateTimeData } from './DateTimeData';
+import { DateTimeEncounter } from './DateTimeEncounter';
 
 import { map as mapDate } from './dates';
 import { map as mapTime } from './times';

@@ -1,8 +1,8 @@
-import { TimeRelationship } from './relationship';
-import { IntervalEdge } from './edge';
-import { Weekday } from './weekday';
-import { Meridiem } from './meridiem';
-import { Precision } from './precision';
+import { TimeRelationship } from './TimeRelationship';
+import { IntervalEdge } from './IntervalEdge';
+import { Weekday } from './Weekday';
+import { Meridiem } from './Meridiem';
+import { Precision } from './Precision';
 
 /**
  * Data that is extracted during a parse operation. This is used to map into

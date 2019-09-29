@@ -1,10 +1,10 @@
-import { ValueMatcherFactory } from '../value-matcher-factory';
-import { GraphBuilder } from '../../graph/builder';
+import { ValueMatcherFactory } from '../ValueMatcherFactory';
+import { GraphBuilder } from '../../graph/GraphBuilder';
 
 import { map, thisQuarter, nextQuarter, previousQuarter } from '../../time/quarters';
 import { ordinalMatcher } from './ordinal';
 import { IntervalValue } from '../../time/interval-value';
-import { DateTimeData } from '../../time/date-time-data';
+import { DateTimeData } from '../../time/DateTimeData';
 
 export const quarterMatcher: ValueMatcherFactory<IntervalValue> = {
 	id: 'quarter',

@@ -1,13 +1,13 @@
-import { GraphBuilder } from '../graph/builder';
+import { GraphBuilder } from '../graph/GraphBuilder';
 import { Matcher, MatcherOptions, EncounterOptions } from '../graph/matching';
 
-import { TokenNode } from '../graph/token';
-import { ValueNode } from './value';
+import { TokenNode } from '../graph/TokenNode';
+import { ValueNode } from './ValueNode';
 
 import { LanguageSpecificValue, NodeConvertable, Value } from '../values/base';
 import { isDeepEqual } from '../utils/equality';
-import { Node } from '../graph/node';
-import { Language } from '../language/language';
+import { Node } from '../graph/Node';
+import { Language } from '../language/Language';
 
 const VALUE = /{([a-zA-Z0-9]+)}/g;
 

@@ -1,6 +1,6 @@
-import { Node } from './node';
+import { Node } from './Node';
 
-import { Language } from '../language/language';
+import { Language } from '../language/Language';
 import { Token } from '../language/tokens';
 import { Encounter } from './matching';
 

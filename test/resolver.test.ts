@@ -1,7 +1,7 @@
 import { en } from '../src/language/en';
 import 'jest-expect-message';
 
-import { ResolverBuilder } from '../src/resolver/builder';
+import { ResolverBuilder } from '../src/resolver/ResolverBuilder';
 import { anyStringValue, dateValue, numberValue, booleanValue, customValue } from '../src/values';
 
 function checkExpression(expression: any[], expected: any[]) {
@@ -185,7 +185,7 @@ describe('Resolver', function() {
 	describe('Partial matching with value', function() {
 		const resolver = new ResolverBuilder(en)
 			.value('test', customValue(async encounter => {
-				if(encounter.text() === 'world') {
+				if(encounter.text === 'world') {
 					encounter.match(true);
 				}
 			}))
@@ -327,7 +327,7 @@ describe('Resolver', function() {
 			];
 			const resolver = new ResolverBuilder(en)
 				.value('name', customValue(async encounter => {
-					let text = encounter.text();
+					let text = encounter.text;
 					if(encounter.partial) {
 						for(const v of values) {
 							if(v.indexOf(text) === 0) {
@@ -458,7 +458,7 @@ describe('Resolver', function() {
 			];
 			const resolver = new ResolverBuilder(en)
 				.value('name', customValue(async encounter => {
-					let text = encounter.text();
+					let text = encounter.text;
 					if(encounter.partial) {
 						for(const v of values) {
 							if(v.indexOf(text) === 0) {
@@ -558,7 +558,7 @@ describe('Resolver', function() {
 					greedy: true,
 
 					match: async function(encounter) {
-						let text = encounter.text();
+						let text = encounter.text;
 						if(encounter.partial) {
 							for(const v of values) {
 								if(v.indexOf(text) === 0) {

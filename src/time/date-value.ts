@@ -1,7 +1,7 @@
 import { toDate } from './toDate';
-import { Language } from '../language/language';
-import { Period } from './period';
-import { Precision } from './precision';
+import { Language } from '../language/Language';
+import { Period } from './Period';
+import { Precision } from './Precision';
 
 export interface DateValue {
 	readonly period?: Period;
