@@ -1,5 +1,6 @@
 export * from './Encounter';
 export * from './EncounterOptions';
+export * from './DefaultMatcher';
 export * from './Match';
 export * from './Matcher';
 export * from './MatchHandler';

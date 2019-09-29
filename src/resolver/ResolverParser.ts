@@ -1,5 +1,5 @@
 import { GraphBuilder } from '../graph/GraphBuilder';
-import { Matcher, MatcherOptions, EncounterOptions } from '../graph/matching';
+import { MatcherOptions, EncounterOptions, DefaultMatcher } from '../graph/matching';
 
 import { TokenNode } from '../graph/TokenNode';
 import { ValueNode } from './ValueNode';
@@ -107,7 +107,7 @@ export class ResolverParser<V, M=V[]> extends GraphBuilder<V, M> {
 	}
 }
 
-class ResolvingMatcher<V> extends Matcher<V> {
+class ResolvingMatcher<V> extends DefaultMatcher<V> {
 
 	public match(expression: string, options: EncounterOptions={}) {
 		options.matchIsEqual = options.partial

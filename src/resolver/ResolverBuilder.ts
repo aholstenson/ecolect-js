@@ -4,7 +4,7 @@ import { ResolvedIntent } from './ResolvedIntent';
 import { Language } from '../language/Language';
 import { LanguageSpecificValue, NodeConvertable } from '../values/base';
 import { Collectable } from '../graph/CollectorNode';
-import { Match } from '../graph/matching';
+import { Match, DefaultMatcher } from '../graph/matching';
 import { ResolvedIntents } from './ResolvedIntents';
 import { GraphBuildable } from '../graph/GraphBuilder';
 
@@ -52,7 +52,7 @@ export class ResolverBuilder {
 	}
 
 	public add(...args: GraphBuildable<any>[]) {
-		if(args[0] instanceof Matcher) {
+		if(args[0] instanceof DefaultMatcher) {
 			/**
 			 * If adding another parser for resolving intent just copy all
 			 * of its nodes as they should work just fine with our own parser.

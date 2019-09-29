@@ -5,7 +5,8 @@ import { SubNode } from './SubNode';
 import { CollectorNode, Collectable } from './CollectorNode';
 import { CustomNode, TokenValidator } from './CustomNode';
 
-import { Matcher, MatcherOptions, MatchReductionEncounter } from './matching/Matcher';
+import { Matcher } from './matching/Matcher';
+import { DefaultMatcher, MatcherOptions, MatchReductionEncounter } from './matching/DefaultMatcher';
 import { Language } from '../language/Language';
 import { Encounter, Match } from './matching';
 import { Predicate } from '../utils/predicates';
@@ -151,7 +152,7 @@ export class GraphBuilder<V, M=V, R=M[]> {
 				return push(result);
 			} else if(n instanceof RegExp) {
 				return push(new RegExpNode(n));
-			} else if(n instanceof Matcher) {
+			} else if(n instanceof DefaultMatcher) {
 				return push(new SubNode(n, n.options));
 			} else if(n instanceof Node) {
 				return push(n);
@@ -247,8 +248,8 @@ export class GraphBuilder<V, M=V, R=M[]> {
 		return this.createMatcher(this.language, this.nodes, this.options);
 	}
 
-	protected createMatcher<C>(lang: Language, nodes: Node[], options: MatcherOptions<C>) {
-		return new Matcher(lang, nodes, options);
+	protected createMatcher<C>(lang: Language, nodes: Node[], options: MatcherOptions<C>): Matcher<C> {
+		return new DefaultMatcher(lang, nodes, options);
 	}
 
 	public static result<V>(matcher?: Matcher<any> | Predicate<V>, validator?: Predicate<V>): (builder: GraphBuilder<V, any>) => Node {
@@ -261,19 +262,19 @@ export class GraphBuilder<V, M=V, R=M[]> {
 			}
 		}
 
-		if(matcher && ! (matcher instanceof Matcher)) {
+		if(matcher && ! (matcher instanceof DefaultMatcher)) {
 			throw new Error('matcher is not actually an instance of Matcher');
 		}
 
 		return function(builder: GraphBuilder<V>) {
-			const sub = matcher instanceof Matcher
+			const sub = matcher instanceof DefaultMatcher
 				? new SubNode(matcher, matcher.options, validator)
 				: new SubNode(builder.nodes, builder.options as any, validator);
 
 			sub.recursive = ! matcher;
 
 			if(validator) {
-				let name = matcher instanceof Matcher ? matcher.options.name : builder.options.name;
+				let name = matcher instanceof DefaultMatcher ? matcher.options.name : builder.options.name;
 				if(validator.name) {
 					if(name) {
 						name += ':' + validator.name;
