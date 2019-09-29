@@ -5,9 +5,9 @@ import { Matcher, EncounterOptions } from './graph/matching';
 import { ResolvedIntent } from './resolver/ResolvedIntent';
 import { ResolvedIntents } from './resolver/ResolvedIntents';
 
-export type Action<Values extends object> = (item: ResolvedIntent<Values>) => void;
+export type Action<Context, ReturnType, Values extends object> = (item: ResolvedIntent<Values>, context: Context) => Promise<ReturnType> | ReturnType;
 
-export class ActionsBuilder {
+export class ActionsBuilder<Context=void, ReturnType=void> {
 	private language: Language;
 	private builder: IntentsBuilder;
 	private handlers: Map<string, any>;
@@ -20,7 +20,7 @@ export class ActionsBuilder {
 		this.id = 0;
 	}
 
-	public action(id?: string): ActionBuilder<{}> {
+	public action(id?: string): ActionBuilder<Context, ReturnType, {}> {
 		// Auto assign an id
 		const actualId = id ? id : id = ('__auto__' + ++this.id);
 
@@ -51,21 +51,21 @@ export class ActionsBuilder {
 	}
 
 	public build() {
-		return new Actions(this.language, this.builder.build(), this.handlers);
+		return new Actions<Context, ReturnType>(this.language, this.builder.build(), this.handlers);
 	}
 }
 
-export interface ActionBuilder<Values extends object> {
-	value<I extends string, V>(id: I, type: Value<V>): ActionBuilder<Values & { [K in I]: V }>;
+export interface ActionBuilder<Context, ReturnType, Values extends object> {
+	value<I extends string, V>(id: I, type: Value<V>): ActionBuilder<Context, ReturnType, Values & { [K in I]: V }>;
 
 	add(...args: string[]): this;
 
-	handler(func: Action<Values>): this;
+	handler(func: Action<Context, ReturnType, Values>): this;
 
-	done(): ActionsBuilder;
+	done(): ActionsBuilder<Context, ReturnType>;
 }
 
-export class Actions {
+export class Actions<Context, ReturnType> {
 	public readonly language: Language;
 	private handlers: Map<string, any>;
 	private matcher: Matcher<ResolvedIntents<any>>;
@@ -80,12 +80,12 @@ export class Actions {
 		this.handlers = handlers;
 	}
 
-	public match(expression: string, options: EncounterOptions): Promise<ResolvedActions> {
-		const map = (item: ResolvedIntent<any>): ResolvedAction => {
+	public match(expression: string, options?: EncounterOptions): Promise<ResolvedActions<Context, ReturnType>> {
+		const map = (item: ResolvedIntent<any>): ResolvedAction<Context, ReturnType> => {
 			const result = item as any;
-			result.activate = (...args: any[]) => {
+			result.activate = (context: Context) => {
 				const handler = this.handlers.get(item.intent);
-				const r = handler(item, ...args);
+				const r = handler(item, context);
 				return Promise.resolve(r);
 			};
 
@@ -102,11 +102,11 @@ export class Actions {
 	}
 }
 
-export interface ResolvedAction extends ResolvedIntent<any> {
-	activate: () => void;
+export interface ResolvedAction<Context, ReturnType> extends ResolvedIntent<any> {
+	activate: (context: Context) => Promise<ReturnType>;
 }
 
-export interface ResolvedActions {
-	best: ResolvedAction | null;
-	matches: ResolvedAction[];
+export interface ResolvedActions<Context, ReturnType> {
+	best: ResolvedAction<Context, ReturnType> | null;
+	matches: ResolvedAction<Context, ReturnType>[];
 }

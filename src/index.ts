@@ -15,6 +15,6 @@ export function intentsBuilder(lang: Language) {
 	return new IntentsBuilder(lang);
 }
 
-export function actionsBuilder(lang: Language) {
-	return new ActionsBuilder(lang);
+export function actionsBuilder<Context, ReturnType>(lang: Language) {
+	return new ActionsBuilder<Context, ReturnType>(lang);
 }
