@@ -7,7 +7,7 @@ import treebank from 'talisman/tokenizers/words/treebank';
 import { Matcher } from '../../graph/matching';
 import { GraphBuilder } from '../../graph/GraphBuilder';
 
-import { AbstractLanguage } from '../abstract-language';
+import { AbstractLanguage } from '../AbstractLanguage';
 import { Token } from '../tokens';
 import { integerMatcher } from './integer';
 import { numberMatcher } from './number';
