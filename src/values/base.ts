@@ -32,14 +32,11 @@ export class LanguageSpecificValue<V> {
 	/**
 	 * Create a matcher function for this value and the specified language.
 	 *
-	 * @param {Language} language
+	 * @param language
 	 */
-	public matcher(language: Language) {
+	public matcher(language: Language): Matcher<V> {
 		const value = this.factory(language);
-
-		return function(text: string, options?: EncounterOptions) {
-			return value.matcher.match(text, options);
-		};
+		return value.matcher;
 	}
 }
 
