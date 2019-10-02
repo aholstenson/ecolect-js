@@ -31,18 +31,18 @@ Matching can also be run in two modes:
 ### Example
 
 ```javascript
-const ecolect = require('ecolect');
-const en = require('ecolect/language/en');
-const { any } = require('ecolect/values');
+import { intentsBuilder } from 'ecolect';
+import { en } from 'ecolect/language/en';
+import { anyStringValue } from 'ecolect/values';
 
-const intents = ecolect.intents(en)
+const intents = intentsBuilder(en)
   .intent('lights:on')
-    .value('room', any())
+    .value('room', anyStringValue())
     .add('turn lights on')
     .add('turn lights in {room} on')
     .done()
   .intent('lights:off')
-    .value('room', any())
+    .value('room', anyStringValue())
     .add('turn lights off')
     .add('turn lights in {room} off')
     .done()
