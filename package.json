@@ -29,9 +29,11 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "date-fns": "^2.4.0",
+    "date-fns": "^2.4.1",
+    "datetime-types": "^0.2.0",
     "fast-clone": "^1.5.13",
     "fast-deep-equal": "^3.0.0-beta.2",
+    "numeric-types": "^0.3.1",
     "talisman": "^0.21.0"
   },
   "devDependencies": {

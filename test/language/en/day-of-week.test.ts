@@ -2,18 +2,18 @@ import { testRunner } from '../helpers';
 
 import { en } from '../../../src/language/en';
 import { dayOfWeekGraph } from '../../../src/language/en/dayOfWeekGraph';
-import { Weekday } from '../../../src/time/Weekday';
+import { DayOfWeek } from 'datetime-types';
 
-const test = testRunner(en, dayOfWeekGraph, d => d as Weekday);
+const test = testRunner(en, dayOfWeekGraph, d => d as DayOfWeek);
 
 describe('English', function() {
 
 	describe('Day of Week', function() {
-		test('Friday', {}, Weekday.Friday);
+		test('Friday', {}, DayOfWeek.Friday);
 
-		test('Tue', {}, Weekday.Tuesday);
+		test('Tue', {}, DayOfWeek.Tuesday);
 
-		test('on Tue', {}, Weekday.Tuesday);
+		test('on Tue', {}, DayOfWeek.Tuesday);
 	});
 
 });

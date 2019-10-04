@@ -144,8 +144,8 @@ describe('Value: Options', function() {
 				expect(option).not.toBeNull();
 				expect(option.option).toEqual('deadline');
 				expect(option.values.deadline).toEqual({
-					start: { period: 'day', year: 2010, month: 0, day: 12 },
-					end: { period: 'day', year: 2010, month: 0, day: 12 }
+					start: { year: 2010, month: 1, dayOfMonth: 12 },
+					end: { year: 2010, month: 1, dayOfMonth: 12 }
 				});
 			})
 		);
@@ -222,8 +222,8 @@ describe('Value: Options', function() {
 					const v = r.best.values.queryOptions.get('deadline');
 					expect(v.option).toEqual('deadline');
 					expect(v.values.deadline).toEqual({
-						start: { period: 'day', year: 2018, month: 0, day: 12 },
-						end: { period: 'day', year: 2018, month: 0, day: 12 }
+						start: { year: 2018, month: 1, dayOfMonth: 12 },
+						end: { year: 2018, month: 1, dayOfMonth: 12 }
 					});
 				});
 		});
@@ -236,15 +236,15 @@ describe('Value: Options', function() {
 					const v0 = r.best.values.queryOptions.get('deadline');
 					expect(v0.option).toEqual('deadline');
 					expect(v0.values.deadline).toEqual({
-						start: { period: 'day', year: 2018, month: 0, day: 12 },
-						end: { period: 'day', year: 2018, month: 0, day: 12 }
+						start: { year: 2018, month: 1, dayOfMonth: 12 },
+						end: { year: 2018, month: 1, dayOfMonth: 12 }
 					});
 
 					const v1 = r.best.values.queryOptions.get('completed');
 					expect(v1.option).toEqual('completed');
 					expect(v1.values.completed).toEqual({
-						start: { period: 'day', year: 2018, month: 0, day: 2 },
-						end: { period: 'day', year: 2018, month: 0, day: 2 }
+						start: { year: 2018, month: 1, dayOfMonth: 2 },
+						end: { year: 2018, month: 1, dayOfMonth: 2 }
 					});
 				});
 		});

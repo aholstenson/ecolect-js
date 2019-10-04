@@ -1,4 +1,4 @@
-import { Weekday } from './Weekday';
+import { DayOfWeek } from 'datetime-types';
 
 /**
  * Options that can be used with date and times.
@@ -31,7 +31,7 @@ export interface DateTimeOptions {
 	/**
 	 * The day weeks start on.
 	 */
-	weekStartsOn?: Weekday;
+	weekStartsOn?: DayOfWeek;
 
 	/**
 	 * The day of January that is always in the first week of the year.

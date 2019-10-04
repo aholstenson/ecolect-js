@@ -1,8 +1,8 @@
 import { TimeRelationship } from './TimeRelationship';
 import { IntervalEdge } from './IntervalEdge';
-import { Weekday } from './Weekday';
 import { Meridiem } from './Meridiem';
 import { Precision } from './Precision';
+import { DayOfWeek } from 'datetime-types';
 
 /**
  * Data that is extracted during a parse operation. This is used to map into
@@ -20,7 +20,7 @@ export interface DateTimeData {
 	/**
 	 * Day of week requested.
 	 */
-	dayOfWeek?: Weekday;
+	dayOfWeek?: DayOfWeek;
 
 	/**
 	 * Ordinal describing what day of week in the current period is being

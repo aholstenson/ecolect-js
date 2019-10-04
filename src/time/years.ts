@@ -7,8 +7,7 @@ import {
 import { DateTimeEncounter } from './DateTimeEncounter';
 import { currentTime } from './currentTime';
 import { DateTimeData } from './DateTimeData';
-import { MutableDateValue } from './date-value';
-import { Period } from './Period';
+import { Year } from 'datetime-types';
 
 export function thisYear(r: any, e: DateTimeEncounter): DateTimeData {
 	return {
@@ -28,7 +27,7 @@ export function previousYear(r: any, e: DateTimeEncounter): DateTimeData {
 	};
 }
 
-export function mapYear(r: DateTimeData, e: DateTimeEncounter): MutableDateValue | null {
+export function mapYear(r: DateTimeData, e: DateTimeEncounter): Year | null {
 	const now = currentTime(e.options);
 
 	let time;
@@ -42,13 +41,5 @@ export function mapYear(r: DateTimeData, e: DateTimeEncounter): MutableDateValue
 		return null;
 	}
 
-	// Adjust the time to the start of the year
-	time = startOfYear(time);
-
-	const result = new MutableDateValue();
-	result.period = Period.Year;
-	result.year = time.getFullYear();
-	result.month = time.getMonth();
-	result.day = time.getDate();
-	return result;
+	return Year.of(time.getFullYear());
 }

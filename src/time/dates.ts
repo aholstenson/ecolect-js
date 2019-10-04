@@ -24,10 +24,11 @@ import {
 	startOfMonth
 } from 'date-fns';
 
+import { LocalDate, DayOfWeek } from 'datetime-types';
+
 import { DateTimeEncounter } from './DateTimeEncounter';
 import { DateTimeData } from './DateTimeData';
 import { DateTimeOptions } from './DateTimeOptions';
-import { MutableDateValue } from './date-value';
 
 import { TimeRelationship } from './TimeRelationship';
 import { Period } from './Period';
@@ -36,7 +37,6 @@ import { IntervalEdge } from './IntervalEdge';
 import { currentTime } from './currentTime';
 import { toStart, toEnd } from './intervals';
 import { combine } from './matching';
-import { Weekday } from './Weekday';
 
 export function today(r: any, e: DateTimeEncounter) {
 	const time = currentTime(e.options);
@@ -86,7 +86,7 @@ export function withYear(r: DateTimeData, year: number) {
 	});
 }
 
-export function nextDayOfWeek(day: Weekday) {
+export function nextDayOfWeek(day: DayOfWeek) {
 	return { dayOfWeek: day };
 }
 
@@ -185,7 +185,7 @@ function adjust(r: DateTimeData, options: DateTimeOptions, time: Date, def: Adju
 	return time;
 }
 
-export function mapDate(r: DateTimeData, e: DateTimeEncounter, options: DateTimeOptions={}): MutableDateValue | null {
+export function mapDate(r: DateTimeData, e: DateTimeEncounter, options: DateTimeOptions={}): LocalDate | null {
 	if(! r.relationToCurrent) {
 		r.relationToCurrent = TimeRelationship.Auto;
 	}
@@ -201,34 +201,33 @@ export function mapDate(r: DateTimeData, e: DateTimeEncounter, options: DateTime
 		const resolvedTime = mapDate(sub, e, options);
 		if(! resolvedTime) return null;
 
-		time = resolvedTime.toDate();
+		time = resolvedTime.toDateAtMidnight();
 	} else {
 		time = options.now || currentTime(e.options);
 	}
 
 	// The actual result
-	const result = new MutableDateValue();
-	result.period = Period.Day;
+	let period = Period.Day;
 
 	// First resolve the year
 	if(typeof r.relativeYears !== 'undefined') {
 		// Relative year - add the years and keep the current month and day
-		result.period = Period.Year;
+		period = Period.Year;
 		time = addYears(time, r.relativeYears);
 	} else if(typeof r.year !== 'undefined') {
 		// Exact year - set the month and day to the start of year
-		result.period = Period.Year;
+		period = Period.Year;
 		time = startOfYear(setYear(time, r.year));
 	}
 
 	// Resolve quarter if set
 	if(typeof r.relativeQuarters !== 'undefined') {
 		// Relative quarter - add the number of quarters, but try to keep day within quarter
-		result.period = Period.Quarter;
+		period = Period.Quarter;
 		time = addQuarters(time, r.relativeQuarters);
 	} else if(typeof r.quarter !== 'undefined') {
 		// Exact quarter - set it and reset to start of quarter
-		result.period = Period.Quarter;
+		period = Period.Quarter;
 
 		time = adjust(r, e.options, time, QUARTER);
 		time = startOfQuarter(time);
@@ -237,11 +236,11 @@ export function mapDate(r: DateTimeData, e: DateTimeEncounter, options: DateTime
 	// Resolve week if set
 	if(typeof r.relativeWeeks !== 'undefined') {
 		// Relative week - add the week, keep the week day
-		result.period = Period.Week;
+		period = Period.Week;
 		time = addWeeks(time, r.relativeWeeks);
 	} else if(typeof r.week !== 'undefined') {
 		// Exact week - set it and reset to start of week
-		result.period = Period.Week;
+		period = Period.Week;
 
 		time = adjust(r, e.options, time, WEEK);
 		time = startOfWeek(time, e.options);
@@ -250,11 +249,11 @@ export function mapDate(r: DateTimeData, e: DateTimeEncounter, options: DateTime
 	// Resolve the month
 	if(typeof r.relativeMonths !== 'undefined') {
 		// Relative month - add the months and keep the day
-		result.period = Period.Month;
+		period = Period.Month;
 		time = addMonths(time, r.relativeMonths);
 	} else if(typeof r.month !== 'undefined') {
 		// Exact month - set the day to the start of the month
-		result.period = Period.Month;
+		period = Period.Month;
 
 		time = adjust(r, e.options, time, MONTH);
 		time = startOfMonth(time);
@@ -263,17 +262,17 @@ export function mapDate(r: DateTimeData, e: DateTimeEncounter, options: DateTime
 	// Resolve the day
 	if(typeof r.relativeDays !== 'undefined') {
 		// Relative day
-		result.period = Period.Day;
+		period = Period.Day;
 		time = addDays(time, r.relativeDays);
 	} else if(typeof r.day !== 'undefined') {
 		// If there is an explicit day set it
-		result.period = Period.Day;
+		period = Period.Day;
 
 		time = adjust(r, e.options, time, DAY);
 	}
 
 	if(typeof r.dayOfWeek !== 'undefined') {
-		result.period = Period.Day;
+		period = Period.Day;
 
 		const currentDayOfWeek = getDay(time);
 		if(currentDayOfWeek >= r.dayOfWeek) {
@@ -290,10 +289,10 @@ export function mapDate(r: DateTimeData, e: DateTimeEncounter, options: DateTime
 
 	if(r.intervalEdge === IntervalEdge.End) {
 		// If the end of the period has been requested
-		time = toEnd(time, result.period, e.options);
+		time = toEnd(time, period, e.options);
 	} else if(r.intervalEdge === IntervalEdge.Start) {
 		// If the start of the period has been requested
-		time = toStart(time, result.period, e.options);
+		time = toStart(time, period, e.options);
 	}
 
 	if(r.intervalAdjustment) {
@@ -302,9 +301,5 @@ export function mapDate(r: DateTimeData, e: DateTimeEncounter, options: DateTime
 	}
 
 	// Move the time into the result
-	result.year = time.getFullYear();
-	result.month = time.getMonth();
-	result.day = time.getDate();
-
-	return result;
+	return LocalDate.fromDate(time);
 }

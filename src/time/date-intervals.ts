@@ -1,12 +1,12 @@
 import { mapDate, today } from './dates';
 import { cloneObject } from '../utils/cloning';
-import { IntervalValue } from './interval-value';
 import { adjusted } from './matching';
 import { DateTimeEncounter } from './DateTimeEncounter';
 import { IntervalData } from './IntervalData';
 import { DateTimeData } from './DateTimeData';
 import { IntervalEdge } from './IntervalEdge';
 import { TimeRelationship } from './TimeRelationship';
+import { Interval, LocalDate } from 'datetime-types';
 
 /**
  * Create an interval that matches dates in the past.
@@ -48,7 +48,7 @@ function applyRelationAndEdge(r: DateTimeData, edge: IntervalEdge) {
 	return r;
 }
 
-export function mapDateInterval(r: IntervalData, e: DateTimeEncounter): IntervalValue {
+export function mapDateInterval(r: IntervalData, e: DateTimeEncounter): Interval<LocalDate> {
 	let start = null;
 	let end = null;
 
@@ -64,7 +64,7 @@ export function mapDateInterval(r: IntervalData, e: DateTimeEncounter): Interval
 			start = mapDate(applyRelationAndEdge(cloneObject(r.start), IntervalEdge.Start), e);
 			if(! start) throw new Error();
 
-			end = mapDate(applyRelationAndEdge(r.end, IntervalEdge.End), e, { now: start.toDate() });
+			end = mapDate(applyRelationAndEdge(r.end, IntervalEdge.End), e, { now: start.toDateAtMidnight() });
 		} else {
 			end = mapDate(applyRelationAndEdge(r.end, IntervalEdge.End), e);
 		}
@@ -78,5 +78,5 @@ export function mapDateInterval(r: IntervalData, e: DateTimeEncounter): Interval
 		}
 	}
 
-	return new IntervalValue(start || undefined, end || undefined);
+	return Interval.between(start, end);
 }

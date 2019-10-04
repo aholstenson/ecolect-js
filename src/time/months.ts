@@ -7,10 +7,10 @@ import {
 
 import { DateTimeEncounter } from './DateTimeEncounter';
 import { DateTimeData } from './DateTimeData';
-import { MutableDateValue } from './date-value';
 
 import { Period } from './Period';
 import { currentTime } from './currentTime';
+import { Month } from 'datetime-types';
 
 export function thisMonth(r: any, e: DateTimeEncounter): DateTimeData {
 	return {
@@ -34,7 +34,7 @@ export function previousMonth(r: any, e: DateTimeEncounter): DateTimeData {
 	};
 }
 
-export function mapMonth(r: DateTimeData, e: DateTimeEncounter): MutableDateValue | null {
+export function mapMonth(r: DateTimeData, e: DateTimeEncounter): Month | null {
 	let time = currentTime(e.options);
 
 	if(typeof r.year !== 'undefined') {
@@ -50,13 +50,5 @@ export function mapMonth(r: DateTimeData, e: DateTimeEncounter): MutableDateValu
 		return null;
 	}
 
-	// Set the time to the start of the month
-	time = startOfMonth(time);
-
-	const result = new MutableDateValue();
-	result.period = Period.Month;
-	result.year = time.getFullYear();
-	result.month = time.getMonth();
-	result.day = time.getDate();
-	return result;
+	return Month.of(time.getMonth() + 1);
 }

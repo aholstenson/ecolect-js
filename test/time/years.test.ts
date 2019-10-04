@@ -13,10 +13,7 @@ describe('Time', () => {
 				const r = mapYear({ relativeYears: 0 }, e);
 
 				expect(r).toEqual({
-					period: 'year',
-					year: 2017,
-					month: 0,
-					day: 1
+					year: 2017
 				});
 			});
 
@@ -24,10 +21,7 @@ describe('Time', () => {
 				const r = mapYear({ relativeYears: 2 }, e);
 
 				expect(r).toEqual({
-					period: 'year',
-					year: 2019,
-					month: 0,
-					day: 1
+					year: 2019
 				});
 			});
 
@@ -35,10 +29,7 @@ describe('Time', () => {
 				const r = mapYear({ relativeYears: -2 }, e);
 
 				expect(r).toEqual({
-					period: 'year',
-					year: 2015,
-					month: 0,
-					day: 1
+					year: 2015
 				});
 			});
 
@@ -46,10 +37,7 @@ describe('Time', () => {
 				const r = mapYear({ year: 2015 }, e);
 
 				expect(r).toEqual({
-					period: 'year',
-					year: 2015,
-					month: 0,
-					day: 1
+					year: 2015
 				});
 			});
 		});

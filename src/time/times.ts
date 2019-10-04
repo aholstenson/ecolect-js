@@ -11,9 +11,10 @@ import {
 	startOfMinute
 } from 'date-fns';
 
+import { LocalTime } from 'datetime-types';
+
 import { DateTimeEncounter } from './DateTimeEncounter';
 import { DateTimeData } from './DateTimeData';
-import { MutableDateValue } from './date-value';
 
 import { currentTime } from './currentTime';
 import { Meridiem } from './Meridiem';
@@ -70,19 +71,19 @@ export function toAM(time: DateTimeData) {
 	return time;
 }
 
-export function mapTime(r: DateTimeData, e: DateTimeEncounter, options?: DateTimeOptions, result?: MutableDateValue) {
-	result = result || new MutableDateValue();
-
+export function mapTime(r: DateTimeData, e: DateTimeEncounter, options?: DateTimeOptions) {
 	const current = currentTime(e.options);
 	let time = current;
 	const now = (options && options.now) ? options.now : current;
 
+	let period = Period.Hour;
+
 	if(typeof r.relativeHours !== 'undefined') {
-		result.period = Period.Hour;
+		period = Period.Hour;
 
 		time = addHours(time, r.relativeHours);
 	} else if(typeof r.hour !== 'undefined') {
-		result.period = Period.Hour;
+		period = Period.Hour;
 
 		if(r.hour > 12) {
 			// Always force fixed meridiem when hours are > 12
@@ -118,11 +119,11 @@ export function mapTime(r: DateTimeData, e: DateTimeEncounter, options?: DateTim
 	}
 
 	if(typeof r.relativeMinutes !== 'undefined') {
-		result.period = Period.Minute;
+		period = Period.Minute;
 
 		time = addMinutes(time, r.relativeMinutes);
 	} else if(typeof r.minute !== 'undefined') {
-		result.period = Period.Minute;
+		period = Period.Minute;
 
 		if(r.minute < time.getMinutes() && r.relationToCurrent !== TimeRelationship.Past) {
 			// The given minute is before the current minute - assume next hour
@@ -136,11 +137,11 @@ export function mapTime(r: DateTimeData, e: DateTimeEncounter, options?: DateTim
 	}
 
 	if(typeof r.relativeSeconds !== 'undefined') {
-		result.period = Period.Second;
+		period = Period.Second;
 
 		time = addSeconds(time, r.relativeSeconds);
 	} else if(typeof r.second !== 'undefined') {
-		result.period = Period.Second;
+		period = Period.Second;
 
 		if(r.second < time.getSeconds() && r.relationToCurrent !== TimeRelationship.Past) {
 			// The given second is before the current second - assume next minute
@@ -151,10 +152,6 @@ export function mapTime(r: DateTimeData, e: DateTimeEncounter, options?: DateTim
 		}
 	}
 
-	result.hour = time.getHours();
-	result.minute = time.getMinutes();
-	result.second = time.getSeconds();
-	result.precision = r.precision || result.precision || Precision.Normal;
-
-	return result;
+	//precision = r.precision || precision || Precision.Normal;
+	return LocalTime.fromDate(time);
 }

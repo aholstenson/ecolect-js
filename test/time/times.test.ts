@@ -108,12 +108,10 @@ describe('Time', () => {
 				const r = mapTime({ hour: 15, meridiem: Meridiem.Fixed }, defaultE);
 
 				expect(r).toEqual({
-					period: 'hour',
-					precision: 'normal',
-
 					hour: 15,
 					minute: 0,
-					second: 0
+					second: 0,
+					milliOfSecond: 0
 				});
 			});
 
@@ -121,12 +119,10 @@ describe('Time', () => {
 				const r = mapTime({ hour: 8, meridiem: Meridiem.Fixed }, defaultE);
 
 				expect(r).toEqual({
-					period: 'hour',
-					precision: 'normal',
-
 					hour: 8,
 					minute: 0,
-					second: 0
+					second: 0,
+					milliOfSecond: 0
 				});
 			});
 
@@ -134,12 +130,10 @@ describe('Time', () => {
 				const r = mapTime({ hour: 8, meridiem: Meridiem.Am }, defaultE);
 
 				expect(r).toEqual({
-					period: 'hour',
-					precision: 'normal',
-
 					hour: 8,
 					minute: 0,
-					second: 0
+					second: 0,
+					milliOfSecond: 0
 				});
 			});
 
@@ -147,12 +141,10 @@ describe('Time', () => {
 				const r = mapTime({ hour: 12, meridiem: Meridiem.Am }, defaultE);
 
 				expect(r).toEqual({
-					period: 'hour',
-					precision: 'normal',
-
 					hour: 0,
 					minute: 0,
-					second: 0
+					second: 0,
+					milliOfSecond: 0
 				});
 			});
 
@@ -160,12 +152,10 @@ describe('Time', () => {
 				const r = mapTime({ hour: 8, meridiem: Meridiem.Pm }, defaultE);
 
 				expect(r).toEqual({
-					period: 'hour',
-					precision: 'normal',
-
 					hour: 20,
 					minute: 0,
-					second: 0
+					second: 0,
+					milliOfSecond: 0
 				});
 			});
 
@@ -173,12 +163,10 @@ describe('Time', () => {
 				const r = mapTime({ hour: 12, meridiem: Meridiem.Pm }, defaultE);
 
 				expect(r).toEqual({
-					period: 'hour',
-					precision: 'normal',
-
 					hour: 12,
 					minute: 0,
-					second: 0
+					second: 0,
+					milliOfSecond: 0
 				});
 			});
 
@@ -191,12 +179,10 @@ describe('Time', () => {
 				const r = mapTime({ hour: 8, meridiem: Meridiem.Auto }, e);
 
 				expect(r).toEqual({
-					period: 'hour',
-					precision: 'normal',
-
 					hour: 20,
 					minute: 0,
-					second: 0
+					second: 0,
+					milliOfSecond: 0
 				});
 			});
 
@@ -209,12 +195,10 @@ describe('Time', () => {
 				const r = mapTime({ hour: 8, meridiem: Meridiem.Auto }, e);
 
 				expect(r).toEqual({
-					period: 'hour',
-					precision: 'normal',
-
 					hour: 8,
 					minute: 0,
-					second: 0
+					second: 0,
+					milliOfSecond: 0
 				});
 			});
 
@@ -227,12 +211,10 @@ describe('Time', () => {
 				const r = mapTime({ hour: 8, meridiem: Meridiem.Auto }, e);
 
 				expect(r).toEqual({
-					period: 'hour',
-					precision: 'normal',
-
 					hour: 20,
 					minute: 0,
-					second: 0
+					second: 0,
+					milliOfSecond: 0
 				});
 			});
 
@@ -245,12 +227,10 @@ describe('Time', () => {
 				const r = mapTime({ hour: 12, meridiem: Meridiem.Auto }, e);
 
 				expect(r).toEqual({
-					period: 'hour',
-					precision: 'normal',
-
 					hour: 12,
 					minute: 0,
-					second: 0
+					second: 0,
+					milliOfSecond: 0
 				});
 			});
 
@@ -263,12 +243,10 @@ describe('Time', () => {
 				const r = mapTime({ hour: 12, meridiem: Meridiem.Auto }, e);
 
 				expect(r).toEqual({
-					period: 'hour',
-					precision: 'normal',
-
 					hour: 0,
 					minute: 0,
-					second: 0
+					second: 0,
+					milliOfSecond: 0
 				});
 			});
 		});

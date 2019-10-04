@@ -15,10 +15,9 @@ describe('Time', () => {
 				const r = mapDate({ relativeYears: 0 }, e);
 
 				expect(r).toEqual({
-					period: 'year',
 					year: 2017,
-					month: 2,
-					day: 24
+					month: 3,
+					dayOfMonth: 24
 				});
 			});
 
@@ -26,10 +25,9 @@ describe('Time', () => {
 				const r = mapDate({ relativeYears: 2 }, e);
 
 				expect(r).toEqual({
-					period: 'year',
 					year: 2019,
-					month: 2,
-					day: 24
+					month: 3,
+					dayOfMonth: 24
 				});
 			});
 
@@ -37,10 +35,9 @@ describe('Time', () => {
 				const r = mapDate({ relativeYears: -2 }, e);
 
 				expect(r).toEqual({
-					period: 'year',
 					year: 2015,
-					month: 2,
-					day: 24
+					month: 3,
+					dayOfMonth: 24
 				});
 			});
 
@@ -48,10 +45,9 @@ describe('Time', () => {
 				const r = mapDate({ year: 2018 }, e);
 
 				expect(r).toEqual({
-					period: 'year',
 					year: 2018,
-					month: 0,
-					day: 1
+					month: 1,
+					dayOfMonth: 1
 				});
 			});
 
@@ -59,10 +55,9 @@ describe('Time', () => {
 				const r = mapDate({ relativeQuarters: 0 }, e);
 
 				expect(r).toEqual({
-					period: 'quarter',
 					year: 2017,
-					month: 2,
-					day: 24
+					month: 3,
+					dayOfMonth: 24
 				});
 			});
 
@@ -70,10 +65,9 @@ describe('Time', () => {
 				const r = mapDate({ relativeQuarters: 1 }, e);
 
 				expect(r).toEqual({
-					period: 'quarter',
 					year: 2017,
-					month: 5,
-					day: 24
+					month: 6,
+					dayOfMonth: 24
 				});
 			});
 
@@ -81,10 +75,9 @@ describe('Time', () => {
 				const r = mapDate({ quarter: 3 }, e);
 
 				expect(r).toEqual({
-					period: 'quarter',
 					year: 2017,
-					month: 6,
-					day: 1
+					month: 7,
+					dayOfMonth: 1
 				});
 			});
 
@@ -94,10 +87,9 @@ describe('Time', () => {
 				}});
 
 				expect(r).toEqual({
-					period: 'quarter',
 					year: 2018,
-					month: 0,
-					day: 1
+					month: 1,
+					dayOfMonth: 1
 				});
 			});
 
@@ -105,10 +97,9 @@ describe('Time', () => {
 				const r = mapDate({ relativeWeeks: 0 }, e);
 
 				expect(r).toEqual({
-					period: 'week',
 					year: 2017,
-					month: 2,
-					day: 24
+					month: 3,
+					dayOfMonth: 24
 				});
 			});
 
@@ -116,10 +107,9 @@ describe('Time', () => {
 				const r = mapDate({ relativeWeeks: 2 }, e);
 
 				expect(r).toEqual({
-					period: 'week',
 					year: 2017,
-					month: 3,
-					day: 7
+					month: 4,
+					dayOfMonth: 7
 				});
 			});
 
@@ -127,10 +117,9 @@ describe('Time', () => {
 				const r = mapDate({ week: 13 }, e);
 
 				expect(r).toEqual({
-					period: 'week',
 					year: 2017,
-					month: 2,
-					day: 26
+					month: 3,
+					dayOfMonth: 26
 				});
 			});
 
@@ -138,10 +127,9 @@ describe('Time', () => {
 				const r = mapDate({ week: 11}, e);
 
 				expect(r).toEqual({
-					period: 'week',
 					year: 2018,
-					month: 2,
-					day: 11
+					month: 3,
+					dayOfMonth: 11
 				});
 			});
 
@@ -149,10 +137,9 @@ describe('Time', () => {
 				const r = mapDate({ week: 11, relationToCurrent: TimeRelationship.Past }, e);
 
 				expect(r).toEqual({
-					period: 'week',
 					year: 2017,
-					month: 2,
-					day: 12
+					month: 3,
+					dayOfMonth: 12
 				});
 			});
 
@@ -160,10 +147,9 @@ describe('Time', () => {
 				const r = mapDate({ relativeMonths: 2 }, e);
 
 				expect(r).toEqual({
-					period: 'month',
 					year: 2017,
-					month: 4,
-					day: 24
+					month: 5,
+					dayOfMonth: 24
 				});
 			});
 
@@ -171,10 +157,9 @@ describe('Time', () => {
 				const r = mapDate({ month: 4 }, e);
 
 				expect(r).toEqual({
-					period: 'month',
 					year: 2017,
-					month: 4,
-					day: 1
+					month: 5,
+					dayOfMonth: 1
 				});
 			});
 
@@ -182,10 +167,9 @@ describe('Time', () => {
 				const r = mapDate({ month: 1 }, e);
 
 				expect(r).toEqual({
-					period: 'month',
 					year: 2018,
-					month: 1,
-					day: 1
+					month: 2,
+					dayOfMonth: 1
 				});
 			});
 
@@ -193,10 +177,9 @@ describe('Time', () => {
 				const r = mapDate({ month: 1, relationToCurrent: TimeRelationship.Past }, e);
 
 				expect(r).toEqual({
-					period: 'month',
 					year: 2017,
-					month: 1,
-					day: 1
+					month: 2,
+					dayOfMonth: 1
 				});
 			});
 
@@ -204,10 +187,9 @@ describe('Time', () => {
 				const r = mapDate({ month: 1, year: 2017 }, e);
 
 				expect(r).toEqual({
-					period: 'month',
 					year: 2017,
-					month: 1,
-					day: 1
+					month: 2,
+					dayOfMonth: 1
 				});
 			});
 
@@ -215,10 +197,9 @@ describe('Time', () => {
 				const r = mapDate({ month: 6, year: 2017 }, e);
 
 				expect(r).toEqual({
-					period: 'month',
 					year: 2017,
-					month: 6,
-					day: 1
+					month: 7,
+					dayOfMonth: 1
 				});
 			});
 
@@ -226,10 +207,9 @@ describe('Time', () => {
 				const r = mapDate({ day: 28 }, e);
 
 				expect(r).toEqual({
-					period: 'day',
 					year: 2017,
-					month: 2,
-					day: 28
+					month: 3,
+					dayOfMonth: 28
 				});
 			});
 
@@ -237,10 +217,9 @@ describe('Time', () => {
 				const r = mapDate({ day: 2 }, e);
 
 				expect(r).toEqual({
-					period: 'day',
 					year: 2017,
-					month: 3,
-					day: 2
+					month: 4,
+					dayOfMonth: 2
 				});
 			});
 
@@ -248,10 +227,9 @@ describe('Time', () => {
 				const r = mapDate({ relativeYears: 1, relativeMonths: 2 }, e);
 
 				expect(r).toEqual({
-					period: 'month',
 					year: 2018,
-					month: 4,
-					day: 24
+					month: 5,
+					dayOfMonth: 24
 				});
 			});
 
@@ -259,10 +237,9 @@ describe('Time', () => {
 				const r = mapDate({ relativeYears: 1, relativeMonths: 2 }, e);
 
 				expect(r).toEqual({
-					period: 'month',
 					year: 2018,
-					month: 4,
-					day: 24
+					month: 5,
+					dayOfMonth: 24
 				});
 			});
 
@@ -270,10 +247,9 @@ describe('Time', () => {
 				const r = mapDate({ year: 2019, month: 1, day: 2 }, e);
 
 				expect(r).toEqual({
-					period: 'day',
 					year: 2019,
-					month: 1,
-					day: 2
+					month: 2,
+					dayOfMonth: 2
 				});
 			});
 		});

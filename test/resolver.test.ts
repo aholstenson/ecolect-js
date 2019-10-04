@@ -1,6 +1,8 @@
 import { en } from '../src/language/en';
 import 'jest-expect-message';
 
+import { BigDecimal } from 'numeric-types/decimal';
+
 import { ResolverBuilder } from '../src/resolver/ResolverBuilder';
 import { anyStringValue, dateValue, numberValue, booleanValue, customValue } from '../src/values';
 
@@ -229,9 +231,7 @@ describe('Resolver', function() {
 			return resolver.match('stuff 2')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.number).toEqual({
-						value: 2
-					});
+					expect(results.best.values.number).toEqual(BigDecimal.fromNumber(2));
 				});
 		});
 
@@ -253,9 +253,7 @@ describe('Resolver', function() {
 			return resolver.match('stuff 2 thousand')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.number).toEqual({
-						value: 2000
-					});
+					expect(results.best.values.number).toEqual(BigDecimal.fromNumber(2000));
 				});
 		});
 
@@ -263,9 +261,7 @@ describe('Resolver', function() {
 			return resolver.match('a two hundred c')
 				.then(results => {
 					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.number).toEqual({
-						value: 200
-					});
+					expect(results.best.values.number).toEqual(BigDecimal.fromNumber(200));
 				});
 		});
 	});

@@ -1,5 +1,7 @@
+import { BigDecimal } from 'numeric-types/decimal';
+import { BigInteger } from 'numeric-types/integer';
+
 import { NumberData } from './NumberData';
-import { NumberValue } from './NumberValue';
 
 export function isDigits(o: NumberData): boolean {
 	return ! o.literal;
@@ -97,5 +99,9 @@ export function float(a: NumberData, b: NumberData): NumberData {
 }
 
 export function mapNumber(data: NumberData) {
-	return new NumberValue(data);
+	return BigDecimal.parse(data.rawDigits);
+}
+
+export function mapInteger(data: NumberData) {
+	return BigInteger.parse(data.rawDigits);
 }
