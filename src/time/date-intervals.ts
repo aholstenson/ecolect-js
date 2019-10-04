@@ -6,7 +6,7 @@ import { IntervalData } from './IntervalData';
 import { DateTimeData } from './DateTimeData';
 import { IntervalEdge } from './IntervalEdge';
 import { TimeRelationship } from './TimeRelationship';
-import { Interval, LocalDate } from 'datetime-types';
+import { DateInterval } from 'datetime-types';
 
 /**
  * Create an interval that matches dates in the past.
@@ -48,7 +48,7 @@ function applyRelationAndEdge(r: DateTimeData, edge: IntervalEdge) {
 	return r;
 }
 
-export function mapDateInterval(r: IntervalData, e: DateTimeEncounter): Interval<LocalDate> {
+export function mapDateInterval(r: IntervalData, e: DateTimeEncounter): DateInterval {
 	let start = null;
 	let end = null;
 
@@ -78,5 +78,5 @@ export function mapDateInterval(r: IntervalData, e: DateTimeEncounter): Interval
 		}
 	}
 
-	return Interval.between(start, end);
+	return DateInterval.between(start, end);
 }
