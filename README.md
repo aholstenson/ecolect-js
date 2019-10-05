@@ -5,9 +5,9 @@
 [![Coverage Status](https://coveralls.io/repos/aholstenson/ecolect-js/badge.svg)](https://coveralls.io/github/aholstenson/ecolect-js)
 [![Dependencies](https://david-dm.org/aholstenson/ecolect-js.svg)](https://david-dm.org/aholstenson/ecolect-js)
 
-Ecolect helps with parsing natural language to intents and values. This can be
-used as a part in building a natural language interface for things such as bots,
-voice or search interfaces.
+Ecolect is a library for JavaScript and TypeScript that helps with matching
+natural language phrases and values. This can be used as a part in building a
+natural language interface for things such as bots, voice or search interfaces.
 
 ## Installation
 
@@ -15,62 +15,72 @@ voice or search interfaces.
 $ npm install --save ecolect
 ```
 
-## Matching intents
+# Features
 
-The main function of Ecolect is to match natural language expressions to
-intents. Every expression is parsed into tokens that are matched and scored
-using a language specific comparison function. This allows the library to
-match for example `cookies` even if the user skipped the last `s` and entered
-`cookie` instead.
+* Natural language parsing of different values, such as:
+  * Dates and times (via `dateValue`, `timeValue` and `dateTimeValue`)
+  * Date intervals (via `dateIntervalValue`)
+  * Durations (via `dateDurationValue`, `timeDurationValue` and `dateTimeDurationValue`)
+  * Numbers (via `ordinalValue`, `numberValue` and `integerValue`)
+* Matching of phrases, including value extraction
+* Partial matching of phrases, for auto-complete uses such as action launches
 
-Matching can also be run in two modes:
+### Examples
 
-* Normal mode - Match a full expression to an intent, which is best used when building a bot or a voice interface.
-* Partial mode - Match most of the expression, for example when building an action launcher or a auto-complete for a search engine
-
-### Example
+Using a value:
 
 ```javascript
-import { intentsBuilder } from 'ecolect';
 import { en } from 'ecolect/language/en';
-import { anyStringValue } from 'ecolect/values';
+import { dateValue } from 'ecolect';
 
-const intents = intentsBuilder(en)
-  .intent('lights:on')
-    .value('room', anyStringValue())
-    .add('turn lights on')
-    .add('turn lights in {room} on')
-    .done()
-  .intent('lights:off')
-    .value('room', anyStringValue())
-    .add('turn lights off')
-    .add('turn lights in {room} off')
-    .done()
+const matcher = dateValue().toMatcher(en);
+const bestMatch = await matcher.match('first Monday of 2021');
+```
+
+Matching phrases:
+
+```javascript
+import { en } from 'ecolect/language/en';
+import { newPhrases, dateIntervalValue } from 'ecolect';
+
+const matcher = newPhrases()
+  .value('when', dateIntervalValue())
+  .phrase('Show todos due {when}')
+  .phrase('Todos due {when}')
+  .toMatcher(en);
+
+const bestMatch = await matcher.match('todo due today');
+```
+
+Combining phrases:
+
+```javascript
+import { en } from 'ecolect/language/en';
+import { intentsBuilder, newPhrases, dateIntervalValue } from 'ecolect';
+
+const matcher = intentsBuilder(en)
+  .add('orders', newPhrases()
+    .phrase('Orders')
+    .phrase('Show orders')
+    .build()
+  )
+  .add('orders:active', newPhrases()
+    .phrase('Orders that are active')
+    .phrase('Show orders that are active')
+    .build()
+  )
   .build();
 
-// Normal mode - match the best
-intents.match('turn lights off')
-  .then(results => {
-    if(results.best) {
-      // One of the expressions matched
-      console.log('Intent:', results.best.intent);
-      console.log('Values:', results.best.values)
+const bestMatch = await matcher.match('orders');
 
-      // results.matches will contain the top matches if anything else matched as well
-    }
-  });
-
-intents.match('turn lights', { partial: true })
-  .then(results => {
-    results.matches.forEach(match => console.log(match));
-  });
+// Or partially match
+const matches = await matcher.matchPartial('orders);
 ```
 
 ## Options
 
 Option                  | Default      | Description
 ------------------------|--------------|-------------
-`partial`               | `false`      | If partial matching should be performed
 `now`                   | `new Date()` | Date to use as a base for times and dates parsed
 `weekStartsOn`          | `0` (Sunday) | The day the week starts on
 `firstWeekContainsDate` | `1`          | The day of January which is always in the first week of the year.
@@ -98,35 +108,15 @@ style of week.
 
 For more information about week numbering see the [Week article on Wikipedia](https://en.wikipedia.org/wiki/Week#Week_numbering).
 
-## Values
-
-Intents in Ecolect can also contain values, there are several built in types and
-it's easy to provide custom value validation. Values are used to capture
-information, such as dates, numbers, names and freeform text.
-
-Values can either be used within intents or standalone as matchers:
-
-```javascript
-const en = require('ecolect/language/en');
-const { date } = require('ecolect/values');
-
-// Create a matcher for the date value
-const dateMatcher = date().matcher(en);
-
-// Call the matcher
-dateMatcher('2018')
-  .then(value => /* do something with the value */)
-  .catch(err => /* handle errors */);
-
-// Optionally specify options for parsing, such as what day the week starts on
-dateMatcher('start of week 12', { weekStartsOn: 1 /* Monday*/ })
-  .then(value => /* do something with the value */)
-  .catch(err => /* handle errors */);
-```
-
 ## Value types
 
 ### Integer
+
+```javascript
+import { integerValue } from 'ecolect';
+
+const value = integerValue();
+```
 
 Capture any positive integer number.
 
@@ -136,25 +126,15 @@ English          | `20`, `zero`, `one million`, `4 000`, `1 dozen`, `100k`
 
 #### Returned value
 
-The returned value is a simple object with one key named `value`.
-
-```javascript
-{ value: 2 }
-```
-
-#### Example
-
-```javascript
-const { integer } = require('ecolect/values');
-
-builder.intent('list')
-  .value('count', integer())
-  .add('Show top {count} items')
-  .done();
-```
-
+The returned value is a `BigInteger` from [numeric-types](https://github.com/aholstenson/numeric-types).
 
 ### Number
+
+```javascript
+import { numberValue } from 'ecolect';
+
+const value = numberValue();
+```
 
 Capture any number, including numbers with a fractional element.
 
@@ -164,24 +144,15 @@ English          | `20`, `2.4 million`, `8.0`, `-12`
 
 #### Returned value
 
-The returned value is a simple object with one key named `value`.
-
-```javascript
-{ value: 2.4 }
-```
-
-#### Example
-
-```javascript
-const { number } = require('ecolect/values');
-
-builder.intent('add')
-  .value('amount', number())
-  .add('Add {amount} to result')
-  .done();
-```
+The returned value is a `BigDecimal` from [numeric-types](https://github.com/aholstenson/numeric-types).
 
 ### Ordinal
+
+```javascript
+import { ordinalValue } from 'ecolect';
+
+const value = ordinalValue();
+```
 
 Capture an ordinal, such as `1st`, indicating a position.
 
@@ -191,24 +162,15 @@ English          | `1st`, `third`, `3`, `the fifth`
 
 #### Returned value
 
-The returned value is a simple object with one key named `value`.
-
-```javascript
-{ value: 5 }
-```
-
-#### Example
-
-```javascript
-const { ordinal } = require('ecolect/values');
-
-builder.intent('pick')
-  .value('position', ordinal())
-  .add('Show {position} in the list')
-  .done();
-```
+The returned value is a `BigInteger` from [numeric-types](https://github.com/aholstenson/numeric-types).
 
 ### Date
+
+```javascript
+import { dateValue } from 'ecolect';
+
+const value = dateValue();
+```
 
 Capture a date representing a single day.
 
@@ -218,25 +180,15 @@ English          | `today`, `in 2 days`, `january 12th`, `2010-02-22`, `02/22/20
 
 #### Returned value
 
-The returned value is an object with the keys `year`, `month`, `day` and can
-be turned into a `Date` via the function `toDate`.
-
-```javascript
-const date = value.toDate();
-```
-
-#### Example
-
-```javascript
-const { date } = require('ecolect/values');
-
-builder.intent('deadline')
-  .value('date', date())
-  .add('Set deadline to {date}')
-  .done();
-```
+The returned value is a `LocalDate` from [datetime-types](https://github.com/aholstenson/datetime-types).
 
 ### Time
+
+```javascript
+import { timeValue } from 'ecolect';
+
+const value = timeValue();
+```
 
 Capture a time of day.
 
@@ -246,25 +198,15 @@ English          | `09:00`, `3 pm`, `at 3:30 am`, `noon`, `quarter to twelve`, `
 
 #### Returned value
 
-The returned value is an object with the keys `hour`, `minute`, `second` and can
-be turned into a `Date` via the function `toDate`.
-
-```javascript
-const date = value.toDate();
-```
-
-#### Example
-
-```javascript
-const { time } = require('ecolect/values');
-
-builder.intent('alarm')
-  .value('time', time())
-  .add('Wake me {time}')
-  .done();
-```
+The returned value is a `LocalTime` from [datetime-types](https://github.com/aholstenson/datetime-types).
 
 ### Date & Time
+
+```javascript
+import { dateTimeValue } from 'ecolect';
+
+const value = dateTimeValue();
+```
 
 Capture both a date and a time.
 
@@ -272,16 +214,17 @@ Language         | Examples
 -----------------|-------------
 English          | `3pm on Jan 12th`, `in 2 days and 2 hours`, `14:00`
 
-```javascript
-const { dateTime } = require('ecolect/values');
+#### Returned value
 
-builder.intent('schedule')
-  .value('when', dateTime())
-  .add('Schedule a call {when}')
-  .done();
-```
+The returned value is a `LocalDateTime` from [datetime-types](https://github.com/aholstenson/datetime-types).
 
 ### Date Interval
+
+```javascript
+import { dateIntervalValue } from 'ecolect';
+
+const value = dateIntervalValue();
+```
 
 Capture an interval between two dates.
 
@@ -291,26 +234,15 @@ English          | `today`, `this month`, `February to March`, `2018-01-01 to 20
 
 #### Returned value
 
-The returned value is an object with two dates in the `start` and `end` keys.
-Objects can be turned into dates with `toStartDate()` and `toEndDate()`:
-
-```javascript
-const start = value.toStartDate();
-const end = value.toEndDate();
-```
-
-#### Example
-
-```javascript
-const { dateInterval } = require('ecolect/values');
-
-builder.intent('add')
-  .value('interval', dateInterval())
-  .add('Todos with deadline within {dateInterval}')
-  .done();
-```
+The returned value is a `DateInterval` from [datetime-types](https://github.com/aholstenson/datetime-types).
 
 ### Date Duration
+
+```javascript
+import { dateDurationValue } from 'ecolect';
+
+const value = dateDurationValue();
+```
 
 Capture a duration.
 
@@ -320,30 +252,13 @@ English          | `2 days`, `2m, 1d`, `1 year and 2 days`, `4y 2m`, `1 week`
 
 #### Returned value
 
-The returned value is an object containg fields with the change, such as
-`years`, `weeks`, `months` and `days`. The function `toDate(currentTime)` can
-be used to add the duration to a date.
-
-```javascript
-// Add the duration to the current time
-const fromNow = value.toDate();
-
-// Add the duration to the specific date and time
-const fromSpecific = value.toDate(new Date(2015, 0, 2));
-```
-
-#### Example
-
-```javascript
-const { dateDuration } = require('ecolect/values');
-
-builder.intent('listPending')
-  .value('dateDuration', dateDuration())
-  .add('Show todos due to be completed in {dateDuration}')
-  .done();
-```
-
 ### Time Duration
+
+```javascript
+import { timeDurationValue } from 'ecolect';
+
+const value = timeDurationValue();
+```
 
 Capture a duration of hours, minutes, seconds and miliseconds.
 
@@ -353,30 +268,13 @@ English          | `2 hours`, `1s`, `2h, 45m`, `4 minutes and 10 seconds`
 
 #### Returned value
 
-The returned value is an object containg fields with the change, such as
-`hours`, `minutes`, `seconds` and `milliseconds`. The function 
-`toDate(currentTime)` can be used to add the duration to a date.
-
-```javascript
-// Add the duration to the current time
-const fromNow = value.toDate();
-
-// Add the duration to the specific date and time
-const fromSpecific = value.toDate(new Date(2015, 0, 2, 10, 0));
-```
-
-#### Example
-
-```javascript
-const { timeDuration } = require('ecolect/values');
-
-builder.intent('timer')
-  .value('timeDuration', timeDuration())
-  .add('Set a timer for {timeDuration}')
-  .done();
-```
-
 ### Date & Time Duration
+
+```javascript
+import { dateTimeDurationValue } from 'ecolect';
+
+const value = dateTimedurationValue();
+```
 
 Capture a duration of both days, hours, minutes, seconds and miliseconds.
 
@@ -386,60 +284,29 @@ English          | `2 hours`, `2 d 20 m`, `4 weeks and 10 minutes`
 
 #### Returned value
 
-The returned value is an object containg fields with the change, such as
-`years`, `weeks`, `months` and `days`, `hours`, `minutes`, `seconds` and
-`milliseconds`. The function `toDate(currentTime)` can be used to add the
-duration to a date.
-
-
-```javascript
-// Add the duration to the current time
-const fromNow = value.toDate();
-
-// Add the duration to the specific date and time
-const fromSpecific = value.toDate(new Date(2015, 0, 2, 10, 0));
-```
-
-#### Example
-
-```javascript
-const { dateTimeDuration } = require('ecolect/values');
-
-builder.intent('timer')
-  .value('dateTimeDuration', dateTimeDuration())
-  .add('Set a timer for {dateTimeDuration}')
-  .done();
-```
-
 ### Enumeration
+
+```javascript
+import { enumerationValue } from 'ecolect';
+
+const value = enumerationValue([
+  'Option 1',
+  'Other option'
+]);
+```
 
 Capture one of the specified values. Used to specify one or more values that
 should match.
 
-```javascript
-const { enumeration } = require('ecolect/values');
-
-builder.intent('list')
-  .value('type', enumeration([
-    'Balloons',
-    'Cookies',
-    'Tasty Cake'
-  ]))
-  .add('Show me the last {type}')
-  .done();
-```
-
 ### Text
 
-Text can be captured with the type `any`. You can use `any` for things such as
-search queries, todo items and calendar events. Values of type `any` will
-always try to capture as much as they can and will not validate the result.
-
 ```javascript
-const { any } = require('ecolect/values');
+import { anyTextValue } from 'ecolect';
 
-builder.intent('echo')
-  .value('text', any())
-  .add('Echo {text}')
-  .done();
+const value = anyTextValue();
 ```
+
+Text can be captured with the type `anyTextValue`. You can use `anyTextValue`
+for things such as search queries, todo items and calendar events. Values of
+type `anyTextValue` will always try to capture as much as they can and will not
+validate the result.
