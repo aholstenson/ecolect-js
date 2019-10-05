@@ -1,6 +1,6 @@
 import { OrdinalData } from './OrdinalData';
-import { OrdinalValue } from './OrdinalValue';
 import { OrdinalPrecision } from './OrdinalPrecision';
+import { BigInteger } from 'numeric-types/integer';
 
 export function specificOrdinal(value: number): OrdinalData {
 	return {
@@ -21,12 +21,10 @@ export function ambiguousOrdinal(value: number): OrdinalData {
  *
  * @param r
  */
-export function mapOrdinal(r: OrdinalData): OrdinalValue | null {
+export function mapOrdinal(r: OrdinalData): BigInteger | null {
 	if(typeof r.value === 'undefined') return null;
 
-	return {
-		value: r.value
-	};
+	return BigInteger.fromNumber(r.value);
 }
 
 /**
