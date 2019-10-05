@@ -1,10 +1,12 @@
-import { ValueParserNode, ValueParserOptions } from '../resolver/ValueParserNode';
-import { ValueNode, ValueNodeOptions } from '../resolver/ValueNode';
 import { Language } from '../language/Language';
-import { Node } from '../graph/Node';
-import { Matcher, GraphMatcher, GraphMatcherOptions, Encounter } from '../graph/matching';
+
 import { Graph } from '../graph/Graph';
-import { MatchReductionEncounter } from '../graph/matching/MatchReductionEncounter';
+import { Node } from '../graph/Node';
+import { GraphMatcher, Encounter } from '../graph/matching';
+
+import { ValueParserNode } from '../resolver/ValueParserNode';
+import { ValueNode, ValueNodeOptions } from '../resolver/ValueNode';
+import { Matcher } from '../matching';
 
 /**
  * Object that can be converted into a node within a graph.
@@ -16,14 +18,14 @@ export interface NodeConvertable<V> {
 /**
  * Function that creates a convertable item for the given language.
  */
-export type LanguageSpecificFactory<Mapped, MatcherResult> = (language: Language) => ParsingValue<any, Mapped, MatcherResult>;
+export type LanguageSpecificFactory<Mapped> = (language: Language) => ParsingValue<any, Mapped>;
 
-export type Value<V> = LanguageSpecificValue<V, any> | NodeConvertable<V>;
+export type Value<V> = LanguageSpecificValue<V> | NodeConvertable<V>;
 
-export class LanguageSpecificValue<Mapped, MatcherResult> {
-	private factory: LanguageSpecificFactory<Mapped, MatcherResult>;
+export class LanguageSpecificValue<Mapped> {
+	private factory: LanguageSpecificFactory<Mapped>;
 
-	constructor(factory: LanguageSpecificFactory<Mapped, MatcherResult>) {
+	constructor(factory: LanguageSpecificFactory<Mapped>) {
 		this.factory = factory;
 	}
 
@@ -36,34 +38,25 @@ export class LanguageSpecificValue<Mapped, MatcherResult> {
 	 *
 	 * @param language
 	 */
-	public matcher(language: Language): Matcher<MatcherResult> {
+	public matcher(language: Language): Matcher<Mapped> {
 		const value = this.factory(language);
 		return new GraphMatcher(language, value.graph, {
-			reducer: value.options.reducer || (({ encounter, results }: MatchReductionEncounter<any>) => {
-				const first = results.first();
-				if(first === null || typeof first === 'undefined') {
-					return null;
-				} else {
-					return value.options.mapper(first.data, encounter);
-				}
-			}) as any
+			mapper: (m, encounter) => value.options.mapper(m.data, encounter)
 		});
 	}
 }
 
-export interface ParsingValueOptions<RawData, Mapped, MatcherResult> {
+export interface ParsingValueOptions<RawData, Mapped> {
 	mapper: (data: RawData, encounter: Encounter) => Mapped;
-
-	reducer?: (encounter: MatchReductionEncounter<RawData>) => MatcherResult;
 
 	partialBlankWhenNoToken?: boolean;
 }
 
-export class ParsingValue<RawData, Mapped, MatcherResult=Mapped> {
+export class ParsingValue<RawData, Mapped> {
 	public graph: Graph<RawData>;
-	public options: ParsingValueOptions<RawData, Mapped, MatcherResult>;
+	public options: ParsingValueOptions<RawData, Mapped>;
 
-	constructor(graph: Graph<RawData>, options: ParsingValueOptions<RawData, Mapped, MatcherResult>) {
+	constructor(graph: Graph<RawData>, options: ParsingValueOptions<RawData, Mapped>) {
 		this.graph = graph;
 
 		this.options = options;

@@ -3,14 +3,12 @@ import { Encounter } from '../graph/matching';
 import { ExpressionPart } from './expression/ExpressionPart';
 import { clone } from '../utils/cloning';
 
-export class ResolvedIntent<Values extends object> {
-	public intent: string;
+export class Phrase<Values extends object> {
 	public values: Values;
 	public score: number;
 	public expression: ExpressionPart[];
 
-	constructor(intent: string) {
-		this.intent = intent;
+	constructor() {
 		this.values = {} as Values;
 		this.score = 0;
 		this.expression = [];
@@ -30,7 +28,7 @@ export class ResolvedIntent<Values extends object> {
 	}
 
 	public clone() {
-		const r = new ResolvedIntent(this.intent);
+		const r = new Phrase();
 		r.values = clone(this.values);
 		r.expression = clone(this.expression);
 		return r;

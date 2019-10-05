@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { Language } from '../../src/language/Language';
 
-import { EncounterOptions, Matcher, GraphMatcher, Encounter } from '../../src/graph/matching';
+import { EncounterOptions, GraphMatcher, Encounter } from '../../src/graph/matching';
 import { Graph } from '../../src/graph/Graph';
 import { LanguageGraphFactory } from '../../src/language/LanguageGraphFactory';
 
@@ -51,12 +51,7 @@ export function testRunnerViaGraph<V, O>(
 	mapper: (value: V, encounter: Encounter) => O
 ): TestRunner {
 	const matcher = new GraphMatcher(lang, graph, {
-		reducer: ({ encounter, results }) => {
-			const first = results.first();
-			if(! first) return null;
-
-			return mapper(first.data, encounter);
-		}
+		mapper: (m, encounter) => mapper(m.data, encounter)
 	});
 
 	const r = (text: string, options: EncounterOptions) => matcher.match(text, options);

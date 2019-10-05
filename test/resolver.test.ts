@@ -23,291 +23,273 @@ function checkExpression(expression: any[], expected: any[]) {
 
 describe('Resolver', function() {
 	describe('Graph without value', function() {
-		const resolver = new ResolverBuilder(en)
-			.add('one')
-			.add('one two three')
-			.toMatcher();
+		const resolver = new ResolverBuilder()
+			.phrase('one')
+			.phrase('one two three')
+			.toMatcher(en);
 
 		it('#1', function() {
 			return resolver.match('one')
-				.then(r => expect(r.best).not.toBeNull());
+				.then(r => expect(r).not.toBeNull());
 		});
 
 		it('#2', function() {
 			return resolver.match('one two three')
-				.then(r => expect(r.best).not.toBeNull());
+				.then(r => expect(r).not.toBeNull());
 		});
 
 		it('#3', function() {
 			return resolver.match('one two')
-				.then(r => expect(r.best).toBeNull());
+				.then(r => expect(r).toBeNull());
 		});
 	});
 
 	describe('Graph with value of type any', function() {
-		const resolver = new ResolverBuilder(en)
+		const resolver = new ResolverBuilder()
 			.value('a', anyStringValue())
-			.add('{a}')
-			.add('one {a}')
-			.add('{a} one')
-			.toMatcher();
+			.phrase('{a}')
+			.phrase('one {a}')
+			.phrase('{a} one')
+			.toMatcher(en);
 
 		it('#1', function() {
 			return resolver.match('one')
 				.then(r => {
-					expect(r.best).not.toBeNull();
-					expect(r.best.values.a).toEqual('one');
-					expect(r.matches.length).toEqual(1);
+					expect(r).not.toBeNull();
+					expect(r.values.a).toEqual('one');
 				});
 		});
 
 		it('#2', function() {
 			return resolver.match('one test')
 				.then(r => {
-					expect(r.best).not.toBeNull();
-					expect(r.best.values.a).toEqual('test');
-					expect(r.matches.length).toEqual(1);
+					expect(r).not.toBeNull();
+					expect(r.values.a).toEqual('test');
 				});
 		});
 
 		it('#3', function() {
 			return resolver.match('test one')
 			.then(r => {
-				expect(r.best).not.toBeNull();
-				expect(r.best.values.a).toEqual('test');
-				expect(r.matches.length).toEqual(1);
+				expect(r).not.toBeNull();
+				expect(r.values.a).toEqual('test');
 			});
 		});
 
 		it('#4', function() {
 			return resolver.match('one one')
 			.then(r => {
-				expect(r.best).not.toBeNull();
-				expect(r.best.values.a).toEqual('one');
-				expect(r.matches.length).toEqual(1);
+				expect(r).not.toBeNull();
+				expect(r.values.a).toEqual('one');
 			});
 		});
 	});
 
 	describe('Graph with date', function() {
-		const resolver = new ResolverBuilder(en)
+		const resolver = new ResolverBuilder()
 			.value('date', dateValue())
-			.add('stuff {date}')
-			.add('{date} stuff')
-			.add('stuff {date} cookie')
-			.toMatcher();
+			.phrase('stuff {date}')
+			.phrase('{date} stuff')
+			.phrase('stuff {date} cookie')
+			.toMatcher(en);
 
 		it('start', function() {
 			return resolver.match('today stuff')
 				.then(r => {
-					expect(r.best).not.toBeNull();
-					expect(r.matches.length).toEqual(1);
+					expect(r).not.toBeNull();
 				});
 		});
 
 		it('middle', function() {
 			return resolver.match('stuff today cookie')
 				.then(r => {
-					expect(r.best).not.toBeNull();
-					expect(r.matches.length).toEqual(1);
+					expect(r).not.toBeNull();
 				});
 		});
 
 		it('middle (no match)', function() {
 			return resolver.match('stuff today a b')
 				.then(r => {
-					expect(r.best).toBeNull();
+					expect(r).toBeNull();
 				});
 		});
 
 		it('end', function() {
 			return resolver.match('stuff today')
 				.then(r => {
-					expect(r.best).not.toBeNull();
-					expect(r.matches.length).toEqual(1);
+					expect(r).not.toBeNull();
 				});
 		});
 
 		it('end - trailing th', function() {
 			return resolver.match('stuff jan 12th')
 				.then(r => {
-					expect(r.best).not.toBeNull();
-					expect(r.matches.length).toEqual(1);
+					expect(r).not.toBeNull();
 				});
 		});
 
 		it('end - partial, trailing th', function() {
-			return resolver.match('stuff jan 12th', { partial: true })
+			return resolver.matchPartial('stuff jan 12th')
 				.then(r => {
-					expect(r.best).not.toBeNull();
-					expect(r.matches.length).toEqual(2);
+					expect(r.length).toEqual(2);
 				});
 		});
 
 		it('end - partial, trailing th', function() {
-			return resolver.match('stuff j', { partial: true })
+			return resolver.matchPartial('stuff j')
 				.then(r => {
-					expect(r.best).not.toBeNull();
-					expect(r.matches.length).toEqual(1);
+					expect(r.length).toEqual(1);
 				});
 		});
 
 		it('range (no match)', function() {
 			return resolver.match('stuff Jan 12-14')
-			.then(r => {
-				expect(r.best).toBeNull();
-			});
+				.then(r => {
+					expect(r).toBeNull();
+				});
 		});
 	});
 
 	describe('Partial matching', function() {
-		const resolver = new ResolverBuilder(en)
-			.add('hello world')
-			.toMatcher();
+		const resolver = new ResolverBuilder()
+			.phrase('hello world')
+			.toMatcher(en);
 
 		it('Full token', function() {
-
-			return resolver.match('hello', {
-				partial: true
-			}).then(r => {
-				expect(r.matches.length).toEqual(1);
-			});
+			return resolver.matchPartial('hello')
+				.then(r => {
+					expect(r.length).toEqual(1);
+				});
 		});
 
 		it('Partial token', function() {
-
-			return resolver.match('he', {
-				partial: true
-			}).then(r => {
-				expect(r.matches.length).toEqual(1);
-			});
+			return resolver.matchPartial('he')
+				.then(r => {
+					expect(r.length).toEqual(1);
+				});
 		});
 	});
 
 	describe('Partial matching with value', function() {
-		const resolver = new ResolverBuilder(en)
+		const resolver = new ResolverBuilder()
 			.value('test', customValue(async encounter => {
 				if(encounter.text === 'world') {
 					encounter.match(true);
 				}
 			}))
-			.add('hello {test}')
-			.toMatcher();
+			.phrase('hello {test}')
+			.toMatcher(en);
 
 		it('No value', function() {
-
-			return resolver.match('hello', {
-				partial: true
-			}).then(r => {
-				expect(r.matches.length).toEqual(1);
-			});
+			return resolver.matchPartial('hello')
+				.then(r => {
+					expect(r.length).toEqual(1);
+				});
 		});
 
 		it('Value - valid', function() {
-			return resolver.match('hello world', {
-				partial: true
-			}).then(r => {
-				expect(r.matches.length).toEqual(1);
-			});
+			return resolver.matchPartial('hello world')
+				.then(r => {
+					expect(r.length).toEqual(1);
+				});
 		});
 
 		it('Value - invalid', function() {
-			return resolver.match('hello cookie', {
-				partial: true
-			}).then(r => {
-				expect(r.matches.length).toEqual(0);
-			});
+			return resolver.matchPartial('hello cookie')
+				.then(r => {
+					expect(r.length).toEqual(0);
+				});
 		});
 	});
 
 	describe('Graph with number', function() {
-		const resolver = new ResolverBuilder(en)
+		const resolver = new ResolverBuilder()
 			.value('number', numberValue())
-			.add('stuff {number}')
-			.add('a {number} c')
-			.toMatcher();
+			.phrase('stuff {number}')
+			.phrase('a {number} c')
+			.toMatcher(en);
 
 		it('With a number', function() {
 			return resolver.match('stuff 2')
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.number).toEqual(BigDecimal.fromNumber(2));
+				.then(r => {
+					expect(r).not.toBeNull();
+					expect(r.values.number).toEqual(BigDecimal.fromNumber(2));
 				});
 		});
 
 		it('Without a number', function() {
 			return resolver.match('stuff abc')
-				.then(results => {
-					expect(results.matches.length).toEqual(0);
+				.then(r => {
+					expect(r).toBeNull();
 				});
 		});
 
 		it('With a number followed by garbage', function() {
 			return resolver.match('stuff 2 abc')
-				.then(results => {
-					expect(results.matches.length).toEqual(0);
+				.then(r => {
+					expect(r).toBeNull();
 				});
 		});
 
 		it('With a more complex number', function() {
 			return resolver.match('stuff 2 thousand')
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.number).toEqual(BigDecimal.fromNumber(2000));
+				.then(r => {
+					expect(r).not.toBeNull();
+					expect(r.values.number).toEqual(BigDecimal.fromNumber(2000));
 				});
 		});
 
 		it('With a number and trailing valid token', function() {
 			return resolver.match('a two hundred c')
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.number).toEqual(BigDecimal.fromNumber(200));
+				.then(r => {
+					expect(r).not.toBeNull();
+					expect(r.values.number).toEqual(BigDecimal.fromNumber(200));
 				});
 		});
 	});
 
 	describe('Graph with boolean', function() {
-		const resolver = new ResolverBuilder(en)
+		const resolver = new ResolverBuilder()
 			.value('boolean', booleanValue())
-			.add('stuff {boolean}')
-			.add('a {boolean} c')
-			.toMatcher();
+			.phrase('stuff {boolean}')
+			.phrase('a {boolean} c')
+			.toMatcher(en);
 
 		it('With a boolean', function() {
 			return resolver.match('stuff off')
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.boolean).toEqual(false);
+				.then(r => {
+					expect(r).not.toBeNull();
+					expect(r.values.boolean).toEqual(false);
 				});
 		});
 
 		it('Without a boolean', function() {
 			return resolver.match('stuff abc')
-				.then(results => {
-					expect(results.matches.length).toEqual(0);
+				.then(r => {
+					expect(r).toBeNull();
 				});
 		});
 
 		it('With a boolean followed by garbage', function() {
 			return resolver.match('stuff off abc')
-				.then(results => {
-					expect(results.matches.length).toEqual(0);
+				.then(r => {
+					expect(r).toBeNull();
 				});
 		});
 
 		it('With yes', function() {
 			return resolver.match('stuff yes')
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.boolean).toEqual(true);
+				.then(r => {
+					expect(r).not.toBeNull();
+					expect(r.values.boolean).toEqual(true);
 				});
 		});
 
 		it('With a boolean and trailing valid token', function() {
 			return resolver.match('a false c')
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.values.boolean).toEqual(false);
+				.then(r => {
+					expect(r).not.toBeNull();
+					expect(r.values.boolean).toEqual(false);
 				});
 		});
 	});
@@ -321,9 +303,9 @@ describe('Resolver', function() {
 				'three',
 				'four five'
 			];
-			const resolver = new ResolverBuilder(en)
+			const resolver = new ResolverBuilder()
 				.value('name', customValue(async encounter => {
-					let text = encounter.text;
+					const text = encounter.text;
 					if(encounter.partial) {
 						for(const v of values) {
 							if(v.indexOf(text) === 0) {
@@ -336,17 +318,17 @@ describe('Resolver', function() {
 						}
 					}
 				}))
-				.add('do {name}')
-				.toMatcher();
+				.phrase('do {name}')
+				.toMatcher(en);
 
 			it('Match', function() {
 				return resolver.match('do one')
-					.then(results => {
-						expect(results.matches.length).toEqual(1);
-						expect(results.best.values.name).toEqual('one');
+					.then(r => {
+						expect(r).not.toBeNull();
+						expect(r.values.name).toEqual('one');
 
 						// Check that the expression matches
-						const expression = results.best.expression;
+						const expression = r.expression;
 						checkExpression(expression, [
 							{
 								type: 'text',
@@ -368,12 +350,12 @@ describe('Resolver', function() {
 
 			it('Match multiple', function() {
 				return resolver.match('do four five')
-					.then(results => {
-						expect(results.matches.length).toEqual(1);
-						expect(results.best.values.name).toEqual('four five');
+					.then(r => {
+						expect(r).not.toBeNull();
+						expect(r.values.name).toEqual('four five');
 
 						// Check that the expression matches
-						const expression = results.best.expression;
+						const expression = r.expression;
 						checkExpression(expression, [
 							{
 								type: 'text',
@@ -395,20 +377,18 @@ describe('Resolver', function() {
 
 			it('No match', function() {
 				return resolver.match('do four')
-					.then(results => {
-						expect(results.matches.length).toEqual(0);
+					.then(r => {
+						expect(r).toBeNull();
 					});
 			});
 
 			it('Partial', function() {
-				return resolver.match('do t', {
-					partial: true
-				})
-					.then(results => {
-						expect(results.matches.length).toEqual(2);
+				return resolver.matchPartial('do t')
+					.then(r => {
+						expect(r.length).toEqual(2);
 
 						// Check that the expressions matches
-						checkExpression(results.matches[0].expression, [
+						checkExpression(r[0].expression, [
 							{
 								type: 'text',
 								value: 'do',
@@ -425,7 +405,7 @@ describe('Resolver', function() {
 							}
 						]);
 
-						checkExpression(results.matches[1].expression, [
+						checkExpression(r[1].expression, [
 							{
 								type: 'text',
 								value: 'do',
@@ -452,9 +432,9 @@ describe('Resolver', function() {
 				'three',
 				'four five'
 			];
-			const resolver = new ResolverBuilder(en)
+			const resolver = new ResolverBuilder()
 				.value('name', customValue(async encounter => {
-					let text = encounter.text;
+					const text = encounter.text;
 					if(encounter.partial) {
 						for(const v of values) {
 							if(v.indexOf(text) === 0) {
@@ -467,17 +447,17 @@ describe('Resolver', function() {
 						}
 					}
 				}))
-				.add('{name} value')
-				.toMatcher();
+				.phrase('{name} value')
+				.toMatcher(en);
 
 			it('Match', function() {
 				return resolver.match('one value')
-					.then(results => {
-						expect(results.matches.length).toEqual(1);
-						expect(results.best.values.name).toEqual('one');
+					.then(r => {
+						expect(r).not.toBeNull();
+						expect(r.values.name).toEqual('one');
 
 						// Check that the expression matches
-						const expression = results.best.expression;
+						const expression = r.expression;
 						checkExpression(expression, [
 							{
 								type: 'value',
@@ -499,12 +479,12 @@ describe('Resolver', function() {
 
 			it('Match multiple', function() {
 				return resolver.match('four five value')
-					.then(results => {
-						expect(results.matches.length).toEqual(1);
-						expect(results.best.values.name).toEqual('four five');
+					.then(r => {
+						expect(r).not.toBeNull();
+						expect(r.values.name).toEqual('four five');
 
 						// Check that the expression matches
-						const expression = results.best.expression;
+						const expression = r.expression;
 						checkExpression(expression, [
 							{
 								type: 'value',
@@ -526,17 +506,15 @@ describe('Resolver', function() {
 
 			it('No match', function() {
 				return resolver.match('four value')
-					.then(results => {
-						expect(results.matches.length).toEqual(0);
+					.then(r => {
+						expect(r).toBeNull();
 					});
 			});
 
 			it('Partial', function() {
-				return resolver.match('t', {
-					partial: true
-				})
-					.then(results => {
-						expect(results.matches.length).toEqual(2);
+				return resolver.matchPartial('t')
+					.then(r => {
+						expect(r.length).toEqual(2);
 					});
 			});
 		});
@@ -549,12 +527,12 @@ describe('Resolver', function() {
 				'three',
 				'four five'
 			];
-			const resolver = new ResolverBuilder(en)
+			const resolver = new ResolverBuilder()
 				.value('name', customValue({
 					greedy: true,
 
 					match: async function(encounter) {
-						let text = encounter.text;
+						const text = encounter.text;
 						if(encounter.partial) {
 							for(const v of values) {
 								if(v.indexOf(text) === 0) {
@@ -568,49 +546,47 @@ describe('Resolver', function() {
 						}
 					}
 				}))
-				.add('{name} end')
-				.add('{name} value end')
-				.toMatcher();
+				.phrase('{name} end')
+				.phrase('{name} value end')
+				.toMatcher(en);
 
 			it('Match', function() {
 				return resolver.match('one value end')
-					.then(results => {
-						expect(results.matches.length).toEqual(1);
-						expect(results.best.values.name).toEqual('one');
+					.then(r => {
+						expect(r).not.toBeNull();
+						expect(r.values.name).toEqual('one');
 					});
 			});
 
 			it('No match', function() {
 				return resolver.match('four value')
-					.then(results => {
-						expect(results.matches.length).toEqual(0);
+					.then(r => {
+						expect(r).toBeNull();
 					});
 			});
 
 			it('Partial', function() {
-				return resolver.match('one value', {
-					partial: true
-				})
-					.then(results => {
-						expect(results.matches.length).toEqual(2);
+				return resolver.matchPartial('one value')
+					.then(r => {
+						expect(r.length).toEqual(2);
 					});
 			});
 		});
 	});
 
 	describe('Graph contains matching expression', function() {
-		const resolver = new ResolverBuilder(en)
+		const resolver = new ResolverBuilder()
 			.value('boolean', booleanValue())
 			.value('free', anyStringValue())
-			.add('stuff {boolean}')
-			.add('a {boolean} c')
-			.add('longer {free} message')
-			.toMatcher();
+			.phrase('stuff {boolean}')
+			.phrase('a {boolean} c')
+			.phrase('longer {free} message')
+			.toMatcher(en);
 
 		it('Expression has source offsets', function() {
 			return resolver.match('a yes c')
-				.then(result => {
-					const e = result.best.expression;
+				.then(r => {
+					const e = r.expression;
 
 					expect(e.length).toEqual(3);
 					expect(e[0].source).toEqual({ start: 0, end: 1 });
@@ -621,8 +597,8 @@ describe('Resolver', function() {
 
 		it('Expression with any() has source offsets', function() {
 			return resolver.match('longer hello world message')
-				.then(result => {
-					const e = result.best.expression;
+				.then(r => {
+					const e = r.expression;
 
 					expect(e.length).toEqual(3);
 					expect(e[0].source).toEqual({ start: 0, end: 6 });

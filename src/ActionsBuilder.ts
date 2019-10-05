@@ -1,112 +1,77 @@
-import { IntentsBuilder } from './IntentsBuilder';
 import { Language } from './language/Language';
-import { Value } from './values/base';
-import { Matcher, EncounterOptions } from './graph/matching';
-import { ResolvedIntent } from './resolver/ResolvedIntent';
-import { ResolvedIntents } from './resolver/ResolvedIntents';
 
-export type Action<Context, ReturnType, Values extends object> = (item: ResolvedIntent<Values>, context: Context) => Promise<ReturnType> | ReturnType;
+import { GraphBuilder } from './graph/GraphBuilder';
+import { GraphMatcher } from './graph/matching';
+
+import { Matcher } from './matching';
+import { Phrase } from './resolver/Phrase';
+import { Phrases } from './resolver/Phrases';
+
+export type ActionInvoker<Context, ReturnType, Values extends object> = (item: Phrase<Values>, context: Context) => ReturnType;
+
+/**
+ * Definition of an action. Used as input when adding actions.
+ */
+export interface ActionDef<Context, ReturnType, Values extends object> {
+	id: string;
+
+	phrases: Phrases<Values>;
+
+	handler: ActionInvoker<Context, ReturnType, Values>;
+}
 
 export class ActionsBuilder<Context=void, ReturnType=void> {
 	private language: Language;
-	private builder: IntentsBuilder;
-	private handlers: Map<string, any>;
-	private id: number;
+	private builder: GraphBuilder<Action<any, any, any>>;
 
-	constructor(lang: Language) {
-		this.language = lang;
-		this.builder = new IntentsBuilder(lang);
-		this.handlers = new Map();
-		this.id = 0;
+	constructor(language: Language) {
+		if(! language || ! language.tokenize || ! language.compareTokens) {
+			throw new Error('Language instance must be provided');
+		}
+
+		this.language = language;
+
+		this.builder = new GraphBuilder<Action<any, any, any>>(language)
+			.allowPartial();
 	}
 
-	public action(id?: string): ActionBuilder<Context, ReturnType, {}> {
-		// Auto assign an id
-		const actualId = id ? id : id = ('__auto__' + ++this.id);
+	public add<V extends object>(def: ActionDef<Context, ReturnType, V>) {
+		this.builder.add(
+			def.phrases.toGraph(this.language),
+			v => new Action(def.id, def.handler, v[0])
+		);
 
-		const builder = this.builder.intent(id);
-
-		const self = this;
-		return {
-			value(valueId, type) {
-				builder.value(valueId, type);
-				return this as any;
-			},
-
-			add(...args) {
-				builder.add(...args);
-				return this;
-			},
-
-			handler(func) {
-				self.handlers.set(actualId, func);
-				return this;
-			},
-
-			done() {
-				builder.done();
-				return self;
-			}
-		};
+		return this;
 	}
 
-	public build() {
-		return new Actions<Context, ReturnType>(this.language, this.builder.build(), this.handlers);
+	public build(): Matcher<Action<Context, ReturnType, any>> {
+		const graph = this.builder.build();
+		return new GraphMatcher(this.language, graph, {
+			mapper: m => m.data
+		}) as any;
 	}
 }
 
-export interface ActionBuilder<Context, ReturnType, Values extends object> {
-	value<I extends string, V>(id: I, type: Value<V>): ActionBuilder<Context, ReturnType, Values & { [K in I]: V }>;
-
-	add(...args: string[]): this;
-
-	handler(func: Action<Context, ReturnType, Values>): this;
-
-	done(): ActionsBuilder<Context, ReturnType>;
-}
-
-export class Actions<Context, ReturnType> {
-	public readonly language: Language;
-	private handlers: Map<string, any>;
-	private matcher: Matcher<ResolvedIntents<any>>;
+export class Action<Context, ReturnType, Values extends object> extends Phrase<Values> {
+	public readonly id: string;
+	private readonly handler: ActionInvoker<Context, ReturnType, Values>;
 
 	constructor(
-		language: Language,
-		matcher: Matcher<ResolvedIntents<any>>,
-		handlers: Map<string, any>
+		id: string,
+		handler: ActionInvoker<Context, ReturnType, Values>,
+		phrase: Phrase<Values>
 	) {
-		this.language = language;
-		this.matcher = matcher;
-		this.handlers = handlers;
+		super();
+
+		this.id = id;
+		this.handler = handler;
+
+		this.score = phrase.score;
+		this.expression = phrase.expression;
+		this.values = phrase.values;
 	}
 
-	public match(expression: string, options?: EncounterOptions): Promise<ResolvedActions<Context, ReturnType>> {
-		const map = (item: ResolvedIntent<any>): ResolvedAction<Context, ReturnType> => {
-			const result = item as any;
-			result.activate = (context: Context) => {
-				const handler = this.handlers.get(item.intent);
-				const r = handler(item, context);
-				return Promise.resolve(r);
-			};
-
-			return result;
-		};
-
-		return this.matcher.match(expression, options)
-			.then(result => {
-				return {
-					best: result.best ? map(result.best) : null,
-					matches: result.matches.map(map)
-				};
-			});
+	public activate(context: Context): ReturnType {
+		return this.handler(this, context);
 	}
-}
-
-export interface ResolvedAction<Context, ReturnType> extends ResolvedIntent<any> {
-	activate: (context: Context) => Promise<ReturnType>;
-}
-
-export interface ResolvedActions<Context, ReturnType> {
-	best: ResolvedAction<Context, ReturnType> | null;
-	matches: ResolvedAction<Context, ReturnType>[];
 }

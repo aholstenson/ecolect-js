@@ -1,12 +1,14 @@
 import { Language } from './language/Language';
 
+export * from './matching';
+export * from './resolver/expression';
+
+export * from './resolver/Phrases';
+export * from './resolver/newPhrases';
+export * from './resolver/ResolverBuilder';
+
 import { IntentsBuilder } from './IntentsBuilder';
 import { ActionsBuilder } from './ActionsBuilder';
-
-export {
-	Matcher,
-	MatchOptions
-} from './graph/matching';
 
 export * from './IntentsBuilder';
 export * from './ActionsBuilder';

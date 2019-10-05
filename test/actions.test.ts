@@ -1,80 +1,78 @@
 import { en } from '../src/language/en';
-import { actionsBuilder } from '../src';
+import { actionsBuilder, newPhrases } from '../src';
 
 describe('Actions', function() {
 	describe('Orders', function() {
 		const actions = actionsBuilder<number, string>(en)
-			.action('orders')
-				.add('Orders')
-				.add('Show orders')
-				.handler(() => 'executed orders')
-				.done()
-			.action()
-				.add('Orders that are active')
-				.add('Show orders that are active')
-				.handler((match, ctx) => 'active ' + ctx)
-				.done()
-			.build();
+			.add({
+				id: 'orders',
+				phrases: newPhrases()
+					.phrase('Orders')
+					.phrase('Show orders')
+					.build(),
+				handler: () => 'executed orders'
+			})
+			.add({
+				id: 'activeOrders',
+				phrases: newPhrases()
+					.phrase('Orders that are active')
+					.phrase('Show orders that are active')
+					.build(),
 
-		it('Language available', () => {
-			expect(actions.language).toEqual(en);
-		});
+				handler: (match, ctx) => 'active ' + ctx
+			})
+			.build();
 
 		it('Match: orders', function() {
 			return actions.match('orders')
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.intent).toEqual('orders');
+				.then(r => {
+					expect(r).not.toBeNull();
+					expect(r.id).toEqual('orders');
 				});
 		});
 
 		it('No match: show', function() {
 			return actions.match('show')
-				.then(results => {
-					expect(results.matches.length).toEqual(0);
+				.then(r => {
+					expect(r).toBeNull();
 				});
 		});
 
 		it('Partial: orders', function() {
-			return actions.match('orders', { partial: true })
-				.then(results => {
-					expect(results.matches.length).toEqual(2);
+			return actions.matchPartial('orders')
+				.then(r => {
+					expect(r.length).toEqual(2);
 				});
 		});
 
 		it('Partial: or', function() {
-			return actions.match('or', { partial: true })
-				.then(results => {
-					expect(results.matches.length).toEqual(2);
+			return actions.matchPartial('or')
+				.then(r => {
+					expect(r.length).toEqual(2);
 				});
 		});
 
 		it('Matched items have an activate() function', () => {
 			return actions.match('orders')
-				.then(results => {
-					expect(typeof results.best.activate).toEqual('function')
-					expect(typeof results.matches[0].activate).toEqual('function');
+				.then(r => {
+					expect(typeof r.activate).toEqual('function');
 				});
 		});
 
 		it('activate() functions is callable', () => {
 			return actions.match('orders')
-				.then(results => {
-					const p = results.best.activate(1234);
-					expect(typeof p.then).toEqual('function');
-					return p;
-				})
-				.then(v => expect(v).toEqual('executed orders'));
+				.then(r => {
+					const p = r.activate(1234);
+					expect(p).toEqual('executed orders');
+				});
 		});
 
 		it('activate() passes context to handler', () => {
 			return actions.match('orders that are active')
-				.then(results => {
-					const p = results.best.activate(1234);
-					expect(typeof p.then).toEqual('function');
-					return p;
-				})
-				.then(v => expect(v).toEqual('active 1234'));
+				.then(r => {
+					const p = r.activate(1234);
+					expect(p).toEqual('active 1234')
+				});
 		});
 	});
 });

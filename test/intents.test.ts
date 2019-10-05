@@ -1,136 +1,147 @@
 import { en } from '../src/language/en';
 import { IntentsBuilder } from '../src/IntentsBuilder';
 import { anyStringValue } from '../src/values';
+import { newPhrases } from '../src/resolver/newPhrases';
 
 describe('Intents', function() {
 	describe('Orders', function() {
 		const intents = new IntentsBuilder(en)
-			.intent('orders')
-				.add('Orders')
-				.add('Show orders')
-				.done()
-			.intent('orders:active')
-				.add('Orders that are active')
-				.add('Show orders that are active')
-				.done()
-			.intent('customer:orders')
+			.add('orders', newPhrases()
+				.phrase('Orders')
+				.phrase('Show orders')
+				.build()
+			)
+			.add('orders:active', newPhrases()
+				.phrase('Orders that are active')
+				.phrase('Show orders that are active')
+				.build()
+			)
+			.add('customer:orders', newPhrases()
 				.value('customer', anyStringValue())
-				.add('Orders for {customer}')
-				.add('Find orders for {customer}')
-				.add('Show orders for {customer}')
-				.done()
-			.intent('employee:assignments')
+				.phrase('Orders for {customer}')
+				.phrase('Find orders for {customer}')
+				.phrase('Show orders for {customer}')
+				.build()
+			)
+			.add('employee:assignments', newPhrases()
 				.value('employee', anyStringValue())
-				.add('Assignments for {employee}')
-				.done()
+				.phrase('Assignments for {employee}')
+				.build()
+			)
 			.build();
 
 		it('Match: orders', function() {
 			return intents.match('orders')
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.intent).toEqual('orders');
+				.then(r => {
+					expect(r.id).toEqual('orders');
 				});
 		});
 
 		it('Match (skippable in input): show for orders', function() {
 			return intents.match('show for orders', { fuzzy: true })
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.intent).toEqual('orders');
+				.then(r => {
+					expect(r.id).toEqual('orders');
 				});
 		});
 
 		it('Match (skippable in expression): orders Test', function() {
 			// Test that skipping `for` works fine
 			return intents.match('orders Test')
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.intent).toEqual('customer:orders');
+				.then(r => {
+					expect(r.id).toEqual('customer:orders');
 				});
 		});
 
 		it('No match: show', function() {
 			return intents.match('show')
-				.then(results => {
-					expect(results.matches.length).toEqual(0);
+				.then(r => {
+					expect(r).toBeNull();
 				});
 		});
 
 		it('Partial: orders', function() {
-			return intents.match('orders', { partial: true })
-				.then(results => {
-					expect(results.matches.length).toEqual(3);
+			return intents.matchPartial('orders')
+				.then(r => {
+					expect(r.length).toEqual(3);
 				});
 		});
 
 		it('Partial: or', function() {
-			return intents.match('or', { partial: true })
-				.then(results => {
-					expect(results.matches.length).toEqual(3);
+			return intents.matchPartial('or')
+				.then(r => {
+					expect(r.length).toEqual(3);
 				});
 		});
 
 		it('Partial: show orders', function() {
-			return intents.match('show orders', { partial: true })
-				.then(results => {
-					expect(results.matches.length).toEqual(3);
+			return intents.matchPartial('show orders')
+				.then(r => {
+					expect(r.length).toEqual(3);
 				});
 		});
 
 		it('Partial: sh order', function() {
-			return intents.match('sh order', { partial: true })
-				.then(results => {
-					expect(results.matches.length).toEqual(0);
+			return intents.matchPartial('sh order')
+				.then(r => {
+					expect(r.length).toEqual(0);
 				});
 		});
 
 		it('Partial: orders for', function() {
-			return intents.match('orders for', { partial: true })
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.intent).toEqual('customer:orders');
+			return intents.matchPartial('orders for')
+				.then(r => {
+					expect(r.length).toEqual(1);
+					expect(r[0].id).toEqual('customer:orders');
 				});
 		});
 
 		it('Partial: orders for Test', function() {
-			return intents.match('orders for Test', { partial: true })
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.intent).toEqual('customer:orders');
-					expect(results.best.values.customer).toEqual('Test');
+			return intents.matchPartial('orders for Test')
+				.then(r => {
+					expect(r.length).toEqual(1);
+					expect(r[0].id).toEqual('customer:orders');
+
+					if(r[0].id === 'customer:orders') {
+						expect(r[0].values.customer).toEqual('Test');
+					}
 				});
 		});
 
 		it('Partial (with skippable): orders Test', function() {
-			return intents.match('orders Test', { partial: true })
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.intent).toEqual('customer:orders');
-					expect(results.best.values.customer).toEqual('Test');
+			return intents.matchPartial('orders Test')
+				.then(r => {
+					expect(r.length).toEqual(1);
+					expect(r[0].id).toEqual('customer:orders');
+
+					if(r[0].id === 'customer:orders') {
+						expect(r[0].values.customer).toEqual('Test');
+					}
 				});
 		});
 
 		it('Partial and fuzzy: orders for Test', function() {
-			return intents.match('o Test', { partial: true, fuzzy: true })
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
-					expect(results.best.intent).toEqual('customer:orders');
-					expect(results.best.values.customer).toEqual('Test');
+			return intents.matchPartial('o Test', { fuzzy: true })
+				.then(r => {
+					expect(r.length).toEqual(1);
+					expect(r[0].id).toEqual('customer:orders');
+
+					if(r[0].id === 'customer:orders') {
+						expect(r[0].values.customer).toEqual('Test');
+					}
 				});
 		});
 
 		it('Partial: assign', function() {
-			return intents.match('assign', { partial: true })
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
+			return intents.matchPartial('assign')
+				.then(r => {
+					expect(r.length).toEqual(1);
 				});
 		});
 
 		it('Partial: assignments', function() {
-			return intents.match('assignments', { partial: true })
-				.then(results => {
-					expect(results.matches.length).toEqual(1);
+			return intents.matchPartial('assignments')
+				.then(r => {
+					expect(r.length).toEqual(1);
 				});
 		});
 	});

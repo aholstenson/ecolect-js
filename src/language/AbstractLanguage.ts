@@ -1,7 +1,5 @@
 import { Language } from './Language';
 import { Tokens, Token } from './tokens';
-import { ValueMatcherFactory } from './ValueMatcherFactory';
-import { Matcher } from '../graph/matching';
 import { GraphBuilder } from '../graph/GraphBuilder';
 import { Graph } from '../graph/Graph';
 import { LanguageGraphFactory } from './LanguageGraphFactory';

@@ -1,12 +1,15 @@
-import { ResolverBuilder } from './resolver/ResolverBuilder';
 import { Language } from './language/Language';
-import { Value } from './values/base';
-import { Matcher } from './graph/matching';
-import { ResolvedIntents } from './resolver/ResolvedIntents';
 
-export class IntentsBuilder {
+import { GraphBuilder } from './graph/GraphBuilder';
+import { GraphMatcher } from './graph/matching';
+
+import { Matcher } from './matching';
+import { Phrase } from './resolver/Phrase';
+import { Phrases } from './resolver/Phrases';
+
+export class IntentsBuilder<Intents extends Intent<any, any> = never> {
 	private language: Language;
-	private builder: ResolverBuilder;
+	private builder: GraphBuilder<Intent<any, any>>;
 
 	constructor(language: Language) {
 		if(! language || ! language.tokenize || ! language.compareTokens) {
@@ -15,43 +18,40 @@ export class IntentsBuilder {
 
 		this.language = language;
 
-		this.builder = new ResolverBuilder(this.language);
+		this.builder = new GraphBuilder<Intent<any, any>>(language)
+			.allowPartial();
 	}
 
-	public intent(id: string): IntentBuilder {
+	public add<I extends string, V extends object>(
+		id: I,
+		phrases: Phrases<V>): IntentsBuilder<Intents | Intent<I, V>>
+	{
 		if(typeof id !== 'string') {
 			throw new Error('Intents require identifiers that are strings');
 		}
 
-		const self = this;
-		const instance = new ResolverBuilder(this.language, id);
-		return {
-			value(valueId: string, type: Value<any>) {
-				instance.value(valueId, type);
-				return this;
-			},
+		this.builder.add(phrases.toGraph(this.language), v => new Intent(id, v[0]));
 
-			add(...args: string[]) {
-				instance.add(...args);
-				return this;
-			},
-
-			done() {
-				self.builder.add(instance.build());
-				return self;
-			}
-		};
+		return this as any;
 	}
 
-	public build(): Matcher<ResolvedIntents<any>> {
-		return this.builder.toMatcher();
+	public build(): Matcher<Intents> {
+		const graph = this.builder.build();
+		return new GraphMatcher(this.language, graph, {
+			mapper: m => m.data
+		}) as any;
 	}
 }
 
-export interface IntentBuilder {
-	value(id: string, type: Value<any>): this;
+export class Intent<K extends string, V extends object> extends Phrase<V> {
+	public readonly id: K;
 
-	add(...args: string[]): this;
+	constructor(id: K, phrase: Phrase<V>) {
+		super();
 
-	done(): IntentsBuilder;
+		this.id = id;
+		this.score = phrase.score;
+		this.expression = phrase.expression;
+		this.values = phrase.values;
+	}
 }

@@ -2,7 +2,6 @@ import { GraphBuilder } from '../graph/GraphBuilder';
 import { ResolverBuilder } from '../resolver/ResolverBuilder';
 
 import { LanguageSpecificValue, ParsingValue, Value } from './base';
-import { ResolvedIntent } from '../resolver/ResolvedIntent';
 import { ExpressionPart } from '../resolver/expression/ExpressionPart';
 
 export interface OptionBuilderOptions {
@@ -37,7 +36,7 @@ export class OptionsBuilder<CurrentOptions extends object> {
 				return this as any;
 			},
 
-			add(...args) {
+			phrase(...args) {
 				result.phrases.push(args);
 				return this;
 			},
@@ -51,16 +50,13 @@ export class OptionsBuilder<CurrentOptions extends object> {
 
 	public build() {
 		return new LanguageSpecificValue(language => {
-			const parent = new GraphBuilder<ResolvedIntent<any>>(language)
+			const parent = new GraphBuilder<Option<any>>(language)
 				.name(this.name)
 				.allowPartial();
 
 			for(const id of Object.keys(this.data)) {
 				const option = this.data[id];
-				const instance = new ResolverBuilder(language, id);
-
-				// Set the name of the parser - for easier debugging
-				//instance.parser.options.name = parent.options.name + '[' + id + ']';
+				const instance = new ResolverBuilder();
 
 				// Transfer all of the values
 				for(const valueKey of Object.keys(option.values)) {
@@ -69,11 +65,13 @@ export class OptionsBuilder<CurrentOptions extends object> {
 
 				// Transfer the phrases
 				for(const phrase of option.phrases) {
-					instance.add(...phrase);
+					instance.phrase(...phrase);
 				}
 
 				const parser = instance.build();
-				parent.add(parser, v => v[0]);
+				parent.add(parser.toGraph(language), v => {
+					return new Option(id, v[0].values, v[0].expression);
+				});
 			}
 
 			const graph = parent.build();
@@ -82,12 +80,7 @@ export class OptionsBuilder<CurrentOptions extends object> {
 
 			return new ParsingValue(repeating, {
 				mapper: value => {
-					const allResults: Option<any>[] = [];
-					for(const option of value) {
-						allResults.push(new Option(option.intent, option.values, option.expression));
-					}
-
-					return new OptionsSet<CurrentOptions>(allResults);
+					return new OptionsSet<CurrentOptions>(value);
 				},
 				...this.options
 			});
@@ -102,7 +95,7 @@ export function optionsValue(options: OptionBuilderOptions={}) {
 export interface OptionBuilder<CurrentOptions, Key extends string, Values extends object> {
 	value<I extends string, V>(id: I, type: Value<V>): OptionBuilder<CurrentOptions, Key, Values & { [K in I]: V }>;
 
-	add(...args: string[]): this;
+	phrase(...args: string[]): this;
 
 	done(): OptionsBuilder<CurrentOptions & { [K in Key]: Values }>;
 }

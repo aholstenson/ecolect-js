@@ -3,7 +3,7 @@ import { GraphBuilder } from '../src/graph/GraphBuilder';
 import { GraphMatcher, GraphMatcherOptions } from '../src/graph/matching';
 
 const options: GraphMatcherOptions<any, any> = {
-	reducer: ({ results }) => results.toArray().map(r => r.data)
+	mapper: m => m.data
 };
 
 describe('Graph Builder', function() {
@@ -16,29 +16,29 @@ describe('Graph Builder', function() {
 
 		it('All tokens', function() {
 			return matcher.match('hello world')
-				.then(results => {
-					expect(results).toEqual([ true ]);
+				.then(r => {
+					expect(r).toEqual(true);
 				});
 		});
 
 		it('Single token', function() {
 			return matcher.match('hello')
-				.then(results => {
-					expect(results).toEqual([ ]);
+				.then(r => {
+					expect(r).toBeNull();
 				});
 		});
 
 		it('Extra tokens', function() {
 			return matcher.match('hello world and more')
-				.then(results => {
-					expect(results).toEqual([]);
+				.then(r => {
+					expect(r).toBeNull();
 				});
 		});
 
 		it('Extra tokens - partial, no match', function() {
-			return matcher.match('hello world and more', { partial: true })
-				.then(results => {
-					expect(results).toEqual([ ]);
+			return matcher.matchPartial('hello world and more')
+				.then(r => {
+					expect(r).toEqual([]);
 				});
 		});
 	});
@@ -53,23 +53,23 @@ describe('Graph Builder', function() {
 		const matcher = new GraphMatcher(en, graph, options);
 
 		it('Match longest - partial', function() {
-			return matcher.match('hello world', { partial: true })
-				.then(results => {
-					expect(results).toEqual([ 1 ]);
+			return matcher.matchPartial('hello world')
+				.then(r => {
+					expect(r).toEqual([ 1 ]);
 				});
 		});
 
 		it('Match standalone', function() {
 			return matcher.match('cookies')
-				.then(results => {
-					expect(results).toEqual([ 2 ]);
+				.then(r => {
+					expect(r).toEqual(2);
 				});
 		});
 
 		it('Match shortest', function() {
 			return matcher.match('hello')
-				.then(results => {
-					expect(results).toEqual([ 3 ]);
+				.then(r => {
+					expect(r).toEqual(3);
 				});
 		});
 	});
@@ -88,15 +88,15 @@ describe('Graph Builder', function() {
 
 			it('All tokens', function() {
 				return matcher.match('hello world')
-					.then(results => {
-						expect(results).toEqual([ 2 ]);
+					.then(r => {
+						expect(r).toEqual(2);
 					});
 			});
 
 			it('First token', function() {
 				return matcher.match('hello')
-					.then(results => {
-						expect(results).toEqual([ ]);
+					.then(r => {
+						expect(r).toBeNull();
 					});
 			});
 		});
@@ -110,15 +110,15 @@ describe('Graph Builder', function() {
 
 			it('Single token', function() {
 				return matcher.match('one')
-					.then(results => {
-						expect(results).toEqual([ 1 ]);
+					.then(r => {
+						expect(r).toEqual(1);
 					});
 			});
 
 			it('Invalid first token', function() {
 				return matcher.match('three')
-					.then(results => {
-						expect(results).toEqual([ ]);
+					.then(r => {
+						expect(r).toBeNull();
 					});
 			});
 		});
@@ -135,22 +135,22 @@ describe('Graph Builder', function() {
 
 			it('Single token', function() {
 				return matcher.match('one')
-					.then(results => {
-						expect(results).toEqual([ 1 ]);
+					.then(r => {
+						expect(r).toEqual(1);
 					});
 			});
 
 			it('All tokens - partial', function() {
-				return matcher.match('one two', { partial: true })
-					.then(results => {
-						expect(results).toEqual([ 2 ]);
+				return matcher.matchPartial('one two')
+					.then(r => {
+						expect(r).toEqual([ 2 ]);
 					});
 			});
 
 			it('Invalid first token - partial', function() {
-				return matcher.match('three two', { partial: true })
-					.then(results => {
-						expect(results).toEqual([ ]);
+				return matcher.matchPartial('three two')
+					.then(r => {
+						expect(r).toEqual([ ]);
 					});
 			});
 		});
@@ -168,43 +168,43 @@ describe('Graph Builder', function() {
 
 			it('a', function() {
 				return matcher.match('a')
-					.then(results => {
-						expect(results).toEqual([ 'a' ]);
+					.then(r => {
+						expect(r).toEqual('a');
 					});
 			});
 
 			it('a b', function() {
 				return matcher.match('a b')
-					.then(results => {
-						expect(results).toEqual([ 'ab' ]);
+					.then(r => {
+						expect(r).toEqual('ab');
 					});
 			});
 
 			it('a b c', function() {
 				return matcher.match('a b c')
-					.then(results => {
-						expect(results).toEqual([ 'abc' ]);
+					.then(r => {
+						expect(r).toEqual('abc');
 					});
 			});
 
 			it('a b c d', function() {
 				return matcher.match('a b c d')
-					.then(results => {
-						expect(results).toEqual([ 'abcd' ]);
+					.then(r => {
+						expect(r).toEqual('abcd');
 					});
 			});
 
 			it('a - b c', function() {
 				return matcher.match('a - b c')
-					.then(results => {
-						expect(results).toEqual([ 'abc' ]);
+					.then(r => {
+						expect(r).toEqual('abc');
 					});
 			});
 
 			it('abc', function() {
 				return matcher.match('abc')
-					.then(results => {
-						expect(results).toEqual([ ]);
+					.then(r => {
+						expect(r).toBeNull();
 					});
 			});
 		});

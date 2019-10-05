@@ -7,13 +7,13 @@ import { ExpressionPart } from './expression/ExpressionPart';
 import { ExpressionPartType } from './expression/ExpressionPartType';
 import { TextPart } from './expression/TextPart';
 import { ValuePart } from './expression/ValuePart';
-import { ResolvedIntent } from './ResolvedIntent';
+import { Phrase } from './Phrase';
 
 /**
  * Refresh the expression by copying back values from the matches into the
  * expression and sub-expressions.
  */
-export function refresh(v: ResolvedIntent<any>) {
+export function refresh(v: Phrase<any>) {
 	for(const e of v.expression) {
 		if(e.type === ExpressionPartType.Value) {
 			const part: ValuePart = e as ValuePart;
