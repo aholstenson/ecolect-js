@@ -7,6 +7,8 @@ export * from './resolver/Phrases';
 export * from './resolver/newPhrases';
 export * from './resolver/PhrasesBuilder';
 
+export * from './values';
+
 import { IntentsBuilder } from './IntentsBuilder';
 import { ActionsBuilder } from './ActionsBuilder';
 
