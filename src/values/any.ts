@@ -8,6 +8,6 @@ const instance: ValueNodeOptions<string> = {
 	}
 };
 
-export function anyStringValue(options?: Omit<ValueNodeOptions<string>, 'match'>): NodeConvertable<string> {
+export function anyTextValue(options?: Omit<ValueNodeOptions<string>, 'match'>): NodeConvertable<string> {
 	return new ValueMatcher(Object.assign({}, options, instance));
 }

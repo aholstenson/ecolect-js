@@ -4,7 +4,7 @@ import 'jest-expect-message';
 import { BigDecimal } from 'numeric-types/decimal';
 
 import { PhrasesBuilder } from '../src/resolver/PhrasesBuilder';
-import { anyStringValue, dateValue, numberValue, booleanValue, customValue } from '../src/values';
+import { anyTextValue, dateValue, numberValue, booleanValue, customValue } from '../src/values';
 
 function checkExpression(expression: any[], expected: any[]) {
 	expect(expression.length).toEqual(expected.length);
@@ -46,7 +46,7 @@ describe('Resolver', function() {
 
 	describe('Graph with value of type any', function() {
 		const resolver = new PhrasesBuilder()
-			.value('a', anyStringValue())
+			.value('a', anyTextValue())
 			.phrase('{a}')
 			.phrase('one {a}')
 			.phrase('{a} one')
@@ -577,7 +577,7 @@ describe('Resolver', function() {
 	describe('Graph contains matching expression', function() {
 		const resolver = new PhrasesBuilder()
 			.value('boolean', booleanValue())
-			.value('free', anyStringValue())
+			.value('free', anyTextValue())
 			.phrase('stuff {boolean}')
 			.phrase('a {boolean} c')
 			.phrase('longer {free} message')

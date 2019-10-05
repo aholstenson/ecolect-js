@@ -1,6 +1,6 @@
 import { en } from '../src/language/en';
 import { IntentsBuilder } from '../src/IntentsBuilder';
-import { anyStringValue } from '../src/values';
+import { anyTextValue } from '../src/values';
 import { newPhrases } from '../src/resolver/newPhrases';
 
 describe('Intents', function() {
@@ -17,14 +17,14 @@ describe('Intents', function() {
 				.build()
 			)
 			.add('customer:orders', newPhrases()
-				.value('customer', anyStringValue())
+				.value('customer', anyTextValue())
 				.phrase('Orders for {customer}')
 				.phrase('Find orders for {customer}')
 				.phrase('Show orders for {customer}')
 				.build()
 			)
 			.add('employee:assignments', newPhrases()
-				.value('employee', anyStringValue())
+				.value('employee', anyTextValue())
 				.phrase('Assignments for {employee}')
 				.build()
 			)
