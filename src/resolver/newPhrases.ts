@@ -1,5 +1,5 @@
-import { ResolverBuilder } from './ResolverBuilder';
+import { PhrasesBuilder } from './PhrasesBuilder';
 
-export function newPhrases(): ResolverBuilder {
-	return new ResolverBuilder();
+export function newPhrases(): PhrasesBuilder {
+	return new PhrasesBuilder();
 }

@@ -1,5 +1,5 @@
 import { en } from '../src/language/en';
-import { ResolverBuilder } from '../src/resolver/ResolverBuilder';
+import { PhrasesBuilder } from '../src/resolver/PhrasesBuilder';
 
 import { optionsValue, dateIntervalValue, enumerationValue, customValue } from '../src/values';
 import { newPhrases } from '../src/resolver/newPhrases';

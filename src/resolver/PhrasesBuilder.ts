@@ -11,7 +11,7 @@ import { Phrases } from './Phrases';
  * This is a basic naive builder for instances of Resolver on top of the
  * parser.
  */
-export class ResolverBuilder<Values extends object = {}> {
+export class PhrasesBuilder<Values extends object = {}> {
 	private values: Map<string, Value<any>>;
 	private phrases: GraphBuildable<any>[][];
 
@@ -20,7 +20,7 @@ export class ResolverBuilder<Values extends object = {}> {
 		this.phrases = [];
 	}
 
-	public value<I extends string, V>(id: I, type: Value<V>): ResolverBuilder<Values & { [K in I]: V | undefined }> {
+	public value<I extends string, V>(id: I, type: Value<V>): PhrasesBuilder<Values & { [K in I]: V | undefined }> {
 		this.values.set(id, type);
 		return this as any;
 	}

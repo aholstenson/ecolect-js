@@ -3,7 +3,7 @@ import 'jest-expect-message';
 
 import { BigDecimal } from 'numeric-types/decimal';
 
-import { ResolverBuilder } from '../src/resolver/ResolverBuilder';
+import { PhrasesBuilder } from '../src/resolver/PhrasesBuilder';
 import { anyStringValue, dateValue, numberValue, booleanValue, customValue } from '../src/values';
 
 function checkExpression(expression: any[], expected: any[]) {
@@ -23,7 +23,7 @@ function checkExpression(expression: any[], expected: any[]) {
 
 describe('Resolver', function() {
 	describe('Graph without value', function() {
-		const resolver = new ResolverBuilder()
+		const resolver = new PhrasesBuilder()
 			.phrase('one')
 			.phrase('one two three')
 			.toMatcher(en);
@@ -45,7 +45,7 @@ describe('Resolver', function() {
 	});
 
 	describe('Graph with value of type any', function() {
-		const resolver = new ResolverBuilder()
+		const resolver = new PhrasesBuilder()
 			.value('a', anyStringValue())
 			.phrase('{a}')
 			.phrase('one {a}')
@@ -86,7 +86,7 @@ describe('Resolver', function() {
 	});
 
 	describe('Graph with date', function() {
-		const resolver = new ResolverBuilder()
+		const resolver = new PhrasesBuilder()
 			.value('date', dateValue())
 			.phrase('stuff {date}')
 			.phrase('{date} stuff')
@@ -151,7 +151,7 @@ describe('Resolver', function() {
 	});
 
 	describe('Partial matching', function() {
-		const resolver = new ResolverBuilder()
+		const resolver = new PhrasesBuilder()
 			.phrase('hello world')
 			.toMatcher(en);
 
@@ -171,7 +171,7 @@ describe('Resolver', function() {
 	});
 
 	describe('Partial matching with value', function() {
-		const resolver = new ResolverBuilder()
+		const resolver = new PhrasesBuilder()
 			.value('test', customValue(async encounter => {
 				if(encounter.text === 'world') {
 					encounter.match(true);
@@ -203,7 +203,7 @@ describe('Resolver', function() {
 	});
 
 	describe('Graph with number', function() {
-		const resolver = new ResolverBuilder()
+		const resolver = new PhrasesBuilder()
 			.value('number', numberValue())
 			.phrase('stuff {number}')
 			.phrase('a {number} c')
@@ -249,7 +249,7 @@ describe('Resolver', function() {
 	});
 
 	describe('Graph with boolean', function() {
-		const resolver = new ResolverBuilder()
+		const resolver = new PhrasesBuilder()
 			.value('boolean', booleanValue())
 			.phrase('stuff {boolean}')
 			.phrase('a {boolean} c')
@@ -303,7 +303,7 @@ describe('Resolver', function() {
 				'three',
 				'four five'
 			];
-			const resolver = new ResolverBuilder()
+			const resolver = new PhrasesBuilder()
 				.value('name', customValue(async encounter => {
 					const text = encounter.text;
 					if(encounter.partial) {
@@ -432,7 +432,7 @@ describe('Resolver', function() {
 				'three',
 				'four five'
 			];
-			const resolver = new ResolverBuilder()
+			const resolver = new PhrasesBuilder()
 				.value('name', customValue(async encounter => {
 					const text = encounter.text;
 					if(encounter.partial) {
@@ -527,7 +527,7 @@ describe('Resolver', function() {
 				'three',
 				'four five'
 			];
-			const resolver = new ResolverBuilder()
+			const resolver = new PhrasesBuilder()
 				.value('name', customValue({
 					greedy: true,
 
@@ -575,7 +575,7 @@ describe('Resolver', function() {
 	});
 
 	describe('Graph contains matching expression', function() {
-		const resolver = new ResolverBuilder()
+		const resolver = new PhrasesBuilder()
 			.value('boolean', booleanValue())
 			.value('free', anyStringValue())
 			.phrase('stuff {boolean}')

@@ -1,5 +1,5 @@
 import { GraphBuilder } from '../graph/GraphBuilder';
-import { ResolverBuilder } from '../resolver/ResolverBuilder';
+import { PhrasesBuilder } from '../resolver/PhrasesBuilder';
 
 import { LanguageSpecificValue, ParsingValue, Value } from './base';
 import { ExpressionPart } from '../resolver/expression/ExpressionPart';
@@ -56,7 +56,7 @@ export class OptionsBuilder<CurrentOptions extends object> {
 
 			for(const id of Object.keys(this.data)) {
 				const option = this.data[id];
-				const instance = new ResolverBuilder();
+				const instance = new PhrasesBuilder();
 
 				// Transfer all of the values
 				for(const valueKey of Object.keys(option.values)) {

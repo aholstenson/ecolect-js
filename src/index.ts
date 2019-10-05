@@ -5,7 +5,7 @@ export * from './resolver/expression';
 
 export * from './resolver/Phrases';
 export * from './resolver/newPhrases';
-export * from './resolver/ResolverBuilder';
+export * from './resolver/PhrasesBuilder';
 
 import { IntentsBuilder } from './IntentsBuilder';
 import { ActionsBuilder } from './ActionsBuilder';
