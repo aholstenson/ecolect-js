@@ -1,5 +1,12 @@
 import { Language } from './language/Language';
 
+export { Language } from './language/Language';
+export * from './graph/KnownGraphs';
+
+export * from './graph/Graph';
+export * from './graph/matching/GraphMatcher';
+export * from './graph/Node';
+
 export * from './matching';
 export * from './resolver/expression';
 
