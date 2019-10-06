@@ -8,9 +8,12 @@ describe('Value: Options', function() {
 
 	describe('Standalone option: No values', () => {
 		const matcher = optionsValue()
-			.option('deadline')
-				.phrase('with deadline')
-				.done()
+			.add({
+				id: 'deadline',
+				phrases: newPhrases()
+					.phrase('with deadline')
+					.build()
+			})
 			.build()
 			.matcher(en);
 
@@ -138,10 +141,13 @@ describe('Value: Options', function() {
 
 	describe('Standalone option: With value', () => {
 		const matcher = optionsValue()
-			.option('deadline')
-				.value('deadline', dateIntervalValue())
-				.phrase('with deadline {deadline}')
-				.done()
+			.add({
+				id: 'deadline',
+				phrases: newPhrases()
+					.value('deadline', dateIntervalValue())
+					.phrase('with deadline {deadline}')
+					.build()
+			})
 			.build()
 			.matcher(en);
 
@@ -172,9 +178,12 @@ describe('Value: Options', function() {
 
 	describe('Single option - no value', () => {
 		const queryOptions = optionsValue()
-			.option('deadline')
-				.phrase('with deadline')
-				.done()
+			.add({
+				id: 'deadline',
+				phrases: newPhrases()
+					.phrase('with deadline')
+					.build()
+			})
 			.build();
 
 		const resolver = newPhrases()
@@ -207,15 +216,21 @@ describe('Value: Options', function() {
 
 	describe('With values', () => {
 		const queryOptions = optionsValue()
-			.option('deadline')
-				.value('deadline', dateIntervalValue())
-				.phrase('with deadline {deadline}')
-				.phrase('deadline {deadline}')
-				.done()
-			.option('completed')
-				.value('completed', dateIntervalValue())
-				.phrase('completed {completed}')
-				.done()
+			.add({
+				id: 'deadline',
+				phrases: newPhrases()
+					.value('deadline', dateIntervalValue())
+					.phrase('with deadline {deadline}')
+					.phrase('deadline {deadline}')
+					.build()
+			})
+			.add({
+				id: 'completed',
+				phrases: newPhrases()
+					.value('completed', dateIntervalValue())
+					.phrase('completed {completed}')
+					.build()
+			})
 			.build();
 
 		const resolver = newPhrases()
@@ -268,28 +283,34 @@ describe('Value: Options', function() {
 		];
 
 		const queryOptions = optionsValue()
-			.option('value')
-				.value('name', customValue<string>(async function(encounter) {
-					const text = encounter.text;
-					if(encounter.partial) {
-						for(const v of values) {
-							if(v.indexOf(text) === 0) {
-								encounter.match(v);
+			.add({
+				id: 'value',
+				phrases: newPhrases()
+					.value('name', customValue<string>(async function(encounter) {
+						const text = encounter.text;
+						if(encounter.partial) {
+							for(const v of values) {
+								if(v.indexOf(text) === 0) {
+									encounter.match(v);
+								}
+							}
+						} else {
+							if(values.indexOf(text) >= 0) {
+								encounter.match(text);
 							}
 						}
-					} else {
-						if(values.indexOf(text) >= 0) {
-							encounter.match(text);
-						}
-					}
-				}))
-				.phrase('named {name}')
-				.done()
-			.option('completed')
-				.value('completed', dateIntervalValue())
-				.phrase('completed {completed}')
-				.phrase('c {completed}')
-				.done()
+					}))
+					.phrase('named {name}')
+					.build()
+			})
+			.add({
+				id: 'completed',
+				phrases: newPhrases()
+					.value('completed', dateIntervalValue())
+					.phrase('completed {completed}')
+					.phrase('c {completed}')
+					.build()
+			})
 			.build();
 
 		const resolver = newPhrases()

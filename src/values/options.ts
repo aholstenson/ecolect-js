@@ -3,49 +3,31 @@ import { PhrasesBuilder } from '../resolver/PhrasesBuilder';
 
 import { LanguageSpecificValue, ParsingValue, Value } from './base';
 import { ExpressionPart } from '../resolver/expression/ExpressionPart';
+import { Phrases } from '../resolver/Phrases';
 
 export interface OptionBuilderOptions {
 	name?: string;
 }
 
+export interface OptionDef<Id extends string, Values extends object> {
+	id: Id;
+	phrases: Phrases<Values>;
+}
+
 export class OptionsBuilder<CurrentOptions extends object> {
 	private name: string;
 	private options: OptionBuilderOptions;
-	private data: Record<string, OptionData>;
+	private defs: OptionDef<any, any>[];
 
 	constructor(options: OptionBuilderOptions) {
 		this.name = options.name || 'options';
 		this.options = options;
-		this.data = {};
+		this.defs = [];
 	}
 
-	public option<Id extends string>(id: Id): OptionBuilder<CurrentOptions, Id, {}> {
-		if(typeof id !== 'string') {
-			throw new Error('Options require identifiers that are strings');
-		}
-
-		const result: OptionData = {
-			values: {},
-			phrases: []
-		};
-
-		const self = this;
-		return {
-			value(valueId, type) {
-				result.values[valueId] = type;
-				return this as any;
-			},
-
-			phrase(...args) {
-				result.phrases.push(args);
-				return this;
-			},
-
-			done() {
-				self.data[id] = result;
-				return self as any;
-			}
-		};
+	public add<Id extends string, Values extends object>(options: OptionDef<Id, Values>): OptionsBuilder<CurrentOptions & { [K in Id]: Values }> {
+		this.defs.push(options);
+		return this as any;
 	}
 
 	public build() {
@@ -54,23 +36,9 @@ export class OptionsBuilder<CurrentOptions extends object> {
 				.name(this.name)
 				.allowPartial();
 
-			for(const id of Object.keys(this.data)) {
-				const option = this.data[id];
-				const instance = new PhrasesBuilder();
-
-				// Transfer all of the values
-				for(const valueKey of Object.keys(option.values)) {
-					instance.value(valueKey, option.values[valueKey]);
-				}
-
-				// Transfer the phrases
-				for(const phrase of option.phrases) {
-					instance.phrase(...phrase);
-				}
-
-				const parser = instance.build();
-				parent.add(parser.toGraph(language), v => {
-					return new Option(id, v[0].values, v[0].expression);
+			for(const def of this.defs) {
+				parent.add(def.phrases.toGraph(language), v => {
+					return new Option(def.id, v[0].values, v[0].expression);
 				});
 			}
 
@@ -90,19 +58,6 @@ export class OptionsBuilder<CurrentOptions extends object> {
 
 export function optionsValue(options: OptionBuilderOptions={}) {
 	return new OptionsBuilder<{}>(options);
-}
-
-export interface OptionBuilder<CurrentOptions, Key extends string, Values extends object> {
-	value<I extends string, V>(id: I, type: Value<V>): OptionBuilder<CurrentOptions, Key, Values & { [K in I]: V }>;
-
-	phrase(...args: string[]): this;
-
-	done(): OptionsBuilder<CurrentOptions & { [K in Key]: Values }>;
-}
-
-interface OptionData {
-	values: Record<string, Value<any>>;
-	phrases: any[];
 }
 
 /**
