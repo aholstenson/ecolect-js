@@ -47,7 +47,10 @@ export class ActionsBuilder<Context=void, ReturnType=void> {
 	public build(): Matcher<Action<Context, ReturnType, any>> {
 		const graph = this.builder.build();
 		return new GraphMatcher(this.language, graph, {
-			mapper: m => m.data
+			mapper: m => {
+				m.data.refreshExpression();
+				return m.data;
+			}
 		}) as any;
 	}
 }

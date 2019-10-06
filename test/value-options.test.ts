@@ -3,6 +3,7 @@ import { PhrasesBuilder } from '../src/resolver/PhrasesBuilder';
 
 import { optionsValue, dateIntervalValue, enumerationValue, customValue } from '../src/values';
 import { newPhrases } from '../src/resolver/newPhrases';
+import { IntentsBuilder } from '../src/IntentsBuilder';
 
 describe('Value: Options', function() {
 
@@ -401,9 +402,95 @@ describe('Value: Options', function() {
 			return resolver2.matchPartial('test', { now: new Date(2018, 0, 2) })
 				.then(r => {
 					expect(r.length).toEqual(2);
+
+					const expression = r[0].expression;
+
+					expect(expression[0].type).toEqual('value');
+					expect((expression[0] as any).value).toEqual('test');
+
+					expect((expression[1] as any).value).not.toBeUndefined();
 				});
 		});
 
+	});
+
+	describe('With values in another graph', () => {
+		const queryOptions = optionsValue()
+			.add({
+				id: 'deadline',
+				phrases: newPhrases()
+					.value('deadline', dateIntervalValue())
+					.phrase('with deadline {deadline}')
+					.phrase('deadline {deadline}')
+					.build()
+			})
+			.add({
+				id: 'completed',
+				phrases: newPhrases()
+					.value('completed', dateIntervalValue())
+					.phrase('completed {completed}')
+					.build()
+			})
+			.build();
+
+		const phrases = newPhrases()
+			.value('queryOptions', queryOptions)
+			.phrase('Things {queryOptions}')
+			.build();
+
+		const intents = new IntentsBuilder(en)
+			.add('test', phrases)
+			.build();
+
+		it('Full match', () => {
+			return intents.match('things with deadline jan 12th', { now: new Date(2018, 0, 2) })
+				.then(r => {
+					expect(r).not.toBeNull();
+
+					const v = r.values.queryOptions.get('deadline');
+					expect(v.option).toEqual('deadline');
+					expect(v.values.deadline).toEqual({
+						start: { year: 2018, month: 1, dayOfMonth: 12 },
+						end: { year: 2018, month: 1, dayOfMonth: 12 }
+					});
+				});
+		});
+
+		it('Multiple options', () => {
+			return intents.match('things with deadline jan 12th and completed today', { now: new Date(2018, 0, 2) })
+				.then(r => {
+					expect(r).not.toBeNull();
+
+					const v0 = r.values.queryOptions.get('deadline');
+					expect(v0.option).toEqual('deadline');
+					expect(v0.values.deadline).toEqual({
+						start: { year: 2018, month: 1, dayOfMonth: 12 },
+						end: { year: 2018, month: 1, dayOfMonth: 12 }
+					});
+
+					const v1 = r.values.queryOptions.get('completed');
+					expect(v1.option).toEqual('completed');
+					expect(v1.values.completed).toEqual({
+						start: { year: 2018, month: 1, dayOfMonth: 2 },
+						end: { year: 2018, month: 1, dayOfMonth: 2 }
+					});
+				});
+		});
+
+		it('Partial match with enum first', () => {
+			return intents.matchPartial('thing', { now: new Date(2018, 0, 2) })
+				.then(r => {
+					expect(r.length).toEqual(2);
+
+					const expression = r[0].expression;
+
+					expect(expression[0].type).toEqual('text');
+					expect((expression[0] as any).value).toEqual('Things');
+
+					expect(expression[1].type).toEqual('value');
+					expect((expression[1] as any).value).not.toBeUndefined();
+				});
+		});
 	});
 
 });

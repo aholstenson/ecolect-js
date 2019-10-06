@@ -38,7 +38,10 @@ export class IntentsBuilder<Intents extends Intent<any, any> = never> {
 	public build(): Matcher<Intents> {
 		const graph = this.builder.build();
 		return new GraphMatcher(this.language, graph, {
-			mapper: m => m.data
+			mapper: m => {
+				m.data.refreshExpression();
+				return m.data;
+			}
 		}) as any;
 	}
 }
