@@ -84,7 +84,7 @@ export interface Options<OptionTypes extends object> {
 	toArray(): ReadonlyArray<Option<any>>;
 }
 
-class OptionsSet<OptionTypes extends object> implements Options<OptionTypes> {
+export class OptionsSet<OptionTypes extends object> implements Options<OptionTypes> {
 	private readonly matches: Option<any>[];
 
 	constructor(matches: Option<any>[]) {
