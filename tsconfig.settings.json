@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"composite": true,
+
+		"moduleResolution": "node",
+		"target": "ES2019",
+		"module": "CommonJS",
+
+		"lib": [ "ES2019" ],
+		"strict": true,
+
+		"sourceMap": true,
+		"declaration": true,
+		"declarationMap": true,
+
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true
+	}
+}

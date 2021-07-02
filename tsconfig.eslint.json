@@ -1,0 +1,17 @@
+{
+	"extends": "./tsconfig.settings.json",
+	"compilerOptions": {
+		"module": "commonjs",
+
+		"noEmit": true,
+
+		"baseUrl": "."
+	},
+	"include": [
+		"packages/*/src",
+		"packages/*/test",
+		"languages/*/src",
+		"languages/*/test"
+	],
+	"exclude": [ "**/node_modules/**", "**/dist/**" ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@ecolect/tokenization",
+  "version": "0.7.0-beta.6",
+  "description": "Tokenization of strings for use with graph matching in Ecolect",
+  "license": "MIT",
+  "repository": "https://github.com/aholstenson/ecolect-js/tree/master/packages/tokenization",
+  "keywords": [
+    "natural language processing",
+    "nlp",
+    "tokenization"
+  ],
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "coverage": "jest --coverage",
+    "build": "node build/unicode.js && tsc --project tsconfig.build.json --module commonjs --outDir dist/cjs && tsc --project tsconfig.build.json --module es6 --outDir dist/esm",
+    "prebuild": "rimraf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "regenerate": "^1.4.2",
+    "unicode-9.0.0": "^0.7.5"
+  }
+}

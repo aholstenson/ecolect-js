@@ -1,0 +1,40 @@
+{
+  "name": "ecolect",
+  "version": "0.7.0-beta.6",
+  "description": "Natural language handling for commands and intents",
+  "license": "MIT",
+  "repository": "https://github.com/aholstenson/ecolect-js/tree/master/packages/ecolect",
+  "keywords": [
+    "natural language processing",
+    "nlp",
+    "intents",
+    "commands",
+    "parsing"
+  ],
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "coverage": "jest --coverage",
+    "build": "tsc --project tsconfig.build.json --module commonjs --outDir dist/cjs && tsc --project tsconfig.build.json --module es6 --outDir dist/esm",
+    "prebuild": "rimraf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@ecolect/tokenization": "^0.7.0-beta.6",
+    "@ecolect/graph": "^0.7.0-beta.6",
+    "@ecolect/language": "^0.7.0-beta.6",
+    "@ecolect/type-datetime": "^0.7.0-beta.6",
+    "@ecolect/type-numbers": "^0.7.0-beta.6",
+    "fast-equals": "^2.0.3",
+    "rfdc": "^1.3.0"
+  },
+  "devDependencies": {
+    "@ecolect/language-en": "^0.7.0-beta.6",
+    "@types/jest-expect-message": "^1.0.3",
+    "jest-expect-message": "^1.0.2"
+  }
+}

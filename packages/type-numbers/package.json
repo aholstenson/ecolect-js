@@ -1,0 +1,23 @@
+{
+  "name": "@ecolect/type-numbers",
+  "version": "0.7.0-beta.6",
+  "description": "Primitives for number parsing",
+  "license": "MIT",
+  "repository": "https://github.com/aholstenson/ecolect-js/tree/master/packages/type-numbers",
+  "keywords": [
+  ],
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "test:watch": "jest --watch",
+    "coverage": "jest --coverage",
+    "build": "tsc --project tsconfig.build.json --module commonjs --outDir dist/cjs && tsc --project tsconfig.build.json --module es6 --outDir dist/esm",
+    "prebuild": "rimraf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "numeric-types": "^0.3.1"
+  }
+}

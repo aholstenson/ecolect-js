@@ -1,5 +1,0 @@
-{
-  "main": "../../dist/cjs/language/en/index.js",
-  "module": "../../dist/esm/language/en/index.js",
-  "types":"../../dist/types/language/en/index.d.ts"
-}

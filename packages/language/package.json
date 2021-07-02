@@ -1,0 +1,28 @@
+{
+  "name": "@ecolect/language",
+  "version": "0.7.0-beta.6",
+  "description": "Language support for Ecolect",
+  "license": "MIT",
+  "repository": "https://github.com/aholstenson/ecolect-js/tree/master/packages/lang",
+  "keywords": [
+    "ecolect"
+  ],
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "test:watch": "jest --watch",
+    "coverage": "jest --coverage",
+    "build": "tsc --project tsconfig.build.json --module commonjs --outDir dist/cjs && tsc --project tsconfig.build.json --module es6 --outDir dist/esm",
+    "prebuild": "rimraf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@ecolect/graph": "^0.7.0-beta.6",
+    "@ecolect/tokenization": "^0.7.0-beta.6",
+    "@ecolect/type-datetime": "^0.7.0-beta.6",
+    "@ecolect/type-numbers": "^0.7.0-beta.6",
+    "talisman": "^0.21.0"
+  }
+}

@@ -30,7 +30,7 @@ $ npm install --save ecolect
 Using a value:
 
 ```javascript
-import { en } from 'ecolect/language/en';
+import { en } from '@ecolect/language-en';
 import { dateValue } from 'ecolect';
 
 const matcher = dateValue().toMatcher(en);
@@ -40,7 +40,7 @@ const bestMatch = await matcher.match('first Monday of 2021');
 Matching phrases:
 
 ```javascript
-import { en } from 'ecolect/language/en';
+import { en } from '@ecolect/language-en';
 import { newPhrases, dateIntervalValue } from 'ecolect';
 
 const matcher = newPhrases()
@@ -55,7 +55,7 @@ const bestMatch = await matcher.match('todo due today');
 Combining phrases:
 
 ```javascript
-import { en } from 'ecolect/language/en';
+import { en } from '@ecolect/language-en';
 import { intentsBuilder, newPhrases, dateIntervalValue } from 'ecolect';
 
 const matcher = intentsBuilder(en)

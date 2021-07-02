@@ -1,55 +1,31 @@
 {
-  "name": "ecolect",
-  "version": "0.7.0-beta.6",
-  "description": "Natural language handling for commands and intents",
-  "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "ci": "npm run build && npm run coverage && npm run lint",
-    "coverage": "jest --coverage",
-    "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-    "build": "node build/unicode.js && tsc --module commonjs --target es5 --outDir dist/cjs && tsc --module es6 --target es6 --outDir dist/esm",
-    "prebuild": "rimraf dist",
-    "prepublishOnly": "npm run build"
-  },
+  "name": "ecolect-base",
+  "private": true,
   "license": "MIT",
-  "repository": "aholstenson/ecolect-js",
-  "keywords": [
-    "natural language processing",
-    "nlp",
-    "intents",
-    "commands",
-    "parsing"
+  "workspaces": [
+    "packages/*",
+    "languages/*"
   ],
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/types/index.d.ts",
-  "sideEffects": false,
-  "engines": {
-    "node": ">=8.0.0"
-  },
-  "dependencies": {
-    "date-fns": "^2.4.1",
-    "datetime-types": "^0.3.0",
-    "fast-clone": "^1.5.13",
-    "fast-deep-equal": "^3.0.0-beta.2",
-    "numeric-types": "^0.3.1",
-    "talisman": "^0.21.0"
+  "scripts": {
+    "apidocs": "typedoc",
+    "test": "lerna run test",
+    "build": "lerna run build",
+    "lint": "eslint --ext .ts,.tsx ."
   },
   "devDependencies": {
-    "@types/jest": "^24.0.18",
-    "@types/jest-expect-message": "^1.0.0",
-    "chalk": "^2.4.2",
-    "cli-autocomplete": "^0.4.1",
-    "coveralls": "^3.0.6",
-    "jest": "^24.9.0",
-    "jest-config": "^24.9.0",
-    "jest-expect-message": "^1.0.2",
-    "regenerate": "^1.4.0",
-    "rimraf": "^3.0.0",
-    "ts-jest": "^24.1.0",
-    "tslint": "^5.20.0",
-    "typescript": "^3.6.3",
-    "unicode-9.0.0": "^0.7.5"
+    "@types/debug": "^4.1.5",
+    "@types/jest": "^26.0.23",
+    "@types/node": "^15.12.1",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
+    "eslint": "^7.28.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jsdoc": "^35.1.2",
+    "eslint-plugin-tsdoc": "^0.2.14",
+    "jest": "^27.0.3",
+    "lerna": "^4.0.0",
+    "ts-jest": "^27.0.1",
+    "typedoc": "^0.21.0-beta.2",
+    "typescript": "^4.3.2"
   }
 }

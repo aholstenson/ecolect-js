@@ -1,25 +1,32 @@
 {
+	"extends": "./tsconfig.settings.json",
 	"compilerOptions": {
-		"moduleResolution": "node",
-		"target": "es5",
-		"module":"es2015",
-		"lib": [ "es2015", "es2016", "es2017", "dom" ],
-		"strict": true,
-		"sourceMap": true,
-		"declaration": true,
-		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true,
-		"downlevelIteration": true,
-		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true,
-		"declarationDir": "dist/types",
-		"outDir": "dist/lib",
-		"strictNullChecks": true,
-		"typeRoots": [
-			"node_modules/@types"
-		]
+		"module": "commonjs",
+
+		"noEmit": true,
+
+		"baseUrl": ".",
+		"paths": {
+			"ecolect": [ "./packages/ecolect/src" ],
+			"@ecolect/language-*": [ "./languages/*/src" ],
+			"@ecolect/*": [ "./packages/*/src" ]
+		}
 	},
-	"include": [
-		"src"
-	]
+	"include": [ "packages/*/src", "languages/*/src" ],
+	"exclude": [ "**/node_modules/**", "**/dist/**" ],
+	"typedocOptions": {
+		"name": "Ecolect",
+		"entryPoints": [
+			"packages/ecolect/src/index.ts",
+
+			"packages/graph/src/index.ts",
+			"packages/tokenization/src/index.ts",
+			"packages/lang/src/index.ts",
+			"packages/type-datetimes/src/index.ts",
+			"packages/type-numbers/src/index.ts",
+		],
+		"readme": "./docs/apidocs.md",
+		"out": "apidocs",
+		"excludePrivate": true
+	}
 }
