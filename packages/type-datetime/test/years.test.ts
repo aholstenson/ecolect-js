@@ -1,4 +1,4 @@
-import { mapYear } from '../src/years';
+import { mapYear } from '../src/years.js';
 
 describe('Time', () => {
 	describe('years', () => {

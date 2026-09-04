@@ -1,49 +1,36 @@
-'use strict';
-
-const { intentsBuilder } = require('../');
-const en = require('../language/en');
-const { any, date } = require('../values');
+import { en } from '@ecolect/language-en';
+import { anyTextValue, dateValue, intentsBuilder, newPhrases } from 'ecolect';
 
 const intents = intentsBuilder(en)
-	.intent('todo:list')
-		.add('show me my todos')
-		.done()
-	.intent('todo:create')
-		.value('text', any())
-		.add('add {text}')
-		.add('add {text} to my todo list')
-		.add('add {text} to my todo')
-		.done()
-	.intent('todo:deadline')
-		.value('date', date())
-		.add('show me todos for {date}')
-		.done()
+	.add('todo:list', newPhrases()
+		.phrase('show me my todos')
+		.build()
+	)
+	.add('todo:create', newPhrases()
+		.value('text', anyTextValue())
+		.phrase('add {text}')
+		.phrase('add {text} to my todo list')
+		.phrase('add {text} to my todo')
+		.build()
+	)
+	.add('todo:deadline', newPhrases()
+		.value('date', dateValue())
+		.phrase('show me todos for {date}')
+		.build()
+	)
 	.build();
 
-// Match the intent
-intents.match('show me my todos')
-	.then(results => {
-		console.log('1', results);
-	})
-	.catch(err => {
-		console.log(err);
-	});
+// Match a single intent, or `null` when nothing matches
+const match = await intents.match('show me my todos');
+console.log('Matched intent:', match?.id);
 
-intents.match('show me todo for Friday')
-	.then(results => {
-		console.log('2', results);
-	})
-	.catch(err => {
-		console.log(err);
-	});
+// Match with a value in it
+const withValue = await intents.match('add Do the dishes to my todo list');
+console.log('Matched intent:', withValue?.id);
+console.log('Values:', withValue?.values);
 
-// Perform partial matching
-intents.match('add', {
-	partial: true
-})
-	.then(results => {
-		console.log('3', results.best);
-	})
-	.catch(err => {
-		console.log(err);
-	});
+// Partial matching returns every intent that could still be completed
+const partial = await intents.matchPartial('show me');
+for(const item of partial) {
+	console.log('Could become:', item.id);
+}

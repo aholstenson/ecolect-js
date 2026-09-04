@@ -10,7 +10,7 @@
  * account things as daylight savings and leap seconds so the exact times will
  * vary depending on the date.
  */
-export const enum IntervalEdge {
+export enum IntervalEdge {
 	Start = 'start',
 
 	End = 'end'

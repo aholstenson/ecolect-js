@@ -1,6 +1,6 @@
 import { deepEqual } from 'fast-equals';
 
-import { Match } from './Match';
+import { Match } from './Match.js';
 
 function binarySearch(items: Match<any>[], fromIndex: number, toIndex: number, key: number) {
 	let low = fromIndex;

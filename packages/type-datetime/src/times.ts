@@ -12,12 +12,12 @@ import {
 } from 'date-fns';
 import { LocalTime } from 'datetime-types';
 
-import { currentTime } from './currentTime';
-import { DateTimeData } from './DateTimeData';
-import { DateTimeOptions } from './DateTimeOptions';
-import { Meridiem } from './Meridiem';
-import { Period } from './Period';
-import { TimeRelationship } from './TimeRelationship';
+import { currentTime } from './currentTime.js';
+import { DateTimeData } from './DateTimeData.js';
+import { DateTimeOptions } from './DateTimeOptions.js';
+import { Meridiem } from './Meridiem.js';
+import { Period } from './Period.js';
+import { TimeRelationship } from './TimeRelationship.js';
 
 /**
  * Create a time in a 12-hour clock, which will guess the AM or PM.

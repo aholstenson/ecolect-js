@@ -1,8 +1,10 @@
 import { en } from '@ecolect/language-en';
 
-import { newPhrases } from '../src/resolver/newPhrases';
-import { ValueEncounter } from '../src/resolver/ValueEncounter';
-import { customValue } from '../src/values';
+import { newPhrases } from '../src/resolver/newPhrases.js';
+import { ValueEncounter } from '../src/resolver/ValueEncounter.js';
+import { customValue } from '../src/values/index.js';
+
+import { assertNotNull } from './assertions.js';
 
 const items = [ 'Balloons', 'Cookie Co' ];
 async function match(encounter: ValueEncounter<string>) {
@@ -34,7 +36,7 @@ describe('Value: Custom', function() {
 		it('Single token company', function() {
 			return resolver.match('Balloons')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.company).toEqual('Balloons');
 				});
 		});
@@ -42,7 +44,7 @@ describe('Value: Custom', function() {
 		it('Multi token company', function() {
 			return resolver.match('Cookie Co')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.company).toEqual('Cookie Co');
 				});
 		});
@@ -50,7 +52,7 @@ describe('Value: Custom', function() {
 		it('Multi token company with suffix', function() {
 			return resolver.match('Cookie Co company')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.company).toEqual('Cookie Co');
 				});
 		});
@@ -74,7 +76,10 @@ describe('Value: Custom', function() {
 			return resolver.matchPartial('Ba')
 				.then(r => {
 					expect(r.length).toEqual(1);
-					expect(r[0].values.company).toEqual('Balloons');
+
+					const match = r[0];
+					assertNotNull(match);
+					expect(match.values.company).toEqual('Balloons');
 				});
 		});
 
@@ -82,7 +87,10 @@ describe('Value: Custom', function() {
 			return resolver.matchPartial('C')
 				.then(r => {
 					expect(r.length).toEqual(1);
-					expect(r[0].values.company).toEqual('Cookie Co');
+
+					const match = r[0];
+					assertNotNull(match);
+					expect(match.values.company).toEqual('Cookie Co');
 				});
 		});
 
@@ -90,7 +98,10 @@ describe('Value: Custom', function() {
 			return resolver.matchPartial('Cookie company')
 				.then(r => {
 					expect(r.length).toEqual(1);
-					expect(r[0].values.company).toEqual('Cookie Co');
+
+					const match = r[0];
+					assertNotNull(match);
+					expect(match.values.company).toEqual('Cookie Co');
 				});
 		});
 	});

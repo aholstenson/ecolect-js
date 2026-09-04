@@ -1,5 +1,5 @@
-import { tokenize } from './tokenize';
-import { Tokenizer } from './Tokenizer';
+import { tokenize } from './tokenize.js';
+import { Tokenizer } from './Tokenizer.js';
 
 export const whitespaceTokenizer: Tokenizer = input => {
 	return tokenize(input, tokens => {

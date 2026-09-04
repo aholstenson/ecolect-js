@@ -6,11 +6,11 @@ import {
 } from '@ecolect/graph';
 import { Language } from '@ecolect/language';
 
-import { Matcher } from '../matching/Matcher';
-import { Value } from '../values/base';
+import { Matcher } from '../matching/Matcher.js';
+import { Value } from '../values/base.js';
 
-import { Phrase } from './Phrase';
-import { ResolverParser } from './ResolverParser';
+import { Phrase } from './Phrase.js';
+import { ResolverParser } from './ResolverParser.js';
 
 /**
  * Collection of phrases that can be turned into a matcher or be used to build

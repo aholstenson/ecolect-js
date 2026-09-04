@@ -1,7 +1,7 @@
 import { BigDecimal } from 'numeric-types/decimal';
 import { BigInteger } from 'numeric-types/integer';
 
-import { NumberData } from './NumberData';
+import { NumberData } from './NumberData.js';
 
 export function isDigits(o: NumberData): boolean {
 	return ! o.literal;

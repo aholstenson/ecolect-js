@@ -9,8 +9,8 @@ import {
 } from '@ecolect/type-datetime';
 import { isSpecific, OrdinalData } from '@ecolect/type-numbers';
 
-import { ordinalGraph } from './ordinalGraph';
-import { integerGraph } from './integerGraph';
+import { ordinalGraph } from './ordinalGraph.js';
+import { integerGraph } from './integerGraph.js';
 
 export const monthGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'month',

@@ -1,12 +1,12 @@
 import { TokenNode, SubNode, Encounter } from '@ecolect/graph';
 
-import { ValueNode } from './ValueNode';
-import { ValueParserNode } from './ValueParserNode';
-import { ExpressionPart } from './expression/ExpressionPart';
-import { ExpressionPartType } from './expression/ExpressionPartType';
-import { TextPart } from './expression/TextPart';
-import { ValuePart } from './expression/ValuePart';
-import { Phrase } from './Phrase';
+import { ValueNode } from './ValueNode.js';
+import { ValueParserNode } from './ValueParserNode.js';
+import { ExpressionPart } from './expression/ExpressionPart.js';
+import { ExpressionPartType } from './expression/ExpressionPartType.js';
+import { TextPart } from './expression/TextPart.js';
+import { ValuePart } from './expression/ValuePart.js';
+import { Phrase } from './Phrase.js';
 
 /**
  * Refresh the expression by copying back values from the matches into the

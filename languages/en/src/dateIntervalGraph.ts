@@ -15,7 +15,7 @@ import {
 	anyTime
 } from '@ecolect/type-datetime';
 
-import { dateGraph } from './dateGraph';
+import { dateGraph } from './dateGraph.js';
 
 export const dateIntervalGraph: LanguageGraphFactory<IntervalData> = {
 	id: 'date-interval',

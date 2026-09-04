@@ -1,9 +1,9 @@
 import { mapMonth } from '@ecolect/type-datetime';
 
-import { EnglishLanguage } from '../src/EnglishLanguage';
-import { monthGraph } from '../src/monthGraph';
+import { EnglishLanguage } from '../src/EnglishLanguage.js';
+import { monthGraph } from '../src/monthGraph.js';
 
-import { testRunner } from './helpers';
+import { testRunner } from './helpers.js';
 
 const test = testRunner(new EnglishLanguage(), monthGraph, mapMonth);
 

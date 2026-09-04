@@ -1,4 +1,4 @@
-import { Token } from './Token';
+import { Token } from './Token.js';
 
 export interface TokenComparer {
 	compare(a: Token, b: Token): number;

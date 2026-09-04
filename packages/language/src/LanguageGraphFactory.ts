@@ -1,6 +1,6 @@
 import { Graph } from '@ecolect/graph';
 
-import { Language } from './Language';
+import { Language } from './Language.js';
 
 /**
  * Factory that creates a graph tied to a certain language.

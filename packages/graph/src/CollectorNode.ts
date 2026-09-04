@@ -1,5 +1,5 @@
-import { Encounter, EncounterOptions } from './matching';
-import { Node } from './Node';
+import { Encounter, EncounterOptions } from './matching/index.js';
+import { Node } from './Node.js';
 
 /**
  * Function that can resolve a value given data collected during graph

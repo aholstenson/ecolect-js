@@ -1,4 +1,4 @@
-import { mapMonth } from '../src/months';
+import { mapMonth } from '../src/months.js';
 
 describe('Time', () => {
 	describe('months', () => {

@@ -1,6 +1,6 @@
 import { GraphBuilder } from '@ecolect/graph';
 
-import { LanguageSpecificValue, ParsingValue } from './base';
+import { LanguageSpecificValue, ParsingValue } from './base.js';
 
 const DEFAULT_MAPPER = <V>(v: V) => String(v);
 

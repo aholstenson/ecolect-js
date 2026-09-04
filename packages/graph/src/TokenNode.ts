@@ -1,13 +1,13 @@
 import { Token, TokenComparer } from '@ecolect/tokenization';
 
-import { Encounter } from './matching';
-import { Node } from './Node';
+import { Encounter } from './matching/index.js';
+import { Node } from './Node.js';
 
 export class TokenNode extends Node {
 	private readonly comparer: TokenComparer;
 	public readonly token: Token;
 
-	constructor(comparer: TokenComparer, token: Token) {
+	public constructor(comparer: TokenComparer, token: Token) {
 		super();
 
 		this.token = token;

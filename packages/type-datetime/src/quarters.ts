@@ -3,10 +3,10 @@ import {
 	getQuarter
 } from 'date-fns';
 
-import { currentTime } from './currentTime';
-import { mapDateInterval } from './date-intervals';
-import { DateTimeData } from './DateTimeData';
-import { DateTimeOptions } from './DateTimeOptions';
+import { currentTime } from './currentTime.js';
+import { mapDateInterval } from './date-intervals.js';
+import { DateTimeData } from './DateTimeData.js';
+import { DateTimeOptions } from './DateTimeOptions.js';
 
 export function thisQuarter(r: any, options: DateTimeOptions): DateTimeData {
 	const time = currentTime(options);

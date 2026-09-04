@@ -1,9 +1,9 @@
 import { DayOfWeek } from 'datetime-types';
 
-import { IntervalEdge } from './IntervalEdge';
-import { Meridiem } from './Meridiem';
-import { Precision } from './Precision';
-import { TimeRelationship } from './TimeRelationship';
+import { IntervalEdge } from './IntervalEdge.js';
+import { Meridiem } from './Meridiem.js';
+import { Precision } from './Precision.js';
+import { TimeRelationship } from './TimeRelationship.js';
 
 /**
  * Data that is extracted during a parse operation. This is used to map into

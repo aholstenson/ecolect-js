@@ -1,9 +1,9 @@
 import { mapDate } from '@ecolect/type-datetime';
 
-import { dateGraph } from '../src/dateGraph';
-import { EnglishLanguage } from '../src/EnglishLanguage';
+import { dateGraph } from '../src/dateGraph.js';
+import { EnglishLanguage } from '../src/EnglishLanguage.js';
 
-import { testRunner } from './helpers';
+import { testRunner } from './helpers.js';
 
 const test = testRunner(new EnglishLanguage(), dateGraph, mapDate);
 

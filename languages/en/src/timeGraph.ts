@@ -16,8 +16,8 @@ import {
 	Precision
 } from '@ecolect/type-datetime';
 
-import { integerGraph } from './integerGraph';
-import { timeDurationGraph } from './timeDurationGraph';
+import { integerGraph } from './integerGraph.js';
+import { timeDurationGraph } from './timeDurationGraph.js';
 
 function adjustMinutes(time: DateTimeData, minutes: number) {
 	return combine(time, {

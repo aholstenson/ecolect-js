@@ -1,8 +1,8 @@
 import { Graph, GraphBuilder } from '@ecolect/graph';
 import { TokenComparer, Tokenizer } from '@ecolect/tokenization';
 
-import { KnownGraphs, KnownGraphsDataTypes } from './KnownGraphs';
-import { LanguageGraphFactory } from './LanguageGraphFactory';
+import { KnownGraphs, KnownGraphsDataTypes } from './KnownGraphs.js';
+import { LanguageGraphFactory } from './LanguageGraphFactory.js';
 
 /**
  * Language usable with Ecolect.

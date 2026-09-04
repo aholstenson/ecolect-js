@@ -1,9 +1,9 @@
 import { mapYear } from '@ecolect/type-datetime';
 
-import { EnglishLanguage } from '../src/EnglishLanguage';
-import { yearGraph } from '../src/yearGraph';
+import { EnglishLanguage } from '../src/EnglishLanguage.js';
+import { yearGraph } from '../src/yearGraph.js';
 
-import { testRunner } from './helpers';
+import { testRunner } from './helpers.js';
 
 const test = testRunner(new EnglishLanguage(), yearGraph, mapYear);
 

@@ -1,8 +1,8 @@
-import { Graph } from './Graph';
-import { Encounter } from './matching/Encounter';
-import { Match } from './matching/Match';
-import { MatchingState, emptyState } from './matching/MatchingState';
-import { MatchSet } from './matching/MatchSet';
+import { Graph } from './Graph.js';
+import { Encounter } from './matching/Encounter.js';
+import { Match } from './matching/Match.js';
+import { MatchingState, emptyState } from './matching/MatchingState.js';
+import { MatchSet } from './matching/MatchSet.js';
 
 export interface GraphMatcherOptions<RawData, V> {
 	/**

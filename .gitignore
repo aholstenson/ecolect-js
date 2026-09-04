@@ -1,7 +1,9 @@
 node_modules
+.pnpm-store
 coverage
+apidocs
 npm-debug.log
-.nyc_output
 docs/build
 dist
 package-lock.json
+yarn.lock

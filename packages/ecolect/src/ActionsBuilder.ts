@@ -1,9 +1,9 @@
 import { GraphBuilder, GraphMatcher } from '@ecolect/graph';
 import { Language } from '@ecolect/language';
 
-import { Matcher } from './matching';
-import { Phrase } from './resolver/Phrase';
-import { Phrases } from './resolver/Phrases';
+import { Matcher } from './matching/index.js';
+import { Phrase } from './resolver/Phrase.js';
+import { Phrases } from './resolver/Phrases.js';
 
 export type ActionInvoker<Context, ReturnType, Values extends object> = (item: Phrase<Values>, context: Context) => ReturnType;
 

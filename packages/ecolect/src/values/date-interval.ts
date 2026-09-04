@@ -1,7 +1,7 @@
 import { KnownGraphs } from '@ecolect/language';
 import { mapDateInterval } from '@ecolect/type-datetime';
 
-import { LanguageSpecificValue, ParsingValue } from './base';
+import { LanguageSpecificValue, ParsingValue } from './base.js';
 
 export function dateIntervalValue() {
 	return new LanguageSpecificValue(language => new ParsingValue(

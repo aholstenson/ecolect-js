@@ -1,45 +1,54 @@
-const fs = require('fs');
-const path = require('path');
+/*
+ * Generate `src/matchers.ts` from the Unicode character databases. Run as part
+ * of the build, so the generated file always matches the data currently
+ * installed.
+ */
+import { writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const regenerate = require('regenerate');
+import regenerate from 'regenerate';
+
+const require = createRequire(import.meta.url);
+const here = dirname(fileURLToPath(import.meta.url));
+
+const codePoints = name => require('unicode-9.0.0/' + name + '/code-points.js');
 
 const matchers = {};
 
-matchers['emoji'] = regenerate()
-	.add(require('unicode-9.0.0/Word_Break/E_Base/code-points.js'))
-	.add(require('unicode-9.0.0/Word_Break/E_Base_GAZ/code-points.js'))
-	.add(require('unicode-9.0.0/Word_Break/E_Modifier/code-points.js'))
+matchers.emoji = regenerate()
+	.add(codePoints('Word_Break/E_Base'))
+	.add(codePoints('Word_Break/E_Base_GAZ'))
+	.add(codePoints('Word_Break/E_Modifier'))
 	.toString();
 
-matchers['emojiModifier'] = regenerate()
-	.add(require('unicode-9.0.0/Word_Break/E_Modifier/code-points.js'))
+matchers.emojiModifier = regenerate()
+	.add(codePoints('Word_Break/E_Modifier'))
 	.toString();
 
-matchers['regionalIndicator'] = regenerate()
-	.add(require('unicode-9.0.0/Word_Break/Regional_Indicator/code-points.js'))
+matchers.regionalIndicator = regenerate()
+	.add(codePoints('Word_Break/Regional_Indicator'))
 	.toString();
 
-matchers['wordish'] = regenerate()
-	.add(require('unicode-9.0.0/Binary_Property/Alphabetic/code-points.js'))
-	.add(require('unicode-9.0.0/General_Category/Mark/code-points.js'))
-	.add(require('unicode-9.0.0/General_Category/Connector_Punctuation/code-points.js'))
-	.add(require('unicode-9.0.0/Binary_Property/Join_Control/code-points.js'))
+matchers.wordish = regenerate()
+	.add(codePoints('Binary_Property/Alphabetic'))
+	.add(codePoints('General_Category/Mark'))
+	.add(codePoints('General_Category/Connector_Punctuation'))
+	.add(codePoints('Binary_Property/Join_Control'))
 	.add('\'')
 	.toString();
 
-matchers['numeric'] = regenerate()
-	.add(require('unicode-9.0.0/General_Category/Decimal_Number/code-points.js'))
+matchers.numeric = regenerate()
+	.add(codePoints('General_Category/Decimal_Number'))
 	.toString();
 
-matchers['punctuation'] = regenerate()
-	.add(require('unicode-9.0.0/General_Category/Punctuation/code-points.js'))
+matchers.punctuation = regenerate()
+	.add(codePoints('General_Category/Punctuation'))
 	.toString();
 
-const source = Object.keys(matchers).map(m =>
-	'/* eslint-disable */ export const ' + m + ' = ' + JSON.stringify(matchers[m]) + ';'
+const source = Object.keys(matchers).map(name =>
+	'/* eslint-disable */ export const ' + name + ' = ' + JSON.stringify(matchers[name]) + ';'
 ).join('');
 
-fs.writeFileSync(
-	path.join(__dirname, '..', 'src', 'matchers.ts'),
-	source
-);
+writeFileSync(join(here, '..', 'src', 'matchers.ts'), source);

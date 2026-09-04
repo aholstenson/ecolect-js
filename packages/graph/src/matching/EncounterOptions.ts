@@ -1,4 +1,4 @@
-import { Match } from './Match';
+import { Match } from './Match.js';
 
 /**
  * Options that can be passed to an Encounter.

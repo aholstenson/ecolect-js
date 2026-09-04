@@ -1,9 +1,9 @@
 import { Encounter, Graph, GraphMatcher, Node } from '@ecolect/graph';
 import { Language } from '@ecolect/language';
 
-import { Matcher, MatchOptions } from '../matching';
-import { ValueNode, ValueNodeOptions } from '../resolver/ValueNode';
-import { ValueParserNode } from '../resolver/ValueParserNode';
+import { Matcher, MatchOptions } from '../matching/index.js';
+import { ValueNode, ValueNodeOptions } from '../resolver/ValueNode.js';
+import { ValueParserNode } from '../resolver/ValueParserNode.js';
 
 /**
  * Object that can be converted into a node within a graph.

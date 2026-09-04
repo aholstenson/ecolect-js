@@ -1,6 +1,0 @@
-build
-.nyc-output
-examples
-test
-.*
-docs

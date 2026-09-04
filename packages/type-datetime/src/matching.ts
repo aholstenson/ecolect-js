@@ -1,7 +1,7 @@
-import { clone } from './clone';
-import { DateTimeData } from './DateTimeData';
-import { IntervalData, isIntervalData } from './IntervalData';
-import { IntervalEdge } from './IntervalEdge';
+import { clone } from './clone.js';
+import { DateTimeData } from './DateTimeData.js';
+import { IntervalData, isIntervalData } from './IntervalData.js';
+import { IntervalEdge } from './IntervalEdge.js';
 
 /**
  * Check if a given result is currently relative.

@@ -1,9 +1,9 @@
 import { Graph, GraphBuilder } from '@ecolect/graph';
 import { TokenComparer, Tokenizer } from '@ecolect/tokenization';
 
-import { KnownGraphs, KnownGraphsDataTypes } from './KnownGraphs';
-import { Language } from './Language';
-import { LanguageGraphFactory } from './LanguageGraphFactory';
+import { KnownGraphs, KnownGraphsDataTypes } from './KnownGraphs.js';
+import { Language } from './Language.js';
+import { LanguageGraphFactory } from './LanguageGraphFactory.js';
 
 /**
  * Abstract implementation of Language. This is the root that languages should

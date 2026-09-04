@@ -3,9 +3,9 @@ import { deepEqual } from 'fast-equals';
 import { GraphBuilder, Node, TokenNode } from '@ecolect/graph';
 import { Language } from '@ecolect/language';
 
-import { LanguageSpecificValue, NodeConvertable, Value } from '../values/base';
+import { LanguageSpecificValue, NodeConvertable, Value } from '../values/base.js';
 
-import { ValueNode } from './ValueNode';
+import { ValueNode } from './ValueNode.js';
 
 const VALUE = /{([a-zA-Z0-9]+)}/g;
 

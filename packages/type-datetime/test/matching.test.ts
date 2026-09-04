@@ -1,4 +1,4 @@
-import { combine } from '../src/matching';
+import { combine } from '../src/matching.js';
 
 describe('Time', () => {
 	describe('matching', () => {

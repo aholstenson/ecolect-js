@@ -2,10 +2,10 @@ import { BigInteger } from 'numeric-types/integer';
 
 import { mapOrdinal } from '@ecolect/type-numbers';
 
-import { EnglishLanguage } from '../src/EnglishLanguage';
-import { ordinalGraph } from '../src/ordinalGraph';
+import { EnglishLanguage } from '../src/EnglishLanguage.js';
+import { ordinalGraph } from '../src/ordinalGraph.js';
 
-import { testRunner } from './helpers';
+import { testRunner } from './helpers.js';
 
 const test = testRunner(new EnglishLanguage(), ordinalGraph, mapOrdinal);
 

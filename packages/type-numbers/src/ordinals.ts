@@ -1,7 +1,7 @@
 import { BigInteger } from 'numeric-types/integer';
 
-import { OrdinalData } from './OrdinalData';
-import { OrdinalPrecision } from './OrdinalPrecision';
+import { OrdinalData } from './OrdinalData.js';
+import { OrdinalPrecision } from './OrdinalPrecision.js';
 
 export function specificOrdinal(value: number): OrdinalData {
 	return {

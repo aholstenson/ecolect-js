@@ -1,6 +1,6 @@
-import { ValueMatcher, NodeConvertable } from './base';
-import { ValueNodeOptions } from '../resolver/ValueNode';
-import { ValueEncounter } from '../resolver/ValueEncounter';
+import { ValueMatcher, NodeConvertable } from './base.js';
+import { ValueNodeOptions } from '../resolver/ValueNode.js';
+import { ValueEncounter } from '../resolver/ValueEncounter.js';
 
 /**
  * Create a custom value that performs its own parsing of a raw textual value.

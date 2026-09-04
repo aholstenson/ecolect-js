@@ -1,5 +1,5 @@
-import { ExpressionPartType } from './ExpressionPartType';
-import { TextPosition } from './TextPosition';
+import { ExpressionPartType } from './ExpressionPartType.js';
+import { TextPosition } from './TextPosition.js';
 
 export interface ExpressionPart {
 	/**

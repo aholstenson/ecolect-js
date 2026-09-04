@@ -1,5 +1,5 @@
-import { Node } from './Node';
-import { Encounter } from './matching/Encounter';
+import { Node } from './Node.js';
+import { Encounter } from './matching/Encounter.js';
 
 /**
  * Node that matches a token against a regular expression.
@@ -7,7 +7,7 @@ import { Encounter } from './matching/Encounter';
 export class RegExpNode extends Node {
 	private regexp: RegExp;
 
-	constructor(regexp: RegExp) {
+	public constructor(regexp: RegExp) {
 		super();
 
 		this.regexp = regexp;

@@ -3,7 +3,7 @@ import { deepEqual } from 'fast-equals';
 import { Encounter, Match, Node } from '@ecolect/graph';
 import { Tokens } from '@ecolect/tokenization';
 
-import { ValueEncounter } from './ValueEncounter';
+import { ValueEncounter } from './ValueEncounter.js';
 
 /**
  * Options for a ValueNode.

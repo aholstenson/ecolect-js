@@ -1,19 +1,19 @@
 import { Language } from '@ecolect/language';
 
-import { ActionsBuilder } from './ActionsBuilder';
-import { IntentsBuilder } from './IntentsBuilder';
+import { ActionsBuilder } from './ActionsBuilder.js';
+import { IntentsBuilder } from './IntentsBuilder.js';
 
-export * from './matching';
-export * from './resolver/expression';
+export * from './matching/index.js';
+export * from './resolver/expression/index.js';
 
-export * from './resolver/Phrases';
-export * from './resolver/newPhrases';
-export * from './resolver/PhrasesBuilder';
+export * from './resolver/Phrases.js';
+export * from './resolver/newPhrases.js';
+export * from './resolver/PhrasesBuilder.js';
 
-export * from './values';
+export * from './values/index.js';
 
-export * from './IntentsBuilder';
-export * from './ActionsBuilder';
+export * from './IntentsBuilder.js';
+export * from './ActionsBuilder.js';
 
 export function intentsBuilder(lang: Language) {
 	return new IntentsBuilder(lang);

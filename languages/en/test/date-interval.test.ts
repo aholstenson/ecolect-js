@@ -1,9 +1,9 @@
 import { mapDateInterval } from '@ecolect/type-datetime';
 
-import { dateIntervalGraph } from '../src/dateIntervalGraph';
-import { EnglishLanguage } from '../src/EnglishLanguage';
+import { dateIntervalGraph } from '../src/dateIntervalGraph.js';
+import { EnglishLanguage } from '../src/EnglishLanguage.js';
 
-import { testRunner } from './helpers';
+import { testRunner } from './helpers.js';
 
 const test = testRunner(new EnglishLanguage(), dateIntervalGraph, mapDateInterval);
 

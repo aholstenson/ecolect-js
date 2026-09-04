@@ -6,7 +6,7 @@ import {
 	specificOrdinal
 } from '@ecolect/type-numbers';
 
-import { integerGraph } from './integerGraph';
+import { integerGraph } from './integerGraph.js';
 
 const specific = (v: any) => specificOrdinal(v[0].value);
 

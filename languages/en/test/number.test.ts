@@ -2,10 +2,10 @@ import { BigDecimal } from 'numeric-types/decimal';
 
 import { mapNumber } from '@ecolect/type-numbers';
 
-import { EnglishLanguage } from '../src/EnglishLanguage';
-import { numberGraph } from '../src/numberGraph';
+import { EnglishLanguage } from '../src/EnglishLanguage.js';
+import { numberGraph } from '../src/numberGraph.js';
 
-import { testRunner } from './helpers';
+import { testRunner } from './helpers.js';
 
 const test = testRunner(new EnglishLanguage(), numberGraph, mapNumber);
 

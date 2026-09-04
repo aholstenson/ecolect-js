@@ -1,6 +1,8 @@
 import { en } from '@ecolect/language-en';
 
-import { actionsBuilder, newPhrases } from '../src';
+import { actionsBuilder, newPhrases } from '../src/index.js';
+
+import { assertNotNull } from './assertions.js';
 
 describe('Actions', function() {
 	describe('Orders', function() {
@@ -27,7 +29,7 @@ describe('Actions', function() {
 		it('Match: orders', function() {
 			return actions.match('orders')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.id).toEqual('orders');
 				});
 		});
@@ -56,6 +58,7 @@ describe('Actions', function() {
 		it('Matched items have an activate() function', () => {
 			return actions.match('orders')
 				.then(r => {
+					assertNotNull(r);
 					expect(typeof r.activate).toEqual('function');
 				});
 		});
@@ -63,6 +66,8 @@ describe('Actions', function() {
 		it('activate() functions is callable', () => {
 			return actions.match('orders')
 				.then(r => {
+					assertNotNull(r);
+
 					const p = r.activate(1234);
 					expect(p).toEqual('executed orders');
 				});
@@ -71,6 +76,8 @@ describe('Actions', function() {
 		it('activate() passes context to handler', () => {
 			return actions.match('orders that are active')
 				.then(r => {
+					assertNotNull(r);
+
 					const p = r.activate(1234);
 					expect(p).toEqual('active 1234');
 				});

@@ -1,9 +1,7 @@
 # Ecolect
 
 [![npm version](https://badge.fury.io/js/ecolect.svg)](https://badge.fury.io/js/ecolect)
-[![Build Status](https://travis-ci.org/aholstenson/ecolect-js.svg?branch=master)](https://travis-ci.org/aholstenson/ecolect-js)
-[![Coverage Status](https://coveralls.io/repos/aholstenson/ecolect-js/badge.svg)](https://coveralls.io/github/aholstenson/ecolect-js)
-[![Dependencies](https://david-dm.org/aholstenson/ecolect-js.svg)](https://david-dm.org/aholstenson/ecolect-js)
+[![CI](https://github.com/aholstenson/ecolect-js/actions/workflows/ci.yml/badge.svg)](https://github.com/aholstenson/ecolect-js/actions/workflows/ci.yml)
 
 Ecolect is a library for JavaScript and TypeScript that helps with matching
 natural language phrases and values. This can be used as a part in building a
@@ -11,9 +9,14 @@ natural language interface for things such as bots, voice or search interfaces.
 
 ## Installation
 
+Ecolect needs the core library and a language:
+
 ```
-$ npm install --save ecolect
+$ npm install ecolect @ecolect/language-en
 ```
+
+The packages are ESM only and need Node 20.19 or later. To use them from
+CommonJS, load them with a dynamic `import()`.
 
 # Features
 
@@ -33,7 +36,7 @@ Using a value:
 import { en } from '@ecolect/language-en';
 import { dateValue } from 'ecolect';
 
-const matcher = dateValue().toMatcher(en);
+const matcher = dateValue().matcher(en);
 const bestMatch = await matcher.match('first Monday of 2021');
 ```
 
@@ -74,7 +77,7 @@ const matcher = intentsBuilder(en)
 const bestMatch = await matcher.match('orders');
 
 // Or partially match
-const matches = await matcher.matchPartial('orders);
+const matches = await matcher.matchPartial('orders');
 ```
 
 ## Options
@@ -310,3 +313,53 @@ Text can be captured with the type `anyTextValue`. You can use `anyTextValue`
 for things such as search queries, todo items and calendar events. Values of
 type `anyTextValue` will always try to capture as much as they can and will not
 validate the result.
+
+## Packages
+
+Name | Description
+-----|------------
+`ecolect` | Intents, actions and the value types
+`@ecolect/language-en` | English language support
+`@ecolect/graph` | Graph based matching over tokens
+`@ecolect/language` | Shared language interfaces
+`@ecolect/tokenization` | Tokenization of strings
+`@ecolect/type-datetime` | Date and time primitives
+`@ecolect/type-numbers` | Number primitives
+
+## Development
+
+The repository is a pnpm workspace. Install [pnpm](https://pnpm.io) and then:
+
+```
+$ pnpm install
+$ pnpm build
+$ pnpm test
+```
+
+Command | Description
+--------|------------
+`pnpm build` | Compile every package to `dist`, in dependency order
+`pnpm test` | Run the test suite once with Vitest
+`pnpm test:watch` | Run the test suite in watch mode
+`pnpm coverage` | Run the test suite and report coverage
+`pnpm typecheck` | Type check the sources and the tests
+`pnpm lint` | Run ESLint
+`pnpm apidocs` | Build the API documentation into `apidocs`
+
+Tests resolve the workspace packages to their sources, so `pnpm test` does not
+need a build first.
+
+## Releases
+
+Releases are prepared by [Release Please](https://github.com/googleapis/release-please),
+which reads the [Conventional Commits](https://www.conventionalcommits.org)
+history and opens a pull request that raises the versions and writes the
+changelogs. Merging that pull request tags the release, and the `Release`
+workflow publishes every package to npm.
+
+All packages share one version number, kept in step by the `linked-versions`
+plugin.
+
+`release-please-config.json` carries `"release-as": "0.8.0"` to set the version
+of the first release after the move to ESM. Remove that field once 0.8.0 is
+published, so that later versions follow from the commit history again.

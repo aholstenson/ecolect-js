@@ -1,9 +1,9 @@
 import { DayOfWeek } from 'datetime-types';
 
-import { dayOfWeekGraph } from '../src/dayOfWeekGraph';
-import { EnglishLanguage } from '../src/EnglishLanguage';
+import { dayOfWeekGraph } from '../src/dayOfWeekGraph.js';
+import { EnglishLanguage } from '../src/EnglishLanguage.js';
 
-import { testRunner } from './helpers';
+import { testRunner } from './helpers.js';
 
 const test = testRunner(new EnglishLanguage(), dayOfWeekGraph, d => d as DayOfWeek);
 

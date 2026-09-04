@@ -1,10 +1,11 @@
-import 'jest-expect-message';
 import { BigDecimal } from 'numeric-types/decimal';
 
 import { en } from '@ecolect/language-en';
 
-import { PhrasesBuilder } from '../src/resolver/PhrasesBuilder';
-import { anyTextValue, dateValue, numberValue, booleanValue, customValue } from '../src/values';
+import { PhrasesBuilder } from '../src/resolver/PhrasesBuilder.js';
+import { anyTextValue, dateValue, numberValue, booleanValue, customValue } from '../src/values/index.js';
+
+import { assertNotNull } from './assertions.js';
 
 function checkExpression(expression: any[], expected: any[]) {
 	expect(expression.length).toEqual(expected.length);
@@ -55,7 +56,7 @@ describe('Resolver', function() {
 		it('#1', function() {
 			return resolver.match('one')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.a).toEqual('one');
 				});
 		});
@@ -63,25 +64,25 @@ describe('Resolver', function() {
 		it('#2', function() {
 			return resolver.match('one test')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.a).toEqual('test');
 				});
 		});
 
 		it('#3', function() {
 			return resolver.match('test one')
-			.then(r => {
-				expect(r).not.toBeNull();
-				expect(r.values.a).toEqual('test');
-			});
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.a).toEqual('test');
+				});
 		});
 
 		it('#4', function() {
 			return resolver.match('one one')
-			.then(r => {
-				expect(r).not.toBeNull();
-				expect(r.values.a).toEqual('one');
-			});
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.a).toEqual('one');
+				});
 		});
 	});
 
@@ -96,14 +97,14 @@ describe('Resolver', function() {
 		it('start', function() {
 			return resolver.match('today stuff')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 				});
 		});
 
 		it('middle', function() {
 			return resolver.match('stuff today cookie')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 				});
 		});
 
@@ -117,14 +118,14 @@ describe('Resolver', function() {
 		it('end', function() {
 			return resolver.match('stuff today')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 				});
 		});
 
 		it('end - trailing th', function() {
 			return resolver.match('stuff jan 12th')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 				});
 		});
 
@@ -212,7 +213,7 @@ describe('Resolver', function() {
 		it('With a number', function() {
 			return resolver.match('stuff 2')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.number).toEqual(BigDecimal.fromNumber(2));
 				});
 		});
@@ -234,7 +235,7 @@ describe('Resolver', function() {
 		it('With a more complex number', function() {
 			return resolver.match('stuff 2 thousand')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.number).toEqual(BigDecimal.fromNumber(2000));
 				});
 		});
@@ -242,7 +243,7 @@ describe('Resolver', function() {
 		it('With a number and trailing valid token', function() {
 			return resolver.match('a two hundred c')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.number).toEqual(BigDecimal.fromNumber(200));
 				});
 		});
@@ -258,7 +259,7 @@ describe('Resolver', function() {
 		it('With a boolean', function() {
 			return resolver.match('stuff off')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.boolean).toEqual(false);
 				});
 		});
@@ -280,7 +281,7 @@ describe('Resolver', function() {
 		it('With yes', function() {
 			return resolver.match('stuff yes')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.boolean).toEqual(true);
 				});
 		});
@@ -288,7 +289,7 @@ describe('Resolver', function() {
 		it('With a boolean and trailing valid token', function() {
 			return resolver.match('a false c')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.boolean).toEqual(false);
 				});
 		});
@@ -324,7 +325,7 @@ describe('Resolver', function() {
 			it('Match', function() {
 				return resolver.match('do one')
 					.then(r => {
-						expect(r).not.toBeNull();
+						assertNotNull(r);
 						expect(r.values.name).toEqual('one');
 
 						// Check that the expression matches
@@ -351,7 +352,7 @@ describe('Resolver', function() {
 			it('Match multiple', function() {
 				return resolver.match('do four five')
 					.then(r => {
-						expect(r).not.toBeNull();
+						assertNotNull(r);
 						expect(r.values.name).toEqual('four five');
 
 						// Check that the expression matches
@@ -388,6 +389,7 @@ describe('Resolver', function() {
 						expect(r.length).toEqual(2);
 
 						// Check that the expressions matches
+						assertNotNull(r[0]);
 						checkExpression(r[0].expression, [
 							{
 								type: 'text',
@@ -405,6 +407,7 @@ describe('Resolver', function() {
 							}
 						]);
 
+						assertNotNull(r[1]);
 						checkExpression(r[1].expression, [
 							{
 								type: 'text',
@@ -453,7 +456,7 @@ describe('Resolver', function() {
 			it('Match', function() {
 				return resolver.match('one value')
 					.then(r => {
-						expect(r).not.toBeNull();
+						assertNotNull(r);
 						expect(r.values.name).toEqual('one');
 
 						// Check that the expression matches
@@ -480,7 +483,7 @@ describe('Resolver', function() {
 			it('Match multiple', function() {
 				return resolver.match('four five value')
 					.then(r => {
-						expect(r).not.toBeNull();
+						assertNotNull(r);
 						expect(r.values.name).toEqual('four five');
 
 						// Check that the expression matches
@@ -553,7 +556,7 @@ describe('Resolver', function() {
 			it('Match', function() {
 				return resolver.match('one value end')
 					.then(r => {
-						expect(r).not.toBeNull();
+						assertNotNull(r);
 						expect(r.values.name).toEqual('one');
 					});
 			});
@@ -586,6 +589,8 @@ describe('Resolver', function() {
 		it('Expression has source offsets', function() {
 			return resolver.match('a yes c')
 				.then(r => {
+					assertNotNull(r);
+
 					const e = r.expression;
 
 					expect(e.length).toEqual(3);
@@ -598,6 +603,8 @@ describe('Resolver', function() {
 		it('Expression with any() has source offsets', function() {
 			return resolver.match('longer hello world message')
 				.then(r => {
+					assertNotNull(r);
+
 					const e = r.expression;
 
 					expect(e.length).toEqual(3);

@@ -1,10 +1,10 @@
 import { GraphBuilder } from '@ecolect/graph';
 
-import { PhrasesBuilder } from '../resolver/PhrasesBuilder';
+import { PhrasesBuilder } from '../resolver/PhrasesBuilder.js';
 
-import { LanguageSpecificValue, ParsingValue, Value } from './base';
-import { ExpressionPart } from '../resolver/expression/ExpressionPart';
-import { Phrases } from '../resolver/Phrases';
+import { LanguageSpecificValue, ParsingValue, Value } from './base.js';
+import { ExpressionPart } from '../resolver/expression/ExpressionPart.js';
+import { Phrases } from '../resolver/Phrases.js';
 
 export interface OptionBuilderOptions {
 	name?: string;

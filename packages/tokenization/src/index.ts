@@ -1,8 +1,8 @@
-export * from './Token';
-export * from './TokenComparer';
-export * from './TokenData';
-export * from './tokenize';
-export * from './Tokenizer';
-export * from './Tokens';
+export * from './Token.js';
+export * from './TokenComparer.js';
+export * from './TokenData.js';
+export * from './tokenize.js';
+export * from './Tokenizer.js';
+export * from './Tokens.js';
 
-export * from './whitespaceTokenizer';
+export * from './whitespaceTokenizer.js';

@@ -1,15 +1,12 @@
 {
 	"extends": "./tsconfig.settings.json",
 	"compilerOptions": {
-		"module": "commonjs",
-
 		"noEmit": true,
 
-		"baseUrl": ".",
 		"paths": {
-			"ecolect": [ "./packages/ecolect/src" ],
-			"@ecolect/language-*": [ "./languages/*/src" ],
-			"@ecolect/*": [ "./packages/*/src" ]
+			"ecolect": [ "./packages/ecolect/src/index.ts" ],
+			"@ecolect/language-*": [ "./languages/*/src/index.ts" ],
+			"@ecolect/*": [ "./packages/*/src/index.ts" ]
 		}
 	},
 	"include": [ "packages/*/src", "languages/*/src" ],
@@ -20,12 +17,11 @@
 			"packages/ecolect/src/index.ts",
 
 			"packages/graph/src/index.ts",
+			"packages/language/src/index.ts",
 			"packages/tokenization/src/index.ts",
-			"packages/lang/src/index.ts",
-			"packages/type-datetimes/src/index.ts",
-			"packages/type-numbers/src/index.ts",
+			"packages/type-datetime/src/index.ts",
+			"packages/type-numbers/src/index.ts"
 		],
-		"readme": "./docs/apidocs.md",
 		"out": "apidocs",
 		"excludePrivate": true
 	}

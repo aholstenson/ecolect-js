@@ -8,7 +8,7 @@ import {
 	previousQuarter
 } from '@ecolect/type-datetime';
 
-import { ordinalGraph } from './ordinalGraph';
+import { ordinalGraph } from './ordinalGraph.js';
 
 export const quarterGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'quarter',

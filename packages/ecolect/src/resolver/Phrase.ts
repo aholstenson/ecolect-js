@@ -2,8 +2,8 @@ import rfdc from 'rfdc';
 
 import { Encounter } from '@ecolect/graph';
 
-import { ExpressionPart } from './expression/ExpressionPart';
-import { describe, refresh } from './expressions';
+import { ExpressionPart } from './expression/ExpressionPart.js';
+import { describe, refresh } from './expressions.js';
 
 const clone = rfdc();
 

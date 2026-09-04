@@ -1,6 +1,6 @@
 import { en } from '@ecolect/language-en';
 
-import { anyTextValue, booleanValue } from '../src/values';
+import { anyTextValue, booleanValue } from '../src/values/index.js';
 
 describe('Value: Matchers', () => {
 	it('Can parse string', () => {

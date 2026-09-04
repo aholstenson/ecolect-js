@@ -2,7 +2,7 @@ import { deepEqual } from 'fast-equals';
 
 import { Node, SubNode, Graph, Encounter } from '@ecolect/graph';
 
-import { MatchOptions } from '../matching';
+import { MatchOptions } from '../matching/index.js';
 
 export interface ValueParserOptions<V, O> {
 	/**

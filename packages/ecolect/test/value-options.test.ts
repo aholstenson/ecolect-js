@@ -1,8 +1,10 @@
 import { en } from '@ecolect/language-en';
 
-import { IntentsBuilder } from '../src/IntentsBuilder';
-import { newPhrases } from '../src/resolver/newPhrases';
-import { optionsValue, dateIntervalValue, enumerationValue, customValue } from '../src/values';
+import { IntentsBuilder } from '../src/IntentsBuilder.js';
+import { newPhrases } from '../src/resolver/newPhrases.js';
+import { optionsValue, dateIntervalValue, enumerationValue, customValue } from '../src/values/index.js';
+
+import { assertNotNull } from './assertions.js';
 
 describe('Value: Options', function() {
 	describe('Standalone option: No values', () => {
@@ -18,6 +20,7 @@ describe('Value: Options', function() {
 
 		it('with deadline [partial=false]', () => matcher.match('with deadline')
 			.then(v => {
+				assertNotNull(v);
 				expect(v.toArray()).toEqual([
 					{
 						option: 'deadline',
@@ -26,6 +29,7 @@ describe('Value: Options', function() {
 				]);
 
 				const option = v.get('deadline');
+				assertNotNull(option);
 				expect(option.expression).toEqual([
 					{
 						type: 'text',
@@ -48,6 +52,7 @@ describe('Value: Options', function() {
 				]);
 
 				const option = r[0].get('deadline');
+				assertNotNull(option);
 				expect(option.expression).toEqual([
 					{
 						type: 'text',
@@ -70,6 +75,7 @@ describe('Value: Options', function() {
 				]);
 
 				const option = r[0].get('deadline');
+				assertNotNull(option);
 				expect(option.expression).toEqual([
 					{
 						type: 'text',
@@ -92,6 +98,7 @@ describe('Value: Options', function() {
 				]);
 
 				const option = r[0].get('deadline');
+				assertNotNull(option);
 				expect(option.expression).toEqual([
 					{
 						type: 'text',
@@ -152,10 +159,10 @@ describe('Value: Options', function() {
 
 		it('with deadline [partial=false]', () => matcher.match('with deadline jan 12th', { now: new Date(2010, 0, 1) })
 			.then(v => {
-				expect(v).not.toBeNull();
+				assertNotNull(v);
 
 				const option = v.get('deadline');
-				expect(option).not.toBeNull();
+				assertNotNull(option);
 				expect(option.option).toEqual('deadline');
 				expect(option.values.deadline).toEqual({
 					start: { year: 2010, month: 1, dayOfMonth: 12 },
@@ -169,7 +176,7 @@ describe('Value: Options', function() {
 				expect(r.length).toEqual(1);
 
 				const option = r[0].get('deadline');
-				expect(option).not.toBeNull();
+				assertNotNull(option);
 				expect(option.option).toEqual('deadline');
 			})
 		);
@@ -195,7 +202,12 @@ describe('Value: Options', function() {
 				.then(r => {
 					expect(r.length).toEqual(1);
 
-					const v = r[0].values.queryOptions.get('deadline');
+					const match = r[0];
+					assertNotNull(match);
+					assertNotNull(match.values.queryOptions);
+
+					const v = match.values.queryOptions.get('deadline');
+					assertNotNull(v);
 					expect(v.option).toEqual('deadline');
 					expect(v.values).toEqual({});
 				});
@@ -206,7 +218,12 @@ describe('Value: Options', function() {
 				.then(r => {
 					expect(r.length).toEqual(1);
 
-					const v = r[0].values.queryOptions.get('deadline');
+					const match = r[0];
+					assertNotNull(match);
+					assertNotNull(match.values.queryOptions);
+
+					const v = match.values.queryOptions.get('deadline');
+					assertNotNull(v);
 					expect(v.option).toEqual('deadline');
 					expect(v.values).toEqual({});
 				});
@@ -240,9 +257,12 @@ describe('Value: Options', function() {
 		it('Full match', () => {
 			return resolver.match('things with deadline jan 12th', { now: new Date(2018, 0, 2) })
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
+
+					assertNotNull(r.values.queryOptions);
 
 					const v = r.values.queryOptions.get('deadline');
+					assertNotNull(v);
 					expect(v.option).toEqual('deadline');
 					expect(v.values.deadline).toEqual({
 						start: { year: 2018, month: 1, dayOfMonth: 12 },
@@ -254,9 +274,12 @@ describe('Value: Options', function() {
 		it('Multiple options', () => {
 			return resolver.match('things with deadline jan 12th and completed today', { now: new Date(2018, 0, 2) })
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
+
+					assertNotNull(r.values.queryOptions);
 
 					const v0 = r.values.queryOptions.get('deadline');
+					assertNotNull(v0);
 					expect(v0.option).toEqual('deadline');
 					expect(v0.values.deadline).toEqual({
 						start: { year: 2018, month: 1, dayOfMonth: 12 },
@@ -264,6 +287,7 @@ describe('Value: Options', function() {
 					});
 
 					const v1 = r.values.queryOptions.get('completed');
+					assertNotNull(v1);
 					expect(v1.option).toEqual('completed');
 					expect(v1.values.completed).toEqual({
 						start: { year: 2018, month: 1, dayOfMonth: 2 },
@@ -326,9 +350,12 @@ describe('Value: Options', function() {
 		it('Full match', () => {
 			return resolver.match('things named one', { now: new Date(2018, 0, 2) })
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
+
+					assertNotNull(r.values.queryOptions);
 
 					const v = r.values.queryOptions.get('value');
+					assertNotNull(v);
 					expect(v.option).toEqual('value');
 					expect(v.values.name).toEqual('one');
 				});
@@ -339,7 +366,12 @@ describe('Value: Options', function() {
 				.then(r => {
 					expect(r.length).toEqual(2);
 
-					const v = r[0].values.queryOptions.get('value');
+					const match = r[0];
+					assertNotNull(match);
+					assertNotNull(match.values.queryOptions);
+
+					const v = match.values.queryOptions.get('value');
+					assertNotNull(v);
 					expect(v.option).toEqual('value');
 				});
 		});
@@ -349,7 +381,12 @@ describe('Value: Options', function() {
 				.then(r => {
 					expect(r.length).toEqual(1);
 
-					const v = r[0].values.queryOptions.get('completed');
+					const match = r[0];
+					assertNotNull(match);
+					assertNotNull(match.values.queryOptions);
+
+					const v = match.values.queryOptions.get('completed');
+					assertNotNull(v);
 					expect(v.option).toEqual('completed');
 				});
 		});
@@ -359,7 +396,12 @@ describe('Value: Options', function() {
 				.then(r => {
 					expect(r.length).toEqual(1);
 
-					const v = r[0].values.queryOptions.get('completed');
+					const match = r[0];
+					assertNotNull(match);
+					assertNotNull(match.values.queryOptions);
+
+					const v = match.values.queryOptions.get('completed');
+					assertNotNull(v);
 					expect(v.option).toEqual('completed');
 				});
 		});
@@ -367,9 +409,12 @@ describe('Value: Options', function() {
 		it('Match with enum first', () => {
 			return resolver2.match('test named one', { now: new Date(2018, 0, 2) })
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
+
+					assertNotNull(r.values.queryOptions);
 
 					const v = r.values.queryOptions.get('value');
+					assertNotNull(v);
 					expect(v.option).toEqual('value');
 					expect(v.values.name).toEqual('one');
 				});
@@ -387,7 +432,11 @@ describe('Value: Options', function() {
 				.then(r => {
 					expect(r.length).toEqual(1);
 
-					expect(r[0].values.queryOptions.toArray()).toEqual([
+					const match = r[0];
+					assertNotNull(match);
+					assertNotNull(match.values.queryOptions);
+
+					expect(match.values.queryOptions.toArray()).toEqual([
 						{
 							option: 'value',
 							values: {}
@@ -401,7 +450,10 @@ describe('Value: Options', function() {
 				.then(r => {
 					expect(r.length).toEqual(2);
 
-					const expression = r[0].expression;
+					const match = r[0];
+					assertNotNull(match);
+
+					const expression = match.expression;
 
 					expect(expression[0].type).toEqual('value');
 					expect((expression[0] as any).value).toEqual('test');
@@ -456,9 +508,12 @@ describe('Value: Options', function() {
 		it('Full match', () => {
 			return intents.match('things with deadline jan 12th', { now: new Date(2018, 0, 2) })
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
+
+					assertNotNull(r.values.queryOptions);
 
 					const v = r.values.queryOptions.get('deadline');
+					assertNotNull(v);
 					expect(v.option).toEqual('deadline');
 					expect(v.values.deadline).toEqual({
 						start: { year: 2018, month: 1, dayOfMonth: 12 },
@@ -470,9 +525,12 @@ describe('Value: Options', function() {
 		it('Multiple options', () => {
 			return intents.match('things with deadline jan 12th and completed today', { now: new Date(2018, 0, 2) })
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
+
+					assertNotNull(r.values.queryOptions);
 
 					const v0 = r.values.queryOptions.get('deadline');
+					assertNotNull(v0);
 					expect(v0.option).toEqual('deadline');
 					expect(v0.values.deadline).toEqual({
 						start: { year: 2018, month: 1, dayOfMonth: 12 },
@@ -480,6 +538,7 @@ describe('Value: Options', function() {
 					});
 
 					const v1 = r.values.queryOptions.get('completed');
+					assertNotNull(v1);
 					expect(v1.option).toEqual('completed');
 					expect(v1.values.completed).toEqual({
 						start: { year: 2018, month: 1, dayOfMonth: 2 },
@@ -493,7 +552,10 @@ describe('Value: Options', function() {
 				.then(r => {
 					expect(r.length).toEqual(3);
 
-					const expression = r[0].expression;
+					const match = r[0];
+					assertNotNull(match);
+
+					const expression = match.expression;
 
 					expect(expression[0].type).toEqual('text');
 					expect((expression[0] as any).value).toEqual('Things');
@@ -508,9 +570,14 @@ describe('Value: Options', function() {
 				.then(r => {
 					expect(r.length).toEqual(1);
 
-					expect(r[0].values.queryOptions.toArray().length).toEqual(1);
+					const match = r[0];
+					assertNotNull(match);
+					assertNotNull(match.values.queryOptions);
 
-					const v0 = r[0].values.queryOptions.get('deadline');
+					expect(match.values.queryOptions.toArray().length).toEqual(1);
+
+					const v0 = match.values.queryOptions.get('deadline');
+					assertNotNull(v0);
 					expect(v0.option).toEqual('deadline');
 					expect(v0.values.deadline).toEqual({
 						start: { year: 2018, month: 1, dayOfMonth: 12 },
@@ -523,9 +590,14 @@ describe('Value: Options', function() {
 			return intents.matchPartial('things for K', { now: new Date(2018, 0, 2) })
 				.then(r => {
 					expect(r.length).toEqual(1);
-					expect(r[0].values.queryOptions.toArray().length).toEqual(1);
+					const match = r[0];
+					assertNotNull(match);
+					assertNotNull(match.values.queryOptions);
 
-					const v0 = r[0].values.queryOptions.get('for');
+					expect(match.values.queryOptions.toArray().length).toEqual(1);
+
+					const v0 = match.values.queryOptions.get('for');
+					assertNotNull(v0);
 					expect(v0.option).toEqual('for');
 					expect(v0.values.custom).toEqual('K');
 				});

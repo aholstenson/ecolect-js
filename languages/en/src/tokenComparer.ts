@@ -1,6 +1,6 @@
-import { similarity } from 'talisman/metrics/distance/jaro-winkler';
-
 import { TokenComparer } from '@ecolect/tokenization';
+
+import { jaroWinklerSimilarity } from './algorithms/jaroWinkler.js';
 
 export const tokenComparer: TokenComparer = {
 	compare(a, b) {
@@ -10,7 +10,7 @@ export const tokenComparer: TokenComparer = {
 
 		if(a.short || b.short) return 0;
 
-		const d = similarity(a.normalized, b.normalized);
+		const d = jaroWinklerSimilarity(a.normalized, b.normalized);
 		if(d > 0.9) return d * 0.9;
 
 		return 0;
@@ -19,7 +19,7 @@ export const tokenComparer: TokenComparer = {
 	comparePartial(a, b) {
 		if(a.normalized.indexOf(b.normalized) === 0) return 1.0;
 
-		const d = similarity(a.normalized.substring(0, b.normalized.length), b.normalized);
+		const d = jaroWinklerSimilarity(a.normalized.substring(0, b.normalized.length), b.normalized);
 		if(d > 0.9) return d * 0.9;
 
 		return 0;

@@ -6,8 +6,8 @@ import {
 	isRelative
 } from '@ecolect/type-datetime';
 
-import { dateGraph } from './dateGraph';
-import { timeGraph } from './timeGraph';
+import { dateGraph } from './dateGraph.js';
+import { timeGraph } from './timeGraph.js';
 
 export const dateTimeGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'date-time',

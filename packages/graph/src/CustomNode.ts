@@ -1,7 +1,7 @@
 import { Token } from '@ecolect/tokenization';
 
-import { Node } from './Node';
-import { Encounter } from './matching/Encounter';
+import { Node } from './Node.js';
+import { Encounter } from './matching/Encounter.js';
 
 export type TokenValidator = (token: Token) => Promise<boolean | null> | boolean | null;
 
@@ -11,7 +11,7 @@ export type TokenValidator = (token: Token) => Promise<boolean | null> | boolean
 export class CustomNode extends Node {
 	private validator: TokenValidator;
 
-	constructor(validator: TokenValidator) {
+	public constructor(validator: TokenValidator) {
 		super();
 
 		this.validator = validator;
@@ -23,7 +23,7 @@ export class CustomNode extends Node {
 
 		return Promise.resolve(this.validator(token))
 			.then(r => {
-				if(r != null && typeof r !== 'undefined') {
+				if(r !== null && typeof r !== 'undefined') {
 					// This validator resolved a value, continue matching
 					return encounter.next(1, 1, r);
 				}

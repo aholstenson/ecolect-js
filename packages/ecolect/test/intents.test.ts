@@ -1,8 +1,10 @@
 import { en } from '@ecolect/language-en';
 
-import { IntentsBuilder } from '../src/IntentsBuilder';
-import { newPhrases } from '../src/resolver/newPhrases';
-import { anyTextValue } from '../src/values';
+import { IntentsBuilder } from '../src/IntentsBuilder.js';
+import { newPhrases } from '../src/resolver/newPhrases.js';
+
+import { assertNotNull } from './assertions.js';
+import { anyTextValue } from '../src/values/index.js';
 
 describe('Intents', function() {
 	describe('Orders', function() {
@@ -34,6 +36,7 @@ describe('Intents', function() {
 		it('Match: orders', function() {
 			return intents.match('orders')
 				.then(r => {
+					assertNotNull(r);
 					expect(r.id).toEqual('orders');
 				});
 		});
@@ -41,6 +44,7 @@ describe('Intents', function() {
 		it('Match (skippable in input): show for orders', function() {
 			return intents.match('show for orders', { fuzzy: true })
 				.then(r => {
+					assertNotNull(r);
 					expect(r.id).toEqual('orders');
 				});
 		});
@@ -49,6 +53,7 @@ describe('Intents', function() {
 			// Test that skipping `for` works fine
 			return intents.match('orders Test')
 				.then(r => {
+					assertNotNull(r);
 					expect(r.id).toEqual('customer:orders');
 				});
 		});

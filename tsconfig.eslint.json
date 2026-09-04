@@ -1,17 +1,15 @@
 {
-	"extends": "./tsconfig.settings.json",
+	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"module": "commonjs",
-
-		"noEmit": true,
-
-		"baseUrl": "."
+		"types": [ "node", "vitest/globals" ]
 	},
 	"include": [
 		"packages/*/src",
 		"packages/*/test",
 		"languages/*/src",
-		"languages/*/test"
+		"languages/*/test",
+		"*.ts",
+		"*.js"
 	],
 	"exclude": [ "**/node_modules/**", "**/dist/**" ]
 }

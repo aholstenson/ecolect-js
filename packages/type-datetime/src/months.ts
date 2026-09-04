@@ -5,9 +5,9 @@ import {
 } from 'date-fns';
 import { Month } from 'datetime-types';
 
-import { currentTime } from './currentTime';
-import { DateTimeData } from './DateTimeData';
-import { DateTimeOptions } from './DateTimeOptions';
+import { currentTime } from './currentTime.js';
+import { DateTimeData } from './DateTimeData.js';
+import { DateTimeOptions } from './DateTimeOptions.js';
 
 export function thisMonth(r: any, options: DateTimeOptions): DateTimeData {
 	return {

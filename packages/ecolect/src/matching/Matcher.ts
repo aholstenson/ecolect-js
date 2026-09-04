@@ -1,4 +1,4 @@
-import { MatchOptions } from './MatchOptions';
+import { MatchOptions } from './MatchOptions.js';
 
 /**
  * Matcher that can match expressions against a graph.
@@ -9,7 +9,7 @@ export interface Matcher<V> {
 	 *
 	 * @param expression
 	 * @param options
-	 * @return
+	 * @returns
 	 */
 	match(expression: string, options?: MatchOptions): Promise<V | null>;
 

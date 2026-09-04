@@ -1,5 +1,5 @@
-import { time12h, time24h, mapTime } from '../src/times';
-import { Meridiem } from '../src/Meridiem';
+import { time12h, time24h, mapTime } from '../src/times.js';
+import { Meridiem } from '../src/Meridiem.js';
 
 describe('Time', () => {
 	describe('times', () => {

@@ -1,5 +1,5 @@
-import { Encounter } from './Encounter';
-import { MatchSet } from './MatchSet';
+import { Encounter } from './Encounter.js';
+import { MatchSet } from './MatchSet.js';
 
 /**
  * Encounter used to reduce matches

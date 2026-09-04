@@ -1,13 +1,13 @@
 import { DateInterval } from 'datetime-types';
 
-import { clone } from './clone';
-import { mapDate, today } from './dates';
-import { DateTimeData } from './DateTimeData';
-import { DateTimeOptions } from './DateTimeOptions';
-import { IntervalData } from './IntervalData';
-import { IntervalEdge } from './IntervalEdge';
-import { adjusted } from './matching';
-import { TimeRelationship } from './TimeRelationship';
+import { clone } from './clone.js';
+import { mapDate, today } from './dates.js';
+import { DateTimeData } from './DateTimeData.js';
+import { DateTimeOptions } from './DateTimeOptions.js';
+import { IntervalData } from './IntervalData.js';
+import { IntervalEdge } from './IntervalEdge.js';
+import { adjusted } from './matching.js';
+import { TimeRelationship } from './TimeRelationship.js';
 
 /**
  * Create an interval that matches dates in the past.

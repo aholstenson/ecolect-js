@@ -1,19 +1,18 @@
 {
 	"compilerOptions": {
-		"composite": true,
+		"target": "ES2022",
+		"lib": [ "ES2022" ],
 
-		"moduleResolution": "node",
-		"target": "ES2019",
-		"module": "CommonJS",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
 
-		"lib": [ "ES2019" ],
 		"strict": true,
+		"isolatedModules": true,
 
 		"sourceMap": true,
 		"declaration": true,
 		"declarationMap": true,
 
-		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true

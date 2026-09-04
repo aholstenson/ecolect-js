@@ -2,10 +2,10 @@ import { BigInteger } from 'numeric-types/integer';
 
 import { mapInteger } from '@ecolect/type-numbers';
 
-import { EnglishLanguage } from '../src/EnglishLanguage';
-import { integerGraph } from '../src/integerGraph';
+import { EnglishLanguage } from '../src/EnglishLanguage.js';
+import { integerGraph } from '../src/integerGraph.js';
 
-import { testRunner } from './helpers';
+import { testRunner } from './helpers.js';
 
 const test = testRunner(new EnglishLanguage(), integerGraph, mapInteger);
 

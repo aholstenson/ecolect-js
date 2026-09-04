@@ -10,7 +10,7 @@ import {
 	addMilliseconds
 } from 'date-fns';
 
-import { DateTimeData } from './DateTimeData';
+import { DateTimeData } from './DateTimeData.js';
 
 /**
  * Map a duration of time into a usable object.

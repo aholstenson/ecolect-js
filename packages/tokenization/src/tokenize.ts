@@ -4,10 +4,10 @@ import {
 	numeric,
 	emoji,
 	emojiModifier
-} from './matchers';
-import { Token } from './Token';
-import { TokenData } from './TokenData';
-import { Tokens } from './Tokens';
+} from './matchers.js';
+import { Token } from './Token.js';
+import { TokenData } from './TokenData.js';
+import { Tokens } from './Tokens.js';
 
 const MATCHER_PUNCTUATION = new RegExp('^(' + punctuation + ')+$');
 function isPunctuation(text: string) {

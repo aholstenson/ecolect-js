@@ -1,9 +1,9 @@
-import { Node } from './Node';
-import { Encounter, Match, MatchingState, emptyState } from './matching';
-import { Predicate } from './Predicate';
+import { Node } from './Node.js';
+import { Encounter, Match, MatchingState, emptyState } from './matching/index.js';
+import { Predicate } from './Predicate.js';
 
-import { Graph } from './Graph';
-import { GraphOptions } from './GraphOptions';
+import { Graph } from './Graph.js';
+import { GraphOptions } from './GraphOptions.js';
 
 /*
  * Small penalty applied when a SubNode matches. This helps the algorithm
@@ -54,7 +54,7 @@ export class SubNode<V> extends Node {
 	 */
 	public partialFallback?: any;
 
-	constructor(roots: Graph<V> | Node[], options: GraphOptions, filter?: Predicate<V>) {
+	public constructor(roots: Graph<V> | Node[], options: GraphOptions, filter?: Predicate<V>) {
 		super();
 
 		this.recursive = false;

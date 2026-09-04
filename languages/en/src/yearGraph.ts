@@ -10,7 +10,7 @@ import {
 	previousYear
 } from '@ecolect/type-datetime';
 
-import { integerGraph } from './integerGraph';
+import { integerGraph } from './integerGraph.js';
 
 export const yearGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'year',

@@ -1,7 +1,7 @@
 import { GraphBuilder } from '@ecolect/graph';
 
-import { testRunnerViaGraph } from './helpers';
-import { EnglishLanguage } from '../src/EnglishLanguage';
+import { testRunnerViaGraph } from './helpers.js';
+import { EnglishLanguage } from '../src/EnglishLanguage.js';
 
 const en = new EnglishLanguage();
 

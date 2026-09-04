@@ -1,7 +1,9 @@
 import { en } from '@ecolect/language-en';
 
-import { newPhrases } from '../src/resolver/newPhrases';
-import { enumerationValue } from '../src/values';
+import { newPhrases } from '../src/resolver/newPhrases.js';
+import { enumerationValue } from '../src/values/index.js';
+
+import { assertNotNull } from './assertions.js';
 
 describe('Value: Enumeration', function() {
 	describe('No mapping', function() {
@@ -21,7 +23,7 @@ describe('Value: Enumeration', function() {
 		it('Single token company', function() {
 			return resolver.match('orders for Ballons')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.company).toEqual('Balloons');
 				});
 		});
@@ -29,7 +31,7 @@ describe('Value: Enumeration', function() {
 		it('Multi token company', function() {
 			return resolver.match('orders for Cookie Co')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.company).toEqual('Cookie Co');
 				});
 		});
@@ -56,7 +58,7 @@ describe('Value: Enumeration', function() {
 		it('Single token company', function() {
 			return resolver.match('orders for Ballons')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.company).toEqual({
 						name: 'Balloons'
 					});
@@ -66,7 +68,7 @@ describe('Value: Enumeration', function() {
 		it('Multi token company', function() {
 			return resolver.match('orders for Cookie Co')
 				.then(r => {
-					expect(r).not.toBeNull();
+					assertNotNull(r);
 					expect(r.values.company).toEqual({
 						name: 'Cookie Co'
 					});
@@ -85,7 +87,10 @@ describe('Value: Enumeration', function() {
 			return resolver.matchPartial('orders ')
 				.then(r => {
 					expect(r.length).toEqual(1);
-					expect(r[0].values.company).toBeUndefined();
+
+					const match = r[0];
+					assertNotNull(match);
+					expect(match.values.company).toBeUndefined();
 				});
 		});
 
@@ -114,9 +119,12 @@ describe('Value: Enumeration', function() {
 			return resolver.matchPartial('orders for C')
 				.then(r => {
 					expect(r.length).toEqual(1);
-					expect(r[0].values.company).toEqual('Cookie Co');
 
-					const expr = r[0].expression;
+					const match = r[0];
+					assertNotNull(match);
+					expect(match.values.company).toEqual('Cookie Co');
+
+					const expr = match.expression;
 					expect(expr[expr.length - 1]).toEqual({
 						type: 'value',
 						id: 'company',

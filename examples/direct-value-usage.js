@@ -1,25 +1,17 @@
-'use strict';
+import { en } from '@ecolect/language-en';
+import { dateValue } from 'ecolect';
 
-const en = require('../language/en');
-const { date } = require('../values');
+const dateMatcher = dateValue().matcher(en);
 
-(async function() {
-	const dateMatcher = date().matcher(en);
+// The matcher takes a string to parse and returns a promise
+const matchedYear = await dateMatcher.match('2018');
+console.log('Matched value:', matchedYear);
+console.log('As date:', matchedYear?.toDate());
 
-	// Function can be called with a string to parse and will return a promise
-	const matchedYear = await dateMatcher('2018');
-	console.log('Matched value:', matchedYear);
-	console.log('As date:', matchedYear.toDate());
+// Relative dates are resolved against the current time
+const tomorrow = await dateMatcher.match('tomorrow');
+console.log('Tomorrow:', tomorrow);
 
-	// Options can be specified for relative dates
-	const matchedRelative = await dateMatcher('in 2 days', { now: new Date(2018, 0, 1) });
-	console.log('Relative time is:', matchedRelative.toDate());
-
-	// Or to specify the start of the week (defaults to Sunday)
-	const matchedWeek = await dateMatcher('start of week 12', { weekStartsOn: 1 /* 1 = Monday */ });
-	console.log('Week 12 starts on:', matchedWeek.toDate());
-
-	// Strings that can't be parsed resolve to null
-	const invalidValue = await dateMatcher('not a date');
-	console.log('Invalid value resolved to:', invalidValue);
-})();
+// Pass `now` to resolve against a fixed point in time instead
+const fixed = await dateMatcher.match('in 2 days', { now: new Date(2018, 0, 1) });
+console.log('Two days after 2018-01-01:', fixed);

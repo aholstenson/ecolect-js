@@ -9,7 +9,7 @@ import {
 	negative
 } from '@ecolect/type-numbers';
 
-import { integerGraph } from './integerGraph';
+import { integerGraph } from './integerGraph.js';
 
 function isNumber(o: NumberData) {
 	return typeof o.value !== 'undefined';

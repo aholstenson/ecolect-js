@@ -1,4 +1,4 @@
-import { DateTimeData } from './DateTimeData';
+import { DateTimeData } from './DateTimeData.js';
 
 export interface IntervalData {
 	start: DateTimeData | null;

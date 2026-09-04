@@ -1,9 +1,9 @@
 import { GraphBuildable } from '@ecolect/graph';
 import { Language } from '@ecolect/language';
 
-import { Value } from '../values/base';
+import { Value } from '../values/base.js';
 
-import { Phrases } from './Phrases';
+import { Phrases } from './Phrases.js';
 
 /**
  * This is a basic naive builder for instances of Resolver on top of the

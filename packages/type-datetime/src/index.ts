@@ -1,20 +1,20 @@
-export * from './DateTimeData';
-export * from './DateTimeOptions';
-export * from './IntervalEdge';
-export * from './IntervalData';
-export * from './Precision';
+export * from './DateTimeData.js';
+export * from './DateTimeOptions.js';
+export * from './IntervalEdge.js';
+export * from './IntervalData.js';
+export * from './Precision.js';
 
-export * from './matching';
+export * from './matching.js';
 
-export * from './durations';
-export * from './date-intervals';
+export * from './durations.js';
+export * from './date-intervals.js';
 
-export * from './date-times';
-export * from './dates';
+export * from './date-times.js';
+export * from './dates.js';
 
-export * from './times';
+export * from './times.js';
 
-export * from './weeks';
-export * from './months';
-export * from './quarters';
-export * from './years';
+export * from './weeks.js';
+export * from './months.js';
+export * from './quarters.js';
+export * from './years.js';

@@ -1,5 +1,5 @@
-import { mapDate } from '../src/dates';
-import { TimeRelationship } from '../src/TimeRelationship';
+import { mapDate } from '../src/dates.js';
+import { TimeRelationship } from '../src/TimeRelationship.js';
 
 describe('Time', () => {
 	describe('dates', () => {

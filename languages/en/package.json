@@ -11,27 +11,39 @@
     "ecolect",
     "ecolect-language"
   ],
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/types/index.d.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
   "sideEffects": false,
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "coverage": "jest --coverage",
-    "build": "tsc --project tsconfig.build.json --module commonjs --outDir dist/cjs && tsc --project tsconfig.build.json --module es6 --outDir dist/esm",
-    "prebuild": "rimraf dist",
-    "prepublishOnly": "npm run build"
+    "build": "tsc --project tsconfig.build.json",
+    "clean": "rm -rf dist",
+    "prebuild": "pnpm run clean",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@ecolect/graph": "0.7.0-beta.6",
-    "@ecolect/language": "0.7.0-beta.6",
-    "@ecolect/tokenization": "0.7.0-beta.6",
-    "@ecolect/type-datetime": "0.7.0-beta.6",
-    "@ecolect/type-numbers": "0.7.0-beta.6",
-    "talisman": "^1.1.4"
+    "@ecolect/graph": "workspace:^",
+    "@ecolect/language": "workspace:^",
+    "@ecolect/tokenization": "workspace:^",
+    "@ecolect/type-datetime": "workspace:^",
+    "@ecolect/type-numbers": "workspace:^"
   },
   "devDependencies": {
-    "date-fns": "^2.22.1"
+    "date-fns": "^4.4.0",
+    "datetime-types": "^0.3.0",
+    "numeric-types": "^0.3.1"
   }
 }

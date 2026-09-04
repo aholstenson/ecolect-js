@@ -1,4 +1,4 @@
-import { Encounter } from './matching/Encounter';
+import { Encounter } from './matching/Encounter.js';
 
 /**
  * The base class for nodes.

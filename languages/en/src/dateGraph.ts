@@ -25,13 +25,13 @@ import {
 } from '@ecolect/type-datetime';
 import { OrdinalData } from '@ecolect/type-numbers';
 
-import { dateDurationGraph } from './dateDurationGraph';
-import { dayOfWeekGraph } from './dayOfWeekGraph';
-import { monthGraph } from './monthGraph';
-import { ordinalGraph } from './ordinalGraph';
-import { quarterGraph } from './quarterGraph';
-import { weekGraph } from './weekGraph';
-import { yearGraph } from './yearGraph';
+import { dateDurationGraph } from './dateDurationGraph.js';
+import { dayOfWeekGraph } from './dayOfWeekGraph.js';
+import { monthGraph } from './monthGraph.js';
+import { ordinalGraph } from './ordinalGraph.js';
+import { quarterGraph } from './quarterGraph.js';
+import { weekGraph } from './weekGraph.js';
+import { yearGraph } from './yearGraph.js';
 
 export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'date',

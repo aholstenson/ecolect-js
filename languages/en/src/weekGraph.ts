@@ -9,7 +9,7 @@ import {
 } from '@ecolect/type-datetime';
 import { isSpecific } from '@ecolect/type-numbers';
 
-import { ordinalGraph } from './ordinalGraph';
+import { ordinalGraph } from './ordinalGraph.js';
 
 export const weekGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'week',

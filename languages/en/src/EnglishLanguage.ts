@@ -1,20 +1,20 @@
-import { booleanGraph } from './booleanGraph';
-import { dateDurationGraph } from './dateDurationGraph';
-import { dateGraph } from './dateGraph';
-import { dateIntervalGraph } from './dateIntervalGraph';
-import { dateTimeDurationGraph } from './dateTimeDurationGraph';
-import { dateTimeGraph } from './dateTimeGraph';
-import { dayOfWeekGraph } from './dayOfWeekGraph';
-import { integerGraph } from './integerGraph';
-import { MinimalEnglishLanguage } from './MinimalEnglishLanguage';
-import { monthGraph } from './monthGraph';
-import { numberGraph } from './numberGraph';
-import { ordinalGraph } from './ordinalGraph';
-import { quarterGraph } from './quarterGraph';
-import { timeDurationGraph } from './timeDurationGraph';
-import { timeGraph } from './timeGraph';
-import { weekGraph } from './weekGraph';
-import { yearGraph } from './yearGraph';
+import { booleanGraph } from './booleanGraph.js';
+import { dateDurationGraph } from './dateDurationGraph.js';
+import { dateGraph } from './dateGraph.js';
+import { dateIntervalGraph } from './dateIntervalGraph.js';
+import { dateTimeDurationGraph } from './dateTimeDurationGraph.js';
+import { dateTimeGraph } from './dateTimeGraph.js';
+import { dayOfWeekGraph } from './dayOfWeekGraph.js';
+import { integerGraph } from './integerGraph.js';
+import { MinimalEnglishLanguage } from './MinimalEnglishLanguage.js';
+import { monthGraph } from './monthGraph.js';
+import { numberGraph } from './numberGraph.js';
+import { ordinalGraph } from './ordinalGraph.js';
+import { quarterGraph } from './quarterGraph.js';
+import { timeDurationGraph } from './timeDurationGraph.js';
+import { timeGraph } from './timeGraph.js';
+import { weekGraph } from './weekGraph.js';
+import { yearGraph } from './yearGraph.js';
 
 export class EnglishLanguage extends MinimalEnglishLanguage {
 	public constructor() {

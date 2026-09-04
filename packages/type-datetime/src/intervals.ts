@@ -18,8 +18,8 @@ import {
 	endOfSecond
 } from 'date-fns';
 
-import { DateTimeOptions } from './DateTimeOptions';
-import { Period } from './Period';
+import { DateTimeOptions } from './DateTimeOptions.js';
+import { Period } from './Period.js';
 
 export function toStart(time: Date, period: Period, options?: DateTimeOptions) {
 	switch(period) {

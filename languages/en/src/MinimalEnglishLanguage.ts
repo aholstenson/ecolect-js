@@ -1,9 +1,9 @@
 import { Graph, GraphBuilder } from '@ecolect/graph';
 import { AbstractLanguage } from '@ecolect/language';
 
-import { createRepeating } from './repeating';
-import { tokenComparer } from './tokenComparer';
-import { tokenizer } from './tokenizer';
+import { createRepeating } from './repeating.js';
+import { tokenComparer } from './tokenComparer.js';
+import { tokenizer } from './tokenizer.js';
 
 /*
  * Minimal implementation of English. Does not include any known graphs.

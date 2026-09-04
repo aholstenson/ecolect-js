@@ -1,0 +1,14 @@
+{
+  "name": "@ecolect/examples",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Runnable examples for Ecolect",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@ecolect/language-en": "workspace:^",
+    "chalk": "^6.0.0",
+    "cli-autocomplete": "^0.4.3",
+    "ecolect": "workspace:^"
+  }
+}

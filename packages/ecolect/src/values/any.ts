@@ -1,6 +1,6 @@
-import { ValueMatcher, NodeConvertable } from './base';
-import { ValueNodeOptions } from '../resolver/ValueNode';
-import { ValueEncounter } from '../resolver/ValueEncounter';
+import { ValueMatcher, NodeConvertable } from './base.js';
+import { ValueNodeOptions } from '../resolver/ValueNode.js';
+import { ValueEncounter } from '../resolver/ValueEncounter.js';
 
 const instance: ValueNodeOptions<string> = {
 	async match(encounter: ValueEncounter<string>) {

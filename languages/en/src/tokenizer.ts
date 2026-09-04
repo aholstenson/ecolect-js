@@ -1,7 +1,7 @@
-import stemmer from 'talisman/stemmers/porter';
-import treebank from 'talisman/tokenizers/words/treebank';
-
 import { Tokenizer, tokenize } from '@ecolect/tokenization';
+
+import { porterStemmer } from './algorithms/porterStemmer.js';
+import { treebankTokenizer } from './algorithms/treebankTokenizer.js';
 
 /**
  * Tokenizer for English.
@@ -11,7 +11,7 @@ import { Tokenizer, tokenize } from '@ecolect/tokenization';
  */
 export const tokenizer: Tokenizer = (value: string) => {
 	return tokenize(value, input => {
-		const tokens: string[] = treebank(input.raw);
+		const tokens: string[] = treebankTokenizer(input.raw);
 		const result = [];
 		for(let i = 0; i < tokens.length; i++) {
 			const word = tokens[i];
@@ -21,7 +21,7 @@ export const tokenizer: Tokenizer = (value: string) => {
 				raw: word,
 				normalized: normalized,
 				short: word.length <= 4,
-				stemmed: stemmer(normalized),
+				stemmed: porterStemmer(normalized),
 				skippable: SKIPPABLE.has(normalized)
 			};
 		}

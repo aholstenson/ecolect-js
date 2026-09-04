@@ -6,7 +6,7 @@ import {
 	combine
 } from '@ecolect/type-datetime';
 
-import { integerGraph } from './integerGraph';
+import { integerGraph } from './integerGraph.js';
 
 export const timeDurationGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'time-duration',

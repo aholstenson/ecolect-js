@@ -1,15 +1,15 @@
 import { Tokenizer, TokenComparer } from '@ecolect/tokenization';
 
-import { CollectorNode, Collectable } from './CollectorNode';
-import { CustomNode, TokenValidator } from './CustomNode';
-import { Graph } from './Graph';
-import { GraphOptions } from './GraphOptions';
-import { emptyState } from './matching';
-import { Node } from './Node';
-import { Predicate } from './Predicate';
-import { RegExpNode } from './RegExpNode';
-import { SubNode } from './SubNode';
-import { TokenNode } from './TokenNode';
+import { CollectorNode, Collectable } from './CollectorNode.js';
+import { CustomNode, TokenValidator } from './CustomNode.js';
+import { Graph } from './Graph.js';
+import { GraphOptions } from './GraphOptions.js';
+import { emptyState } from './matching/index.js';
+import { Node } from './Node.js';
+import { Predicate } from './Predicate.js';
+import { RegExpNode } from './RegExpNode.js';
+import { SubNode } from './SubNode.js';
+import { TokenNode } from './TokenNode.js';
 
 /**
  * Object that can be mapped into another one.
@@ -57,7 +57,7 @@ export class GraphBuilder<V> {
 	 *
 	 * @param {string} name
 	 *   the name of the graph
-	 * @return
+	 * @returns
 	 *   self
 	 */
 	public name(name: string): this {
@@ -68,7 +68,7 @@ export class GraphBuilder<V> {
 	/**
 	 * Indicate that this graph supports partial matching.
 	 *
-	 * @return
+	 * @returns
 	 *   self
 	 */
 	public allowPartial(active=true): this {
@@ -79,7 +79,7 @@ export class GraphBuilder<V> {
 	/**
 	 * Allow the graph to skip punctuation during matching.
 	 *
-	 * @return
+	 * @returns
 	 *   self
 	 */
 	public skipPunctuation(active=true): this {
@@ -90,7 +90,7 @@ export class GraphBuilder<V> {
 	/**
 	 * Allow the graph to perform fuzzy matching.
 	 *
-	 * @return
+	 * @returns
 	 *   self
 	 */
 	public supportsFuzzy(active=true): this {

@@ -1,11 +1,11 @@
 import { Tokens, Token } from '@ecolect/tokenization';
 
-import { Match } from './Match';
-import { MatchSet } from './MatchSet';
-import { Node } from '../Node';
+import { Match } from './Match.js';
+import { MatchSet } from './MatchSet.js';
+import { Node } from '../Node.js';
 
-import { EncounterOptions } from './EncounterOptions';
-import { MatchHandler } from './MatchHandler';
+import { EncounterOptions } from './EncounterOptions.js';
+import { MatchHandler } from './MatchHandler.js';
 
 /**
  * Encounter used when trying to match an expression. Contains all the tokens

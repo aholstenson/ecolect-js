@@ -2,10 +2,10 @@ import { LocalDateTime } from 'datetime-types';
 
 import { mapDateTime } from '@ecolect/type-datetime';
 
-import { dateTimeGraph } from '../src/dateTimeGraph';
-import { EnglishLanguage } from '../src/EnglishLanguage';
+import { dateTimeGraph } from '../src/dateTimeGraph.js';
+import { EnglishLanguage } from '../src/EnglishLanguage.js';
 
-import { testRunner } from './helpers';
+import { testRunner } from './helpers.js';
 
 const test = testRunner(new EnglishLanguage(), dateTimeGraph, mapDateTime);
 

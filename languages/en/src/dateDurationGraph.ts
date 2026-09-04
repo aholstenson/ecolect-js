@@ -2,7 +2,7 @@ import { GraphBuilder } from '@ecolect/graph';
 import { LanguageGraphFactory } from '@ecolect/language';
 import { combine, DateTimeData } from '@ecolect/type-datetime';
 
-import { integerGraph } from './integerGraph';
+import { integerGraph } from './integerGraph.js';
 
 export const dateDurationGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'date-duration',

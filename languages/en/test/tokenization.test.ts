@@ -1,4 +1,4 @@
-import { tokenizer } from '../src/tokenizer';
+import { tokenizer } from '../src/tokenizer.js';
 
 describe('English', function() {
 	describe('Tokenization', function() {

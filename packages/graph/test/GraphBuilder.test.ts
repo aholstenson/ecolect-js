@@ -1,7 +1,7 @@
 import { whitespaceTokenizer } from '@ecolect/tokenization';
 
-import { GraphBuilder, GraphTokens } from '../src/GraphBuilder';
-import { GraphMatcher, GraphMatcherOptions } from '../src/GraphMatcher';
+import { GraphBuilder, GraphTokens } from '../src/GraphBuilder.js';
+import { GraphMatcher, GraphMatcherOptions } from '../src/GraphMatcher.js';
 
 const options: GraphMatcherOptions<any, any> = {
 	mapper: m => m.data

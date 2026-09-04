@@ -1,7 +1,7 @@
 /**
  * Meridiem of a time value.
  */
-export const enum Meridiem {
+export enum Meridiem {
 	Auto = 'auto',
 	Fixed = 'fixed',
 	Am = 'am',

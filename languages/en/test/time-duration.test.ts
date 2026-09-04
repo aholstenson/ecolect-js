@@ -1,9 +1,9 @@
 import { mapDuration } from '@ecolect/type-datetime';
 
-import { EnglishLanguage } from '../src/EnglishLanguage';
-import { timeDurationGraph } from '../src/timeDurationGraph';
+import { EnglishLanguage } from '../src/EnglishLanguage.js';
+import { timeDurationGraph } from '../src/timeDurationGraph.js';
 
-import { testRunner } from './helpers';
+import { testRunner } from './helpers.js';
 
 const test = testRunner(new EnglishLanguage(), timeDurationGraph, mapDuration);
 

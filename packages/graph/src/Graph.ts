@@ -1,8 +1,8 @@
 import { Tokenizer } from '@ecolect/tokenization';
 
-import { GraphOptions } from './GraphOptions';
-import { MatchingState } from './matching';
-import { Node } from './Node';
+import { GraphOptions } from './GraphOptions.js';
+import { MatchingState } from './matching/index.js';
+import { Node } from './Node.js';
 
 /**
  * Graph that has been built via GraphBuilder. Graphs are a collection of

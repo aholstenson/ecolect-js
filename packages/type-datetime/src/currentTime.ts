@@ -1,4 +1,4 @@
-import { DateTimeOptions } from './DateTimeOptions';
+import { DateTimeOptions } from './DateTimeOptions.js';
 
 /**
  * Resolve the current time from the given options. This is used so that the

@@ -25,14 +25,15 @@ import {
 } from 'date-fns';
 import { LocalDate, DayOfWeek } from 'datetime-types';
 
-import { currentTime } from './currentTime';
-import { DateTimeData } from './DateTimeData';
-import { DateTimeOptions } from './DateTimeOptions';
-import { IntervalEdge } from './IntervalEdge';
-import { toStart, toEnd } from './intervals';
-import { combine } from './matching';
-import { Period } from './Period';
-import { TimeRelationship } from './TimeRelationship';
+import { currentTime } from './currentTime.js';
+import { DateTimeData } from './DateTimeData.js';
+import { DateTimeOptions } from './DateTimeOptions.js';
+import { IntervalEdge } from './IntervalEdge.js';
+import { toStart, toEnd } from './intervals.js';
+import { combine } from './matching.js';
+import { Period } from './Period.js';
+import { TimeRelationship } from './TimeRelationship.js';
+import { toWeekOptions } from './weekOptions.js';
 
 export function today(r: any, options: DateTimeOptions) {
 	const time = currentTime(options);
@@ -99,20 +100,20 @@ interface Adjustment {
 const QUARTER: Adjustment = {
 	getField: o => o.quarter || 0,
 
-	get: getQuarter,
-	set: setQuarter,
+	get: date => getQuarter(date),
+	set: (date, v) => setQuarter(date, v),
 
-	adjuster: addYears,
+	adjuster: (date, v) => addYears(date, v),
 	parentData: r => typeof r.year !== 'undefined'
 };
 
 const WEEK: Adjustment = {
 	getField: o => o.week || 0,
 
-	get: getWeek,
-	set: setWeek,
+	get: (date, options = {}) => getWeek(date, toWeekOptions(options)),
+	set: (date, v, options = {}) => setWeek(date, v, toWeekOptions(options)),
 
-	adjuster: addYears,
+	adjuster: (date, v) => addYears(date, v),
 	parentData: r => typeof r.year !== 'undefined'
 };
 
@@ -120,9 +121,9 @@ const MONTH: Adjustment = {
 	getField: o => o.month || 0,
 
 	get: d => d.getMonth(),
-	set: setMonth,
+	set: (date, v) => setMonth(date, v),
 
-	adjuster: addYears,
+	adjuster: (date, v) => addYears(date, v),
 	parentData: r => typeof r.year !== 'undefined'
 };
 
@@ -130,9 +131,9 @@ const DAY: Adjustment = {
 	getField: o => o.day || 0,
 
 	get: d => d.getDate(),
-	set: setDate,
+	set: (date, v) => setDate(date, v),
 
-	adjuster: addMonths,
+	adjuster: (date, v) => addMonths(date, v),
 	parentData: r => typeof r.year !== 'undefined' || typeof r.month !== 'undefined'
 };
 
