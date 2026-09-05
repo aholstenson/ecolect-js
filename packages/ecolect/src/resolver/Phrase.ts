@@ -33,8 +33,16 @@ export class Phrase<Values extends object> {
 		refresh(this);
 	}
 
-	public clone() {
-		const r = new Phrase();
+	/**
+	 * Create a copy of this phrase. The values and the expression are copied
+	 * deeply, so the copy can be changed without changing this phrase.
+	 *
+	 * @returns
+	 *   copy of this phrase
+	 */
+	public clone(): Phrase<Values> {
+		const r = new Phrase<Values>();
+		r.score = this.score;
 		r.values = clone(this.values);
 		r.expression = clone(this.expression);
 		return r;
