@@ -202,7 +202,7 @@ export class SubNode<V> extends Node {
 		function arrayEquals<E>(a: E[], b: E[]) {
 			if(a.length !== b.length) return false;
 			for(let i=0; i<a.length; i++) {
-				if(a !== b) return false;
+				if(a[i] !== b[i]) return false;
 			}
 			return true;
 		}
