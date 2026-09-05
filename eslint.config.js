@@ -13,7 +13,7 @@ export default tseslint.config(
 			'**/dist/**',
 			'**/node_modules/**',
 			'**/apidocs/**',
-			'packages/tokenization/src/matchers.ts'
+			'src/tokenization/matchers.ts'
 		]
 	},
 
@@ -207,13 +207,6 @@ export default tseslint.config(
 			'import-x/order': [ 'warn', {
 				'newlines-between': 'always',
 				groups: [ 'builtin', 'external', 'internal', 'parent', 'sibling', 'index' ],
-				pathGroups: [
-					{
-						pattern: '@ecolect/**',
-						group: 'internal'
-					}
-				],
-				pathGroupsExcludedImportTypes: [ 'builtin' ],
 				alphabetize: {
 					order: 'asc',
 					caseInsensitive: true
@@ -223,7 +216,7 @@ export default tseslint.config(
 	},
 
 	{
-		files: [ '**/test/**/*.ts' ],
+		files: [ 'test/**/*.ts' ],
 		rules: {
 			/*
 			 * Tests reach for development dependencies and describe themselves

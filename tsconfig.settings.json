@@ -9,9 +9,12 @@
 		"strict": true,
 		"isolatedModules": true,
 
-		"sourceMap": true,
+		/*
+		 * No source maps or declaration maps are emitted. They are only useful
+		 * together with the TypeScript sources, and shipping those roughly
+		 * triples the size of the package for every language it carries.
+		 */
 		"declaration": true,
-		"declarationMap": true,
 
 		"esModuleInterop": true,
 		"skipLibCheck": true,

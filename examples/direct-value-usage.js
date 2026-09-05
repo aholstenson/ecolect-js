@@ -1,4 +1,4 @@
-import { en } from '@ecolect/language-en';
+import { en } from 'ecolect/language/en';
 import { dateValue } from 'ecolect';
 
 const dateMatcher = dateValue().matcher(en);

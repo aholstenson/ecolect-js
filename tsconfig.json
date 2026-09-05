@@ -1,26 +1,25 @@
 {
 	"extends": "./tsconfig.settings.json",
 	"compilerOptions": {
-		"noEmit": true,
-
-		"paths": {
-			"ecolect": [ "./packages/ecolect/src/index.ts" ],
-			"@ecolect/language-*": [ "./languages/*/src/index.ts" ],
-			"@ecolect/*": [ "./packages/*/src/index.ts" ]
-		}
+		"noEmit": true
 	},
-	"include": [ "packages/*/src", "languages/*/src" ],
+	"include": [ "src", "test" ],
 	"exclude": [ "**/node_modules/**", "**/dist/**" ],
+
 	"typedocOptions": {
 		"name": "Ecolect",
 		"entryPoints": [
-			"packages/ecolect/src/index.ts",
+			"src/index.ts",
+			"src/matching/index.ts",
+			"src/values/index.ts",
 
-			"packages/graph/src/index.ts",
-			"packages/language/src/index.ts",
-			"packages/tokenization/src/index.ts",
-			"packages/type-datetime/src/index.ts",
-			"packages/type-numbers/src/index.ts"
+			"src/graph/index.ts",
+			"src/language/index.ts",
+			"src/language/loader.ts",
+			"src/language/en/index.ts",
+			"src/tokenization/index.ts",
+			"src/type-datetime/index.ts",
+			"src/type-numbers/index.ts"
 		],
 		"out": "apidocs",
 		"excludePrivate": true

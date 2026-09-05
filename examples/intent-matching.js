@@ -1,4 +1,4 @@
-import { en } from '@ecolect/language-en';
+import { en } from 'ecolect/language/en';
 import { anyTextValue, dateValue, intentsBuilder, newPhrases } from 'ecolect';
 
 const intents = intentsBuilder(en)

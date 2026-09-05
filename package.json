@@ -1,21 +1,88 @@
 {
-  "name": "ecolect-base",
-  "private": true,
-  "type": "module",
+  "name": "ecolect",
+  "version": "0.7.0-beta.6",
+  "description": "Natural language handling for commands and intents",
   "license": "MIT",
-  "packageManager": "pnpm@10.33.0",
+  "repository": "https://github.com/aholstenson/ecolect-js",
+  "keywords": [
+    "natural language processing",
+    "nlp",
+    "intents",
+    "commands",
+    "parsing"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./values": {
+      "types": "./dist/values/index.d.ts",
+      "default": "./dist/values/index.js"
+    },
+    "./matching": {
+      "types": "./dist/matching/index.d.ts",
+      "default": "./dist/matching/index.js"
+    },
+    "./graph": {
+      "types": "./dist/graph/index.d.ts",
+      "default": "./dist/graph/index.js"
+    },
+    "./language": {
+      "types": "./dist/language/index.d.ts",
+      "default": "./dist/language/index.js"
+    },
+    "./language/loader": {
+      "types": "./dist/language/loader.d.ts",
+      "default": "./dist/language/loader.js"
+    },
+    "./language/en": {
+      "types": "./dist/language/en/index.d.ts",
+      "default": "./dist/language/en/index.js"
+    },
+    "./tokenization": {
+      "types": "./dist/tokenization/index.d.ts",
+      "default": "./dist/tokenization/index.js"
+    },
+    "./type-datetime": {
+      "types": "./dist/type-datetime/index.d.ts",
+      "default": "./dist/type-datetime/index.js"
+    },
+    "./type-numbers": {
+      "types": "./dist/type-numbers/index.d.ts",
+      "default": "./dist/type-numbers/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
   "engines": {
     "node": ">=22.0.0"
   },
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "apidocs": "typedoc",
-    "build": "pnpm -r run build",
-    "clean": "pnpm -r run clean",
+    "clean": "rm -rf dist",
+    "prebuild": "pnpm run clean",
+    "build": "node build/unicode.js && tsc --project tsconfig.build.json",
+    "prepublishOnly": "pnpm run build",
     "coverage": "vitest run --coverage",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit --project tsconfig.eslint.json"
+  },
+  "dependencies": {
+    "date-fns": "^4.4.0",
+    "datetime-types": "^0.3.0",
+    "fast-equals": "^6.0.3",
+    "numeric-types": "^0.4.0",
+    "rfdc": "^1.4.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -28,9 +95,11 @@
     "eslint-plugin-jsdoc": "^64.3.5",
     "eslint-plugin-tsdoc": "^0.5.2",
     "globals": "^17.12.0",
+    "regenerate": "^1.4.2",
     "typedoc": "^0.28.20",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.69.0",
+    "unicode-9.0.0": "^0.7.5",
     "vitest": "^5.0.0"
   }
 }

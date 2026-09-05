@@ -4,10 +4,9 @@
 		"types": [ "node", "vitest/globals" ]
 	},
 	"include": [
-		"packages/*/src",
-		"packages/*/test",
-		"languages/*/src",
-		"languages/*/test",
+		"src",
+		"test",
+		"build",
 		"*.ts",
 		"*.js"
 	],

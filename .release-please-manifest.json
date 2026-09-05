@@ -1,9 +1,3 @@
 {
-  "packages/ecolect": "0.7.0-beta.6",
-  "packages/graph": "0.7.0-beta.6",
-  "packages/language": "0.7.0-beta.6",
-  "packages/tokenization": "0.7.0-beta.6",
-  "packages/type-datetime": "0.7.0-beta.6",
-  "packages/type-numbers": "0.7.0-beta.6",
-  "languages/en": "0.7.0-beta.6"
+  ".": "0.7.0-beta.6"
 }

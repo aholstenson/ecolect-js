@@ -1,4 +1,4 @@
-import { en } from '@ecolect/language-en';
+import { en } from 'ecolect/language/en';
 import autocompletePrompt from 'cli-autocomplete';
 import chalk from 'chalk';
 import {

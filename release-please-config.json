@@ -1,31 +1,9 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
-  "separate-pull-requests": false,
-  "include-component-in-tag": true,
+  "include-component-in-tag": false,
   "release-as": "0.8.0",
-  "plugins": [
-    {
-      "type": "linked-versions",
-      "groupName": "ecolect",
-      "components": [
-        "ecolect",
-        "@ecolect/graph",
-        "@ecolect/language",
-        "@ecolect/language-en",
-        "@ecolect/tokenization",
-        "@ecolect/type-datetime",
-        "@ecolect/type-numbers"
-      ]
-    }
-  ],
   "packages": {
-    "packages/ecolect": {},
-    "packages/graph": {},
-    "packages/language": {},
-    "packages/tokenization": {},
-    "packages/type-datetime": {},
-    "packages/type-numbers": {},
-    "languages/en": {}
+    ".": {}
   }
 }

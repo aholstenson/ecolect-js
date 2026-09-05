@@ -9,14 +9,14 @@ natural language interface for things such as bots, voice or search interfaces.
 
 ## Installation
 
-Ecolect needs the core library and a language:
-
 ```
-$ npm install ecolect @ecolect/language-en
+$ npm install ecolect
 ```
 
-The packages are ESM only and need Node 20.19 or later. To use them from
-CommonJS, load them with a dynamic `import()`.
+Languages ship with the library, as subpaths such as `ecolect/language/en`.
+
+The package is ESM only and needs Node 22 or later. To use it from CommonJS,
+load it with a dynamic `import()`.
 
 # Features
 
@@ -35,7 +35,7 @@ CommonJS, load them with a dynamic `import()`.
 Using a value:
 
 ```javascript
-import { en } from '@ecolect/language-en';
+import { en } from 'ecolect/language/en';
 import { dateValue } from 'ecolect';
 
 const matcher = dateValue().matcher(en);
@@ -45,7 +45,7 @@ const bestMatch = await matcher.match('first Monday of 2021');
 Matching phrases:
 
 ```javascript
-import { en } from '@ecolect/language-en';
+import { en } from 'ecolect/language/en';
 import { newPhrases, dateIntervalValue } from 'ecolect';
 
 const matcher = newPhrases()
@@ -60,7 +60,7 @@ const bestMatch = await matcher.match('todo due today');
 Combining phrases:
 
 ```javascript
-import { en } from '@ecolect/language-en';
+import { en } from 'ecolect/language/en';
 import { intentsBuilder, newPhrases, dateIntervalValue } from 'ecolect';
 
 const matcher = intentsBuilder(en)
@@ -163,7 +163,7 @@ language it is called on is left unchanged, so several vocabularies can be
 used side by side:
 
 ```javascript
-import { en } from '@ecolect/language-en';
+import { en } from 'ecolect/language/en';
 import { newPhrases } from 'ecolect';
 
 const language = en.withVocabulary({
@@ -199,7 +199,7 @@ is January 2nd or February 1st and which day weeks start on. `en-GB` and
 Set the locale on the language to use it for every match:
 
 ```javascript
-import { english } from '@ecolect/language-en';
+import { english } from 'ecolect/language/en';
 import { dateValue } from 'ecolect';
 
 const matcher = dateValue().matcher(english('en-GB'));
@@ -219,7 +219,7 @@ The conventions are read from `Intl`, so no locale data is bundled. Read them
 directly with `resolveLocale` if you need them yourself:
 
 ```javascript
-import { resolveLocale } from '@ecolect/language';
+import { resolveLocale } from 'ecolect/language';
 
 // { dateOrder: 'day-month-year', weekStartsOn: 1, firstWeekContainsDate: 4, ... }
 const settings = resolveLocale('en-GB');
@@ -483,21 +483,45 @@ for things such as search queries, todo items and calendar events. Values of
 type `anyTextValue` will always try to capture as much as they can and will not
 validate the result.
 
-## Packages
+## Entry points
 
-Name | Description
------|------------
+Everything ships in the `ecolect` package. Import only the parts you need, so
+a bundler can leave the rest out.
+
+Import | Description
+-------|------------
 `ecolect` | Intents, actions and the value types
-`@ecolect/language-en` | English language support
-`@ecolect/graph` | Graph based matching over tokens
-`@ecolect/language` | Shared language interfaces
-`@ecolect/tokenization` | Tokenization of strings
-`@ecolect/type-datetime` | Date and time primitives
-`@ecolect/type-numbers` | Number primitives
+`ecolect/values` | The value types on their own
+`ecolect/matching` | Match options and matcher interfaces
+`ecolect/language/en` | English language support
+`ecolect/language/loader` | Load a language on demand
+`ecolect/language` | Shared language interfaces
+`ecolect/graph` | Graph based matching over tokens
+`ecolect/tokenization` | Tokenization of strings
+`ecolect/type-datetime` | Date and time primitives
+`ecolect/type-numbers` | Number primitives
+
+### Loading a language on demand
+
+Import a language directly when you know which one you need when you write the
+code. When the language is only known while the program runs, load it through
+`ecolect/language/loader`:
+
+```javascript
+import { loadLanguage } from 'ecolect/language/loader';
+import { dateValue } from 'ecolect';
+
+const language = await loadLanguage('en');
+const matcher = dateValue().matcher(language);
+```
+
+The loader holds one literal `import()` per language. A bundler reads those and
+puts every language in a chunk of its own, so a page that only ever loads
+English never downloads the others.
 
 ## Development
 
-The repository is a pnpm workspace. Install [pnpm](https://pnpm.io) and then:
+Install [pnpm](https://pnpm.io) and then:
 
 ```
 $ pnpm install
@@ -507,7 +531,7 @@ $ pnpm test
 
 Command | Description
 --------|------------
-`pnpm build` | Compile every package to `dist`, in dependency order
+`pnpm build` | Generate the Unicode matchers and compile `src` to `dist`
 `pnpm test` | Run the test suite once with Vitest
 `pnpm test:watch` | Run the test suite in watch mode
 `pnpm coverage` | Run the test suite and report coverage
@@ -515,8 +539,11 @@ Command | Description
 `pnpm lint` | Run ESLint
 `pnpm apidocs` | Build the API documentation into `apidocs`
 
-Tests resolve the workspace packages to their sources, so `pnpm test` does not
-need a build first.
+Tests import the sources directly, so `pnpm test` does not need a build first.
+
+`dist` carries the compiled JavaScript and the type declarations, and nothing
+else. No source maps or TypeScript sources are published, which keeps the
+package about a third of the size it would otherwise be.
 
 ## Releases
 
@@ -524,10 +551,7 @@ Releases are prepared by [Release Please](https://github.com/googleapis/release-
 which reads the [Conventional Commits](https://www.conventionalcommits.org)
 history and opens a pull request that raises the versions and writes the
 changelogs. Merging that pull request tags the release, and the `Release`
-workflow publishes every package to npm.
-
-All packages share one version number, kept in step by the `linked-versions`
-plugin.
+workflow publishes the package to npm.
 
 `release-please-config.json` carries `"release-as": "0.8.0"` to set the version
 of the first release after the move to ESM. Remove that field once 0.8.0 is
