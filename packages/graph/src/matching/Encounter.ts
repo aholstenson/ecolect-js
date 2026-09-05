@@ -6,6 +6,8 @@ import { Node } from '../Node.js';
 
 import { EncounterOptions } from './EncounterOptions.js';
 import { MatchHandler } from './MatchHandler.js';
+import { MaybePromise, after, isThenable, sequence, toPromise } from './maybePromise.js';
+import { SubGraphEvaluation } from './SubGraphEvaluation.js';
 
 /**
  * Encounter used when trying to match an expression. Contains all the tokens
@@ -26,7 +28,6 @@ export class Encounter {
 	private currentDataDepth: number;
 
 	public matches: MatchSet<any>;
-	private maxDepth: number;
 
 	private onlyComplete: boolean;
 
@@ -42,6 +43,13 @@ export class Encounter {
 	public outgoing: Node[];
 	private _cache: Map<any, any>[];
 
+	/**
+	 * Evaluations of sub-graphs that are in progress, in the order they were
+	 * started. Used to stop a graph that refers to itself from recursing
+	 * forever.
+	 */
+	private _evaluations: SubGraphEvaluation[];
+
 	public constructor(tokens: Tokens, options: EncounterOptions) {
 		this.tokens = tokens;
 
@@ -54,7 +62,6 @@ export class Encounter {
 		this.matches = new MatchSet({
 			isEqual: options.matchIsEqual && options.matchIsEqual(options)
 		});
-		this.maxDepth = 0;
 
 		this.onMatch = options.onMatch;
 		this.onlyComplete = options.onlyComplete || false;
@@ -66,6 +73,7 @@ export class Encounter {
 
 		this.outgoing = [];
 		this._cache = [];
+		this._evaluations = [];
 	}
 
 	/**
@@ -103,11 +111,46 @@ export class Encounter {
 
 	/**
 	 * Branch out this encounter and try to match all of the given nodes.
+	 * This is the same as `advance` but always returns a promise, for nodes
+	 * that prefer to work with promises.
+	 *
+	 * @param score -
+	 *   score to add for the tokens consumed
+	 * @param consumedTokens -
+	 *   the number of tokens consumed
+	 * @param data -
+	 *   optional data to make available to collectors
+	 * @returns
+	 *   promise that resolves when all outgoing nodes have been evaluated
+	 */
+	public next(score: number, consumedTokens: number, data?: any): Promise<void> {
+		try {
+			return toPromise(this.advance(score, consumedTokens, data));
+		} catch(err) {
+			return Promise.reject(err);
+		}
+	}
+
+	/**
+	 * Branch out this encounter and try to match all of the given nodes.
 	 *
 	 * For every outgoing node:
 	 *   - Run the match method, checking if it matches
+	 *
+	 * The nodes are evaluated one after the other. Evaluation is synchronous
+	 * until a node returns a promise, in which case the remaining nodes are
+	 * evaluated when the promise resolves.
+	 *
+	 * @param score -
+	 *   score to add for the tokens consumed
+	 * @param consumedTokens -
+	 *   the number of tokens consumed
+	 * @param data -
+	 *   optional data to make available to collectors
+	 * @returns
+	 *   nothing, via a promise if any node returned a promise
 	 */
-	public next(score: number, consumedTokens: number, data?: any): Promise<void> {
+	public advance(score: number, consumedTokens: number, data?: any): MaybePromise<void> {
 		const nextIndex = this.currentIndex + (consumedTokens || 0);
 		const nextScore = this.currentScore + (score || 0);
 
@@ -129,14 +172,27 @@ export class Encounter {
 		const currentIndex = this.currentIndex;
 		const currentScore = this.currentScore;
 		const outgoing = this.outgoing;
+		const nodes = this.outgoing;
+
+		const restore = () => {
+			this.currentIndex = currentIndex;
+			this.currentScore = currentScore;
+
+			this.outgoing = outgoing;
+			this.currentNodes.pop();
+			this.currentTokens.pop();
+		};
 
 		/**
-		 * Create a function that evaluates the given node.
+		 * Evaluate the node at the given index.
 		 *
-		 * @param {Node} node
+		 * @param i -
+		 *   index of the node in `nodes`
+		 * @returns
+		 *   nothing, via a promise if the node returned a promise
 		 */
-		const branchInto = (node: Node) => () => {
-			this.maxDepth = Math.max(this.maxDepth, this.currentNodes.length);
+		const branchInto = (i: number): MaybePromise<unknown> => {
+			const node = nodes[i];
 
 			// Switch to the next index and score
 			this.currentIndex = node.supportsPunctuation ? nextIndex : nextIndexAfterPunctuation;
@@ -151,36 +207,16 @@ export class Encounter {
 			// Match the result
 			const result = node.match(this);
 
-			if(result && result.then) {
+			if(isThenable(result)) {
 				// If the match returned a promise chain the reset
-				return result.then(() => {
-					// Restore the indexes
-					this.currentIndex = currentIndex;
-					this.currentScore = currentScore;
-
-					this.outgoing = outgoing;
-					this.currentNodes.pop();
-					this.currentTokens.pop();
-				});
+				return result.then(restore);
 			} else {
 				// If the result was not a promise reset directly
-				this.currentIndex = currentIndex;
-				this.currentScore = currentScore;
-
-				this.outgoing = outgoing;
-				this.currentNodes.pop();
-				this.currentTokens.pop();
-				return result;
+				restore();
 			}
 		};
 
-		const nodes = this.outgoing;
-		let promise = Promise.resolve();
-		for(let i=0; i<nodes.length; i++) {
-			promise = promise.then(branchInto(nodes[i]));
-		}
-
-		return promise.then(() => {
+		const finish = (): MaybePromise<void> => {
 			if(pushedData) this.currentData.pop();
 
 			/*
@@ -197,43 +233,50 @@ export class Encounter {
 				&& this.supportsFuzzy
 				&& nextIndex !== this.tokens.length - 1
 			) {
-				return this.next((score || 0), (consumedTokens || 0) + 1, data);
+				return this.advance((score || 0), (consumedTokens || 0) + 1, data);
 			}
-		});
+		};
+
+		return after(sequence(nodes.length, branchInto), finish);
 	}
 
 	/**
 	 * Branch into and evaluate the expression against the given nodes.
 	 *
-	 * @param {array} nodes
+	 * @param nodes -
+	 *   the nodes to evaluate
+	 * @returns
+	 *   nothing, via a promise if any node returned a promise
 	 */
-	public branchInto(nodes: Node[]): Promise<void> {
+	public branchInto(nodes: Node[]): MaybePromise<void> {
 		const outgoing = this.outgoing;
 		this.outgoing = nodes;
-		return this.next(0, 0)
-			.then(() => {
-				this.outgoing = outgoing;
-			});
+		return after(this.advance(0, 0), () => {
+			this.outgoing = outgoing;
+		});
 	}
 
-	public branchWithOnMatch(newOnMatch: MatchHandler, func: () => Promise<any> | any): Promise<void> {
+	/**
+	 * Run the given function with matches being reported to the given
+	 * handler instead of being added to the result.
+	 *
+	 * @param newOnMatch -
+	 *   handler that receives the matches
+	 * @param func -
+	 *   function to run
+	 * @returns
+	 *   nothing, via a promise if the function returned a promise
+	 */
+	public branchWithOnMatch(newOnMatch: MatchHandler, func: () => MaybePromise<unknown>): MaybePromise<void> {
 		const onMatch = this.onMatch;
 		const currentDataDepth = this.currentDataDepth;
 		this.onMatch = newOnMatch;
 		this.currentDataDepth = this.currentData.length;
 
-		let r = func();
-		if(r && r.then) {
-			r = r.then(() => {
-				this.currentDataDepth = currentDataDepth;
-				this.onMatch = onMatch;
-			});
-		} else {
-			this.onMatch = onMatch;
+		return after(func(), () => {
 			this.currentDataDepth = currentDataDepth;
-		}
-
-		return r;
+			this.onMatch = onMatch;
+		});
 	}
 
 	/**
@@ -266,11 +309,16 @@ export class Encounter {
 	 * This looks backwards in the tokens to try to find the first
 	 * non-punctuation token. Used by SubNodes to allow puncutation to be
 	 * used both the parent parser and the sub-parser.
+	 *
+	 * @param index -
+	 *   the index to look backwards from, defaults to the current index
+	 * @returns
+	 *   the index just after the last token that is not punctuation
 	 */
-	public previousNonSkipped(): number {
-		if(! this.skipPunctuation) return this.currentIndex;
+	public previousNonSkipped(index: number = this.currentIndex): number {
+		if(! this.skipPunctuation) return index;
 
-		let idx = this.currentIndex - 1;
+		let idx = index - 1;
 		let token = this.tokens[idx];
 		while(token && token.punctuation) {
 			token = this.tokens[--idx];
@@ -284,8 +332,13 @@ export class Encounter {
 
 	/**
 	 * Push the current match onto the result.
+	 *
+	 * @param data -
+	 *   the data matched, or a match to report as is
+	 * @returns
+	 *   nothing, via a promise if the match handler returned a promise
 	 */
-	public match(data: any) {
+	public match(data: any): MaybePromise<unknown> {
 		let match;
 		if(data instanceof Match) {
 			match = data;
@@ -326,5 +379,87 @@ export class Encounter {
 		map = new Map();
 		this._cache[index] = map;
 		return map;
+	}
+
+	/**
+	 * Get the evaluation of the given sub-graph if it is in progress at the
+	 * current index. Sub-graphs that refer to themselves use this to find
+	 * the seed to use instead of recursing.
+	 *
+	 * @param roots -
+	 *   the root nodes of the sub-graph
+	 * @returns
+	 *   the evaluation in progress, or `undefined` if the sub-graph is not
+	 *   being evaluated at the current index
+	 */
+	public evaluationOf(roots: Node[]): SubGraphEvaluation | undefined {
+		const evaluations = this._evaluations;
+		for(let i=evaluations.length-1; i>=0; i--) {
+			const evaluation = evaluations[i];
+			if(evaluation.roots === roots && evaluation.index === this.currentIndex) {
+				return evaluation;
+			}
+		}
+
+		return undefined;
+	}
+
+	/**
+	 * Mark that the seed of the given evaluation is being used, which happens
+	 * when the sub-graph refers to itself. Evaluations that started after
+	 * the given one are marked as depending on the seed, as their result may
+	 * change when the seed grows.
+	 *
+	 * @param evaluation -
+	 *   the evaluation whose seed is used
+	 */
+	public useSeed(evaluation: SubGraphEvaluation): void {
+		evaluation.seedUsed = true;
+		evaluation.seedRoots.add(this.currentNodes[evaluation.depth]);
+
+		const evaluations = this._evaluations;
+		for(let i=evaluations.length-1; i>=0; i--) {
+			const other = evaluations[i];
+			if(other === evaluation) break;
+
+			other.dependsOnSeed = true;
+		}
+	}
+
+	/**
+	 * Start evaluating the given sub-graph at the current index.
+	 *
+	 * @param roots -
+	 *   the root nodes of the sub-graph
+	 * @returns
+	 *   the evaluation, to be passed to `stopEvaluating` when done
+	 */
+	public startEvaluating(roots: Node[]): SubGraphEvaluation {
+		const evaluation: SubGraphEvaluation = {
+			roots: roots,
+			index: this.currentIndex,
+			depth: this.currentNodes.length,
+			seed: [],
+			seedUsed: false,
+			seedRoots: new Set(),
+			dependsOnSeed: false
+		};
+
+		this._evaluations.push(evaluation);
+		return evaluation;
+	}
+
+	/**
+	 * Mark the given evaluation as done.
+	 *
+	 * @param evaluation -
+	 *   the evaluation returned by `startEvaluating`
+	 */
+	public stopEvaluating(evaluation: SubGraphEvaluation): void {
+		const evaluations = this._evaluations;
+		const idx = evaluations.lastIndexOf(evaluation);
+		if(idx >= 0) {
+			evaluations.splice(idx, 1);
+		}
 	}
 }

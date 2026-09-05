@@ -1,7 +1,8 @@
 import { Token } from '@ecolect/tokenization';
 
-import { Node } from './Node.js';
 import { Encounter } from './matching/Encounter.js';
+import { after } from './matching/maybePromise.js';
+import { Node } from './Node.js';
 
 export type TokenValidator = (token: Token) => Promise<boolean | null> | boolean | null;
 
@@ -21,13 +22,12 @@ export class CustomNode extends Node {
 		const token = encounter.token();
 		if(! token) return;
 
-		return Promise.resolve(this.validator(token))
-			.then(r => {
-				if(r !== null && typeof r !== 'undefined') {
-					// This validator resolved a value, continue matching
-					return encounter.next(1, 1, r);
-				}
-			});
+		return after(this.validator(token), r => {
+			if(r !== null && typeof r !== 'undefined') {
+				// This validator resolved a value, continue matching
+				return encounter.advance(1, 1, r);
+			}
+		});
 	}
 
 	public equals(other: Node): boolean {

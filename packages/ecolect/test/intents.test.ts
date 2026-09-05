@@ -4,7 +4,7 @@ import { IntentsBuilder } from '../src/IntentsBuilder.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
 
 import { assertNotNull } from './assertions.js';
-import { anyTextValue } from '../src/values/index.js';
+import { anyTextValue, customValue } from '../src/values/index.js';
 
 describe('Intents', function() {
 	describe('Orders', function() {
@@ -168,6 +168,101 @@ describe('Intents', function() {
 				.then(r => {
 					expect(r.length).toEqual(1);
 				});
+		});
+	});
+
+	describe('Scoring with values', function() {
+		const phrases = newPhrases()
+			.value('text', anyTextValue())
+			.phrase('add {text}')
+			.phrase('add {text} to my list')
+			.build();
+
+		const intents = new IntentsBuilder(en)
+			.add('add', phrases)
+			.build();
+
+		const direct = phrases.toMatcher(en);
+
+		it('Intent scores like the phrases do', function() {
+			const expression = 'add milk to my list';
+			return Promise.all([ intents.match(expression), direct.match(expression) ])
+				.then(([ intent, phrase ]) => {
+					assertNotNull(intent);
+					assertNotNull(phrase);
+
+					// The intent adds a small penalty for the nested graph
+					expect(intent.score).toBeCloseTo(phrase.score, 2);
+					expect(intent.values.text).toEqual('milk');
+				});
+		});
+
+		it('Phrase matching more of the expression wins', function() {
+			return intents.match('add milk to my list')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.text).toEqual('milk');
+				});
+		});
+
+		it('Partial matches are ordered by how much they match', function() {
+			return intents.matchPartial('add milk to my')
+				.then(r => {
+					expect(r.length).toBeGreaterThan(1);
+					expect(r[0].values.text).toEqual('milk');
+
+					const scores = r.map(m => m.score);
+					expect([ ...scores ].sort((a, b) => b - a)).toEqual(scores);
+					expect(scores[0]).toBeGreaterThan(scores[scores.length - 1]);
+				});
+		});
+	});
+
+	describe('Concurrent matching', function() {
+		const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+		// Value that takes a while, so that several matches are in flight at once
+		const slow = customValue<string>(async encounter => {
+			await wait(5);
+			if(encounter.text === 'alpha' || encounter.text === 'beta') {
+				encounter.match(encounter.text);
+			}
+		});
+
+		const intents = new IntentsBuilder(en)
+			.add('run', newPhrases()
+				.value('v', slow)
+				.phrase('run {v}')
+				.phrase('run {v} now')
+				.build()
+			)
+			.add('stop', newPhrases()
+				.phrase('stop')
+				.build()
+			)
+			.build();
+
+		it('Matches in flight at the same time do not affect each other', function() {
+			return Promise.all([
+				intents.match('run alpha now'),
+				intents.match('run beta'),
+				intents.match('stop')
+			]).then(([ a, b, c ]) => {
+				assertNotNull(a);
+				expect(a.id).toEqual('run');
+				if(a.id === 'run') {
+					expect(a.values.v).toEqual('alpha');
+				}
+
+				assertNotNull(b);
+				expect(b.id).toEqual('run');
+				if(b.id === 'run') {
+					expect(b.values.v).toEqual('beta');
+				}
+
+				assertNotNull(c);
+				expect(c.id).toEqual('stop');
+			});
 		});
 	});
 });

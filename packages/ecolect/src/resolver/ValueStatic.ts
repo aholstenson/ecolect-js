@@ -23,7 +23,7 @@ export class ValueStatic<V> extends Node {
 	}
 
 	public match(encounter: Encounter) {
-		return encounter.next(0, 0, { id: this.id, value: this.value });
+		return encounter.advance(0, 0, { id: this.id, value: this.value });
 	}
 
 	public toString() {

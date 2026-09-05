@@ -3,7 +3,7 @@ import { ValueNodeOptions } from '../resolver/ValueNode.js';
 import { ValueEncounter } from '../resolver/ValueEncounter.js';
 
 const instance: ValueNodeOptions<string> = {
-	async match(encounter: ValueEncounter<string>) {
+	match(encounter: ValueEncounter<string>) {
 		encounter.match(encounter.text);
 	}
 };

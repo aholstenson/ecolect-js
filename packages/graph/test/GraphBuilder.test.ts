@@ -261,5 +261,95 @@ describe('GraphBuilder', function() {
 					});
 			});
 		});
+
+		describe('Left recursive match', function() {
+			/*
+			 * This graph can only grow to the left, so `a + b + c` has to be
+			 * matched as `(a + b) + c`. Every level needs the graph to be
+			 * evaluated with the results of the previous level.
+			 */
+			const graph = new GraphBuilder<string>(tokens)
+				.add(/^[a-z]$/, v => v[0])
+				.add([ GraphBuilder.result(), '+', /^[a-z]$/ ], v => v[0] + v[1])
+				.build();
+
+			const matcher = new GraphMatcher(graph, options);
+
+			it('a', function() {
+				return matcher.match('a')
+					.then(r => {
+						expect(r).toEqual('a');
+					});
+			});
+
+			it('a + b', function() {
+				return matcher.match('a + b')
+					.then(r => {
+						expect(r).toEqual('ab');
+					});
+			});
+
+			it('a + b + c', function() {
+				return matcher.match('a + b + c')
+					.then(r => {
+						expect(r).toEqual('abc');
+					});
+			});
+
+			it('a + b + c + d + e', function() {
+				return matcher.match('a + b + c + d + e')
+					.then(r => {
+						expect(r).toEqual('abcde');
+					});
+			});
+
+			it('a + b +', function() {
+				return matcher.match('a + b +')
+					.then(r => {
+						expect(r).toBeNull();
+					});
+			});
+		});
+
+		describe('Graph used by several nodes', function() {
+			/*
+			 * The sub-graph is evaluated once per index and the result is
+			 * shared, so every node using it must still see the data mapped
+			 * and filtered the way it expects.
+			 */
+			const sub = new GraphBuilder<number>(tokens)
+				.add('one', 1)
+				.add('two', 2)
+				.build();
+
+			const graph = new GraphBuilder<string>(tokens)
+				.add([ GraphBuilder.result(sub, v => v === 1), 'x' ], v => 'one:' + v[0])
+				.add([ GraphBuilder.result(sub, v => v === 2), 'x' ], v => 'two:' + v[0])
+				.add([ sub, 'y' ], v => 'any:' + v[0])
+				.build();
+
+			const matcher = new GraphMatcher(graph, options);
+
+			it('one x', function() {
+				return matcher.match('one x')
+					.then(r => {
+						expect(r).toEqual('one:1');
+					});
+			});
+
+			it('two x', function() {
+				return matcher.match('two x')
+					.then(r => {
+						expect(r).toEqual('two:2');
+					});
+			});
+
+			it('two y', function() {
+				return matcher.match('two y')
+					.then(r => {
+						expect(r).toEqual('any:2');
+					});
+			});
+		});
 	});
 });

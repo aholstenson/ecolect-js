@@ -7,7 +7,7 @@ import { ValueEncounter } from '../resolver/ValueEncounter.js';
  *
  * @param options
  */
-export function customValue<V>(options: ValueNodeOptions<V> | ((encounter: ValueEncounter<V>) => Promise<void>)): NodeConvertable<V> {
+export function customValue<V>(options: ValueNodeOptions<V> | ((encounter: ValueEncounter<V>) => Promise<void> | void)): NodeConvertable<V> {
 	if(typeof options === 'undefined') {
 		throw new Error('Value matcher must be specified');
 	}

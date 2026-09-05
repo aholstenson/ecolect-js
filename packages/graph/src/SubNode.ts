@@ -1,9 +1,17 @@
-import { Node } from './Node.js';
-import { Encounter, Match, MatchingState, emptyState } from './matching/index.js';
-import { Predicate } from './Predicate.js';
+import { deepEqual } from 'fast-equals';
 
 import { Graph } from './Graph.js';
 import { GraphOptions } from './GraphOptions.js';
+import {
+	Encounter,
+	Match,
+	MaybePromise,
+	SubGraphVariant,
+	after,
+	sequence
+} from './matching/index.js';
+import { Node } from './Node.js';
+import { Predicate } from './Predicate.js';
 
 /*
  * Small penalty applied when a SubNode matches. This helps the algorithm
@@ -12,15 +20,6 @@ import { GraphOptions } from './GraphOptions.js';
  * by an optional P2 to match P1 before before P1 P2.
  */
 const PARSER_PENALTY = 0.001;
-
-/**
- * A variant as resolved by the sub-graph. Used for caching of data.
- */
-interface Variant {
-	index: number;
-	score: number;
-	data: any;
-}
 
 const alwaysTrue: Predicate<any> = () => true;
 
@@ -33,10 +32,14 @@ const alwaysTrue: Predicate<any> = () => true;
  * may return with variants that span `T2` and `T2 T3` in which case the next
  * nodes will be evaluated both against both matches, so it will be invoked
  * once starting from `T3` and once from `T4`.
+ *
+ * The variants a sub-graph resolves are cached per encounter and token index,
+ * so a graph that is used by several nodes is only evaluated once for a given
+ * index. The cache holds the data as the sub-graph reported it, and every
+ * node maps and filters that data on its own.
  */
 export class SubNode<V> extends Node {
 	private roots: Node[];
-	private state: MatchingState;
 
 	public name: string;
 
@@ -61,30 +64,19 @@ export class SubNode<V> extends Node {
 		this.filter = filter ?? alwaysTrue;
 
 		if('nodes' in roots) {
-			// Roots is actually a matcher, copy the graph from the matcher
+			// Roots is actually a graph, use its nodes directly
 			this.roots = roots.nodes;
-			this.state = roots.matchingState;
 		} else {
 			this.roots = roots;
-			this.state = emptyState();
 		}
 
 		this.supportsPartial = options.supportsPartial || false;
 		this.name = options.name || 'unknown';
 		this.skipPunctuation = options.skipPunctuation || false;
 		this.supportsFuzzy = options.supportsFuzzy || false;
-		//this.mapper = options.mapper;
 	}
 
 	public match(encounter: Encounter) {
-		if(this.state.currentIndex === encounter.currentIndex) {
-			/*
-			 * If this node is called with the same index again we skip
-			 * evaluating.
-			 */
-			return;
-		}
-
 		if(! encounter.token() && encounter.options.partial) {
 			if(this.recursive) {
 				/**
@@ -103,98 +95,207 @@ export class SubNode<V> extends Node {
 			}
 		}
 
-		// Set the index we were called at
-		const previousIndex = this.state.currentIndex;
-		this.state.currentIndex = encounter.currentIndex;
-
-		const variants: Variant[] = [];
-		const branchIntoVariants = (variants0: Variant[]) => {
-			let promise;
-
-			if(variants0.length === 0) {
-				if(encounter.options.partial && ! this.supportsPartial && this.partialFallback) {
-					promise = encounter.next(0.0, encounter.tokens.length - encounter.currentIndex, this.partialFallback);
-				} else {
-					promise = Promise.resolve();
-				}
-			} else {
-				promise = Promise.resolve();
-
-				for(let i=0; i<variants0.length; i++) {
-					const v = variants0[i];
-					if(v.data !== null && ! this.filter(v.data)) {
-						continue;
-					}
-
-					promise = promise.then(() => {
-						return encounter.next(
-							v.score - PARSER_PENALTY,
-							v.index - encounter.currentIndex,
-							v.data
-						);
-					});
-				}
-			}
-
-			return promise.then(() => {
-				this.state.currentIndex = previousIndex;
-			});
-		};
-
-		// Check the cache
 		const cache = encounter.cache();
-		const cached = cache.get(this.roots);
-		if(cached) {
-			return branchIntoVariants(cached);
+
+		// Check if this node has already mapped the variants at this index
+		const mapped = cache.get(this);
+		if(mapped) {
+			return this.branchIntoVariants(encounter, mapped);
 		}
 
+		// Check if the sub-graph has been evaluated at this index by another node
+		const raw = cache.get(this.roots);
+		if(raw) {
+			return this.branchIntoVariants(encounter, this.mapVariants(encounter, raw, cache));
+		}
+
+		const evaluation = encounter.evaluationOf(this.roots);
+		if(evaluation) {
+			/*
+			 * The sub-graph refers to itself, use the variants found so far
+			 * as the seed. The evaluation in progress will run again if the
+			 * seed grows, so the seed is not cached.
+			 */
+			encounter.useSeed(evaluation);
+			return this.branchIntoVariants(encounter, this.mapVariants(encounter, evaluation.seed));
+		}
+
+		return after(this.evaluate(encounter), variants => {
+			return this.branchIntoVariants(encounter, this.mapVariants(encounter, variants, cache));
+		});
+	}
+
+	/**
+	 * Evaluate the sub-graph at the current index of the encounter. The
+	 * sub-graph is evaluated again as long as it referred to itself and found
+	 * new variants, so that graphs that combine their own results can nest
+	 * to any depth.
+	 *
+	 * @param encounter -
+	 *   the encounter
+	 * @returns
+	 *   the variants found, via a promise if evaluation was asynchronous
+	 */
+	private evaluate(encounter: Encounter): MaybePromise<SubGraphVariant[]> {
+		const evaluation = encounter.startEvaluating(this.roots);
 		const baseScore = encounter.currentScore;
-		const onMatch = (match: Match<V>) => {
-			let result: V | null = match.data;
-			if(result !== null && typeof result !== 'undefined') {
-				if(this.mapper) {
-					result = this.mapper(result, encounter);
-				}
-			} else {
-				result = null;
-			}
-
-			variants.push({
-				index: match.index,
-				score: encounter.currentScore - baseScore,
-				data: result
-			});
-
-			// Back-track to allow following nodes to also handle any trailing tokens
-			const previousNonSkipped = encounter.previousNonSkipped();
-			if(previousNonSkipped !== match.index) {
-				variants.push({
-					index: previousNonSkipped,
-					score: encounter.currentScore - baseScore,
-					data: result
-				});
-			}
-		};
 
 		// Memorize if we are running a partial match
 		const supportsPartial = encounter.supportsPartial;
 		const supportsFuzzy = encounter.supportsFuzzy;
 		const skipPunctuation = encounter.skipPunctuation;
 
-		return encounter.branchWithOnMatch(onMatch, () => {
-			encounter.supportsPartial = this.supportsPartial;
-			encounter.supportsFuzzy = this.supportsFuzzy;
-			encounter.skipPunctuation = this.skipPunctuation;
+		/*
+		 * Every pass over the sub-graph must be able to consume at least one
+		 * more token than the previous one, so the number of passes is bounded
+		 * by the number of tokens left.
+		 */
+		let passesLeft = encounter.tokens.length - encounter.currentIndex + 2;
 
-			return encounter.branchInto(this.roots);
-		}).then(() => {
-			// Switch back to previous supported values
-			encounter.supportsPartial = supportsPartial;
-			encounter.supportsFuzzy = supportsFuzzy;
-			encounter.skipPunctuation = skipPunctuation;
+		const pass = (roots: Node[]): MaybePromise<SubGraphVariant[]> => {
+			const found: SubGraphVariant[] = [];
+			evaluation.seedUsed = false;
+			evaluation.seedRoots.clear();
 
-			cache.set(this.roots, variants);
-			return branchIntoVariants(variants);
+			const onMatch = (match: Match<V>) => {
+				const data = match.data !== null && typeof match.data !== 'undefined'
+					? match.data
+					: null;
+
+				/*
+				 * The score of the match is used instead of the current score
+				 * of the encounter. Nodes that resolve values report their
+				 * matches after the encounter has been restored to where the
+				 * value started, so the current score would leave out both
+				 * the value and everything matched after it.
+				 */
+				const score = match.scoreData.score - baseScore;
+
+				found.push({
+					index: match.index,
+					score: score,
+					data: data
+				});
+
+				// Back-track to allow following nodes to also handle any trailing tokens
+				const previousNonSkipped = encounter.previousNonSkipped(match.index);
+				if(previousNonSkipped !== match.index) {
+					found.push({
+						index: previousNonSkipped,
+						score: score,
+						data: data
+					});
+				}
+			};
+
+			const branched = encounter.branchWithOnMatch(onMatch, () => {
+				encounter.supportsPartial = this.supportsPartial;
+				encounter.supportsFuzzy = this.supportsFuzzy;
+				encounter.skipPunctuation = this.skipPunctuation;
+
+				return encounter.branchInto(roots);
+			});
+
+			return after(branched, () => {
+				// Switch back to previous supported values
+				encounter.supportsPartial = supportsPartial;
+				encounter.supportsFuzzy = supportsFuzzy;
+				encounter.skipPunctuation = skipPunctuation;
+
+				const grew = mergeVariants(evaluation.seed, found);
+				if(grew && evaluation.seedUsed && --passesLeft > 0) {
+					/*
+					 * Only the roots that used the seed can find something
+					 * new when the seed has grown, so only those are
+					 * evaluated again.
+					 */
+					return pass(Array.from(evaluation.seedRoots));
+				}
+
+				return evaluation.seed;
+			});
+		};
+
+		return after(pass(this.roots), variants => {
+			encounter.stopEvaluating(evaluation);
+
+			if(! evaluation.dependsOnSeed) {
+				encounter.cache().set(this.roots, variants);
+			}
+
+			return variants;
+		});
+	}
+
+	/**
+	 * Map and filter the variants the sub-graph reported into the variants
+	 * this node should branch into.
+	 *
+	 * @param encounter -
+	 *   the encounter
+	 * @param variants -
+	 *   the variants as reported by the sub-graph
+	 * @param cache -
+	 *   cache to store the result in, if the result may be reused
+	 * @returns
+	 *   the variants to branch into
+	 */
+	private mapVariants(
+		encounter: Encounter,
+		variants: SubGraphVariant[],
+		cache?: Map<any, any>
+	): SubGraphVariant[] {
+		const result: SubGraphVariant[] = [];
+		for(const v of variants) {
+			let data = v.data;
+			if(data !== null) {
+				if(this.mapper) {
+					data = this.mapper(data, encounter);
+				}
+
+				if(! this.filter(data)) continue;
+			}
+
+			result.push({
+				index: v.index,
+				score: v.score,
+				data: data
+			});
+		}
+
+		if(cache) {
+			cache.set(this, result);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Evaluate the nodes after this one for every variant.
+	 *
+	 * @param encounter -
+	 *   the encounter
+	 * @param variants -
+	 *   the variants to branch into
+	 * @returns
+	 *   nothing, via a promise if evaluation was asynchronous
+	 */
+	private branchIntoVariants(encounter: Encounter, variants: SubGraphVariant[]): MaybePromise<void> {
+		if(variants.length === 0) {
+			if(encounter.options.partial && ! this.supportsPartial && this.partialFallback) {
+				return encounter.advance(0.0, encounter.tokens.length - encounter.currentIndex, this.partialFallback);
+			}
+
+			return;
+		}
+
+		return sequence(variants.length, i => {
+			const v = variants[i];
+			return encounter.advance(
+				v.score - PARSER_PENALTY,
+				v.index - encounter.currentIndex,
+				v.data
+			);
 		});
 	}
 
@@ -223,4 +324,42 @@ export class SubNode<V> extends Node {
 			return 'shape=rectangle, label="' + (this.name || '') + '"';
 		}
 	}
+}
+
+/**
+ * Merge newly found variants into the seed of an evaluation. Variants that
+ * end at the same index with equal data are the same variant, and only the
+ * best score is kept for them.
+ *
+ * @param seed -
+ *   the variants found so far, which is changed in place
+ * @param found -
+ *   the variants found during the latest pass
+ * @returns
+ *   true if the seed changed
+ */
+function mergeVariants(seed: SubGraphVariant[], found: SubGraphVariant[]): boolean {
+	let changed = false;
+
+	for(const candidate of found) {
+		let existing: SubGraphVariant | undefined;
+		for(const v of seed) {
+			if(v.index === candidate.index && deepEqual(v.data, candidate.data)) {
+				existing = v;
+				break;
+			}
+		}
+
+		if(existing) {
+			if(candidate.score > existing.score) {
+				existing.score = candidate.score;
+				changed = true;
+			}
+		} else {
+			seed.push(candidate);
+			changed = true;
+		}
+	}
+
+	return changed;
 }

@@ -59,7 +59,7 @@ export class ValueParserNode<V> extends Node {
 			* If there are no more tokens and the value does not support
 			* partial matches push a partial value.
 			*/
-			return encounter.next(0, 0, this.node.partialFallback);
+			return encounter.advance(0, 0, this.node.partialFallback);
 		}
 
 		return this.node.match(encounter);

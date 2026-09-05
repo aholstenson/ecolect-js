@@ -1,8 +1,6 @@
 import { Graph } from './Graph.js';
 import { Encounter } from './matching/Encounter.js';
 import { Match } from './matching/Match.js';
-import { MatchingState, emptyState } from './matching/MatchingState.js';
-import { MatchSet } from './matching/MatchSet.js';
 
 export interface GraphMatcherOptions<RawData, V> {
 	/**
@@ -24,17 +22,10 @@ export class GraphMatcher<G, V> {
 	public readonly graph: Graph<G>;
 	public readonly options: GraphMatcherOptions<G, V>;
 
-	/**
-	 * Internal state of this matcher that is accessed if it is used as a
-	 * sub graph.
-	 */
-	public matchingState: MatchingState;
-
 	public constructor(graph: Graph<G>, options: GraphMatcherOptions<G, V>) {
 		this.graph = graph;
 
 		this.options = Object.assign({}, graph.options, options);
-		this.matchingState = emptyState();
 	}
 
 	/**
@@ -57,14 +48,9 @@ export class GraphMatcher<G, V> {
 		const encounter = new Encounter(tokens, resolvedOptions);
 		encounter.outgoing = this.graph.nodes;
 
-		const promise = encounter.next(0, 0)
-			.then(() => {
-				return encounter.matches;
-			});
-
 		const mapper = this.options.mapper;
-		return promise.then((results: MatchSet<any>) => {
-			const first = results.first();
+		return encounter.next(0, 0).then(() => {
+			const first = encounter.matches.first();
 			if(! first) return null;
 
 			return mapper(first, encounter.options, encounter);
@@ -91,13 +77,8 @@ export class GraphMatcher<G, V> {
 		const encounter = new Encounter(tokens, resolvedOptions);
 		encounter.outgoing = this.graph.nodes;
 
-		const promise = encounter.next(0, 0)
-			.then(() => {
-				return encounter.matches;
-			});
-
 		const mapper = this.options.mapper;
-		return promise.then((results: MatchSet<any>) => results.toArray()
+		return encounter.next(0, 0).then(() => encounter.matches.toArray()
 			.map(value => mapper(value, encounter.options, encounter))
 		);
 	}

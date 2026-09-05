@@ -24,7 +24,7 @@ export class RegExpNode extends Node {
 		if(! match) return;
 
 		// If match consume the current token and push data onto the stack
-		return encounter.next(1, 1, match[0]);
+		return encounter.advance(1, 1, match[0]);
 	}
 
 	public equals(other: Node): boolean {

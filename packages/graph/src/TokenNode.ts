@@ -25,10 +25,10 @@ export class TokenNode extends Node {
 			if(this.token.punctuation) {
 				if(this.token.normalized === token.normalized) {
 					// Punctuation nodes must match directly
-					return encounter.next(0.1, 1);
+					return encounter.advance(0.1, 1);
 				} else if(encounter.skipPunctuation) {
 					// This token is punctuation and the encounter allows skipping
-					return encounter.next(0.0, 0);
+					return encounter.advance(0.0, 0);
 				}
 			} else {
 				/*
@@ -45,7 +45,7 @@ export class TokenNode extends Node {
 					: this.comparer.compare(this.token, token);
 
 				if(score > 0) {
-					return encounter.next(score, 1);
+					return encounter.advance(score, 1);
 				}
 			}
 		} else if(encounter.isPartial) {
@@ -54,7 +54,7 @@ export class TokenNode extends Node {
 			 * always match as this node is a potential continuation of the
 			 * current expression.
 			 */
-			return encounter.next(1.0, 1);
+			return encounter.advance(1.0, 1);
 		}
 
 		/*
@@ -68,7 +68,7 @@ export class TokenNode extends Node {
 			/*
 			 * This token is skippable, skip it without adding any score.
 			 */
-			return encounter.next(0.0, 0);
+			return encounter.advance(0.0, 0);
 		}
 	}
 

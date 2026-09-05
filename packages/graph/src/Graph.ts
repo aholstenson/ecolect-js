@@ -1,7 +1,6 @@
 import { Tokenizer } from '@ecolect/tokenization';
 
 import { GraphOptions } from './GraphOptions.js';
-import { MatchingState } from './matching/index.js';
 import { Node } from './Node.js';
 
 /**
@@ -20,10 +19,4 @@ export interface Graph<DataType> {
 	 * Options to apply during matching of this graph.
 	 */
 	readonly options: GraphOptions;
-
-	/**
-	 * Internal state of this matcher that is accessed if it is used as a
-	 * sub graph.
-	 */
-	readonly matchingState: MatchingState;
 }

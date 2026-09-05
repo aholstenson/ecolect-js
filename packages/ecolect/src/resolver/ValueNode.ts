@@ -1,6 +1,6 @@
 import { deepEqual } from 'fast-equals';
 
-import { Encounter, Match, Node } from '@ecolect/graph';
+import { Encounter, Match, MaybePromise, Node, after, sequence } from '@ecolect/graph';
 import { Tokens } from '@ecolect/tokenization';
 
 import { ValueEncounter } from './ValueEncounter.js';
@@ -32,9 +32,10 @@ export interface ValueNodeOptions<V> {
 	/**
 	 * Function used to match the textual value. May be called many times
 	 * during matching so it is recommended to use caching to reduce network
-	 * traffic and latency for the user.
+	 * traffic and latency for the user. The function may return a promise
+	 * if it needs to wait for something, such as a remote lookup.
 	 */
-	match: (encounter: ValueEncounter<V>) => Promise<void>;
+	match: (encounter: ValueEncounter<V>) => Promise<void> | void;
 }
 
 /**
@@ -69,10 +70,19 @@ export class ValueNode<V> extends Node {
 		this.options = options;
 	}
 
-	public match(encounter: Encounter) {
+	public match(encounter: Encounter): MaybePromise<unknown> {
 		const tokens = encounter.tokens;
 		const currentIndex = encounter.currentIndex;
 		const stop = tokens.length;
+
+		if(currentIndex >= stop) {
+			/*
+			 * If the current index has passed the end of the tokens either
+			 * assume this will match in the future if this is partial or
+			 * short circuit without looking ahead in the graph.
+			 */
+			return encounter.isPartial ? encounter.advance(0.0, 0) : undefined;
+		}
 
 		/**
 		 * Values always try to match as much as they can so we loop backwards
@@ -81,66 +91,47 @@ export class ValueNode<V> extends Node {
 		const valueEncounter = new ValueEncounterImpl<V>(encounter);
 		const results: Match<any>[] = [];
 
-		if(currentIndex >= stop) {
-			/*
-			 * If the current index has passed the end of the tokens either
-			 * assume this will match in the future if this is partial or
-			 * short circuit without looking ahead in the graph.
-			 */
-			return encounter.isPartial ? encounter.next(0.0, 0) : Promise.resolve();
-		}
-
 		const onMatch = (m: Match<any>) => {
 			valueEncounter.matches.length = 0;
-			return Promise.resolve(this.options.match(valueEncounter))
-				.then(() => {
-					if(valueEncounter.matches.length === 0) return;
+			return after(this.options.match(valueEncounter), () => {
+				if(valueEncounter.matches.length === 0) return;
 
-					for(const v of valueEncounter.matches) {
-						const matchCopy = m.copy();
-						matchCopy.data.values[this.id] = v.value;
-						matchCopy.scoreData.score += 0.9 * v.score;
-						results.push(matchCopy);
-					}
-				});
-		};
-
-		const match = (idx: number): Promise<void> => {
-			const len = idx - currentIndex;
-
-			if((this.options.greedy && len === 0)
-				|| (! this.options.greedy && idx > tokens.length)
-			) return Promise.resolve();
-
-			valueEncounter._adjust(currentIndex, idx);
-			return encounter.branchWithOnMatch(onMatch, () => encounter.next(0, len))
-				.then(() => {
-					// Attempting to match only a single match and already found it
-					if(this.options.onlySingle && results.length > 0) return;
-
-					if(this.options.greedy) {
-						if(len > 1) {
-							return match(idx - 1);
-						}
-					} else {
-						if(idx < tokens.length) {
-							return match(idx + 1);
-						}
-					}
-				});
-		};
-
-		return match(this.options.greedy ? stop : currentIndex + 1)
-			.then(() => {
-				// Sort and limit the matches
-				const sorted = results.sort((a, b) => b.score - a.score);
-				const limited = sorted.slice(0, Math.min(sorted.length, this.options.max || 10));
-
-				// Match all of the top matches
-				for(const result of limited) {
-					encounter.match(result);
+				for(const v of valueEncounter.matches) {
+					const matchCopy = m.copy();
+					matchCopy.data.values[this.id] = v.value;
+					matchCopy.scoreData.score += 0.9 * v.score;
+					results.push(matchCopy);
 				}
 			});
+		};
+
+		/*
+		 * The indexes to try, in order. Greedy values start with everything
+		 * and shrink, other values start with a single token and grow.
+		 */
+		const greedy = this.options.greedy || false;
+		const steps = stop - currentIndex;
+		const indexAt = (step: number) => greedy ? stop - step : currentIndex + 1 + step;
+
+		const attempt = (step: number): MaybePromise<unknown> => {
+			// Attempting to match only a single match and already found it
+			if(this.options.onlySingle && results.length > 0) return;
+
+			const idx = indexAt(step);
+			const len = idx - currentIndex;
+
+			valueEncounter._adjust(currentIndex, idx);
+			return encounter.branchWithOnMatch(onMatch, () => encounter.advance(0, len));
+		};
+
+		return after(sequence(steps, attempt), () => {
+			// Sort and limit the matches
+			const sorted = results.sort((a, b) => b.score - a.score);
+			const limited = sorted.slice(0, Math.min(sorted.length, this.options.max || 10));
+
+			// Match all of the top matches
+			return sequence(limited.length, i => encounter.match(limited[i]));
+		});
 	}
 
 	public equals(obj: Node): boolean {

@@ -1,4 +1,4 @@
-import { Match } from './Match.js';
+import { MatchHandler } from './MatchHandler.js';
 
 /**
  * Options that can be passed to an Encounter.
@@ -42,5 +42,5 @@ export interface EncounterOptions {
 	/**
 	 * Function called when a match is found.
 	 */
-	onMatch?: (match: Match<any>) => void;
+	onMatch?: MatchHandler;
 }

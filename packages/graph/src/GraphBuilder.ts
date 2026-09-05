@@ -4,7 +4,6 @@ import { CollectorNode, Collectable } from './CollectorNode.js';
 import { CustomNode, TokenValidator } from './CustomNode.js';
 import { Graph } from './Graph.js';
 import { GraphOptions } from './GraphOptions.js';
-import { emptyState } from './matching/index.js';
 import { Node } from './Node.js';
 import { Predicate } from './Predicate.js';
 import { RegExpNode } from './RegExpNode.js';
@@ -216,8 +215,7 @@ export class GraphBuilder<V> {
 		return {
 			tokenizer: this.tokenizer,
 			nodes: this.nodes,
-			options: this.options,
-			matchingState: emptyState()
+			options: this.options
 		};
 	}
 
