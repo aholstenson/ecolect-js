@@ -37,6 +37,81 @@ describe('Value: Enumeration', function() {
 		});
 	});
 
+	describe('Entries with several texts', function() {
+		const resolver = newPhrases()
+			.value('type', enumerationValue([
+				{ value: 'customers', text: [ 'customers', 'clients', 'accounts' ] },
+				{ value: 'orders', text: 'orders' },
+				'invoices'
+			]))
+			.phrase('show {type}')
+			.toMatcher(en);
+
+		it('First text of entry', function() {
+			return resolver.match('show customers')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.type).toEqual('customers');
+				});
+		});
+
+		it('Other text of entry', function() {
+			return resolver.match('show clients')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.type).toEqual('customers');
+				});
+		});
+
+		it('Entry with single text', function() {
+			return resolver.match('show orders')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.type).toEqual('orders');
+				});
+		});
+
+		it('Value without entry', function() {
+			return resolver.match('show invoices')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.type).toEqual('invoices');
+				});
+		});
+
+		it('Unknown text', function() {
+			return resolver.match('show vendors')
+				.then(r => {
+					expect(r).toBeNull();
+				});
+		});
+	});
+
+	describe('Mapping to several texts', function() {
+		const resolver = newPhrases()
+			.value('company', enumerationValue([
+				{ name: 'Balloons', alias: 'Party Co' }
+			], v => [ v.name, v.alias ]))
+			.phrase('orders for {company}')
+			.toMatcher(en);
+
+		it('Name', function() {
+			return resolver.match('orders for Balloons')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.company).toEqual({ name: 'Balloons', alias: 'Party Co' });
+				});
+		});
+
+		it('Alias', function() {
+			return resolver.match('orders for Party Co')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.company).toEqual({ name: 'Balloons', alias: 'Party Co' });
+				});
+		});
+	});
+
 	describe('Mapping', function() {
 		const resolver = newPhrases()
 			.value('company', enumerationValue([

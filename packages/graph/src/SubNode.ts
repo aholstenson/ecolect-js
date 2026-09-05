@@ -6,6 +6,7 @@ import {
 	Encounter,
 	Match,
 	MaybePromise,
+	NO_SKIPPABLE_TOKENS,
 	SubGraphVariant,
 	after,
 	sequence
@@ -47,6 +48,7 @@ export class SubNode<V> extends Node {
 	public supportsPartial: boolean;
 	private skipPunctuation: boolean;
 	private supportsFuzzy: boolean;
+	private skippableTokens: ReadonlySet<string>;
 
 	private filter: Predicate<V>;
 	public mapper: ((result: V, encounter: Encounter) => any) | undefined;
@@ -74,6 +76,7 @@ export class SubNode<V> extends Node {
 		this.name = options.name || 'unknown';
 		this.skipPunctuation = options.skipPunctuation || false;
 		this.supportsFuzzy = options.supportsFuzzy || false;
+		this.skippableTokens = options.skippableTokens || NO_SKIPPABLE_TOKENS;
 	}
 
 	public match(encounter: Encounter) {
@@ -144,6 +147,7 @@ export class SubNode<V> extends Node {
 		const supportsPartial = encounter.supportsPartial;
 		const supportsFuzzy = encounter.supportsFuzzy;
 		const skipPunctuation = encounter.skipPunctuation;
+		const skippableTokens = encounter.skippableTokens;
 
 		/*
 		 * Every pass over the sub-graph must be able to consume at least one
@@ -192,6 +196,7 @@ export class SubNode<V> extends Node {
 				encounter.supportsPartial = this.supportsPartial;
 				encounter.supportsFuzzy = this.supportsFuzzy;
 				encounter.skipPunctuation = this.skipPunctuation;
+				encounter.skippableTokens = this.skippableTokens;
 
 				return encounter.branchInto(roots);
 			});
@@ -201,6 +206,7 @@ export class SubNode<V> extends Node {
 				encounter.supportsPartial = supportsPartial;
 				encounter.supportsFuzzy = supportsFuzzy;
 				encounter.skipPunctuation = skipPunctuation;
+				encounter.skippableTokens = skippableTokens;
 
 				const grew = mergeVariants(evaluation.seed, found);
 				if(grew && evaluation.seedUsed && --passesLeft > 0) {

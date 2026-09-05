@@ -80,6 +80,53 @@ const bestMatch = await matcher.match('orders');
 const matches = await matcher.matchPartial('orders');
 ```
 
+Words that only make sense for certain phrases can be marked as skippable on
+those phrases:
+
+```javascript
+const matcher = newPhrases()
+  .skippable('please', 'all', 'my')
+  .phrase('Show orders')
+  .toMatcher(en);
+
+// Matches, as `please`, `all` and `my` may be left out
+const bestMatch = await matcher.match('please show all my orders');
+```
+
+## Vocabulary
+
+Languages understand common words, but not the words of your domain. Use
+`withVocabulary` to get a language that also reads words you specify. The
+language it is called on is left unchanged, so several vocabularies can be
+used side by side:
+
+```javascript
+import { en } from '@ecolect/language-en';
+import { newPhrases } from 'ecolect';
+
+const language = en.withVocabulary({
+  // Words that mean the same thing, keyed by the word to read them as
+  synonyms: {
+    customers: [ 'clients', 'accounts' ]
+  },
+
+  // Words that may be left out of the input
+  skippable: [ 'please' ]
+});
+
+const matcher = newPhrases()
+  .phrase('Show customers')
+  .toMatcher(language);
+
+// All of these match
+await matcher.match('show customers');
+await matcher.match('show clients');
+await matcher.match('please show accounts');
+```
+
+Synonyms work in both directions, so a phrase may be written with any of the
+words in a group. Every word in a vocabulary must be a single word.
+
 ## Options
 
 Option                  | Default      | Description
@@ -300,6 +347,26 @@ const value = enumerationValue([
 
 Capture one of the specified values. Used to specify one or more values that
 should match.
+
+A value that can be said in more than one way is given as an entry with its
+own text. Every text resolves to the same value:
+
+```javascript
+const value = enumerationValue([
+  { value: 'customers', text: [ 'customers', 'clients', 'accounts' ] },
+  { value: 'orders', text: 'orders' }
+]);
+```
+
+Entries and plain values can be mixed. When values are mapped to text the
+mapper may also return several texts:
+
+```javascript
+const value = enumerationValue(
+  companies,
+  company => [ company.name, company.shortName ]
+);
+```
 
 ### Text
 

@@ -19,17 +19,21 @@ import { ResolverParser } from './ResolverParser.js';
 export class Phrases<Values extends object> {
 	private values: Map<string, Value<any>>;
 	private phrases: GraphBuildable<any>[][];
+	private skippableWords: string[];
 
 	public constructor(
 		values: Map<string, Value<any>>,
-		phrases: GraphBuildable<any>[][]
+		phrases: GraphBuildable<any>[][],
+		skippableWords: string[] = []
 	) {
 		this.values = values;
 		this.phrases = phrases;
+		this.skippableWords = skippableWords;
 	}
 
 	public toGraph(language: Language) {
 		const parser = new ResolverParser<Phrase<Values>>(language);
+		parser.skippable(...this.skippableWords);
 
 		const resultHandler = (values: any, options: any, encounter: Encounter) => {
 			const result = new Phrase<any>();

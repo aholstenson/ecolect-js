@@ -87,6 +87,32 @@ export class GraphBuilder<V> {
 	}
 
 	/**
+	 * Allow the given words to be left out while this graph is matched. The
+	 * words are only skippable within this graph, so a graph that is used
+	 * within another graph keeps its own words.
+	 *
+	 * Skipping requires fuzzy matching, so this only has an effect on graphs
+	 * built with {@link supportsFuzzy}.
+	 *
+	 * @param words -
+	 *   the words that may be left out, each of which may contain several
+	 *   tokens
+	 * @returns
+	 *   self
+	 */
+	public skippable(...words: string[]): this {
+		const tokens = new Set(this.options.skippableTokens);
+		for(const word of words) {
+			for(const token of this.tokenizer(word)) {
+				tokens.add(token.normalized);
+			}
+		}
+
+		this.options.skippableTokens = tokens;
+		return this;
+	}
+
+	/**
 	 * Allow the graph to perform fuzzy matching.
 	 *
 	 * @returns

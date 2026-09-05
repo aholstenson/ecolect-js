@@ -63,7 +63,7 @@ export class TokenNode extends Node {
 		 * 1) Skippable or punctuation and the current graph supports fuzzying
 		 * 2) Punctuation and the current graph supports punctuation skipping
 		 */
-		if(((this.token.skippable || this.token.punctuation) && encounter.supportsFuzzy)
+		if(((encounter.isSkippable(this.token) || this.token.punctuation) && encounter.supportsFuzzy)
 			|| (encounter.skipPunctuation && this.token.punctuation)) {
 			/*
 			 * This token is skippable, skip it without adding any score.

@@ -35,6 +35,12 @@ export interface EncounterOptions {
 	supportsFuzzy?: boolean;
 
 	/**
+	 * Normalized tokens that may be left out, in addition to the ones the
+	 * tokenizer has marked as skippable.
+	 */
+	skippableTokens?: ReadonlySet<string>;
+
+	/**
 	 * Method used to determine if two matches are equal.
 	 */
 	matchIsEqual?: (options: EncounterOptions) => (a: any, b: any) => boolean;

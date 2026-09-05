@@ -3,6 +3,7 @@ import { TokenComparer, Tokenizer } from '@ecolect/tokenization';
 
 import { KnownGraphs, KnownGraphsDataTypes } from './KnownGraphs.js';
 import { LanguageGraphFactory } from './LanguageGraphFactory.js';
+import { Vocabulary } from './Vocabulary.js';
 
 /**
  * Language usable with Ecolect.
@@ -37,4 +38,13 @@ export interface Language {
 	 * @param id
 	 */
 	findGraph<K extends KnownGraphs>(id: K): Graph<KnownGraphsDataTypes[K]>;
+
+	/**
+	 * Get a language that understands the given vocabulary in addition to
+	 * everything this language understands. This language is left unchanged.
+	 *
+	 * @param vocabulary -
+	 *   the extra words to understand
+	 */
+	withVocabulary(vocabulary: Vocabulary): Language;
 }

@@ -12,10 +12,12 @@ import { Phrases } from './Phrases.js';
 export class PhrasesBuilder<Values extends object = object> {
 	private values: Map<string, Value<any>>;
 	private phrases: GraphBuildable<any>[][];
+	private skippableWords: string[];
 
 	public constructor() {
 		this.values = new Map();
 		this.phrases = [];
+		this.skippableWords = [];
 	}
 
 	public value<I extends string, V>(id: I, type: Value<V>): PhrasesBuilder<Values & { [K in I]: V | undefined }> {
@@ -28,8 +30,23 @@ export class PhrasesBuilder<Values extends object = object> {
 		return this;
 	}
 
+	/**
+	 * Allow the given words to be left out of the input when these phrases are
+	 * matched. Use this for filler words, such as `please`, that only make
+	 * sense for these phrases and should not be skippable everywhere.
+	 *
+	 * @param words -
+	 *   the words that may be left out
+	 * @returns
+	 *   self
+	 */
+	public skippable(...words: string[]): this {
+		this.skippableWords.push(...words);
+		return this;
+	}
+
 	public build() {
-		return new Phrases<Values>(this.values, this.phrases);
+		return new Phrases<Values>(this.values, this.phrases, this.skippableWords);
 	}
 
 	public toMatcher(language: Language) {

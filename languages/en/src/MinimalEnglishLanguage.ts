@@ -1,4 +1,3 @@
-import { Graph, GraphBuilder } from '@ecolect/graph';
 import { AbstractLanguage } from '@ecolect/language';
 
 import { createRepeating } from './repeating.js';
@@ -12,10 +11,6 @@ export class MinimalEnglishLanguage extends AbstractLanguage {
 	public readonly id = 'en';
 
 	public constructor() {
-		super(tokenizer, tokenComparer);
-	}
-
-	public repeating<V>(graph: Graph<V>): GraphBuilder<V[]> {
-		return createRepeating<V>(this)(graph);
+		super(tokenizer, tokenComparer, createRepeating);
 	}
 }

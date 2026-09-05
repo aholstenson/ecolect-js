@@ -10,6 +10,11 @@ import { MaybePromise, after, isThenable, sequence, toPromise } from './maybePro
 import { SubGraphEvaluation } from './SubGraphEvaluation.js';
 
 /**
+ * Set used when a graph does not declare any extra skippable tokens.
+ */
+export const NO_SKIPPABLE_TOKENS: ReadonlySet<string> = new Set();
+
+/**
  * Encounter used when trying to match an expression. Contains all the tokens
  * and functions for accessing tokens, the current index and the current
  * score.
@@ -35,6 +40,12 @@ export class Encounter {
 
 	public supportsPartial: boolean;
 	public supportsFuzzy: boolean;
+
+	/**
+	 * Normalized tokens that the graph being evaluated allows to be left out,
+	 * in addition to the ones the tokenizer has marked as skippable.
+	 */
+	public skippableTokens: ReadonlySet<string>;
 
 	private onMatch?: MatchHandler;
 
@@ -68,6 +79,7 @@ export class Encounter {
 		this.skipPunctuation = options.skipPunctuation || false;
 		this.supportsPartial = options.supportsPartial || false;
 		this.supportsFuzzy = options.supportsFuzzy || false;
+		this.skippableTokens = options.skippableTokens || NO_SKIPPABLE_TOKENS;
 
 		this.options = options;
 
@@ -81,6 +93,20 @@ export class Encounter {
 	 */
 	public token(index: number = this.currentIndex): Token {
 		return this.tokens[index];
+	}
+
+	/**
+	 * Get if the given token may be left out. Tokens are skippable either
+	 * because the tokenizer marked them as such, or because the graph being
+	 * evaluated declared them skippable.
+	 *
+	 * @param token -
+	 *   the token to check
+	 * @returns
+	 *   `true` if the token may be left out
+	 */
+	public isSkippable(token: Token): boolean {
+		return token.skippable || this.skippableTokens.has(token.normalized);
 	}
 
 	public get hasMoreTokens() {
@@ -229,7 +255,7 @@ export class Encounter {
 			 * 3) The token is not the last one
 			 */
 			const token = this.token(nextIndex);
-			if(token && token.skippable
+			if(token && this.isSkippable(token)
 				&& this.supportsFuzzy
 				&& nextIndex !== this.tokens.length - 1
 			) {
