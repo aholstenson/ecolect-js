@@ -14,6 +14,13 @@ export interface Language {
 	 */
 	readonly id: string;
 
+	/**
+	 * The locale this language reads expressions as, such as `en-GB`. The
+	 * locale decides the conventions used when nothing is set in the options
+	 * of a match, such as the order of the fields in a numeric date.
+	 */
+	readonly locale: string;
+
 	readonly tokenizer: Tokenizer;
 
 	readonly tokenComparer: TokenComparer;
@@ -47,4 +54,14 @@ export interface Language {
 	 *   the extra words to understand
 	 */
 	withVocabulary(vocabulary: Vocabulary): Language;
+
+	/**
+	 * Get a language that reads expressions as the given locale. The words
+	 * understood do not change, only the conventions, so the new language
+	 * shares the graphs of this one. This language is left unchanged.
+	 *
+	 * @param locale -
+	 *   the locale to read expressions as, as a BCP 47 language tag
+	 */
+	withLocale(locale: string): Language;
 }

@@ -3,7 +3,7 @@ import { deepEqual } from 'fast-equals';
 import { GraphBuilder, GraphMatcher } from '@ecolect/graph';
 import { Language } from '@ecolect/language';
 
-import { Matcher } from './matching/index.js';
+import { localeAwareMatcher, Matcher } from './matching/index.js';
 import { Phrase } from './resolver/Phrase.js';
 import { Phrases } from './resolver/Phrases.js';
 
@@ -55,13 +55,13 @@ export class IntentsBuilder<Intents extends Intent<any, any> = never> {
 
 	public build(): Matcher<Intents> {
 		const graph = this.builder.build();
-		return new GraphMatcher(graph, {
+		return localeAwareMatcher(this.language, new GraphMatcher(graph, {
 			mapper: m => {
 				m.data.score = m.score;
 				m.data.refreshExpression();
 				return m.data;
 			}
-		}) as any;
+		})) as any;
 	}
 }
 

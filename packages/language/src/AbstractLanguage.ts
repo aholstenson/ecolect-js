@@ -17,21 +17,24 @@ export type RepeatingFactory = <V>(language: Language, graph: Graph<V>) => Graph
  * extend.
  */
 export abstract class AbstractLanguage implements Language {
-	private readonly cachedGraphs: Map<string, Graph<any>> = new Map();
-	private readonly graphFactories: Map<string, LanguageGraphFactory<any>> = new Map();
+	private cachedGraphs: Map<string, Graph<any>> = new Map();
+	private graphFactories: Map<string, LanguageGraphFactory<any>> = new Map();
 	private readonly repeatingFactory: RepeatingFactory;
 
 	public readonly tokenizer: Tokenizer;
 	public readonly tokenComparer: TokenComparer;
+	public readonly locale: string;
 
 	public constructor(
 		tokenizer: Tokenizer,
 		tokenComparer: TokenComparer,
-		repeatingFactory: RepeatingFactory
+		repeatingFactory: RepeatingFactory,
+		locale: string
 	) {
 		this.tokenizer = tokenizer;
 		this.tokenComparer = tokenComparer;
 		this.repeatingFactory = repeatingFactory;
+		this.locale = locale;
 	}
 
 	/**
@@ -77,6 +80,7 @@ export abstract class AbstractLanguage implements Language {
 	public withVocabulary(vocabulary: Vocabulary): Language {
 		const derived = new DerivedLanguage(
 			this.id,
+			this.locale,
 			createVocabularyTokenizer(this.tokenizer, vocabulary),
 			this.tokenComparer,
 			this.repeatingFactory
@@ -92,22 +96,48 @@ export abstract class AbstractLanguage implements Language {
 
 		return derived;
 	}
+
+	public withLocale(locale: string): Language {
+		if(locale === this.locale) {
+			return this;
+		}
+
+		const derived = new DerivedLanguage(
+			this.id,
+			locale,
+			this.tokenizer,
+			this.tokenComparer,
+			this.repeatingFactory
+		);
+
+		/*
+		 * The locale is only read when a match is mapped into a value, so the
+		 * graphs are the same for every locale and are shared instead of
+		 * being created again.
+		 */
+		derived.cachedGraphs = this.cachedGraphs;
+		derived.graphFactories = this.graphFactories;
+
+		return derived;
+	}
 }
 
 /**
  * Language that shares everything with the language it was derived from
- * except for its tokenizer, which reads an extended vocabulary.
+ * except for its tokenizer, which reads an extended vocabulary, and its
+ * locale.
  */
 class DerivedLanguage extends AbstractLanguage {
 	public readonly id: string;
 
 	public constructor(
 		id: string,
+		locale: string,
 		tokenizer: Tokenizer,
 		tokenComparer: TokenComparer,
 		repeatingFactory: RepeatingFactory
 	) {
-		super(tokenizer, tokenComparer, repeatingFactory);
+		super(tokenizer, tokenComparer, repeatingFactory, locale);
 
 		this.id = id;
 	}

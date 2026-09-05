@@ -189,34 +189,74 @@ await matcher.match('please show accounts');
 Synonyms work in both directions, so a phrase may be written with any of the
 words in a group. Every word in a vocabulary must be a single word.
 
+## Locale
+
+A language decides which words are understood. A locale decides the
+conventions of the person writing the expression, such as whether `1/2/2017`
+is January 2nd or February 1st and which day weeks start on. `en-GB` and
+`en-US` share a language but not these conventions.
+
+Set the locale on the language to use it for every match:
+
+```javascript
+import { english } from '@ecolect/language-en';
+import { dateValue } from 'ecolect';
+
+const matcher = dateValue().matcher(english('en-GB'));
+
+// February 1st, as `en-GB` writes the day before the month
+const match = await matcher.match('1/2/2017');
+```
+
+Or set it for a single match, which is what a server that answers several
+people at once needs:
+
+```javascript
+const match = await matcher.match('1/2/2017', { locale: 'en-GB' });
+```
+
+The conventions are read from `Intl`, so no locale data is bundled. Read them
+directly with `resolveLocale` if you need them yourself:
+
+```javascript
+import { resolveLocale } from '@ecolect/language';
+
+// { dateOrder: 'day-month-year', weekStartsOn: 1, firstWeekContainsDate: 4, ... }
+const settings = resolveLocale('en-GB');
+```
+
+English reads expressions as `en-US` when no locale is given.
+
 ## Options
 
-Option                  | Default      | Description
-------------------------|--------------|-------------
-`now`                   | `new Date()` | Date to use as a base for times and dates parsed
-`weekStartsOn`          | `0` (Sunday) | The day the week starts on
-`firstWeekContainsDate` | `1`          | The day of January which is always in the first week of the year.
+Option                  | Default             | Description
+------------------------|---------------------|-------------
+`now`                   | `new Date()`        | Date to use as a base for times and dates parsed
+`locale`                | Locale of the language | The locale to read the expression as, such as `en-GB`
+`dateOrder`             | From the locale     | The order of the fields in a numeric date such as `1/2/2017`
+`weekStartsOn`          | From the locale     | The day the week starts on
+`firstWeekContainsDate` | From the locale     | The day of January which is always in the first week of the year
+
+An option set directly wins over the locale, so `dateOrder` given together
+with a locale is used as it is.
 
 ### A note about weeks
 
-It's important to set `weekStartsOn` and `firstWeekContainsDate` to something
-expected by the user. The default value for `weekStartsOn` is `0` which
-indicates that weeks start on Sunday.
+Countries do not agree on which day a week starts on or on which week is the
+first week of the year, so a week number can mean two different dates. Setting
+the locale is the shortest way to get this right, but the two settings can
+also be given on their own.
 
-`firstWeekContainsDate` defaults to `1` which is commonly used in North America
-and Islamic date systems. Countries that use this week numbering include
-Canada, United States, India, Japan, Taiwan, Hong Kong, Macau, Israel,
-Egypt, South Africa, the Phillippines and most of Latin America.
+`weekStartsOn` is `0` for weeks that start on Sunday, which North America,
+India, Japan, Israel, Egypt, South Africa, the Philippines and most of Latin
+America use. It is `1` for weeks that start on Monday, which the EU, most of
+Asia and Oceania use, and `6` for weeks that start on Saturday, which is
+common in the Middle East.
 
-For EU countries most of them use Mondays as the start of the week and the ISO
-week system. Settings `weekStartsOn` to `1` and `firstWeekContainsDate` to `4`
-will set weeks to a style used in EU and most other European countries, most
-of Acia and Oceania.
-
-Middle Eastern countries commonly use Saturday as their first day of week and
-a week numbering system where the first week of the year contains January 1st.
-Set `weekStartsOn` to `6` and `firstWeekContainsDate` to `1` to use this
-style of week.
+`firstWeekContainsDate` is `1` when the first week of the year is the one with
+January 1st in it, and `4` for the ISO week system, where the first week is
+the first one with at least four days in it. Europe uses the ISO system and
+North America does not.
 
 For more information about week numbering see the [Week article on Wikipedia](https://en.wikipedia.org/wiki/Week#Week_numbering).
 

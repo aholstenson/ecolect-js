@@ -1,7 +1,7 @@
 import { Encounter, Graph, GraphMatcher, Node } from '@ecolect/graph';
 import { Language } from '@ecolect/language';
 
-import { Matcher, MatchOptions } from '../matching/index.js';
+import { localeAwareMatcher, Matcher, MatchOptions } from '../matching/index.js';
 import { ValueNode, ValueNodeOptions } from '../resolver/ValueNode.js';
 import { ValueParserNode } from '../resolver/ValueParserNode.js';
 
@@ -37,9 +37,9 @@ export class LanguageSpecificValue<Mapped> {
 	 */
 	public matcher(language: Language): Matcher<Mapped> {
 		const value = this.factory(language);
-		return new GraphMatcher(value.graph, {
+		return localeAwareMatcher(language, new GraphMatcher(value.graph, {
 			mapper: (m, options) => value.options.mapper(m.data, options)
-		});
+		}));
 	}
 }
 

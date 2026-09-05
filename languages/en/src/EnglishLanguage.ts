@@ -1,3 +1,5 @@
+import { Language } from '@ecolect/language';
+
 import { booleanGraph } from './booleanGraph.js';
 import { dateDurationGraph } from './dateDurationGraph.js';
 import { dateGraph } from './dateGraph.js';
@@ -17,8 +19,8 @@ import { weekGraph } from './weekGraph.js';
 import { yearGraph } from './yearGraph.js';
 
 export class EnglishLanguage extends MinimalEnglishLanguage {
-	public constructor() {
-		super();
+	public constructor(locale?: string) {
+		super(locale);
 
 		this.graph(integerGraph);
 		this.graph(numberGraph);
@@ -44,3 +46,24 @@ export class EnglishLanguage extends MinimalEnglishLanguage {
 }
 
 export const en = new EnglishLanguage();
+
+/**
+ * Get English read as the given locale, such as `en-GB`. The words understood
+ * are the same for every locale, only the conventions change, so the returned
+ * language shares its graphs with {@link en}.
+ *
+ * ```javascript
+ * const matcher = dateValue().matcher(english('en-GB'));
+ *
+ * // February 1st, as `en-GB` writes the day first
+ * const match = await matcher.match('1/2/2017');
+ * ```
+ *
+ * @param locale -
+ *   the locale to read expressions as, as a BCP 47 language tag
+ * @returns
+ *   English read as the given locale
+ */
+export function english(locale: string): Language {
+	return en.withLocale(locale);
+}

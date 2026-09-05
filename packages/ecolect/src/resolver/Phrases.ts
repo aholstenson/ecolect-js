@@ -6,6 +6,7 @@ import {
 } from '@ecolect/graph';
 import { Language } from '@ecolect/language';
 
+import { localeAwareMatcher } from '../matching/localeOptions.js';
 import { Matcher } from '../matching/Matcher.js';
 import { Value } from '../values/base.js';
 
@@ -67,9 +68,9 @@ export class Phrases<Values extends object> {
 	}
 
 	public toMatcher(language: Language): Matcher<Phrase<Values>> {
-		return new GraphMatcher(this.toGraph(language), {
+		return localeAwareMatcher(language, new GraphMatcher(this.toGraph(language), {
 			mapper: finalizeMatch
-		});
+		}));
 	}
 }
 
