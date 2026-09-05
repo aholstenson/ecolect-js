@@ -80,14 +80,12 @@ export function mapTime(r: DateTimeData, options: DateTimeOptions & { reference?
 	} else if(typeof r.hour !== 'undefined') {
 		period = Period.Hour;
 
-		if(r.hour > 12) {
-			// Always force fixed meridiem when hours are > 12
-			r.meridiem = Meridiem.Fixed;
-		}
+		// Always force fixed meridiem when hours are > 12
+		const meridiem = r.hour > 12 ? Meridiem.Fixed : r.meridiem;
 
 		// Hours are a bit special and require some special meridiem handling
 		let hourToSet;
-		if(r.meridiem === Meridiem.Auto) {
+		if(meridiem === Meridiem.Auto) {
 			// Automatic meridiem
 			const hour12 = now.getHours() % 12 || 12;
 			if(r.hour < hour12 || (now.getHours() > 12 && r.hour ===  12)) {
@@ -96,10 +94,10 @@ export function mapTime(r: DateTimeData, options: DateTimeOptions & { reference?
 			} else {
 				hourToSet = now.getHours() <= 12 ? r.hour : (r.hour + 12);
 			}
-		} else if(r.meridiem === Meridiem.Am) {
+		} else if(meridiem === Meridiem.Am) {
 			// AM meridiem - time set is hours directly
 			hourToSet = r.hour === 12 ? 0 : r.hour;
-		} else if(r.meridiem === Meridiem.Pm) {
+		} else if(meridiem === Meridiem.Pm) {
 			// PM meridiem - time to set is hours + 12
 			hourToSet = r.hour === 12 ? 12 : (r.hour + 12);
 		} else {

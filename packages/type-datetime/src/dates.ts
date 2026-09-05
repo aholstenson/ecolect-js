@@ -142,36 +142,48 @@ const DAY: Adjustment = {
  * such as automatic, which tries to adjust the field forward if it's in the
  * past.
  *
- * @param {Date} time
- *   the current time
- * @param {Object} r
+ * @param r -
  *   the object containing the data
- * @param {*} def
+ * @param relationToCurrent -
+ *   how the described time relates to the current time
+ * @param options -
+ *   options in use for this mapping
+ * @param time -
+ *   the current time
+ * @param def -
  *   definition describing the field to modify
+ * @returns
+ *   the adjusted time
  */
-function adjust(r: DateTimeData, options: DateTimeOptions, time: Date, def: Adjustment) {
+function adjust(
+	r: DateTimeData,
+	relationToCurrent: TimeRelationship,
+	options: DateTimeOptions,
+	time: Date,
+	def: Adjustment
+) {
 	const requested = def.getField(r);
 	const current = def.get(time, options);
 
-	if(r.relationToCurrent === TimeRelationship.Auto) {
+	if(relationToCurrent === TimeRelationship.Auto) {
 		if(requested < current) {
 			time = def.set(def.adjuster(time, 1, options), requested, options);
 		} else {
 			time = def.set(time, requested, options);
 		}
-	} else if(r.relationToCurrent === TimeRelationship.CurrentPeriod) {
+	} else if(relationToCurrent === TimeRelationship.CurrentPeriod) {
 		if(def.parentData(r) && requested < current) {
 			time = def.set(def.adjuster(time, 1, options), requested, options);
 		} else {
 			time = def.set(time, requested, options);
 		}
-	} else if(r.relationToCurrent === TimeRelationship.Future) {
+	} else if(relationToCurrent === TimeRelationship.Future) {
 		if(requested <= current) {
 			time = def.set(def.adjuster(time, 1, options), requested, options);
 		} else {
 			time = def.set(time, requested, options);
 		}
-	} else if(r.relationToCurrent === TimeRelationship.Past) {
+	} else if(relationToCurrent === TimeRelationship.Past) {
 		if(requested >= current) {
 			time = def.set(def.adjuster(time, -1, options), requested, options);
 		} else {
@@ -183,19 +195,21 @@ function adjust(r: DateTimeData, options: DateTimeOptions, time: Date, def: Adju
 }
 
 export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDate | null {
-	if(! r.relationToCurrent) {
-		r.relationToCurrent = TimeRelationship.Auto;
-	}
+	const relationToCurrent = r.relationToCurrent ?? TimeRelationship.Auto;
 
 	// Resolve the current time for the encounter
 	let time;
 	if(r.relativeTo) {
-		// If this time is relative to another time
-		const sub = r.relativeTo;
-		sub.relationToCurrent = r.relationToCurrent;
-		sub.intervalEdge = r.intervalEdge;
-
-		const resolvedTime = mapDate(sub, options);
+		/*
+		 * This time is relative to another time, so resolve that time first.
+		 * The relation and edge described here are applied to it via a copy,
+		 * so that the data given to this function is left as it is.
+		 */
+		const resolvedTime = mapDate({
+			...r.relativeTo,
+			relationToCurrent: relationToCurrent,
+			intervalEdge: r.intervalEdge
+		}, options);
 		if(! resolvedTime) return null;
 
 		time = resolvedTime.toDateAtMidnight();
@@ -226,7 +240,7 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 		// Exact quarter - set it and reset to start of quarter
 		period = Period.Quarter;
 
-		time = adjust(r, options, time, QUARTER);
+		time = adjust(r, relationToCurrent, options, time, QUARTER);
 		time = startOfQuarter(time);
 	}
 
@@ -239,7 +253,7 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 		// Exact week - set it and reset to start of week
 		period = Period.Week;
 
-		time = adjust(r, options, time, WEEK);
+		time = adjust(r, relationToCurrent, options, time, WEEK);
 		time = startOfWeek(time, options);
 	}
 
@@ -252,7 +266,7 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 		// Exact month - set the day to the start of the month
 		period = Period.Month;
 
-		time = adjust(r, options, time, MONTH);
+		time = adjust(r, relationToCurrent, options, time, MONTH);
 		time = startOfMonth(time);
 	}
 
@@ -265,7 +279,7 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 		// If there is an explicit day set it
 		period = Period.Day;
 
-		time = adjust(r, options, time, DAY);
+		time = adjust(r, relationToCurrent, options, time, DAY);
 	}
 
 	if(typeof r.dayOfWeek !== 'undefined') {
