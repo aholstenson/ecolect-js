@@ -1,3 +1,4 @@
+import { textRenderer } from '../generation/renderers/text.js';
 import { ValueEncounter } from '../resolver/ValueEncounter.js';
 import { ValueNodeOptions } from '../resolver/ValueNode.js';
 
@@ -10,5 +11,5 @@ const instance: ValueNodeOptions<string> = {
 };
 
 export function anyTextValue(options?: Omit<ValueNodeOptions<string>, 'match'>): NodeConvertable<string> {
-	return new ValueMatcher(Object.assign({}, options, instance));
+	return new ValueMatcher(Object.assign({}, options, instance), textRenderer());
 }

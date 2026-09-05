@@ -30,6 +30,8 @@ load it with a dynamic `import()`.
 * Partial matching of phrases, for auto-complete uses such as action launches
 * Ranked matching of everything an expression can mean, for palettes that let
   the user pick between them
+* Generating the text an intent and its values would be matched from, for
+  links that carry what the user asked for
 
 ### Examples
 
@@ -155,6 +157,108 @@ newPhrases()
 ```
 
 Groups can not contain other groups.
+
+## Generating text
+
+A matcher turns text into an intent and its values. A generator turns them
+back into text. Use it when the values have been stored somewhere, such as in
+the query parameters of a page, and the user should see what they asked for:
+
+```javascript
+import { DateInterval, LocalDate } from 'datetime-types';
+import { en } from 'ecolect/language/en';
+import { intentsBuilder, newPhrases, dateIntervalValue } from 'ecolect';
+
+const builder = intentsBuilder(en)
+  .add('orders', newPhrases()
+    .value('when', dateIntervalValue())
+    .phrase('[Show] Orders')
+    .phrase('[Show] Orders (in|from) {when}')
+    .build()
+  );
+
+const matcher = builder.build();
+const generator = builder.buildGenerator();
+
+// `Orders in 2025`
+const text = await generator.generate('orders', {
+  when: DateInterval.between(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 12, 31))
+});
+```
+
+A single set of phrases has a generator of its own, in the same way it has a
+matcher:
+
+```javascript
+const generator = newPhrases()
+  .value('when', dateIntervalValue())
+  .phrase('Todos due {when}')
+  .toGenerator(en);
+
+const text = await generator.generate({ when: interval });
+```
+
+The shortest way of saying something is generated. `generateAll` returns every
+way the phrases allow, shortest first, for letting a user pick between them.
+
+### What is guaranteed
+
+Every text is read back before it is returned, and only text that resolves to
+the intent and values it was written for is handed to the caller. This means:
+
+* **Text always means what it says.** A search for `orders` is not written as
+  `Find orders` when another intent matches that phrase better. There is no
+  way to generate a link that opens something else.
+* **Text keeps meaning it later.** A text that resolves to another value when
+  it is read at another time, such as `today`, is not generated. Set
+  `stable: false` to allow it.
+* **A value that can not be written is not guessed at.** `generate` returns
+  `null`, and the caller can fall back to a plain link.
+
+### Options
+
+Option          | Default    | Description
+----------------|------------|-------------
+`stable`        | `true`     | Only generate text that means the same thing whenever it is read
+`casing`        | `phrase`   | How to write the words of the phrase, one of `phrase`, `lower` or `sentence`
+`maxCandidates` | `25`       | The number of texts to try before giving up
+
+The options of a match, such as `locale` and `now`, are also accepted and are
+used both while writing the text and while reading it back. Generate with the
+locale the text will be read with, as `1/2/2017` is not the same date in every
+locale.
+
+### What can be written
+
+Every value type can be written except `customValue`, which needs a `render`
+of its own:
+
+```javascript
+customValue({
+  match: encounter => encounter.match(lookUp(encounter.text)),
+
+  // Return every way of writing the value, best way first
+  render: value => [ value.name ]
+});
+```
+
+Dates are written as `2010-02-22` and times as `14:00`, which every language
+reads the same way. Date intervals are written as short as they can be, so a
+whole year becomes `2025` and a whole month becomes `january 2025`. Anything
+else becomes a range between two dates.
+
+The words for months, for joining the two dates of a range, and for the parts
+of a length of time are read out of the graphs of the language, so a language
+that is added later can be written without listing its words again. A length
+of time that names more than one part, such as two days and three hours, is
+not written.
+
+`casing` changes the words of the phrase only. A value keeps the case it is
+written with, so a name is not changed.
+
+Pass the values as a match resolved them. A field that is left out is the same
+as a field that is not set, so `{ days: 7 }` is a length of time of seven
+days.
 
 ## Vocabulary
 

@@ -23,6 +23,10 @@
       "types": "./dist/values/index.d.ts",
       "default": "./dist/values/index.js"
     },
+    "./generation": {
+      "types": "./dist/generation/index.d.ts",
+      "default": "./dist/generation/index.js"
+    },
     "./matching": {
       "types": "./dist/matching/index.d.ts",
       "default": "./dist/matching/index.js"

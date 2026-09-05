@@ -1,3 +1,4 @@
+import type { ValueRenderer } from '../generation/ValueRenderer.js';
 import { Encounter, Graph, GraphMatcher, Node } from '../graph/index.js';
 import { Language } from '../language/index.js';
 import { localeAwareMatcher, Matcher, MatchOptions } from '../matching/index.js';
@@ -16,17 +17,37 @@ export interface NodeConvertable<V> {
  */
 export type LanguageSpecificFactory<Mapped> = (language: Language) => ParsingValue<any, Mapped>;
 
+/**
+ * Function that creates the renderer of a value for the given language.
+ */
+export type RendererFactory<Mapped> = (language: Language) => ValueRenderer<Mapped> | null;
+
 export type Value<V> = LanguageSpecificValue<V> | NodeConvertable<V>;
 
 export class LanguageSpecificValue<Mapped> {
 	private factory: LanguageSpecificFactory<Mapped>;
+	private rendererFactory: RendererFactory<Mapped> | undefined;
 
-	public constructor(factory: LanguageSpecificFactory<Mapped>) {
+	public constructor(factory: LanguageSpecificFactory<Mapped>, rendererFactory?: RendererFactory<Mapped>) {
 		this.factory = factory;
+		this.rendererFactory = rendererFactory;
 	}
 
 	public create(language: Language): NodeConvertable<Mapped> {
 		return this.factory(language);
+	}
+
+	/**
+	 * Create the renderer that writes this value as text for the given
+	 * language.
+	 *
+	 * @param language -
+	 *   the language the text is written in
+	 * @returns
+	 *   the renderer, or `null` if this value can not be written as text
+	 */
+	public renderer(language: Language): ValueRenderer<Mapped> | null {
+		return this.rendererFactory ? this.rendererFactory(language) : null;
 	}
 
 	/**
@@ -65,12 +86,46 @@ export class ParsingValue<RawData, Mapped> {
 
 export class ValueMatcher<V> implements NodeConvertable<V> {
 	private options: ValueNodeOptions<V>;
+	private valueRenderer: ValueRenderer<V> | undefined;
 
-	public constructor(options: ValueNodeOptions<V>) {
+	public constructor(options: ValueNodeOptions<V>, valueRenderer?: ValueRenderer<V>) {
 		this.options = options;
+		this.valueRenderer = valueRenderer;
 	}
 
 	public toNode(id: string) {
 		return new ValueNode(id, this.options);
 	}
+
+	/**
+	 * Get the renderer that writes this value as text.
+	 *
+	 * @returns
+	 *   the renderer, or `null` if this value can not be written as text
+	 */
+	public renderer(): ValueRenderer<V> | null {
+		return this.valueRenderer ?? null;
+	}
+}
+
+/**
+ * Get the renderer that writes the given value as text.
+ *
+ * @param value -
+ *   the type of the value
+ * @param language -
+ *   the language the text is written in
+ * @returns
+ *   the renderer, or `null` if the value can not be written as text
+ */
+export function rendererFor(value: Value<any>, language: Language): ValueRenderer<any> | null {
+	if(value instanceof LanguageSpecificValue) {
+		return value.renderer(language);
+	}
+
+	if(value instanceof ValueMatcher) {
+		return value.renderer();
+	}
+
+	return null;
 }

@@ -67,4 +67,8 @@ export class PhrasesBuilder<Values extends object = object> {
 	public toMatcher(language: Language) {
 		return this.build().toMatcher(language);
 	}
+
+	public toGenerator(language: Language) {
+		return this.build().toGenerator(language);
+	}
 }

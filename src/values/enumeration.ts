@@ -1,3 +1,5 @@
+import { renderer } from '../generation/ValueRenderer.js';
+import { valueEqual } from '../generation/valuesEqual.js';
 import { GraphBuilder } from '../graph/index.js';
 
 import { LanguageSpecificValue, ParsingValue } from './base.js';
@@ -86,23 +88,40 @@ export function enumerationValue<V>(
 ) {
 	const mapper = textMapper ? textMapper : DEFAULT_MAPPER;
 
-	return new LanguageSpecificValue(language => {
-		let builder = new GraphBuilder<V>(language)
-			.allowPartial();
+	return new LanguageSpecificValue<V>(
+		language => {
+			let builder = new GraphBuilder<V>(language)
+				.allowPartial();
 
-		for(const item of items) {
-			const value = isEntry(item) ? item.value : item;
-			const texts = isEntry(item) ? toTexts(item.text) : toTexts(mapper(value));
+			for(const item of items) {
+				const value = isEntry(item) ? item.value : item;
+				const texts = isEntry(item) ? toTexts(item.text) : toTexts(mapper(value));
 
-			for(const text of texts) {
-				builder = builder.add(text, value);
+				for(const text of texts) {
+					builder = builder.add(text, value);
+				}
 			}
-		}
 
-		return new ParsingValue(builder.build(), {
-			partialBlankWhenNoToken: true,
+			return new ParsingValue(builder.build(), {
+				partialBlankWhenNoToken: true,
 
-			mapper: value => value
-		});
-	});
+				mapper: value => value
+			});
+		},
+
+		/*
+		 * The items already say which text means which value, so writing one
+		 * of them is a matter of looking it up.
+		 */
+		() => renderer<V>(value => {
+			for(const item of items) {
+				const itemValue = isEntry(item) ? item.value : item;
+				if(! valueEqual(itemValue, value)) continue;
+
+				return isEntry(item) ? toTexts(item.text) : toTexts(mapper(itemValue));
+			}
+
+			return [];
+		})
+	);
 }

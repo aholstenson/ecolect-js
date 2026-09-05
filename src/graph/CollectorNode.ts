@@ -27,20 +27,39 @@ export class CollectorNode<V> extends Node {
 		this.value = value;
 	}
 
-	public match(encounter: Encounter) {
-		let value: Collectable<V> | null = this.value;
-		if(typeof value === 'function') {
-			/**
-			 * For the case where the value is a function to be invoked slice
-			 * the data based on the number of nodes used. This allows the
-			 * parsers to use zero-based indexing instead of length - idx.
-			 */
-			let data = encounter.data();
-			if(data.length > this.depth && data.length > 0) {
-				data = data.slice(data.length - this.depth);
-			}
-			value = (value as ValueResolver<V>)(data, encounter.options, encounter);
+	/**
+	 * Resolve the value this node collects.
+	 *
+	 * @param data -
+	 *   the data collected by the nodes before this one
+	 * @param options -
+	 *   the options of the match
+	 * @param encounter -
+	 *   the encounter being matched, if there is one
+	 * @returns
+	 *   the value, or `null` if the data does not resolve to one
+	 */
+	public resolve(data: any[] = [], options: any = {}, encounter?: Encounter): V | null {
+		const value: Collectable<V> = this.value;
+		if(typeof value !== 'function') {
+			return value;
 		}
+
+		/**
+		 * For the case where the value is a function to be invoked slice
+		 * the data based on the number of nodes used. This allows the
+		 * parsers to use zero-based indexing instead of length - idx.
+		 */
+		let sliced = data;
+		if(sliced.length > this.depth && sliced.length > 0) {
+			sliced = sliced.slice(sliced.length - this.depth);
+		}
+
+		return (value as ValueResolver<V>)(sliced, options, encounter as Encounter) ?? null;
+	}
+
+	public match(encounter: Encounter) {
+		const value = this.resolve(encounter.data(), encounter.options, encounter);
 
 		if(typeof value !== 'undefined' && value !== null) {
 			// If the value is not undefined or null count it as a match

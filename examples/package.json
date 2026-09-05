@@ -11,11 +11,13 @@
   "scripts": {
     "command-line-client": "node command-line-client.js",
     "direct-value-usage": "node direct-value-usage.js",
-    "intent-matching": "node intent-matching.js"
+    "intent-matching": "node intent-matching.js",
+    "text-generation": "node text-generation.js"
   },
   "dependencies": {
     "@inquirer/search": "^4.3.2",
     "chalk": "^6.0.0",
+    "datetime-types": "^0.3.0",
     "ecolect": "workspace:^"
   }
 }

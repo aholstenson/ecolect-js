@@ -3,6 +3,7 @@ import { ActionsBuilder } from './ActionsBuilder.js';
 import { IntentsBuilder } from './IntentsBuilder.js';
 import { Language } from './language/index.js';
 
+export * from './generation/index.js';
 export * from './matching/index.js';
 export * from './resolver/expression/index.js';
 

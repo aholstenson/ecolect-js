@@ -1,13 +1,17 @@
+import { integerRenderer } from '../generation/renderers/numbers.js';
 import { KnownGraphs } from '../language/index.js';
 import { mapInteger } from '../type-numbers/index.js';
 
 import { LanguageSpecificValue, ParsingValue } from './base.js';
 
 export function integerValue() {
-	return new LanguageSpecificValue(language => new ParsingValue(
-		language.findGraph(KnownGraphs.Integer),
-		{
-			mapper: mapInteger
-		}
-	));
+	return new LanguageSpecificValue(
+		language => new ParsingValue(
+			language.findGraph(KnownGraphs.Integer),
+			{
+				mapper: mapInteger
+			}
+		),
+		() => integerRenderer()
+	);
 }
