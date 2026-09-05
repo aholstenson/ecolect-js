@@ -52,19 +52,19 @@ export function time24h(hour: number, minute?: number, second?: number): DateTim
 }
 
 /**
- * Switch the given time to PM.
+ * Switch the given time to PM. The given data is left as it is, as it may be
+ * shared with other parses of the same tokens.
  */
-export function toPM(time: DateTimeData) {
-	time.meridiem = Meridiem.Pm;
-	return time;
+export function toPM(time: DateTimeData): DateTimeData {
+	return { ...time, meridiem: Meridiem.Pm };
 }
 
 /**
- * Switch the given time to AM.
+ * Switch the given time to AM. The given data is left as it is, as it may be
+ * shared with other parses of the same tokens.
  */
-export function toAM(time: DateTimeData) {
-	time.meridiem = Meridiem.Am;
-	return time;
+export function toAM(time: DateTimeData): DateTimeData {
+	return { ...time, meridiem: Meridiem.Am };
 }
 
 export function mapTime(r: DateTimeData, options: DateTimeOptions & { reference?: Date }= {}) {

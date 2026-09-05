@@ -1,8 +1,30 @@
-import { time12h, time24h, mapTime } from '../src/times.js';
+import { time12h, time24h, mapTime, toAM, toPM } from '../src/times.js';
 import { Meridiem } from '../src/Meridiem.js';
 
 describe('Time', () => {
 	describe('times', () => {
+		describe('toAM and toPM', () => {
+			/*
+			 * The data given to these is shared with other parses of the same
+			 * tokens, so it must be left as it is.
+			 */
+			it('toPM leaves the given time as it is', () => {
+				const time = { hour: 8, meridiem: Meridiem.Auto };
+				const r = toPM(time);
+
+				expect(r).toEqual({ hour: 8, meridiem: Meridiem.Pm });
+				expect(time).toEqual({ hour: 8, meridiem: Meridiem.Auto });
+			});
+
+			it('toAM leaves the given time as it is', () => {
+				const time = { hour: 8, meridiem: Meridiem.Auto };
+				const r = toAM(time);
+
+				expect(r).toEqual({ hour: 8, meridiem: Meridiem.Am });
+				expect(time).toEqual({ hour: 8, meridiem: Meridiem.Auto });
+			});
+		});
+
 		describe('time12h', () => {
 			it('Full time', () => {
 				const r = time12h(8, 12, 42);
