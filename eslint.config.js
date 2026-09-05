@@ -1,5 +1,4 @@
 import js from '@eslint/js';
-import stylistic from '@stylistic/eslint-plugin';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import importPlugin from 'eslint-plugin-import-x';
 import jsdoc from 'eslint-plugin-jsdoc';
@@ -33,7 +32,6 @@ export default tseslint.config(
 
 		plugins: {
 			'@typescript-eslint': tseslint.plugin,
-			'@stylistic': stylistic,
 			'import-x': importPlugin,
 			jsdoc: jsdoc,
 			tsdoc: tsdoc
@@ -102,71 +100,6 @@ export default tseslint.config(
 			'@typescript-eslint/prefer-namespace-keyword': 'error',
 			'@typescript-eslint/triple-slash-reference': 'error',
 			'@typescript-eslint/unified-signatures': 'off',
-
-			/*
-			 * Formatting. These used to live in ESLint core and in
-			 * `@typescript-eslint`, and are now provided by `@stylistic`.
-			 */
-			'@stylistic/array-bracket-spacing': [ 'warn', 'always' ],
-			'@stylistic/arrow-parens': [ 'warn', 'as-needed' ],
-			'@stylistic/arrow-spacing': [ 'warn', { before: true, after: true } ],
-			'@stylistic/block-spacing': [ 'warn', 'always' ],
-			'@stylistic/brace-style': [ 'warn', '1tbs' ],
-			'@stylistic/comma-spacing': [ 'warn', { before: false, after: true } ],
-			'@stylistic/comma-style': [ 'warn', 'last' ],
-			'@stylistic/computed-property-spacing': [ 'warn', 'never' ],
-			'@stylistic/function-call-spacing': 'warn',
-			'@stylistic/generator-star-spacing': [ 'warn', { before: true, after: false } ],
-			'@stylistic/indent': [ 'error', 'tab', {
-				SwitchCase: 1,
-				ignoredNodes: [ 'TSTypeLiteral', 'TSUnionType' ]
-			} ],
-			'@stylistic/key-spacing': [ 'warn', {
-				beforeColon: false,
-				afterColon: true,
-				mode: 'strict'
-			} ],
-			'@stylistic/keyword-spacing': [ 'warn', {
-				before: true,
-				after: true,
-				overrides: {
-					if: { after: false },
-					for: { after: false },
-					while: { after: false },
-					switch: { after: false },
-					catch: { after: false }
-				}
-			} ],
-			'@stylistic/member-delimiter-style': [ 'error', {
-				multiline: { delimiter: 'semi', requireLast: true },
-				singleline: { delimiter: 'semi', requireLast: false }
-			} ],
-			'@stylistic/no-extra-semi': 'error',
-			'@stylistic/no-multi-spaces': 'warn',
-			'@stylistic/no-multiple-empty-lines': 'warn',
-			'@stylistic/object-curly-spacing': [ 'warn', 'always' ],
-			'@stylistic/padded-blocks': [ 'warn', 'never' ],
-			'@stylistic/quote-props': [ 'warn', 'as-needed' ],
-			'@stylistic/quotes': [ 'error', 'single', { avoidEscape: true } ],
-			'@stylistic/semi': [ 'error', 'always' ],
-			'@stylistic/semi-spacing': [ 'warn', { before: false, after: true } ],
-			'@stylistic/space-before-blocks': 'warn',
-			'@stylistic/space-before-function-paren': [ 'warn', {
-				anonymous: 'never',
-				named: 'never',
-				asyncArrow: 'always'
-			} ],
-			'@stylistic/space-in-parens': [ 'warn', 'never' ],
-			'@stylistic/space-infix-ops': 'warn',
-			'@stylistic/space-unary-ops': [ 'warn', {
-				words: true,
-				nonwords: false,
-				overrides: {
-					'!': true,
-					'!!': true
-				}
-			} ],
-			'@stylistic/spaced-comment': 'warn',
 
 			'tsdoc/syntax': 'warn',
 			'jsdoc/check-alignment': 'warn',
