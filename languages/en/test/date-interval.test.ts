@@ -337,5 +337,389 @@ describe('English', () => {
 				dayOfMonth: 3
 			}
 		});
+
+		/*
+		 * Rolling ranges are counted from the current day, which is
+		 * Wednesday September 5th 2012 in these tests.
+		 */
+
+		test('last 7 days', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 8,
+				dayOfMonth: 30
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('the last 7 days', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 8,
+				dayOfMonth: 30
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('past 7 days', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 8,
+				dayOfMonth: 30
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('past week', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 8,
+				dayOfMonth: 30
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('the past week', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 8,
+				dayOfMonth: 30
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('the last day', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('last 24 hours', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 4
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('last 3 months', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 6,
+				dayOfMonth: 6
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('previous 2 weeks', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 8,
+				dayOfMonth: 23
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('next 7 days', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 11
+			}
+		});
+
+		test('the next week', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 11
+			}
+		});
+
+		test('coming week', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 11
+			}
+		});
+
+		// Named periods keep meaning the previous or next calendar period
+		test('last week', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 8,
+				dayOfMonth: 26
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 1
+			}
+		});
+
+		test('last month', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 8,
+				dayOfMonth: 1
+			},
+			end: {
+				year: 2012,
+				month: 8,
+				dayOfMonth: 31
+			}
+		});
+
+		test('next week', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 9
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 15
+			}
+		});
+
+		test('since monday', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 3
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('since 2011', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2011,
+				month: 1,
+				dayOfMonth: 1
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('since last week', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 8,
+				dayOfMonth: 26
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('year to date', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 1,
+				dayOfMonth: 1
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('ytd', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 1,
+				dayOfMonth: 1
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('quarter to date', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 7,
+				dayOfMonth: 1
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('month to date', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 1
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('week to date', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 2
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('during the last 7 days', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 8,
+				dayOfMonth: 30
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('in the last 7 days', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 8,
+				dayOfMonth: 30
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		test('over the past week', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 8,
+				dayOfMonth: 30
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 5
+			}
+		});
+
+		// A single relative date covers only the day it describes
+		test('7 days', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 12
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 12
+			}
+		});
+
+		test('3 days ago', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 2
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 2
+			}
+		});
+
+		test('a week', { now: new Date(2012, 8, 5) }, {
+			start: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 9
+			},
+			end: {
+				year: 2012,
+				month: 9,
+				dayOfMonth: 15
+			}
+		});
 	});
 });
