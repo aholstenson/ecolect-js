@@ -1,5 +1,7 @@
 import { DayOfWeek } from 'datetime-types';
 
+import { DateOrder } from './DateOrder.js';
+
 /**
  * Options that can be used with date and times.
  *
@@ -37,4 +39,12 @@ export interface DateTimeOptions {
 	 * The day of January that is always in the first week of the year.
 	 */
 	firstWeekContainsDate?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
+	/**
+	 * The order of the fields in numeric dates such as `1/2/2017`. Defaults
+	 * to month, day and then year as used in the United States. Dates that
+	 * start with a four digit year are always read as year, month and then
+	 * day.
+	 */
+	dateOrder?: DateOrder;
 }

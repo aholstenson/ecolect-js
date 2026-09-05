@@ -1,4 +1,5 @@
-import { mapDate, LAST_DAY_OF_WEEK } from '../src/dates.js';
+import { DateOrder } from '../src/DateOrder.js';
+import { mapDate, expandYear, numericDate, numericMonthDay, LAST_DAY_OF_WEEK } from '../src/dates.js';
 import { TimeRelationship } from '../src/TimeRelationship.js';
 
 describe('Time', () => {
@@ -271,6 +272,83 @@ describe('Time', () => {
 					month: 3,
 					dayOfMonth: 18
 				});
+			});
+		});
+
+		describe('expandYear', () => {
+			const options = {
+				now: new Date(2017, 2, 24)
+			};
+
+			it('two digit year in the current century', () => {
+				expect(expandYear(18, options)).toBe(2018);
+				expect(expandYear(0, options)).toBe(2000);
+			});
+
+			it('up to 20 years ahead stays in the current century', () => {
+				expect(expandYear(37, options)).toBe(2037);
+			});
+
+			it('more than 20 years ahead is the previous century', () => {
+				expect(expandYear(38, options)).toBe(1938);
+				expect(expandYear(99, options)).toBe(1999);
+			});
+
+			it('years with more digits are kept', () => {
+				expect(expandYear(2017, options)).toBe(2017);
+				expect(expandYear(150, options)).toBe(150);
+			});
+		});
+
+		describe('numericMonthDay', () => {
+			it('month first by default', () => {
+				expect(numericMonthDay(4, 12)).toEqual({ month: 3, day: 12 });
+			});
+
+			it('day first with day-month-year order', () => {
+				expect(numericMonthDay(4, 12, { dateOrder: DateOrder.DayMonthYear })).toEqual({ month: 11, day: 4 });
+			});
+
+			it('swaps the fields when only one can be a month', () => {
+				expect(numericMonthDay(13, 2)).toEqual({ month: 1, day: 13 });
+				expect(numericMonthDay(2, 13, { dateOrder: DateOrder.DayMonthYear })).toEqual({ month: 1, day: 13 });
+			});
+
+			it('keeps the fields when neither can be a month', () => {
+				expect(numericMonthDay(13, 13)).toEqual({ month: 12, day: 13 });
+			});
+		});
+
+		describe('numericDate', () => {
+			const options = {
+				now: new Date(2017, 2, 24)
+			};
+
+			it('four digit year first is year, month and day in every order', () => {
+				const expected = { year: 2017, month: 0, day: 2 };
+
+				expect(numericDate(2017, 1, 2, options)).toEqual(expected);
+				expect(numericDate(2017, 1, 2, { ...options, dateOrder: DateOrder.DayMonthYear })).toEqual(expected);
+			});
+
+			it('four digit year first does not swap month and day', () => {
+				expect(numericDate(2017, 13, 1, options)).toEqual({ year: 2017, month: 12, day: 1 });
+			});
+
+			it('four digit year last reads month and day by order', () => {
+				expect(numericDate(1, 2, 2017, options)).toEqual({ year: 2017, month: 0, day: 2 });
+				expect(numericDate(1, 2, 2017, { ...options, dateOrder: DateOrder.DayMonthYear })).toEqual({ year: 2017, month: 1, day: 1 });
+				expect(numericDate(1, 2, 2017, { ...options, dateOrder: DateOrder.YearMonthDay })).toEqual({ year: 2017, month: 0, day: 2 });
+			});
+
+			it('short fields read by order with the year expanded', () => {
+				expect(numericDate(1, 2, 17, options)).toEqual({ year: 2017, month: 0, day: 2 });
+				expect(numericDate(1, 2, 17, { ...options, dateOrder: DateOrder.DayMonthYear })).toEqual({ year: 2017, month: 1, day: 1 });
+				expect(numericDate(17, 1, 2, { ...options, dateOrder: DateOrder.YearMonthDay })).toEqual({ year: 2017, month: 0, day: 2 });
+			});
+
+			it('swaps month and day when only one can be a month', () => {
+				expect(numericDate(24, 1, 2017, options)).toEqual({ year: 2017, month: 0, day: 24 });
 			});
 		});
 

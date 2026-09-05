@@ -1,4 +1,4 @@
-import { mapDate } from '@ecolect/type-datetime';
+import { DateOrder, mapDate } from '@ecolect/type-datetime';
 
 import { dateGraph } from '../src/dateGraph.js';
 import { EnglishLanguage } from '../src/EnglishLanguage.js';
@@ -703,13 +703,126 @@ describe('English', function() {
 				dayOfMonth: 12
 			});
 
-			test('24/01/2017', { now: tuesday }, null);
-
-			test('13/2', { now: tuesday }, null);
-
 			test('2017-13-01', { now: tuesday }, null);
 
 			test('2017-02-30', { now: tuesday }, null);
+
+			test('13/13', { now: tuesday }, null);
+		});
+
+		describe('Numeric formats with date order', function() {
+			const dmy = { dateOrder: DateOrder.DayMonthYear };
+			const ymd = { dateOrder: DateOrder.YearMonthDay };
+
+			test('1/2/2017', { now: tuesday }, {
+				year: 2017,
+				month: 1,
+				dayOfMonth: 2
+			});
+
+			test('1/2/2017', { now: tuesday, ...dmy }, {
+				year: 2017,
+				month: 2,
+				dayOfMonth: 1
+			});
+
+			test('1/2/2017', { now: tuesday, ...ymd }, {
+				year: 2017,
+				month: 1,
+				dayOfMonth: 2
+			});
+
+			test('4/12', { now: tuesday, ...dmy }, {
+				year: 2017,
+				month: 12,
+				dayOfMonth: 4
+			});
+
+			// A four digit year first is always year, month and day
+			test('2017-01-24', { now: tuesday, ...dmy }, {
+				year: 2017,
+				month: 1,
+				dayOfMonth: 24
+			});
+
+			// Only one of the fields can be the month
+			test('24/01/2017', { now: tuesday }, {
+				year: 2017,
+				month: 1,
+				dayOfMonth: 24
+			});
+
+			test('1/24/2017', { now: tuesday, ...dmy }, {
+				year: 2017,
+				month: 1,
+				dayOfMonth: 24
+			});
+
+			test('13/2', { now: tuesday }, {
+				year: 2017,
+				month: 2,
+				dayOfMonth: 13
+			});
+
+			test('2/13', { now: tuesday, ...dmy }, {
+				year: 2017,
+				month: 2,
+				dayOfMonth: 13
+			});
+		});
+
+		describe('Two digit years', function() {
+			const dmy = { dateOrder: DateOrder.DayMonthYear };
+			const ymd = { dateOrder: DateOrder.YearMonthDay };
+
+			test('12/1/18', { now: tuesday }, {
+				year: 2018,
+				month: 12,
+				dayOfMonth: 1
+			});
+
+			test('12/1/18', { now: tuesday, ...dmy }, {
+				year: 2018,
+				month: 1,
+				dayOfMonth: 12
+			});
+
+			test('18/12/1', { now: tuesday, ...ymd }, {
+				year: 2018,
+				month: 12,
+				dayOfMonth: 1
+			});
+
+			test('1/2/99', { now: tuesday }, {
+				year: 1999,
+				month: 1,
+				dayOfMonth: 2
+			});
+
+			// Up to 20 years ahead is read as the future
+			test('1/2/37', { now: tuesday }, {
+				year: 2037,
+				month: 1,
+				dayOfMonth: 2
+			});
+
+			test('1/2/38', { now: tuesday }, {
+				year: 1938,
+				month: 1,
+				dayOfMonth: 2
+			});
+
+			test('jan of 99', { now: tuesday }, {
+				year: 1999,
+				month: 1,
+				dayOfMonth: 1
+			});
+
+			test('jan in 18', { now: tuesday }, {
+				year: 2018,
+				month: 1,
+				dayOfMonth: 1
+			});
 		});
 
 		describe('Years relative to today', function() {

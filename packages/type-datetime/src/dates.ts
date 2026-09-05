@@ -27,6 +27,7 @@ import {
 import { LocalDate, DayOfWeek } from 'datetime-types';
 
 import { currentTime } from './currentTime.js';
+import { DateOrder } from './DateOrder.js';
 import { DateTimeData } from './DateTimeData.js';
 import { DateTimeOptions } from './DateTimeOptions.js';
 import { IntervalEdge } from './IntervalEdge.js';
@@ -87,10 +88,133 @@ export function withDay(r: DateTimeData, day: number) {
 	});
 }
 
-export function withYear(r: DateTimeData, year: number) {
+/**
+ * Add a year to the given data. A two digit year is expanded with
+ * `expandYear`.
+ *
+ * @param r -
+ *   the data to add the year to
+ * @param year -
+ *   the year, either two or four digits
+ * @param options -
+ *   options with the current time, used to expand a two digit year
+ * @returns
+ *   copy of the data with the year set
+ */
+export function withYear(r: DateTimeData, year: number, options: DateTimeOptions = {}) {
 	return combine(r, {
-		year: year < 1000 ? year + 2000 : year
+		year: expandYear(year, options)
 	});
+}
+
+/**
+ * Expand a two digit year into a full year. The year is placed in the window
+ * from 79 years before the current year up to 20 years after it, so in 2026
+ * `18` is 2018, `46` is 2046 and `47` is 1947. Years with three or more
+ * digits are returned as they are.
+ *
+ * @param year -
+ *   the year to expand
+ * @param options -
+ *   options with the current time
+ * @returns
+ *   the full year
+ */
+export function expandYear(year: number, options: DateTimeOptions = {}): number {
+	if(year >= 100) return year;
+
+	const current = currentTime(options).getFullYear();
+	const century = Math.floor(current / 100) * 100;
+
+	const result = century + year;
+	return result > current + 20 ? result - 100 : result;
+}
+
+/**
+ * Check if the month is written before the day in the given options.
+ *
+ * @param options -
+ *   options with the date order
+ * @returns
+ *   `true` if the month comes before the day
+ */
+function isMonthBeforeDay(options: DateTimeOptions): boolean {
+	return options.dateOrder !== DateOrder.DayMonthYear;
+}
+
+/**
+ * Describe a numeric month and day such as `4/12`. The order of the fields
+ * is taken from `dateOrder` in the options. If the field read as the month
+ * cannot be a month but the other one can, the fields are swapped, so `13/2`
+ * is February 13th in every order.
+ *
+ * @param first -
+ *   the first number
+ * @param second -
+ *   the second number
+ * @param options -
+ *   options with the date order
+ * @returns
+ *   data with the month and day
+ */
+export function numericMonthDay(first: number, second: number, options: DateTimeOptions = {}): DateTimeData {
+	let month = isMonthBeforeDay(options) ? first : second;
+	let day = isMonthBeforeDay(options) ? second : first;
+
+	if(month > 12 && day <= 12) {
+		const swapped = month;
+		month = day;
+		day = swapped;
+	}
+
+	return {
+		month: month - 1,
+		day: day
+	};
+}
+
+/**
+ * Describe a numeric date with three fields such as `1/2/2017`, `1/2/17` or
+ * `2017-01-02`.
+ *
+ * A field with three or more digits is the year, so `2017-01-02` is read as
+ * year, month and day and `1/2/2017` has the year last, whatever the date
+ * order is. When every field is short the order comes from `dateOrder` in
+ * the options, and the two digit year is expanded with `expandYear`.
+ *
+ * With the year last the month and day are read as by `numericMonthDay`,
+ * so `24/1/2017` is January 24th in every order. With the year first the
+ * month always comes before the day, as in ISO 8601.
+ *
+ * @param first -
+ *   the first number
+ * @param second -
+ *   the second number
+ * @param third -
+ *   the third number
+ * @param options -
+ *   options with the date order and the current time
+ * @returns
+ *   data with the year, month and day
+ */
+export function numericDate(
+	first: number,
+	second: number,
+	third: number,
+	options: DateTimeOptions = {}
+): DateTimeData {
+	if(first >= 100 || (third < 100 && options.dateOrder === DateOrder.YearMonthDay)) {
+		return {
+			year: expandYear(first, options),
+			month: second - 1,
+			day: third
+		};
+	}
+
+	return {
+		...numericMonthDay(first, second, options),
+		year: expandYear(third, options)
+	};
 }
 
 /**

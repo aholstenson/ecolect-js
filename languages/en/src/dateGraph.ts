@@ -21,6 +21,8 @@ import {
 	nextDayOfWeek,
 	previousDayOfWeek,
 	LAST_DAY_OF_WEEK,
+	numericDate,
+	numericMonthDay,
 	withDay,
 	withYear,
 	thisMonth,
@@ -51,6 +53,9 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 		const dateDuration = language.graph(dateDurationGraph);
 
 		const day = GraphBuilder.result(ordinal, (v: OrdinalData) => v.value >= 1 && v.value <= 31);
+
+		// A field in a numeric date, one or two digits or a four digit year
+		const numericField = /^([0-9]{1,2}|[0-9]{4})$/;
 
 		const builder = new GraphBuilder<DateTimeData>(language)
 			.name('date')
@@ -121,34 +126,28 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			// Without day: Jan 2018, this month 2018
 			.add([ GraphBuilder.result(hasMonth), year ], v => combine(v[0], v[1]))
 
-			.add([ month, 'in', /^[0-9]{1,2}$/ ], v => withYear(v[0], parseInt(v[1], 10)))
-			.add([ month, 'of', /^[0-9]{1,2}$/ ], v => withYear(v[0], parseInt(v[1], 10)))
+			.add([ month, 'in', /^[0-9]{1,2}$/ ], (v, e) => withYear(v[0], parseInt(v[1], 10), e))
+			.add([ month, 'of', /^[0-9]{1,2}$/ ], (v, e) => withYear(v[0], parseInt(v[1], 10), e))
 
-			// Year - Month - Day, such as 2017-01-24 or 2017 2 5
-			.add([ /^[0-9]{4}$/, '-', /^[0-9]{1,2}$/, '-', /^[0-9]{1,2}$/ ], v => {
-				return {
-					year: parseInt(v[0], 10),
-					month: parseInt(v[1], 10) - 1,
-					day: parseInt(v[2], 10)
-				};
-			})
+			/*
+			 * Numeric dates with three fields, such as 2017-01-24, 1/24/2017
+			 * or 1/24/17. The order of the fields is given by the dateOrder
+			 * option, a four digit year at the start is always read as
+			 * year, month and then day.
+			 */
+			.add([ numericField, '-', numericField, '-', numericField ], (v, e) => numericDate(
+				parseInt(v[0], 10),
+				parseInt(v[1], 10),
+				parseInt(v[2], 10),
+				e
+			))
 
-			// Month / Day / Year
-			.add([ /^[0-9]{1,2}$/, '/', /^[0-9]{1,2}$/, '/', /^[0-9]{4}$/ ], v => {
-				return {
-					year: parseInt(v[2], 10),
-					month: parseInt(v[0], 10) - 1,
-					day: parseInt(v[1], 10)
-				};
-			})
-
-			// Month / Day
-			.add([ /^[0-9]{1,2}$/, '/', /^[0-9]{1,2}$/ ], v => {
-				return {
-					month: parseInt(v[0], 10) - 1,
-					day: parseInt(v[1], 10)
-				};
-			})
+			// Numeric month and day, such as 1/24 or 24/1 depending on dateOrder
+			.add([ /^[0-9]{1,2}$/, '/', /^[0-9]{1,2}$/ ], (v, e) => numericMonthDay(
+				parseInt(v[0], 10),
+				parseInt(v[1], 10),
+				e
+			))
 
 			// Standalone year
 			.add([ year ], v => v[0])
