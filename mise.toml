@@ -1,0 +1,7 @@
+[tools]
+node = "24"
+pnpm = "10.33.0"
+
+[env]
+# Run locally installed binaries, such as eslint and vitest, without a prefix.
+_.path = "node_modules/.bin"
