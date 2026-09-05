@@ -34,6 +34,14 @@ describe('Actions', function() {
 				});
 		});
 
+		it('Match: score of orders is above zero', function() {
+			return actions.match('orders')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.score).toBeGreaterThan(0);
+				});
+		});
+
 		it('No match: show', function() {
 			return actions.match('show')
 				.then(r => {

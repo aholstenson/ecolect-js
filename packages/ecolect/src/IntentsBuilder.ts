@@ -38,6 +38,7 @@ export class IntentsBuilder<Intents extends Intent<any, any> = never> {
 		const graph = this.builder.build();
 		return new GraphMatcher(graph, {
 			mapper: m => {
+				m.data.score = m.score;
 				m.data.refreshExpression();
 				return m.data;
 			}

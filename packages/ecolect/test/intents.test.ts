@@ -41,6 +41,25 @@ describe('Intents', function() {
 				});
 		});
 
+		it('Match: score of orders is above zero', function() {
+			return intents.match('orders')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.score).toBeGreaterThan(0);
+				});
+		});
+
+		it('Partial: scores are above zero and in descending order', function() {
+			return intents.matchPartial('orders')
+				.then(r => {
+					const scores = r.map(m => m.score);
+
+					expect(scores.length).toBeGreaterThan(1);
+					expect(scores.every(score => score > 0)).toBe(true);
+					expect([ ...scores ].sort((a, b) => b - a)).toEqual(scores);
+				});
+		});
+
 		it('Match (skippable in input): show for orders', function() {
 			return intents.match('show for orders', { fuzzy: true })
 				.then(r => {

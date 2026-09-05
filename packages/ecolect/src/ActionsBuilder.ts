@@ -46,6 +46,7 @@ export class ActionsBuilder<Context=void, ReturnType=void> {
 		const graph = this.builder.build();
 		return new GraphMatcher(graph, {
 			mapper: m => {
+				m.data.score = m.score;
 				m.data.refreshExpression();
 				return m.data;
 			}
