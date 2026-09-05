@@ -34,7 +34,7 @@
   ],
   "sideEffects": false,
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
@@ -50,7 +50,7 @@
     "@ecolect/type-numbers": "workspace:^",
     "datetime-types": "^0.3.0",
     "fast-equals": "^6.0.3",
-    "numeric-types": "^0.3.1",
+    "numeric-types": "^0.4.0",
     "rfdc": "^1.4.1"
   },
   "devDependencies": {

@@ -91,8 +91,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
       numeric-types:
-        specifier: ^0.3.1
-        version: 0.3.1
+        specifier: ^0.4.0
+        version: 0.4.0
 
   packages/ecolect:
     dependencies:
@@ -118,8 +118,8 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
       numeric-types:
-        specifier: ^0.3.1
-        version: 0.3.1
+        specifier: ^0.4.0
+        version: 0.4.0
       rfdc:
         specifier: ^1.4.1
         version: 1.4.1
@@ -179,8 +179,8 @@ importers:
   packages/type-numbers:
     dependencies:
       numeric-types:
-        specifier: ^0.3.1
-        version: 0.3.1
+        specifier: ^0.4.0
+        version: 0.4.0
 
 packages:
 
@@ -1064,9 +1064,6 @@ packages:
   js-tokens@10.0.0:
     resolution: {integrity: sha512-lM/UBzQmfJRo9ABXbPWemivdCW8V2G8FHaHdypQaIy523snUjog0W71ayWXTjiR+ixeMyVHN2XcpnTd/liPg/Q==}
 
-  jsbi@3.2.5:
-    resolution: {integrity: sha512-aBE4n43IPvjaddScbvWRA2YlTzKEynHzu7MqOyTipdHucf/VxS63ViCjxYRg86M8Rxwbt/GfzHl1kKERkt45fQ==}
-
   jsdoc-type-pratt-parser@9.2.1:
     resolution: {integrity: sha512-V4Ww4EHnTcTLSOMoB0FsF72JhQvcAsriCm/LWnxJeGWoxIjEL2l9na11abQok5SYShq8m0Gl02el/xAbTCulvQ==}
     engines: {node: ^22.22.2 || >=24.15.0}
@@ -1211,9 +1208,9 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
-  numeric-types@0.3.1:
-    resolution: {integrity: sha512-jPSBY1iTbBgHjDcmRTRRpfdxCsUmhxGKtmd9D6MkZL5zo7s7Z5nfa/AyKtKrfyY4wBmRXTij5CI6p7dXE7dYkA==}
-    engines: {node: '>=8.0.0'}
+  numeric-types@0.4.0:
+    resolution: {integrity: sha512-ywcxc3y+Iz8Z1AnLvoRf3TUERlXt/YUBlclD8Qe/MhJZOeVxIbwlJXo80eAz5/Xacu1sR+HWb67sTWYLmexbxg==}
+    engines: {node: '>=22.0.0'}
 
   object-deep-merge@2.0.1:
     resolution: {integrity: sha512-aKttDKcU3pyZqKcCkDhsMn70WmZFG2JGDQLP9EcLyTSIFQRCPWLAmBZRLJnrVUrhPG1jETEEbfdgbNtJf1LyMg==}
@@ -2394,8 +2391,6 @@ snapshots:
 
   js-tokens@10.0.0: {}
 
-  jsbi@3.2.5: {}
-
   jsdoc-type-pratt-parser@9.2.1:
     dependencies:
       '@types/estree': 1.0.9
@@ -2512,9 +2507,8 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  numeric-types@0.3.1:
+  numeric-types@0.4.0:
     dependencies:
-      jsbi: 3.2.5
       ts-custom-error: 3.3.1
 
   object-deep-merge@2.0.1: {}
