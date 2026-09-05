@@ -276,7 +276,7 @@ English          | `2 hours`, `1s`, `2h, 45m`, `4 minutes and 10 seconds`
 ```javascript
 import { dateTimeDurationValue } from 'ecolect';
 
-const value = dateTimedurationValue();
+const value = dateTimeDurationValue();
 ```
 
 Capture a duration of both days, hours, minutes, seconds and miliseconds.
