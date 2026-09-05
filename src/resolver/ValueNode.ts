@@ -153,7 +153,7 @@ class ValueEncounterImpl<V> implements ValueEncounter<V> {
 
 	public constructor(encounter: Encounter) {
 		this.encounter = encounter;
-		this.partial = encounter.options.partial || false;
+		this.partial = encounter.isPartialInput;
 		this.matches = [];
 		this.tokens = Tokens.empty();
 	}

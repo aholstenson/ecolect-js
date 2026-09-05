@@ -26,9 +26,47 @@ describe('Phrases: Skippable words', function() {
 				.then(r => expect(r).not.toBeNull());
 		});
 
+		it('Trailing skippable word', function() {
+			return resolver.match('show orders please')
+				.then(r => expect(r).not.toBeNull());
+		});
+
+		it('Leading and trailing skippable words', function() {
+			return resolver.match('please show all my orders please')
+				.then(r => expect(r).not.toBeNull());
+		});
+
 		it('Word that is not skippable', function() {
 			return resolver.match('show open orders')
 				.then(r => expect(r).toBeNull());
+		});
+
+		it('Trailing word that is not skippable', function() {
+			return resolver.match('show orders now')
+				.then(r => expect(r).toBeNull());
+		});
+	});
+
+	describe('Partial matcher', function() {
+		const resolver = newPhrases()
+			.skippable('please')
+			.phrase('show orders')
+			.phrase('show orders for today')
+			.toMatcher(en);
+
+		it('Trailing skippable word', function() {
+			return resolver.matchPartial('show orders please')
+				.then(r => expect(r.length).toEqual(1));
+		});
+
+		it('Trailing skippable word being typed', function() {
+			return resolver.matchPartial('show orders ple')
+				.then(r => expect(r.length).toEqual(0));
+		});
+
+		it('Trailing stop word keeps continuations', function() {
+			return resolver.matchPartial('show orders for')
+				.then(r => expect(r.length).toEqual(1));
 		});
 	});
 

@@ -80,7 +80,7 @@ export class SubNode<V> extends Node {
 	}
 
 	public match(encounter: Encounter) {
-		if(! encounter.token() && encounter.options.partial) {
+		if(! encounter.token() && encounter.isPartialInput) {
 			if(this.recursive) {
 				/**
 				 * If this evaluating a recursive match on a partial encounter
@@ -288,7 +288,7 @@ export class SubNode<V> extends Node {
 	 */
 	private branchIntoVariants(encounter: Encounter, variants: SubGraphVariant[]): MaybePromise<void> {
 		if(variants.length === 0) {
-			if(encounter.options.partial && ! this.supportsPartial && this.partialFallback) {
+			if(encounter.isPartialInput && ! this.supportsPartial && this.partialFallback) {
 				return encounter.advance(0.0, encounter.tokens.length - encounter.currentIndex, this.partialFallback);
 			}
 

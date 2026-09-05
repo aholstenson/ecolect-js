@@ -51,7 +51,7 @@ export class TokenNode extends Node {
 				 * 2) We are also performing fuzzy matching
 				 */
 				const partialAndLastToken = encounter.isPartial && encounter.isLastToken;
-				const rootPartialAndFuzzy = encounter.isFuzzy && encounter.options.partial;
+				const rootPartialAndFuzzy = encounter.isFuzzy && encounter.isPartialInput;
 				const score = (partialAndLastToken || rootPartialAndFuzzy)
 					? this.comparer.comparePartial(this.token, token)
 					: this.comparer.compare(this.token, token);

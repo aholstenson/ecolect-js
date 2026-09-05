@@ -52,7 +52,7 @@ export class ValueParserNode<V> extends Node {
 	}
 
 	public match(encounter: Encounter) {
-		if(! encounter.token() && encounter.options.partial && this.partialBlankWhenNoToken
+		if(! encounter.token() && encounter.isPartialInput && this.partialBlankWhenNoToken
 			&& (! this.node.supportsPartial || ! encounter.isJustAfterLastToken)) {
 			/*
 			* If there are no more tokens and the value does not support

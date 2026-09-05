@@ -46,6 +46,13 @@ export class Encounter {
 	 */
 	public skippableTokens: ReadonlySet<string>;
 
+	/**
+	 * If the expression may continue after the input ends. Set to `false`
+	 * while evaluating a branch where the last token of a partial expression
+	 * has been skipped.
+	 */
+	private allowContinuation: boolean;
+
 	private onMatch?: MatchHandler;
 
 	public readonly options: EncounterOptions;
@@ -79,6 +86,7 @@ export class Encounter {
 		this.supportsPartial = options.supportsPartial || false;
 		this.supportsFuzzy = options.supportsFuzzy || false;
 		this.skippableTokens = options.skippableTokens || NO_SKIPPABLE_TOKENS;
+		this.allowContinuation = true;
 
 		this.options = options;
 
@@ -124,8 +132,39 @@ export class Encounter {
 		return this.options.fuzzy && this.supportsFuzzy;
 	}
 
+	/**
+	 * Get if the expression is allowed to continue after the input ends. This
+	 * is true while matching a partial expression, except in branches where
+	 * the last token of the input has been skipped.
+	 *
+	 * @returns
+	 *   `true` if more input may follow the tokens in this encounter
+	 */
+	public get isPartialInput(): boolean {
+		return (this.options.partial || false) && this.allowContinuation;
+	}
+
 	public get isPartial() {
-		return this.options.partial && this.supportsPartial;
+		return this.isPartialInput && this.supportsPartial;
+	}
+
+	/**
+	 * Run the given function with the expression not being allowed to continue
+	 * after the input ends, so that only matches that are already complete are
+	 * reported.
+	 *
+	 * @param func -
+	 *   function to run
+	 * @returns
+	 *   nothing, via a promise if the function returned a promise
+	 */
+	public withoutContinuation(func: () => MaybePromise<unknown>): MaybePromise<void> {
+		const allowContinuation = this.allowContinuation;
+		this.allowContinuation = false;
+
+		return after(func(), () => {
+			this.allowContinuation = allowContinuation;
+		});
 	}
 
 	public data() {
@@ -251,13 +290,26 @@ export class Encounter {
 			 * This is done if:
 			 * 1) The token is skippable
 			 * 2) The current graph supports fuzzy matching
-			 * 3) The token is not the last one
 			 */
 			const token = this.token(nextIndex);
-			if(token && this.isSkippable(token)
-				&& this.supportsFuzzy
-				&& nextIndex !== this.tokens.length - 1
-			) {
+			if(token && this.isSkippable(token) && this.supportsFuzzy) {
+				if(this.options.partial && nextIndex === this.tokens.length - 1) {
+					/*
+					 * The last token of a partial expression is the word that
+					 * is being typed. Stop words such as `for` are usually
+					 * followed by more input, so leaving them out would suggest
+					 * expressions the input has already ruled out. Words the
+					 * graph declares skippable, such as `please`, are filler
+					 * and may be left out, but the expression may not continue
+					 * after them as no more input is going to arrive.
+					 */
+					if(token.skippable) return;
+
+					return this.withoutContinuation(
+						() => this.advance((score || 0), (consumedTokens || 0) + 1, data)
+					);
+				}
+
 				return this.advance((score || 0), (consumedTokens || 0) + 1, data);
 			}
 		};
