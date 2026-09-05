@@ -38,7 +38,7 @@ export class LanguageSpecificValue<Mapped> {
 	public matcher(language: Language): Matcher<Mapped> {
 		const value = this.factory(language);
 		return new GraphMatcher(value.graph, {
-			mapper: (m, encounter) => value.options.mapper(m.data, encounter.options)
+			mapper: (m, options) => value.options.mapper(m.data, options)
 		});
 	}
 }
