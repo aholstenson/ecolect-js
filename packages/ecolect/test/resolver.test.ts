@@ -45,6 +45,45 @@ describe('Resolver', function() {
 		});
 	});
 
+	describe('Partial matches and duplicate values', function() {
+		it('Phrases that resolve the same values are reported once', function() {
+			const resolver = new PhrasesBuilder()
+				.phrase('orders')
+				.phrase('orders active')
+				.toMatcher(en);
+
+			return resolver.matchPartial('orders')
+				.then(r => {
+					// Neither phrase resolves a value, so they are duplicates
+					expect(r.length).toEqual(1);
+
+					const match = r[0];
+					assertNotNull(match);
+					expect(match.values).toEqual({});
+				});
+		});
+
+		it('Phrases that resolve different values are all reported', function() {
+			const resolver = new PhrasesBuilder()
+				.value('a', anyTextValue())
+				.phrase('orders {a}')
+				.phrase('orders for {a}')
+				.toMatcher(en);
+
+			return resolver.matchPartial('orders for test')
+				.then(r => {
+					expect(r.length).toEqual(2);
+
+					const [ first, second ] = r;
+					assertNotNull(first);
+					assertNotNull(second);
+
+					expect(first.values).toEqual({ a: 'test' });
+					expect(second.values).toEqual({ a: 'for test' });
+				});
+		});
+	});
+
 	describe('Graph with value of type any', function() {
 		const resolver = new PhrasesBuilder()
 			.value('a', anyTextValue())

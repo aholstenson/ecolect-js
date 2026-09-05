@@ -104,9 +104,17 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 	}
 
 	public build() {
-		this.options.matchIsEqual = (e) => e.partial
-			? (a, b) => a.intent === b.intent && deepEqual(a.values, b.values)
-			: (a, b) => a.intent === b.intent;
+		/*
+		 * A full match only ever exposes the highest scoring result, so every
+		 * full match counts as a duplicate and the set keeps the best one.
+		 *
+		 * Partial matches are all handed back to the caller, so they are only
+		 * duplicates when they resolved the same values. Without this two
+		 * phrases that resolve to the same thing would both be suggested.
+		 */
+		this.options.matchIsEqual = e => e.partial
+			? (a, b) => deepEqual(a.values, b.values)
+			: () => true;
 
 		return super.build();
 	}
