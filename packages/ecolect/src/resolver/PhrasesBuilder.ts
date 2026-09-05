@@ -25,6 +25,22 @@ export class PhrasesBuilder<Values extends object = object> {
 		return this as any;
 	}
 
+	/**
+	 * Add a phrase that may be matched. Values are referred to by name, as in
+	 * `Orders for {customer}`.
+	 *
+	 * A phrase can describe several ways to say the same thing via groups of
+	 * alternatives. Alternatives within `(` and `)` must match, alternatives
+	 * within `[` and `]` may also be left out, and `|` separates them, so
+	 * `[Show|List] orders (from|in) {when}` matches `show orders from today`,
+	 * `list orders in January` and `orders from today`. Groups can not contain
+	 * other groups.
+	 *
+	 * @param args -
+	 *   the phrase, as text or as nodes to match
+	 * @returns
+	 *   self
+	 */
 	public phrase(...args: GraphBuildable<any>[]): this {
 		this.phrases.push(args);
 		return this;

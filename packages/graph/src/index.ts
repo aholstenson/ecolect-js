@@ -3,6 +3,7 @@ export * from './GraphBuilder.js';
 export * from './GraphMatcher.js';
 
 export * from './Node.js';
+export * from './CollectorNode.js';
 export * from './TokenNode.js';
 export * from './CustomNode.js';
 export * from './SubNode.js';

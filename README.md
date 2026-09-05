@@ -126,6 +126,35 @@ const matcher = newPhrases()
 const bestMatch = await matcher.match('please show all my orders');
 ```
 
+### Groups of alternatives
+
+A phrase can describe several ways to say the same thing. Words within `(` and
+`)` must match, words within `[` and `]` may also be left out, and `|`
+separates the alternatives:
+
+```javascript
+const matcher = newPhrases()
+  .value('when', dateIntervalValue())
+  .phrase('[Show|List] orders (from|in) {when}')
+  .toMatcher(en);
+
+// All of these match
+await matcher.match('show orders from today');
+await matcher.match('list orders in January');
+await matcher.match('orders from today');
+```
+
+Alternatives are text, so they may contain both several words and values:
+
+```javascript
+newPhrases()
+  .value('customer', anyTextValue())
+  .phrase('Orders (for|belonging to) {customer}')
+  .phrase('Order[s] (today|{when})')
+```
+
+Groups can not contain other groups.
+
 ## Vocabulary
 
 Languages understand common words, but not the words of your domain. Use

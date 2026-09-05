@@ -1,19 +1,26 @@
 import { deepEqual } from 'fast-equals';
 
-import { GraphBuilder, Node, TokenNode } from '@ecolect/graph';
+import {
+	Collectable,
+	GraphBuildable,
+	GraphBuildableArray,
+	GraphBuilder,
+	Node,
+	TokenNode
+} from '@ecolect/graph';
 import { Language } from '@ecolect/language';
 
 import { LanguageSpecificValue, NodeConvertable, Value } from '../values/base.js';
 
+import { expandPhrase } from './expandPhrase.js';
 import { ValueNode } from './ValueNode.js';
 
 const VALUE = /{([a-zA-Z0-9]+)}/g;
 
 /**
  * Extension to the normal parser that handles referring to values by
- * name in the text.
- *
- * TODO: Extended grammar for optional tokens and OR between tokens?
+ * name in the text, and text that describes several phrases via groups of
+ * alternatives such as `[Show|List] orders`.
  */
 export class ResolverParser<V> extends GraphBuilder<V> {
 	private readonly language: Language;
@@ -48,6 +55,48 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 		}
 
 		this.values.set(id, factory);
+		return this;
+	}
+
+	/**
+	 * Add a phrase and the value to record when it matches. Text within the
+	 * phrase may describe several ways to say the same thing, in which case
+	 * every way is added.
+	 *
+	 * @param nodes -
+	 *   the phrase, as a single item or an array of items
+	 * @param value -
+	 *   the value to record when the phrase matches
+	 * @returns
+	 *   self
+	 */
+	public add(nodes: GraphBuildableArray<V>, value: Collectable<V>): this {
+		const items = Array.isArray(nodes) ? nodes : [ nodes ];
+
+		/*
+		 * Every item may be written in several ways, so the phrases added are
+		 * the combinations of the ways their items can be written.
+		 */
+		let variants: GraphBuildable<V>[][] = [ [] ];
+		for(const item of items) {
+			const expanded = typeof item === 'string'
+				? expandPhrase(item)
+				: [ item ];
+
+			const next: GraphBuildable<V>[][] = [];
+			for(const variant of variants) {
+				for(const alternative of expanded) {
+					next.push([ ...variant, alternative ]);
+				}
+			}
+
+			variants = next;
+		}
+
+		for(const variant of variants) {
+			super.add(variant, value);
+		}
+
 		return this;
 	}
 
