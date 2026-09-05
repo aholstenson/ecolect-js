@@ -73,6 +73,27 @@ function applyRules(rules: Rule[], text: string): string {
 }
 
 /**
+ * Words without quotes or punctuation that the rules still split, so they
+ * can not take the fast path.
+ */
+const SPLIT_WORDS = new Set([
+	'cannot',
+	'gimme',
+	'gonna',
+	'gotta',
+	'lemme',
+	'wanna',
+	'whaddya',
+	'whatcha'
+]);
+
+/**
+ * Characters that make a word subject to the quote, punctuation and
+ * contraction rules.
+ */
+const NEEDS_RULES = /[^\p{L}\p{N}_]/u;
+
+/**
  * Split raw text into words following the Treebank rules.
  *
  * @param text -
@@ -81,6 +102,15 @@ function applyRules(rules: Rule[], text: string): string {
  *   the tokens found in the text
  */
 export function treebankTokenizer(text: string): string[] {
+	/*
+	 * Every rule acts on quotes, punctuation or one of a few known words, so
+	 * a word made up of only letters and digits is returned as it is. This
+	 * is the common case and skips running all of the rules.
+	 */
+	if(text.length > 0 && ! NEEDS_RULES.test(text) && ! SPLIT_WORDS.has(text.toLowerCase())) {
+		return [ text ];
+	}
+
 	text = applyRules(STARTING_QUOTES, text);
 	text = applyRules(PUNCTUATION, text);
 	text = applyRules(PARENS_BRACKETS, text);

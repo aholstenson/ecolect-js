@@ -49,5 +49,34 @@ describe('English', function() {
 			expect(tokens.length).toEqual(1);
 			expect(tokens[0].raw).toEqual(':');
 		});
+
+		it('Words without punctuation are kept as they are', function() {
+			const tokens = tokenizer('Todos due tomorrow 2018');
+			expect(tokens.map(t => t.raw)).toEqual([ 'Todos', 'due', 'tomorrow', '2018' ]);
+			expect(tokens.map(t => t.normalized)).toEqual([ 'todos', 'due', 'tomorrow', '2018' ]);
+		});
+
+		it('Contraction without apostrophe: cannot', function() {
+			const tokens = tokenizer('Cannot');
+			expect(tokens.map(t => t.raw)).toEqual([ 'Can', 'not' ]);
+		});
+
+		it('Contraction without apostrophe: gonna', function() {
+			const tokens = tokenizer('gonna');
+			expect(tokens.map(t => t.raw)).toEqual([ 'gon', 'na' ]);
+		});
+
+		it('Quotes are split from words', function() {
+			const tokens = tokenizer('"hello"');
+			expect(tokens.length).toEqual(3);
+			expect(tokens[1].raw).toEqual('hello');
+		});
+
+		it('Punctuation is split from words', function() {
+			const tokens = tokenizer('hello, world!');
+			expect(tokens.map(t => t.raw)).toEqual([ 'hello', ',', 'world', '!' ]);
+			expect(tokens[1].punctuation).toBe(true);
+			expect(tokens[3].punctuation).toBe(true);
+		});
 	});
 });
