@@ -5,9 +5,17 @@
   "description": "Runnable examples for Ecolect",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "command-line-client": "node command-line-client.js",
+    "direct-value-usage": "node direct-value-usage.js",
+    "intent-matching": "node intent-matching.js"
+  },
   "dependencies": {
+    "@inquirer/search": "^4.3.2",
     "chalk": "^6.0.0",
-    "cli-autocomplete": "^0.4.3",
     "ecolect": "workspace:^"
   }
 }

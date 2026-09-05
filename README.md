@@ -566,6 +566,26 @@ Tests import the sources directly, so `pnpm test` does not need a build first.
 else. No source maps or TypeScript sources are published, which keeps the
 package about a third of the size it would otherwise be.
 
+### Running the examples
+
+`examples` holds runnable programs that use the package the way an application
+would. They import `ecolect` from `dist`, so build first:
+
+```
+$ pnpm install
+$ pnpm build
+$ pnpm --filter @ecolect/examples run intent-matching
+```
+
+Command | Description
+--------|------------
+`pnpm --filter @ecolect/examples run intent-matching` | Match intents and read the captured values
+`pnpm --filter @ecolect/examples run direct-value-usage` | Use a value type on its own, without phrases
+`pnpm --filter @ecolect/examples run command-line-client` | Type an expression and pick between the intents it can still become
+
+The command line client needs a terminal. Pick a suggestion with Enter and
+quit with Ctrl+C.
+
 ## Releases
 
 Releases are prepared by [Release Please](https://github.com/googleapis/release-please),

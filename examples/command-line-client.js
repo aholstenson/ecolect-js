@@ -1,5 +1,5 @@
 import { en } from 'ecolect/language/en';
-import autocompletePrompt from 'cli-autocomplete';
+import search from '@inquirer/search';
 import chalk from 'chalk';
 import {
 	anyTextValue,
@@ -39,53 +39,62 @@ const intents = intentsBuilder(en)
 	)
 	.build();
 
+/**
+ * Turn a captured value into something readable. Values are objects such as
+ * `LocalDate` and `BigDecimal` that all format themselves via `toString`.
+ */
 function formatValue(value) {
-	if(value) {
-		if(value.value) {
-			return value.value;
-		} else if(value.toDate) {
-			return value.toDate();
-		}
-	}
-
-	return value;
+	return String(value);
 }
 
-function run() {
-	autocompletePrompt('', query => {
-		return intents.matchPartial(query)
-			.then(matches => matches.map(item => {
-				const title = item.expression.map(part => {
-					switch(part.type) {
-						case 'value':
-							return chalk.green(formatValue(part.value) || part.id);
-						default:
-							return part.value;
-					}
-				}).join(' ');
-
-				return {
-					title: chalk.gray(item.score.toFixed(2)) + '  ' + title
-				};
-			}))
-			.catch(err => console.log(err));
-	}).on('submit', query => {
-		if(! query) {
-			run();
-			return;
-		}
-
-		intents.match(query).then(match => {
-			if(match) {
-				console.log('Matched ' + match.id);
-			} else {
-				console.log('Did not match');
+/**
+ * Render a partial match as the phrase it would become. Values that have not
+ * been said yet are shown as `{name}` placeholders.
+ */
+function formatExpression(match) {
+	return match.expression
+		.map(part => {
+			if(part.type === 'value') {
+				return chalk.green(part.value === undefined || part.value === null
+					? '{' + part.id + '}'
+					: formatValue(part.value));
 			}
 
-			run();
-		});
-	});
+			return part.value;
+		})
+		.join(' ');
 }
 
-console.log('Type to test matching');
-run();
+console.log('Type to test matching. Pick a suggestion with Enter, quit with Ctrl+C.');
+
+while(true) {
+	let match;
+	try {
+		// `source` runs on every keystroke, so partial matching drives the list
+		match = await search({
+			message: 'Match:',
+			source: async term => {
+				const matches = await intents.matchPartial(term ?? '');
+				return matches.map(item => ({
+					name: chalk.gray(item.score.toFixed(2)) + '  ' + formatExpression(item),
+					value: item,
+					description: 'Intent: ' + item.id
+				}));
+			}
+		});
+	} catch(err) {
+		// Ctrl+C rejects the prompt, which ends the session
+		if(err.name === 'ExitPromptError') break;
+
+		throw err;
+	}
+
+	console.log('Matched ' + match.id);
+
+	const values = Object.entries(match.values);
+	if(values.length > 0) {
+		for(const [ key, value ] of values) {
+			console.log('  ' + key + ': ' + formatValue(value));
+		}
+	}
+}
