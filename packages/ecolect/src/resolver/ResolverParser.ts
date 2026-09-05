@@ -105,14 +105,15 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 
 	public build() {
 		/*
-		 * A full match only ever exposes the highest scoring result, so every
-		 * full match counts as a duplicate and the set keeps the best one.
+		 * A match that only exposes the highest scoring result counts every
+		 * match as a duplicate, so that the set keeps the best one.
 		 *
-		 * Partial matches are all handed back to the caller, so they are only
-		 * duplicates when they resolved the same values. Without this two
-		 * phrases that resolve to the same thing would both be suggested.
+		 * Partial matches and matches that return everything are all handed
+		 * back to the caller, so they are only duplicates when they resolved
+		 * the same values. Without this two phrases that resolve to the same
+		 * thing would both be suggested.
 		 */
-		this.options.matchIsEqual = e => e.partial
+		this.options.matchIsEqual = e => e.partial || e.all
 			? (a, b) => deepEqual(a.values, b.values)
 			: () => true;
 

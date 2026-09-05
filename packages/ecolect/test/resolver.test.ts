@@ -80,6 +80,67 @@ describe('Resolver', function() {
 		});
 	});
 
+	describe('Complete matches and duplicate values', function() {
+		it('Phrases that resolve the same values are reported once', function() {
+			const resolver = new PhrasesBuilder()
+				.phrase('orders')
+				.phrase('show orders')
+				.toMatcher(en);
+
+			return resolver.matchAll('show orders')
+				.then(r => {
+					// Neither phrase resolves a value, so they are duplicates
+					expect(r.length).toEqual(1);
+					expect(r[0].values).toEqual({});
+				});
+		});
+
+		it('Phrases that resolve different values are all reported', function() {
+			const resolver = new PhrasesBuilder()
+				.value('a', anyTextValue())
+				.phrase('orders {a}')
+				.phrase('orders for {a}')
+				.toMatcher(en);
+
+			return resolver.matchAll('orders for test')
+				.then(r => {
+					expect(r.length).toEqual(2);
+
+					const [ first, second ] = r;
+					expect(first.values).toEqual({ a: 'test' });
+					expect(second.values).toEqual({ a: 'for test' });
+
+					expect(first.score).toBeGreaterThan(second.score);
+				});
+		});
+
+		it('Limit keeps the best matches', function() {
+			const resolver = new PhrasesBuilder()
+				.value('a', anyTextValue())
+				.phrase('orders {a}')
+				.phrase('orders for {a}')
+				.toMatcher(en);
+
+			return resolver.matchAll('orders for test', { limit: 1 })
+				.then(r => {
+					expect(r.length).toEqual(1);
+					expect(r[0].values).toEqual({ a: 'test' });
+				});
+		});
+
+		it('Expressions that are not fully matched are not reported', function() {
+			const resolver = new PhrasesBuilder()
+				.phrase('one')
+				.phrase('one two three')
+				.toMatcher(en);
+
+			return resolver.matchAll('one two')
+				.then(r => {
+					expect(r).toEqual([]);
+				});
+		});
+	});
+
 	describe('Graph with value of type any', function() {
 		const resolver = new PhrasesBuilder()
 			.value('a', anyTextValue())

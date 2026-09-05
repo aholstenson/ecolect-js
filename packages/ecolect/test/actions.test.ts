@@ -63,6 +63,35 @@ describe('Actions', function() {
 				});
 		});
 
+		it('Match all: orders', function() {
+			return actions.matchAll('orders')
+				.then(r => {
+					expect(r.map(a => a.id)).toEqual([ 'orders' ]);
+				});
+		});
+
+		it('Match all: an action matched by several phrases is returned once', function() {
+			return actions.matchAll('show orders')
+				.then(r => {
+					expect(r.map(a => a.id)).toEqual([ 'orders' ]);
+				});
+		});
+
+		it('Match all: matched items have an activate() function', function() {
+			return actions.matchAll('orders that are active')
+				.then(r => {
+					expect(r.length).toEqual(1);
+					expect(r[0].activate(1234)).toEqual('active 1234');
+				});
+		});
+
+		it('No match all: show', function() {
+			return actions.matchAll('show')
+				.then(r => {
+					expect(r).toEqual([]);
+				});
+		});
+
 		it('Matched items have an activate() function', () => {
 			return actions.match('orders')
 				.then(r => {

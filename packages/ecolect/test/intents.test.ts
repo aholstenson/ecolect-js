@@ -171,6 +171,82 @@ describe('Intents', function() {
 		});
 	});
 
+	describe('Matching everything', function() {
+		const intents = new IntentsBuilder(en)
+			.add('orders', newPhrases()
+				.phrase('Orders')
+				.phrase('Show orders')
+				.build()
+			)
+			.add('customer:orders', newPhrases()
+				.value('customer', anyTextValue())
+				.phrase('Orders for {customer}')
+				.phrase('Find orders for {customer}')
+				.build()
+			)
+			.add('search', newPhrases()
+				.value('query', anyTextValue())
+				.phrase('Find {query}')
+				.build()
+			)
+			.build();
+
+		it('Every intent that matches the expression is returned', function() {
+			return intents.matchAll('find orders for Test')
+				.then(r => {
+					expect(r.map(m => m.id)).toEqual([ 'customer:orders', 'search' ]);
+
+					const [ first, second ] = r;
+					if(first.id === 'customer:orders') {
+						expect(first.values.customer).toEqual('Test');
+					}
+
+					if(second.id === 'search') {
+						expect(second.values.query).toEqual('orders for Test');
+					}
+				});
+		});
+
+		it('Scores are above zero and in descending order', function() {
+			return intents.matchAll('find orders for Test')
+				.then(r => {
+					const scores = r.map(m => m.score);
+
+					expect(scores.length).toBeGreaterThan(1);
+					expect(scores.every(score => score > 0)).toBe(true);
+					expect([ ...scores ].sort((a, b) => b - a)).toEqual(scores);
+				});
+		});
+
+		it('Intent matched by several phrases is returned once', function() {
+			return intents.matchAll('show orders')
+				.then(r => {
+					expect(r.map(m => m.id)).toEqual([ 'orders' ]);
+				});
+		});
+
+		it('Intents that need more of the expression are left out', function() {
+			return intents.matchAll('orders')
+				.then(r => {
+					expect(r.map(m => m.id)).toEqual([ 'orders' ]);
+				});
+		});
+
+		it('No match: find', function() {
+			return intents.matchAll('find')
+				.then(r => {
+					expect(r).toEqual([]);
+				});
+		});
+
+		it('Limit keeps the best matches', function() {
+			return intents.matchAll('find orders for Test', { limit: 1 })
+				.then(r => {
+					expect(r.map(m => m.id)).toEqual([ 'customer:orders' ]);
+				});
+		});
+	});
+
 	describe('Scoring with values', function() {
 		const phrases = newPhrases()
 			.value('text', anyTextValue())

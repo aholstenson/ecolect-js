@@ -1,9 +1,27 @@
+import { deepEqual } from 'fast-equals';
+
 import { GraphBuilder, GraphMatcher } from '@ecolect/graph';
 import { Language } from '@ecolect/language';
 
 import { Matcher } from './matching/index.js';
 import { Phrase } from './resolver/Phrase.js';
 import { Phrases } from './resolver/Phrases.js';
+
+/**
+ * Check if two intents are the same suggestion. Intents that have the same
+ * identifier and the same values mean the same thing to the caller, even if
+ * they matched different words, so only the best scoring one is kept.
+ *
+ * @param a -
+ *   the first intent
+ * @param b -
+ *   the second intent
+ * @returns
+ *   `true` if the intents are the same suggestion
+ */
+function intentIsEqual(a: Intent<any, any>, b: Intent<any, any>): boolean {
+	return a.id === b.id && deepEqual(a.values, b.values);
+}
 
 export class IntentsBuilder<Intents extends Intent<any, any> = never> {
 	private language: Language;
@@ -17,7 +35,8 @@ export class IntentsBuilder<Intents extends Intent<any, any> = never> {
 		this.language = language;
 
 		this.builder = new GraphBuilder<Intent<any, any>>(language)
-			.allowPartial();
+			.allowPartial()
+			.matchIsEqual(options => options.all ? intentIsEqual : deepEqual);
 	}
 
 	public add<I extends string, V extends object>(

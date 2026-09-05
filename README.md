@@ -27,6 +27,8 @@ CommonJS, load them with a dynamic `import()`.
   * Numbers (via `ordinalValue`, `numberValue` and `integerValue`)
 * Matching of phrases, including value extraction
 * Partial matching of phrases, for auto-complete uses such as action launches
+* Ranked matching of everything an expression can mean, for palettes that let
+  the user pick between them
 
 ### Examples
 
@@ -79,6 +81,37 @@ const bestMatch = await matcher.match('orders');
 // Or partially match
 const matches = await matcher.matchPartial('orders');
 ```
+
+An expression can mean more than one thing. `matchAll` returns everything that
+matches the whole expression, best match first, so that the user can pick
+between them:
+
+```javascript
+import { anyTextValue } from 'ecolect';
+
+const matcher = intentsBuilder(en)
+  .add('orders', newPhrases()
+    .value('customer', anyTextValue())
+    .phrase('Orders for {customer}')
+    .build()
+  )
+  .add('search', newPhrases()
+    .value('query', anyTextValue())
+    .phrase('Find {query}')
+    .build()
+  )
+  .build();
+
+// [ orders for the customer `Test`, a search for `orders for Test` ]
+const matches = await matcher.matchAll('find orders for Test');
+
+// The number of matches can be limited, keeping the best ones
+const bestTwo = await matcher.matchAll('find orders for Test', { limit: 2 });
+```
+
+Every match has a `score`, and matches that mean the same thing are returned
+once. Use `matchAll` when the user has entered a full expression and
+`matchPartial` while they are still typing.
 
 Words that only make sense for certain phrases can be marked as skippable on
 those phrases:

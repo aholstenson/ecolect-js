@@ -4,6 +4,7 @@ import { CollectorNode, Collectable } from './CollectorNode.js';
 import { CustomNode, TokenValidator } from './CustomNode.js';
 import { Graph } from './Graph.js';
 import { GraphOptions } from './GraphOptions.js';
+import { MatchIsEqual } from './matching/index.js';
 import { Node } from './Node.js';
 import { Predicate } from './Predicate.js';
 import { RegExpNode } from './RegExpNode.js';
@@ -109,6 +110,21 @@ export class GraphBuilder<V> {
 		}
 
 		this.options.skippableTokens = tokens;
+		return this;
+	}
+
+	/**
+	 * Set how the graph decides that two matches are the same. Matches that
+	 * are equal are duplicates, and only the one with the best score is kept.
+	 *
+	 * @param func -
+	 *   function that creates the equality check for the options an expression
+	 *   is matched with
+	 * @returns
+	 *   self
+	 */
+	public matchIsEqual(func: MatchIsEqual): this {
+		this.options.matchIsEqual = func;
 		return this;
 	}
 

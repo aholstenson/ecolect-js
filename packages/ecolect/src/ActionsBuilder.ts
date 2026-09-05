@@ -1,3 +1,5 @@
+import { deepEqual } from 'fast-equals';
+
 import { GraphBuilder, GraphMatcher } from '@ecolect/graph';
 import { Language } from '@ecolect/language';
 
@@ -18,6 +20,22 @@ export interface ActionDef<Context, ReturnType, Values extends object> {
 	handler: ActionInvoker<Context, ReturnType, Values>;
 }
 
+/**
+ * Check if two actions are the same suggestion. Actions that have the same
+ * identifier and the same values do the same thing when activated, even if
+ * they matched different words, so only the best scoring one is kept.
+ *
+ * @param a -
+ *   the first action
+ * @param b -
+ *   the second action
+ * @returns
+ *   `true` if the actions are the same suggestion
+ */
+function actionIsEqual(a: Action<any, any, any>, b: Action<any, any, any>): boolean {
+	return a.id === b.id && deepEqual(a.values, b.values);
+}
+
 export class ActionsBuilder<Context=void, ReturnType=void> {
 	private language: Language;
 	private builder: GraphBuilder<Action<any, any, any>>;
@@ -30,7 +48,8 @@ export class ActionsBuilder<Context=void, ReturnType=void> {
 		this.language = language;
 
 		this.builder = new GraphBuilder<Action<any, any, any>>(language)
-			.allowPartial();
+			.allowPartial()
+			.matchIsEqual(options => options.all ? actionIsEqual : deepEqual);
 	}
 
 	public add<V extends object>(def: ActionDef<Context, ReturnType, V>) {

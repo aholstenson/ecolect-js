@@ -92,6 +92,46 @@ describe('GraphBuilder', function() {
 		});
 	});
 
+	describe('Match all', function() {
+		const graph = new GraphBuilder<string>(tokens)
+			.add('hello', 'token')
+			.add(/^[a-z]+$/, v => 'regexp:' + v[0])
+			.add('hello world', 'phrase')
+			.build();
+
+		const matcher = new GraphMatcher(graph, options);
+
+		it('Every branch that matches is returned', function() {
+			return matcher.matchAll('hello')
+				.then(r => {
+					expect([ ...r ].sort()).toEqual([ 'regexp:hello', 'token' ]);
+				});
+		});
+
+		it('Single branch that matches is returned', function() {
+			return matcher.matchAll('hello world')
+				.then(r => {
+					expect(r).toEqual([ 'phrase' ]);
+				});
+		});
+
+		it('Limit keeps the best matches', function() {
+			return Promise.all([
+				matcher.matchAll('hello'),
+				matcher.matchAll('hello', { limit: 1 })
+			]).then(([ all, limited ]) => {
+				expect(limited).toEqual([ all[0] ]);
+			});
+		});
+
+		it('Extra tokens - no match', function() {
+			return matcher.matchAll('hello world and more')
+				.then(r => {
+					expect(r).toEqual([]);
+				});
+		});
+	});
+
 	describe('Skipping punctuation', function() {
 		const sub = new GraphBuilder<number>(tokens)
 			.skipPunctuation()
