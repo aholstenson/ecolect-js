@@ -3,6 +3,12 @@ import { Token, TokenComparer } from '../tokenization/index.js';
 import { Encounter } from './matching/index.js';
 import { Node } from './Node.js';
 
+/**
+ * Score given when a punctuation token in the graph matches the same
+ * punctuation in the expression.
+ */
+const PUNCTUATION_SCORE = 0.1;
+
 export class TokenNode extends Node {
 	private readonly comparer: TokenComparer;
 	public readonly token: Token;
@@ -25,10 +31,16 @@ export class TokenNode extends Node {
 			if(this.token.punctuation) {
 				if(this.token.normalized === token.normalized) {
 					// Punctuation nodes must match directly
-					return encounter.advance(0.1, 1);
+					return encounter.advance(PUNCTUATION_SCORE, 1);
 				} else if(encounter.skipPunctuation) {
-					// This token is punctuation and the encounter allows skipping
-					return encounter.advance(0.0, 0);
+					/*
+					 * The expression left this punctuation out, such as
+					 * writing a time as `14 00` instead of `14:00`. This
+					 * still matches, but it costs what the punctuation would
+					 * have scored, so a reading that has the punctuation is
+					 * preferred.
+					 */
+					return encounter.advance(- PUNCTUATION_SCORE, 0);
 				}
 			} else {
 				/*

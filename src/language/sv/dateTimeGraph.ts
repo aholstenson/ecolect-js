@@ -1,6 +1,7 @@
 import { GraphBuilder } from '../../graph/index.js';
 import {
-	combine,
+	asTime,
+	combineDateAndTime,
 	DateTimeData,
 	isRelative
 } from '../../type-datetime/index.js';
@@ -21,14 +22,14 @@ export const dateTimeGraph: LanguageGraphFactory<DateTimeData> = {
 
 			.skipPunctuation()
 
-			.add(time, v => v[0])
+			.add(time, v => asTime(v[0]))
 			.add(date, v => v[0])
 
-			.add([ time, date ], v => combine(v[0], v[1]))
-			.add([ time, 'och', date ], v => combine(v[0], v[1]))
+			.add([ time, date ], v => combineDateAndTime(v[1], v[0]))
+			.add([ time, 'och', date ], v => combineDateAndTime(v[1], v[0]))
 
-			.add([ date, time ], v => combine(v[0], v[1]))
-			.add([ date, 'och', time ], v => combine(v[0], v[1]))
+			.add([ date, time ], v => combineDateAndTime(v[0], v[1]))
+			.add([ date, 'och', time ], v => combineDateAndTime(v[0], v[1]))
 
 			.add(GraphBuilder.result(date, isRelative), (v, e) => v[0])
 

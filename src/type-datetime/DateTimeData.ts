@@ -31,6 +31,14 @@ export interface DateTimeData {
 
 	meridiem?: Meridiem;
 
+	/**
+	 * If the time was read from a plain number, such as `12` or `2018`, with
+	 * nothing in the text to mark it as a time. Such a number is only a time
+	 * when nothing else in the expression claims it, so this mark is dropped
+	 * as soon as the value is reported as a result.
+	 */
+	fromPlainNumber?: boolean;
+
 	hour?: number;
 	minute?: number;
 	second?: number;

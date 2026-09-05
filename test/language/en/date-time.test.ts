@@ -11,6 +11,46 @@ const test = testRunner(new EnglishLanguage(), dateTimeGraph, mapDateTime);
 
 describe('English', function() {
 	describe('Date & Time', function() {
+		test('january 12', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2010,
+			month: 1,
+			dayOfMonth: 12,
+			hour: 13,
+			minute: 30,
+			second: 0,
+			milliOfSecond: 0
+		}));
+
+		test('12 january', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2010,
+			month: 1,
+			dayOfMonth: 12,
+			hour: 13,
+			minute: 30,
+			second: 0,
+			milliOfSecond: 0
+		}));
+
+		test('january 2018', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2018,
+			month: 1,
+			dayOfMonth: 1,
+			hour: 13,
+			minute: 30,
+			second: 0,
+			milliOfSecond: 0
+		}));
+
+		test('january 12 12:10', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2010,
+			month: 1,
+			dayOfMonth: 12,
+			hour: 12,
+			minute: 10,
+			second: 0,
+			milliOfSecond: 0
+		}));
+
 		test('jan 12th', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
 			year: 2010,
 			month: 1,

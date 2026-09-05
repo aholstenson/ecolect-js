@@ -12,6 +12,46 @@ const now = { now: new Date(2010, 0, 1, 13, 30) };
 
 describe('Swedish', function() {
 	describe('Date & Time', function() {
+		test('12 januari', now, LocalDateTime.from({
+			year: 2010,
+			month: 1,
+			dayOfMonth: 12,
+			hour: 13,
+			minute: 30,
+			second: 0,
+			milliOfSecond: 0
+		}));
+
+		test('januari 12', now, LocalDateTime.from({
+			year: 2010,
+			month: 1,
+			dayOfMonth: 12,
+			hour: 13,
+			minute: 30,
+			second: 0,
+			milliOfSecond: 0
+		}));
+
+		test('januari 2018', now, LocalDateTime.from({
+			year: 2018,
+			month: 1,
+			dayOfMonth: 1,
+			hour: 13,
+			minute: 30,
+			second: 0,
+			milliOfSecond: 0
+		}));
+
+		test('12 januari 12:10', now, LocalDateTime.from({
+			year: 2010,
+			month: 1,
+			dayOfMonth: 12,
+			hour: 12,
+			minute: 10,
+			second: 0,
+			milliOfSecond: 0
+		}));
+
 		test('12:e januari', now, LocalDateTime.from({
 			year: 2010,
 			month: 1,

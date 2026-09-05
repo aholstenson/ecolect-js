@@ -2,6 +2,7 @@ import { clone } from './clone.js';
 import { DateTimeData } from './DateTimeData.js';
 import { IntervalData, isIntervalData } from './IntervalData.js';
 import { IntervalEdge } from './IntervalEdge.js';
+import { asTime, isPlainNumberTime } from './times.js';
 
 /**
  * Check if a given result is currently relative.
@@ -50,6 +51,29 @@ export function hasHour(v: DateTimeData): boolean {
 
 export function isHour(v: DateTimeData): boolean {
 	return v && typeof v.hour !== 'undefined' && typeof v.minute === 'undefined';
+}
+
+/**
+ * Combine a date and a time into a date and time. Returns `null` when the
+ * two parts do not read as a date and a time together, in which case the
+ * expression is better read some other way.
+ *
+ * @param date -
+ *   the date part
+ * @param time -
+ *   the time part
+ * @returns
+ *   the combined value, or `null` if the parts do not go together
+ */
+export function combineDateAndTime(date: DateTimeData, time: DateTimeData): DateTimeData | null {
+	/*
+	 * A plain number next to a month belongs to the date, so `january 12` is
+	 * the 12th and not noon on the 1st, and `january 2018` is a month in 2018
+	 * and not 20:18.
+	 */
+	if(isMonth(date) && isPlainNumberTime(time)) return null;
+
+	return asTime(combine(date, time));
 }
 
 export function combine(a: DateTimeData, b: DateTimeData) {

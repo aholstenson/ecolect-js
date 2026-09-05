@@ -52,6 +52,53 @@ export function time24h(hour: number, minute?: number, second?: number): DateTim
 }
 
 /**
+ * Mark a time as read from a plain number, such as `12` or `2018`. Such a
+ * number is only a time when nothing else in the expression claims it.
+ *
+ * @param time -
+ *   the time to mark, or `null` if the number was not a valid time
+ * @returns
+ *   the marked time, or `null`
+ */
+export function plainNumberTime(time: DateTimeData | null): DateTimeData | null {
+	if(! time) return null;
+
+	return { ...time, fromPlainNumber: true };
+}
+
+/**
+ * Get if a time was read from a plain number and nothing later in the
+ * expression marked it as a time.
+ *
+ * @param time -
+ *   the time to check
+ * @returns
+ *   `true` if the time is only a time because a number can be one
+ */
+export function isPlainNumberTime(time: DateTimeData): boolean {
+	return time.fromPlainNumber === true
+		&& time.meridiem !== Meridiem.Am
+		&& time.meridiem !== Meridiem.Pm;
+}
+
+/**
+ * Drop the marks that only help while an expression is read, so that the
+ * time can be reported as a result.
+ *
+ * @param time -
+ *   the time to clean up
+ * @returns
+ *   the time without parse marks
+ */
+export function asTime(time: DateTimeData): DateTimeData {
+	if(! time.fromPlainNumber) return time;
+
+	const result = { ...time };
+	delete result.fromPlainNumber;
+	return result;
+}
+
+/**
  * Switch the given time to PM. The given data is left as it is, as it may be
  * shared with other parses of the same tokens.
  */

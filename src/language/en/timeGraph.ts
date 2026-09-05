@@ -12,12 +12,25 @@ import {
 	toAM,
 	toPM,
 
+	asTime,
+	plainNumberTime,
+
 	Precision
 } from '../../type-datetime/index.js';
 import { LanguageGraphFactory } from '../index.js';
 
 import { integerGraph } from './integerGraph.js';
 import { timeDurationGraph } from './timeDurationGraph.js';
+
+function withPrecision(time: DateTimeData, precision: Precision) {
+	/*
+	 * A word such as `ish` or `sharp` only makes sense next to a time, so it
+	 * marks a plain number as one.
+	 */
+	return combine(asTime(time), {
+		precision: precision
+	});
+}
 
 function adjustMinutes(time: DateTimeData, minutes: number) {
 	return combine(time, {
@@ -49,19 +62,19 @@ export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 			.skipPunctuation()
 
 			// Approximate times
-			.add([ GraphBuilder.result(), 'ish' ], v => combine(v[0], { precision: Precision.Approximate }))
-			.add([ GraphBuilder.result(), 'approximately' ], v => combine(v[0], { precision: Precision.Approximate }))
-			.add([ 'about', GraphBuilder.result() ], v => combine(v[0], { precision: Precision.Approximate }))
-			.add([ 'around', GraphBuilder.result() ], v => combine(v[0], { precision: Precision.Approximate }))
-			.add([ 'approximately', GraphBuilder.result() ], v => combine(v[0], { precision: Precision.Approximate }))
+			.add([ GraphBuilder.result(), 'ish' ], v => withPrecision(v[0], Precision.Approximate))
+			.add([ GraphBuilder.result(), 'approximately' ], v => withPrecision(v[0], Precision.Approximate))
+			.add([ 'about', GraphBuilder.result() ], v => withPrecision(v[0], Precision.Approximate))
+			.add([ 'around', GraphBuilder.result() ], v => withPrecision(v[0], Precision.Approximate))
+			.add([ 'approximately', GraphBuilder.result() ], v => withPrecision(v[0], Precision.Approximate))
 
 			.add([ GraphBuilder.result(), 'amish' ], v => combine(toAM(v[0]), { precision: Precision.Approximate }))
 			.add([ GraphBuilder.result(), 'pmish' ], v => combine(toPM(v[0]), { precision: Precision.Approximate }))
 
 			// Exact times
-			.add([ 'exactly', GraphBuilder.result() ], v => combine(v[0], { precision: Precision.Exact }))
-			.add([ GraphBuilder.result(), 'exactly' ], v => combine(v[0], { precision: Precision.Exact }))
-			.add([ GraphBuilder.result(), 'sharp' ], v => combine(v[0], { precision: Precision.Exact }))
+			.add([ 'exactly', GraphBuilder.result() ], v => withPrecision(v[0], Precision.Exact))
+			.add([ GraphBuilder.result(), 'exactly' ], v => withPrecision(v[0], Precision.Exact))
+			.add([ GraphBuilder.result(), 'sharp' ], v => withPrecision(v[0], Precision.Exact))
 
 			// Named times
 			.map(
@@ -73,8 +86,8 @@ export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 			)
 
 			// HH, such as 4, 14
-			.add(/^[0-9]{1,2}$/, v => time12h(parseInt(v[0], 10)))
-			.add([ integer ], v => time12h(v[0].value))
+			.add(/^[0-9]{1,2}$/, v => plainNumberTime(time12h(parseInt(v[0], 10))))
+			.add([ integer ], v => plainNumberTime(time12h(v[0].value)))
 
 			// HH:MM, such as 00:10, 9:30, 14 00
 			.add([ /^[0-9]{1,2}$/, ':', /^[0-9]{1,2}$/ ], v => {
@@ -85,7 +98,7 @@ export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 				const t = v[0];
 				const h = t.length === 3 ? t.substring(0, 1) : t.substring(0, 2);
 				const m = t.substring(t.length-2);
-				return time12h(parseInt(h, 10), parseInt(m, 10));
+				return plainNumberTime(time12h(parseInt(h, 10), parseInt(m, 10)));
 			})
 
 			// HH:MM:SS
@@ -112,7 +125,7 @@ export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ 'in', timeDuration ], v => v[0])
 			.add([ timeDuration ], v => v[0])
 			.add([ timeDuration, 'ago' ], v => reverse(v[0]))
-			.add([ 'at', GraphBuilder.result() ], v => v[0])
+			.add([ 'at', GraphBuilder.result() ], v => asTime(v[0]))
 
 			.build();
 	}
