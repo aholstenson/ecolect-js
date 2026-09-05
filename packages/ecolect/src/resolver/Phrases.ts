@@ -62,7 +62,7 @@ export class Phrases<Values extends object> {
 		return parser.build();
 	}
 
-	public toMatcher(language: Language): Matcher<Phrase<Values> | null> {
+	public toMatcher(language: Language): Matcher<Phrase<Values>> {
 		return new GraphMatcher(this.toGraph(language), {
 			mapper: finalizeMatch
 		});

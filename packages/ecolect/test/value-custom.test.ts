@@ -78,7 +78,6 @@ describe('Value: Custom', function() {
 					expect(r.length).toEqual(1);
 
 					const match = r[0];
-					assertNotNull(match);
 					expect(match.values.company).toEqual('Balloons');
 				});
 		});
@@ -89,7 +88,6 @@ describe('Value: Custom', function() {
 					expect(r.length).toEqual(1);
 
 					const match = r[0];
-					assertNotNull(match);
 					expect(match.values.company).toEqual('Cookie Co');
 				});
 		});
@@ -100,7 +98,6 @@ describe('Value: Custom', function() {
 					expect(r.length).toEqual(1);
 
 					const match = r[0];
-					assertNotNull(match);
 					expect(match.values.company).toEqual('Cookie Co');
 				});
 		});

@@ -203,7 +203,6 @@ describe('Value: Options', function() {
 					expect(r.length).toEqual(1);
 
 					const match = r[0];
-					assertNotNull(match);
 					assertNotNull(match.values.queryOptions);
 
 					const v = match.values.queryOptions.get('deadline');
@@ -219,7 +218,6 @@ describe('Value: Options', function() {
 					expect(r.length).toEqual(1);
 
 					const match = r[0];
-					assertNotNull(match);
 					assertNotNull(match.values.queryOptions);
 
 					const v = match.values.queryOptions.get('deadline');
@@ -367,7 +365,6 @@ describe('Value: Options', function() {
 					expect(r.length).toEqual(2);
 
 					const match = r[0];
-					assertNotNull(match);
 					assertNotNull(match.values.queryOptions);
 
 					const v = match.values.queryOptions.get('value');
@@ -382,7 +379,6 @@ describe('Value: Options', function() {
 					expect(r.length).toEqual(1);
 
 					const match = r[0];
-					assertNotNull(match);
 					assertNotNull(match.values.queryOptions);
 
 					const v = match.values.queryOptions.get('completed');
@@ -397,7 +393,6 @@ describe('Value: Options', function() {
 					expect(r.length).toEqual(1);
 
 					const match = r[0];
-					assertNotNull(match);
 					assertNotNull(match.values.queryOptions);
 
 					const v = match.values.queryOptions.get('completed');
@@ -433,7 +428,6 @@ describe('Value: Options', function() {
 					expect(r.length).toEqual(1);
 
 					const match = r[0];
-					assertNotNull(match);
 					assertNotNull(match.values.queryOptions);
 
 					expect(match.values.queryOptions.toArray()).toEqual([
@@ -451,7 +445,6 @@ describe('Value: Options', function() {
 					expect(r.length).toEqual(2);
 
 					const match = r[0];
-					assertNotNull(match);
 
 					const expression = match.expression;
 
@@ -553,7 +546,6 @@ describe('Value: Options', function() {
 					expect(r.length).toEqual(3);
 
 					const match = r[0];
-					assertNotNull(match);
 
 					const expression = match.expression;
 
@@ -571,7 +563,6 @@ describe('Value: Options', function() {
 					expect(r.length).toEqual(1);
 
 					const match = r[0];
-					assertNotNull(match);
 					assertNotNull(match.values.queryOptions);
 
 					expect(match.values.queryOptions.toArray().length).toEqual(1);
@@ -591,7 +582,6 @@ describe('Value: Options', function() {
 				.then(r => {
 					expect(r.length).toEqual(1);
 					const match = r[0];
-					assertNotNull(match);
 					assertNotNull(match.values.queryOptions);
 
 					expect(match.values.queryOptions.toArray().length).toEqual(1);

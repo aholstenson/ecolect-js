@@ -58,7 +58,6 @@ describe('Resolver', function() {
 					expect(r.length).toEqual(1);
 
 					const match = r[0];
-					assertNotNull(match);
 					expect(match.values).toEqual({});
 				});
 		});
@@ -75,9 +74,6 @@ describe('Resolver', function() {
 					expect(r.length).toEqual(2);
 
 					const [ first, second ] = r;
-					assertNotNull(first);
-					assertNotNull(second);
-
 					expect(first.values).toEqual({ a: 'test' });
 					expect(second.values).toEqual({ a: 'for test' });
 				});
@@ -428,7 +424,6 @@ describe('Resolver', function() {
 						expect(r.length).toEqual(2);
 
 						// Check that the expressions matches
-						assertNotNull(r[0]);
 						checkExpression(r[0].expression, [
 							{
 								type: 'text',
@@ -446,7 +441,6 @@ describe('Resolver', function() {
 							}
 						]);
 
-						assertNotNull(r[1]);
 						checkExpression(r[1].expression, [
 							{
 								type: 'text',

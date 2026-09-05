@@ -89,7 +89,6 @@ describe('Value: Enumeration', function() {
 					expect(r.length).toEqual(1);
 
 					const match = r[0];
-					assertNotNull(match);
 					expect(match.values.company).toBeUndefined();
 				});
 		});
@@ -121,7 +120,6 @@ describe('Value: Enumeration', function() {
 					expect(r.length).toEqual(1);
 
 					const match = r[0];
-					assertNotNull(match);
 					expect(match.values.company).toEqual('Cookie Co');
 
 					const expr = match.expression;
