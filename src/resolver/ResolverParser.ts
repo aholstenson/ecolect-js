@@ -14,7 +14,32 @@ import { LanguageSpecificValue, NodeConvertable, Value } from '../values/base.js
 import { expandPhrase } from './expandPhrase.js';
 import { ValueNode } from './ValueNode.js';
 
+/**
+ * A value referred to by name in a phrase, such as `{when}`. A name is
+ * written with the letters and digits of the English alphabet, whatever
+ * language the words around it are written in.
+ */
 const VALUE = /{([a-zA-Z0-9]+)}/g;
+
+/**
+ * A brace left in a phrase after every value has been read. Braces are only
+ * used to name a value, so one that is left over belongs to a value that was
+ * written wrong.
+ */
+const LEFTOVER_BRACE = /{[^{}]*}|[{}]/;
+
+/**
+ * Describe the part of a phrase that was meant to be a value, so that the
+ * error says which one to correct.
+ *
+ * @param text -
+ *   the text of the phrase that no value was read from
+ * @returns
+ *   the part that looks like a value, or the whole text if none stands out
+ */
+function describeLeftover(text: string): string {
+	return LEFTOVER_BRACE.exec(text)?.[0] ?? text;
+}
 
 /**
  * Extension to the normal parser that handles referring to values by
@@ -104,6 +129,21 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 		let node: Node | undefined;
 		const parse = (from: number, to: number) => {
 			const sub = text.substring(from, to);
+
+			/*
+			 * This text is everything the values were not read from, so a
+			 * brace here is a value that was written wrong. Saying so is
+			 * better than matching the braces as words and never matching
+			 * the phrase.
+			 */
+			if(LEFTOVER_BRACE.test(sub)) {
+				throw new Error(
+					'`' + describeLeftover(sub) + '` in `' + text + '` is not a value,'
+					+ ' a value is named with the letters a-z, A-Z and the digits 0-9,'
+					+ ' as in `{when}`'
+				);
+			}
+
 			for(const token of this.tokenizer(sub)) {
 				const nextNode = new TokenNode(this.tokenComparer, token);
 

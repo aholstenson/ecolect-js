@@ -11,7 +11,8 @@ import type { Language } from './Language.js';
  * is known when the code is written and loading it up front is fine.
  */
 export const languages = {
-	en: () => import('./en/index.js').then(module => module.en)
+	en: () => import('./en/index.js').then(module => module.en),
+	sv: () => import('./sv/index.js').then(module => module.sv)
 } satisfies Record<string, () => Promise<Language>>;
 
 /**

@@ -43,6 +43,10 @@
       "types": "./dist/language/en/index.d.ts",
       "default": "./dist/language/en/index.js"
     },
+    "./language/sv": {
+      "types": "./dist/language/sv/index.d.ts",
+      "default": "./dist/language/sv/index.js"
+    },
     "./tokenization": {
       "types": "./dist/tokenization/index.d.ts",
       "default": "./dist/tokenization/index.js"

@@ -707,4 +707,41 @@ describe('Resolver', function() {
 				});
 		});
 	});
+
+	describe('Naming a value in a phrase', function() {
+		function build(phrase: string) {
+			return () => new PhrasesBuilder()
+				.value('when', dateValue())
+				.phrase(phrase)
+				.toMatcher(en);
+		}
+
+		it('A value that was never added is reported', function() {
+			expect(build('orders {who}')).toThrow(/No type registered/);
+		});
+
+		it('A name written with other letters is reported', function() {
+			expect(build('ordrar {när}')).toThrow(/`{när}`/);
+		});
+
+		it('A name with a space in it is reported', function() {
+			expect(build('orders {due when}')).toThrow(/`{due when}`/);
+		});
+
+		it('A value without a name is reported', function() {
+			expect(build('orders {}')).toThrow(/`{}`/);
+		});
+
+		it('A value that is never closed is reported', function() {
+			expect(build('orders {when')).toThrow(/is not a value/);
+		});
+
+		it('A closing brace without a value is reported', function() {
+			expect(build('orders when}')).toThrow(/is not a value/);
+		});
+
+		it('A name of letters and digits is read as a value', function() {
+			expect(build('orders {when}')).not.toThrow();
+		});
+	});
 });

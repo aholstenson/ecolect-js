@@ -13,7 +13,8 @@ natural language interface for things such as bots, voice or search interfaces.
 $ npm install ecolect
 ```
 
-Languages ship with the library, as subpaths such as `ecolect/language/en`.
+Languages ship with the library, as subpaths such as `ecolect/language/en` for
+English and `ecolect/language/sv` for Swedish.
 
 The package is ESM only and needs Node 22 or later. To use it from CommonJS,
 load it with a dynamic `import()`.
@@ -225,7 +226,16 @@ import { resolveLocale } from 'ecolect/language';
 const settings = resolveLocale('en-GB');
 ```
 
-English reads expressions as `en-US` when no locale is given.
+English reads expressions as `en-US` when no locale is given, and Swedish reads
+them as `sv-SE`.
+
+Swedish uses `swedish` the same way English uses `english`:
+
+```javascript
+import { swedish } from 'ecolect/language/sv';
+
+const matcher = dateValue().matcher(swedish('sv-FI'));
+```
 
 ## Options
 
@@ -275,6 +285,7 @@ Capture any positive integer number.
 Language         | Examples
 -----------------|-------------
 English          | `20`, `zero`, `one million`, `4 000`, `1 dozen`, `100k`
+Swedish          | `20`, `noll`, `en miljon`, `4 000`, `1 dussin`, `100k`
 
 #### Returned value
 
@@ -293,6 +304,7 @@ Capture any number, including numbers with a fractional element.
 Language         | Examples
 -----------------|-------------
 English          | `20`, `2.4 million`, `8.0`, `-12`
+Swedish          | `20`, `2,4 miljoner`, `8,0`, `-12`
 
 #### Returned value
 
@@ -311,6 +323,7 @@ Capture an ordinal, such as `1st`, indicating a position.
 Language         | Examples
 -----------------|-------------
 English          | `1st`, `third`, `3`, `the fifth`
+Swedish          | `1:a`, `tredje`, `3`, `den femte`
 
 #### Returned value
 
@@ -329,6 +342,7 @@ Capture a date representing a single day.
 Language         | Examples
 -----------------|-------------
 English          | `today`, `in 2 days`, `january 12th`, `2010-02-22`, `02/22/2010`, `first friday in 2020`
+Swedish          | `idag`, `om 2 dagar`, `12 januari`, `2010-02-22`, `första fredagen 2020`
 
 #### Returned value
 
@@ -347,6 +361,7 @@ Capture a time of day.
 Language         | Examples
 -----------------|-------------
 English          | `09:00`, `3 pm`, `at 3:30 am`, `noon`, `quarter to twelve`, `in 2 hours`, `in 45 minutes`
+Swedish          | `09:00`, `14.30`, `kl 15`, `midnatt`, `kvart i tolv`, `halv tolv`, `om 2 timmar`
 
 #### Returned value
 
@@ -365,6 +380,7 @@ Capture both a date and a time.
 Language         | Examples
 -----------------|-------------
 English          | `3pm on Jan 12th`, `in 2 days and 2 hours`, `14:00`
+Swedish          | `kl 15 den 12 januari`, `om 2 dagar och 2 timmar`, `14:00`
 
 #### Returned value
 
@@ -383,6 +399,7 @@ Capture an interval between two dates.
 Language         | Examples
 -----------------|-------------
 English          | `today`, `this month`, `February to March`, `2018-01-01 to 2018-04-05`, `January 15th - 18th`
+Swedish          | `idag`, `denna månad`, `februari till mars`, `2018-01-01 till 2018-04-05`, `de senaste 7 dagarna`
 
 #### Returned value
 
@@ -401,6 +418,7 @@ Capture a duration.
 Language         | Examples
 -----------------|-------------
 English          | `2 days`, `2m, 1d`, `1 year and 2 days`, `4y 2m`, `1 week`
+Swedish          | `2 dagar`, `2 m, 1 d`, `1 år och 2 dagar`, `4 v 2 d`, `en vecka`
 
 #### Returned value
 
@@ -417,6 +435,7 @@ Capture a duration of hours, minutes, seconds and miliseconds.
 Language         | Examples
 -----------------|-------------
 English          | `2 hours`, `1s`, `2h, 45m`, `4 minutes and 10 seconds`
+Swedish          | `2 timmar`, `1 s`, `2 h 45 min`, `4 minuter och 10 sekunder`
 
 #### Returned value
 
@@ -433,6 +452,7 @@ Capture a duration of both days, hours, minutes, seconds and miliseconds.
 Language         | Examples
 -----------------|-------------
 English          | `2 hours`, `2 d 20 m`, `4 weeks and 10 minutes`
+Swedish          | `2 timmar`, `2 d 20 min`, `4 veckor och 10 minuter`
 
 #### Returned value
 
@@ -494,6 +514,7 @@ Import | Description
 `ecolect/values` | The value types on their own
 `ecolect/matching` | Match options and matcher interfaces
 `ecolect/language/en` | English language support
+`ecolect/language/sv` | Swedish language support
 `ecolect/language/loader` | Load a language on demand
 `ecolect/language` | Shared language interfaces
 `ecolect/graph` | Graph based matching over tokens

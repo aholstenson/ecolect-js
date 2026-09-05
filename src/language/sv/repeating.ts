@@ -1,0 +1,20 @@
+import { Graph, GraphBuilder } from '../../graph/index.js';
+import { Language } from '../index.js';
+
+export function createRepeating<V>(language: Language, graph: Graph<V>): GraphBuilder<V[]> {
+	const builder: GraphBuilder<V[]> = new GraphBuilder<V[]>(language)
+		.skipPunctuation()
+		.name('repeating[' + graph.options.name + ']');
+
+	// If the value supports partial matching so does this repeating value
+	if(graph.options.supportsPartial) {
+		builder.allowPartial();
+	}
+
+	// Add the value and how it can be repeated
+	return builder
+		.add(graph, v => [ v[0] ])
+
+		.add([ GraphBuilder.result(), GraphBuilder.result() ], v => v[0].concat(v[1]))
+		.add([ GraphBuilder.result(), 'och', GraphBuilder.result() ], v => v[0].concat(v[1]));
+}
