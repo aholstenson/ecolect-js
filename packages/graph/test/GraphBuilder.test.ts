@@ -92,6 +92,41 @@ describe('GraphBuilder', function() {
 		});
 	});
 
+	describe('Skipping punctuation', function() {
+		const sub = new GraphBuilder<number>(tokens)
+			.skipPunctuation()
+			.add('hello', 1)
+			.build();
+
+		const graph = new GraphBuilder<number>(tokens)
+			.skipPunctuation()
+			.add([ sub, 'world' ], 2)
+			.build();
+
+		const matcher = new GraphMatcher(graph, options);
+
+		it('No punctuation', function() {
+			return matcher.match('hello world')
+				.then(r => {
+					expect(r).toEqual(2);
+				});
+		});
+
+		it('Punctuation between the tokens', function() {
+			return matcher.match('hello, world')
+				.then(r => {
+					expect(r).toEqual(2);
+				});
+		});
+
+		it('Punctuation before and after the tokens', function() {
+			return matcher.match('- hello world!')
+				.then(r => {
+					expect(r).toEqual(2);
+				});
+		});
+	});
+
 	describe('Graph within graph', function() {
 		describe('Single token + Single token', function() {
 			const sub = new GraphBuilder<number>(tokens)

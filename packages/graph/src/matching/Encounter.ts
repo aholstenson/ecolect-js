@@ -111,16 +111,14 @@ export class Encounter {
 		const nextIndex = this.currentIndex + (consumedTokens || 0);
 		const nextScore = this.currentScore + (score || 0);
 
-		let nextIndexAfterPunctuation = nextIndex;
-		if(this.skipPunctuation) {
-			/*
-			 * Switch to the new index and read all of the punctuation tokens
-			 * and then update index next matching starts at.
-			 */
-			this.currentIndex = nextIndex;
-			this.readPunctuation();
-			nextIndexAfterPunctuation = this.currentIndex;
-		}
+		/*
+		 * Read past any punctuation to find the index the next node starts
+		 * matching at. This must not move `currentIndex`, as that is the index
+		 * every branch is restored to when it has been evaluated.
+		 */
+		const nextIndexAfterPunctuation = this.skipPunctuation
+			? this.afterPunctuation(nextIndex)
+			: nextIndex;
 
 		let pushedData = false;
 		if(data !== null && typeof data !== 'undefined') {
@@ -239,13 +237,27 @@ export class Encounter {
 	}
 
 	/**
-	 * Read any punctuation we can.
+	 * Get the index of the first token at or after the given index that is
+	 * not punctuation.
+	 *
+	 * @param index -
+	 *   the index to start looking at
+	 * @returns
+	 *   the index of the first token that is not punctuation
+	 */
+	public afterPunctuation(index: number): number {
+		let token = this.tokens[index];
+		while(token && token.punctuation) {
+			token = this.tokens[++index];
+		}
+		return index;
+	}
+
+	/**
+	 * Read any punctuation we can, moving the current index past it.
 	 */
 	public readPunctuation() {
-		let token = this.tokens[this.currentIndex];
-		while(token && token.punctuation) {
-			token = this.tokens[++this.currentIndex];
-		}
+		this.currentIndex = this.afterPunctuation(this.currentIndex);
 	}
 
 	/**
