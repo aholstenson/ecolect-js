@@ -1,8 +1,8 @@
 import { GraphBuilder } from '@ecolect/graph';
 import { LanguageGraphFactory } from '@ecolect/language';
 import {
-	IntervalEdge,
 	DateTimeData,
+	DateTimeOptions,
 
 	combine,
 	isRelative,
@@ -15,13 +15,18 @@ import {
 
 	today,
 	yesterday,
+	dayBeforeYesterday,
 	tomorrow,
 	dayAfterTomorrow,
 	nextDayOfWeek,
+	previousDayOfWeek,
+	LAST_DAY_OF_WEEK,
 	withDay,
 	withYear,
+	thisMonth,
 	thisQuarter,
-	thisWeek
+	thisWeek,
+	thisYear
 } from '@ecolect/type-datetime';
 import { OrdinalData } from '@ecolect/type-numbers';
 
@@ -45,9 +50,9 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 		const month = language.graph(monthGraph);
 		const dateDuration = language.graph(dateDurationGraph);
 
-		const day = GraphBuilder.result(ordinal, (v: OrdinalData) => v.value >= 0 && v.value < 31);
+		const day = GraphBuilder.result(ordinal, (v: OrdinalData) => v.value >= 1 && v.value <= 31);
 
-		return new GraphBuilder<DateTimeData>(language)
+		const builder = new GraphBuilder<DateTimeData>(language)
 			.name('date')
 
 			.skipPunctuation()
@@ -60,6 +65,7 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ dateDuration, 'from', GraphBuilder.result() ], v => combine(v[0], {
 				relativeTo: v[1]
 			}))
+			.add([ dateDuration, 'from now' ], v => v[0])
 			.add([ dateDuration, 'before', GraphBuilder.result() ], v => combine(reverse(v[0]), {
 				relativeTo: v[1]
 			}))
@@ -82,12 +88,18 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ 'next', dayOfWeek ], v => nextDayOfWeek(v[0]))
 			.add([ 'on', dayOfWeek ], v => nextDayOfWeek(v[0]))
 
+			// Last Monday or Previous Tuesday
+			.add([ 'last', dayOfWeek ], v => previousDayOfWeek(v[0]))
+			.add([ 'previous', dayOfWeek ], v => previousDayOfWeek(v[0]))
+
 			// Expressions for describing the day, such as today and tomorrow
 			.add('today', today)
 			.add('tomorrow', tomorrow)
 			.add('day after tomorrow', dayAfterTomorrow)
 			.add('the day after tomorrow', dayAfterTomorrow)
 			.add('yesterday', yesterday)
+			.add('day before yesterday', dayBeforeYesterday)
+			.add('the day before yesterday', dayBeforeYesterday)
 
 			// Month followed by day - Jan 12, February 1st
 			.add([ month, day ], v => withDay(v[0], v[1].value))
@@ -143,8 +155,6 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 
 			// Quarters
 			.add(quarter, v => v[0])
-			.add('start of quarter', thisQuarter)
-			.add('end of quarter', (v, e) => combine(thisQuarter(v, e), { intervalEdge: IntervalEdge.End }))
 
 			// Quarter N of year
 			.add([ quarter, year ], v => combine(v[1], {
@@ -157,8 +167,6 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 
 			// Weeks relative to current time
 			.add(week, v => v[0])
-			.add('start of week', thisWeek)
-			.add('end of week', (v, e) => combine(thisWeek(v, e), { intervalEdge: IntervalEdge.End }))
 
 			// Week N of year
 			.add([ week, year ], v => combine(v[1], {
@@ -181,6 +189,12 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 				dayOfWeekOrdinal: 1
 			}))
 
+			// last day of week in month
+			.add([ 'last', dayOfWeek, GraphBuilder.result(isMonth) ], v => combine(v[1], {
+				dayOfWeek: v[0],
+				dayOfWeekOrdinal: LAST_DAY_OF_WEEK
+			}))
+
 			// nth day of week in year
 			.add([ ordinal, dayOfWeek, year ], v => combine(v[2], {
 				dayOfWeek: v[1],
@@ -193,6 +207,12 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 				dayOfWeekOrdinal: 1
 			}))
 
+			// last day of week in year
+			.add([ 'last', dayOfWeek, year ], v => combine(v[1], {
+				dayOfWeek: v[0],
+				dayOfWeekOrdinal: LAST_DAY_OF_WEEK
+			}))
+
 			// nth day of week in X time
 			.add([ ordinal, dayOfWeek, GraphBuilder.result(isRelative) ], v => combine(v[2], {
 				dayOfWeek: v[1],
@@ -203,6 +223,12 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ dayOfWeek, GraphBuilder.result(isRelative) ], v => combine(v[1], {
 				dayOfWeek: v[0],
 				dayOfWeekOrdinal: 1
+			}))
+
+			// last day of week in X time
+			.add([ 'last', dayOfWeek, GraphBuilder.result(isRelative) ], v => combine(v[1], {
+				dayOfWeek: v[0],
+				dayOfWeekOrdinal: LAST_DAY_OF_WEEK
 			}))
 
 			// day of week in week X
@@ -225,8 +251,32 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			// Edges, such as start of [date] or end of [date]
 			.add([ 'start of', GraphBuilder.result() ], v => startOf(v[0]))
 			.add([ 'beginning of', GraphBuilder.result() ], v => startOf(v[0]))
+			.add([ 'first day of', GraphBuilder.result() ], v => startOf(v[0]))
 			.add([ 'end of', GraphBuilder.result() ], v => endOf(v[0]))
+			.add([ 'last day of', GraphBuilder.result() ], v => endOf(v[0]));
 
-			.build();
+		/*
+		 * Edges of the current period, such as end of month or last day of
+		 * the year.
+		 */
+		const currentPeriods: [ string, (v: any, e: DateTimeOptions) => DateTimeData ][] = [
+			[ 'week', thisWeek ],
+			[ 'month', thisMonth ],
+			[ 'quarter', thisQuarter ],
+			[ 'year', thisYear ]
+		];
+
+		for(const [ name, current ] of currentPeriods) {
+			for(const noun of [ name, 'the ' + name ]) {
+				builder
+					.add('start of ' + noun, (v, e) => startOf(current(v, e)))
+					.add('beginning of ' + noun, (v, e) => startOf(current(v, e)))
+					.add('first day of ' + noun, (v, e) => startOf(current(v, e)))
+					.add('end of ' + noun, (v, e) => endOf(current(v, e)))
+					.add('last day of ' + noun, (v, e) => endOf(current(v, e)));
+			}
+		}
+
+		return builder.build();
 	}
 };

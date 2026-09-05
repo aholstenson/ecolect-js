@@ -1,6 +1,7 @@
 import {
 	addWeeks,
-	getWeek
+	getWeek,
+	getWeekYear
 } from 'date-fns';
 
 import { currentTime } from './currentTime.js';
@@ -16,20 +17,33 @@ export function thisWeek(r: any, options: DateTimeOptions): DateTimeData {
 	};
 }
 
-export function nextWeek(r: any, options: DateTimeOptions): DateTimeData {
-	const time = addWeeks(currentTime(options), 1);
+/**
+ * Describe the week a time is in, as a week number within its week
+ * numbering year. Around the turn of the year the week numbering year can
+ * differ from the calendar year, such as December 30th being in the first
+ * week of the following year.
+ *
+ * @param time -
+ *   the time to describe
+ * @param options -
+ *   options with the week numbering settings
+ * @returns
+ *   data with the week and its week numbering year
+ */
+function weekOf(time: Date, options: DateTimeOptions): DateTimeData {
+	const weekOptions = toWeekOptions(options);
 	return {
-		year: time.getFullYear(),
-		week: getWeek(time, toWeekOptions(options))
+		year: getWeekYear(time, weekOptions),
+		week: getWeek(time, weekOptions)
 	};
 }
 
+export function nextWeek(r: any, options: DateTimeOptions): DateTimeData {
+	return weekOf(addWeeks(currentTime(options), 1), options);
+}
+
 export function previousWeek(r: any, options: DateTimeOptions): DateTimeData {
-	const time = addWeeks(currentTime(options), -1);
-	return {
-		year: time.getFullYear(),
-		week: getWeek(time, toWeekOptions(options))
-	};
+	return weekOf(addWeeks(currentTime(options), -1), options);
 }
 
 /**

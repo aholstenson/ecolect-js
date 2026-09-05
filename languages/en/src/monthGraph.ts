@@ -87,6 +87,7 @@ export const monthGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ ordinalMonth ], v => ({ month: v[0].value - 1, }))
 
 			.add([ 'in', GraphBuilder.result() ], v => v[0])
+			.add([ 'of', GraphBuilder.result() ], v => v[0])
 			.add([ relative, 'ago' ], v => reverse(v[0]))
 
 			.build();

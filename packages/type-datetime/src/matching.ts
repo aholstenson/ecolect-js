@@ -8,12 +8,14 @@ import { IntervalEdge } from './IntervalEdge.js';
  */
 export function isRelative(v: DateTimeData) {
 	return typeof v.relativeYears === 'number'
+		|| typeof v.relativeQuarters === 'number'
 		|| typeof v.relativeMonths === 'number'
 		|| typeof v.relativeWeeks === 'number'
 		|| typeof v.relativeDays === 'number'
 		|| typeof v.relativeHours === 'number'
 		|| typeof v.relativeMinutes === 'number'
-		|| typeof v.relativeSeconds === 'number';
+		|| typeof v.relativeSeconds === 'number'
+		|| typeof v.relativeMilliseconds === 'number';
 }
 
 export function hasMonth(v: DateTimeData) {
@@ -146,6 +148,10 @@ export function reverse(v: DateTimeData): DateTimeData {
 
 	if(result.relativeYears) {
 		result.relativeYears = - result.relativeYears;
+	}
+
+	if(result.relativeQuarters) {
+		result.relativeQuarters = - result.relativeQuarters;
 	}
 
 	if(result.relativeWeeks) {

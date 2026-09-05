@@ -8,20 +8,23 @@ import {
 	previousQuarter
 } from '@ecolect/type-datetime';
 
+import { OrdinalData } from '@ecolect/type-numbers';
+
 import { ordinalGraph } from './ordinalGraph.js';
 
 export const quarterGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'quarter',
 
 	create(language) {
-		const ordinal = language.graph(ordinalGraph);
+		// Only four quarters exist in a year
+		const ordinal = GraphBuilder.result<OrdinalData>(language.graph(ordinalGraph), v => v.value >= 1 && v.value <= 4);
 
 		return new GraphBuilder<DateTimeData>(language)
 			.name('quarter')
 
 			.skipPunctuation()
 
-			// Weeks relative to current time
+			// Quarters relative to current time
 			.add([ 'this quarter' ], thisQuarter)
 			.add([ 'next quarter' ], nextQuarter)
 			.add([ 'last quarter' ], previousQuarter)

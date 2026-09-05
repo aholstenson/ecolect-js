@@ -10,6 +10,7 @@ import {
 
 	setWeek,
 	getWeek,
+	startOfWeekYear,
 
 	setQuarter,
 	getQuarter,
@@ -30,7 +31,7 @@ import { DateTimeData } from './DateTimeData.js';
 import { DateTimeOptions } from './DateTimeOptions.js';
 import { IntervalEdge } from './IntervalEdge.js';
 import { toStart, toEnd } from './intervals.js';
-import { combine } from './matching.js';
+import { combine, isRelative } from './matching.js';
 import { Period } from './Period.js';
 import { TimeRelationship } from './TimeRelationship.js';
 import { toWeekOptions } from './weekOptions.js';
@@ -71,6 +72,15 @@ export function yesterday(r: any, options: DateTimeOptions) {
 	};
 }
 
+export function dayBeforeYesterday(r: any, options: DateTimeOptions) {
+	const time = addDays(currentTime(options), -2);
+	return {
+		day: time.getDate(),
+		month: time.getMonth(),
+		year: time.getFullYear()
+	};
+}
+
 export function withDay(r: DateTimeData, day: number) {
 	return combine(r, {
 		day: day
@@ -83,8 +93,85 @@ export function withYear(r: DateTimeData, year: number) {
 	});
 }
 
-export function nextDayOfWeek(day: DayOfWeek) {
+/**
+ * Describe the next occurrence of a day of week, not counting the current
+ * day.
+ *
+ * @param day -
+ *   the day of week
+ * @returns
+ *   data describing the day
+ */
+export function nextDayOfWeek(day: DayOfWeek): DateTimeData {
 	return { dayOfWeek: day };
+}
+
+/**
+ * Describe the most recent occurrence of a day of week, not counting the
+ * current day.
+ *
+ * @param day -
+ *   the day of week
+ * @returns
+ *   data describing the day
+ */
+export function previousDayOfWeek(day: DayOfWeek): DateTimeData {
+	return { dayOfWeek: day, relationToCurrent: TimeRelationship.Past };
+}
+
+/**
+ * Ordinal used with `dayOfWeek` to describe the last occurrence of a day of
+ * week within the described period, such as the last Friday of a month.
+ */
+export const LAST_DAY_OF_WEEK = -1;
+
+/**
+ * Number of days from `from` forward to the next `day`, zero if `from`
+ * already is that day.
+ *
+ * @param from -
+ *   the date to count from
+ * @param day -
+ *   the day of week to find
+ * @returns
+ *   number of days, 0 to 6
+ */
+function daysForwardTo(from: Date, day: DayOfWeek): number {
+	return (day - getDay(from) + 7) % 7;
+}
+
+/**
+ * Number of days from `from` back to the previous `day`, zero if `from`
+ * already is that day.
+ *
+ * @param from -
+ *   the date to count from
+ * @param day -
+ *   the day of week to find
+ * @returns
+ *   number of days, 0 to 6
+ */
+function daysBackTo(from: Date, day: DayOfWeek): number {
+	return (getDay(from) - day + 7) % 7;
+}
+
+/**
+ * Check that the given data describes a date that can exist. Fields outside
+ * their valid range give `null` from `mapDate` instead of a date that has
+ * silently rolled over into another month or year.
+ *
+ * @param r -
+ *   the data to check
+ * @returns
+ *   `true` if every field is within its range
+ */
+function isValid(r: DateTimeData): boolean {
+	if(typeof r.month !== 'undefined' && (r.month < 0 || r.month > 11)) return false;
+	if(typeof r.day !== 'undefined' && (r.day < 1 || r.day > 31)) return false;
+	if(typeof r.quarter !== 'undefined' && (r.quarter < 1 || r.quarter > 4)) return false;
+	if(typeof r.week !== 'undefined' && (r.week < 1 || r.week > 53)) return false;
+
+	return true;
 }
 
 interface Adjustment {
@@ -163,6 +250,18 @@ function adjust(
 	def: Adjustment
 ) {
 	const requested = def.getField(r);
+
+	if(def.parentData(r)) {
+		/*
+		 * The parent period is known and the time has been moved to the start
+		 * of it, so the field is set as it is. Comparing with the current
+		 * value would be wrong here, as the start of the period may be
+		 * numbered as if it belongs to the previous period - such as January
+		 * 1st being part of the last week of the previous year.
+		 */
+		return def.set(time, requested, options);
+	}
+
 	const current = def.get(time, options);
 
 	if(relationToCurrent === TimeRelationship.Auto) {
@@ -172,11 +271,7 @@ function adjust(
 			time = def.set(time, requested, options);
 		}
 	} else if(relationToCurrent === TimeRelationship.CurrentPeriod) {
-		if(def.parentData(r) && requested < current) {
-			time = def.set(def.adjuster(time, 1, options), requested, options);
-		} else {
-			time = def.set(time, requested, options);
-		}
+		time = def.set(time, requested, options);
 	} else if(relationToCurrent === TimeRelationship.Future) {
 		if(requested <= current) {
 			time = def.set(def.adjuster(time, 1, options), requested, options);
@@ -194,7 +289,72 @@ function adjust(
 	return time;
 }
 
+/**
+ * Periods that `mapDate` moves to the start of when the period is given
+ * explicitly, such as a named month or a specific year.
+ *
+ * @param period -
+ *   the period to check
+ * @returns
+ *   `true` if the period is a year, quarter or month
+ */
+function isCalendarPeriod(period: Period): boolean {
+	return period === Period.Year || period === Period.Quarter || period === Period.Month;
+}
+
+/**
+ * Find the date for a day that does not exist in the month it was placed
+ * in, such as the 31st in February or February 29th in a year that is not a
+ * leap year.
+ *
+ * With a specific month and year there is no such date. With only a month
+ * the same month is tried in the following years, as for February 29th, and
+ * with only a day the following months are tried until one has the day.
+ * With a relation to the past the search goes backwards instead.
+ *
+ * @param r -
+ *   the data describing the date
+ * @param relationToCurrent -
+ *   how the described time relates to the current time
+ * @param time -
+ *   the time after the day was set, which has rolled over into the month
+ *   after the intended one
+ * @returns
+ *   the resolved time, or `null` if the date does not exist
+ */
+function resolveDayOverflow(
+	r: DateTimeData,
+	relationToCurrent: TimeRelationship,
+	time: Date
+): Date | null {
+	const day = r.day as number;
+	const hasMonth = typeof r.month !== 'undefined';
+	const hasYear = typeof r.year !== 'undefined';
+
+	if(hasMonth && hasYear) return null;
+
+	const intended = startOfMonth(addMonths(time, -1));
+	const direction = relationToCurrent === TimeRelationship.Past ? -1 : 1;
+
+	// Only February 29th can overflow with a fixed month, it repeats within 8 years
+	const attempts = hasMonth ? 8 : 12;
+	for(let i=1; i<=attempts; i++) {
+		const candidate = setDate(
+			hasMonth ? addYears(intended, i * direction) : addMonths(intended, i * direction),
+			day
+		);
+
+		if(candidate.getDate() === day) {
+			return candidate;
+		}
+	}
+
+	return null;
+}
+
 export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDate | null {
+	if(! isValid(r)) return null;
+
 	const relationToCurrent = r.relationToCurrent ?? TimeRelationship.Auto;
 
 	// Resolve the current time for the encounter
@@ -203,11 +363,13 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 		/*
 		 * This time is relative to another time, so resolve that time first.
 		 * The relation and edge described here are applied to it via a copy,
-		 * so that the data given to this function is left as it is.
+		 * so that the data given to this function is left as it is. A
+		 * relation the other time describes itself, such as the previous
+		 * Monday, is kept.
 		 */
 		const resolvedTime = mapDate({
 			...r.relativeTo,
-			relationToCurrent: relationToCurrent,
+			relationToCurrent: r.relativeTo.relationToCurrent ?? relationToCurrent,
 			intervalEdge: r.intervalEdge
 		}, options);
 		if(! resolvedTime) return null;
@@ -253,7 +415,24 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 		// Exact week - set it and reset to start of week
 		period = Period.Week;
 
-		time = adjust(r, relationToCurrent, options, time, WEEK);
+		if(typeof r.year !== 'undefined') {
+			/*
+			 * Week of a specific year. Weeks are numbered within a week
+			 * numbering year, which may start in late December or early
+			 * January. July is always inside the year, so the first week is
+			 * found from there and the requested week counted from it.
+			 */
+			const weekOptions = toWeekOptions(options);
+			time = addWeeks(startOfWeekYear(new Date(r.year, 6, 1), weekOptions), r.week - 1);
+		} else {
+			time = adjust(r, relationToCurrent, options, time, WEEK);
+		}
+
+		if(getWeek(time, toWeekOptions(options)) !== r.week) {
+			// The year does not have this many weeks
+			return null;
+		}
+
 		time = startOfWeek(time, options);
 	}
 
@@ -280,22 +459,54 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 		period = Period.Day;
 
 		time = adjust(r, relationToCurrent, options, time, DAY);
+
+		if(time.getDate() !== r.day) {
+			/*
+			 * The month is too short for the day, so the date has rolled
+			 * over into the next month.
+			 */
+			const resolved = resolveDayOverflow(r, relationToCurrent, time);
+			if(! resolved) return null;
+
+			time = resolved;
+		}
 	}
 
 	if(typeof r.dayOfWeek !== 'undefined') {
-		period = Period.Day;
+		const dayOfWeek = r.dayOfWeek;
 
-		const currentDayOfWeek = getDay(time);
-		if(currentDayOfWeek >= r.dayOfWeek) {
-			time = addWeeks(time, 1);
-		}
-		time = setDay(time, r.dayOfWeek);
-
-		if(typeof r.dayOfWeekOrdinal !== 'undefined') {
-			for(let i=1; i<r.dayOfWeekOrdinal; i++) {
-				time = addWeeks(time, 1);
+		if(period === Period.Week) {
+			// A day within a specific week, such as Tuesday next week
+			time = setDay(time, dayOfWeek, toWeekOptions(options));
+		} else if(typeof r.dayOfWeekOrdinal !== 'undefined') {
+			/*
+			 * A numbered occurrence within the period, such as the first or
+			 * last Friday of a month. The time is currently at the start of
+			 * the period.
+			 */
+			const start = time;
+			if(r.dayOfWeekOrdinal < 0) {
+				time = toEnd(time, period, options);
+				time = addDays(time, -daysBackTo(time, dayOfWeek));
+				time = addWeeks(time, r.dayOfWeekOrdinal + 1);
+			} else {
+				time = addDays(time, daysForwardTo(time, dayOfWeek));
+				time = addWeeks(time, r.dayOfWeekOrdinal - 1);
 			}
+
+			if(! isRelative(r) && isCalendarPeriod(period) && toStart(time, period, options).getTime() !== toStart(start, period, options).getTime()) {
+				// The period does not have that many of the day, such as a fifth Friday
+				return null;
+			}
+		} else if(relationToCurrent === TimeRelationship.Past) {
+			// The most recent occurrence, not counting the current day
+			time = addDays(time, -(daysBackTo(time, dayOfWeek) || 7));
+		} else {
+			// The next occurrence, not counting the current day
+			time = addDays(time, daysForwardTo(time, dayOfWeek) || 7);
 		}
+
+		period = Period.Day;
 	}
 
 	if(r.intervalEdge === IntervalEdge.End) {

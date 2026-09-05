@@ -29,6 +29,8 @@ export const yearGraph: LanguageGraphFactory<DateTimeData> = {
 			.name('year')
 
 			.add([ /^[0-9]{4}$/ ], v => ({ year: parseInt(v[0], 10) }))
+			.add([ 'year', /^[0-9]{4}$/ ], v => ({ year: parseInt(v[0], 10) }))
+			.add([ 'the year', /^[0-9]{4}$/ ], v => ({ year: parseInt(v[0], 10) }))
 			.add('this year', thisYear)
 			.add('next year', nextYear)
 			.add('last year', previousYear)
