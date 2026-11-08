@@ -5,10 +5,7 @@ import type {
 	GraphBuildable,
 	GraphBuildableArray,
 	Node} from '../graph/index.js';
-import {
-	GraphBuilder,
-	TokenNode
-} from '../graph/index.js';
+import { GraphBuilder } from '../graph/index.js';
 import type { Language } from '../language/index.js';
 import type { NodeConvertable, Value } from '../values/base.js';
 import { LanguageSpecificValue } from '../values/base.js';
@@ -154,7 +151,7 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 			}
 
 			for(const token of this.tokenizer(sub)) {
-				const nextNode = new TokenNode(this.tokenComparer, token);
+				const nextNode = this.createTokenNode(token);
 
 				if(node) {
 					node.outgoing.push(nextNode);

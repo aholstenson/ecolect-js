@@ -1,4 +1,4 @@
-import type { Tokenizer, TokenComparer } from '../tokenization/index.js';
+import type { Token, Tokenizer, TokenComparer } from '../tokenization/index.js';
 
 import type { Collectable } from './CollectorNode.js';
 import { CollectorNode } from './CollectorNode.js';
@@ -41,11 +41,18 @@ export class GraphBuilder<V> {
 	private nodes: Node[];
 	protected options: GraphOptions;
 
+	/**
+	 * Normalized tokens of the words in this graph. The token nodes of the
+	 * graph share this set, so it has every word once the graph is built.
+	 */
+	protected readonly knownTokens: Set<string>;
+
 	public constructor(opts: GraphTokens) {
 		this.tokenizer = opts.tokenizer;
 		this.tokenComparer = opts.tokenComparer;
 
 		this.nodes = [];
+		this.knownTokens = new Set();
 
 		this.options = {
 			supportsPartial: false,
@@ -230,7 +237,7 @@ export class GraphBuilder<V> {
 		let first;
 		let last: Node;
 		this.tokenizer(text).forEach(t => {
-			const node = new TokenNode(this.tokenComparer, t);
+			const node = this.createTokenNode(t);
 			if(last) {
 				last.outgoing.push(node);
 			} else {
@@ -244,6 +251,20 @@ export class GraphBuilder<V> {
 		}
 
 		return first;
+	}
+
+	/**
+	 * Create the node for a word in this graph, and record the word as a
+	 * word of the graph.
+	 *
+	 * @param token -
+	 *   the token of the word
+	 * @returns
+	 *   the node
+	 */
+	protected createTokenNode(token: Token): TokenNode {
+		this.knownTokens.add(token.normalized);
+		return new TokenNode(this.tokenComparer, token, this.knownTokens);
 	}
 
 	public map<D>(values: MappableObject<D>, func: (value: D) => V | null) {

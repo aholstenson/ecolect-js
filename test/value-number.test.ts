@@ -81,4 +81,28 @@ describe('Value: Number', function() {
 				});
 		});
 	});
+
+	describe('Intents and phrases', function() {
+		const phrases = newPhrases()
+			.value('amount', numberValue())
+			.phrase('pay {amount} dollars');
+
+		const intents = new IntentsBuilder(en)
+			.add('pay', phrases.build())
+			.build();
+
+		const matcher = phrases.toMatcher(en);
+
+		it('Repeated suffix words give the same value in intents and phrases', async function() {
+			const expected = BigDecimal.parse('9' + '0'.repeat(27));
+
+			const viaIntents = await intents.match('pay 9 billion billion billion dollars');
+			assertNotNull(viaIntents);
+			expect(viaIntents.values.amount).toEqual(expected);
+
+			const viaPhrases = await matcher.match('pay 9 billion billion billion dollars');
+			assertNotNull(viaPhrases);
+			expect(viaPhrases.values.amount).toEqual(expected);
+		});
+	});
 });

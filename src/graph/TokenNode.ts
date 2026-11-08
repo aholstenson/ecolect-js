@@ -13,12 +13,35 @@ export class TokenNode extends Node {
 	private readonly comparer: TokenComparer;
 	public readonly token: Token;
 
-	public constructor(comparer: TokenComparer, token: Token) {
+	/**
+	 * Normalized tokens of the words in the graph of this node.
+	 */
+	private readonly knownTokens: ReadonlySet<string>;
+
+	public constructor(comparer: TokenComparer, token: Token, knownTokens: ReadonlySet<string> = new Set()) {
 		super();
 
 		this.token = token;
 		this.supportsPunctuation = token.punctuation;
 		this.comparer = comparer;
+		this.knownTokens = knownTokens;
+	}
+
+	/**
+	 * Get if a word of the expression matches this node only by how it is
+	 * spelled, and is itself a word of the graph. Such a word means what the
+	 * graph says it means, so it is not read as a misspelling of this word.
+	 * Without this `billion` could be read as `million`.
+	 *
+	 * @param token -
+	 *   the token of the expression
+	 * @returns
+	 *   `true` if the token must not match this node by spelling
+	 */
+	private isOtherKnownWord(token: Token): boolean {
+		return token.normalized !== this.token.normalized
+			&& token.stemmed !== this.token.stemmed
+			&& this.knownTokens.has(token.normalized);
 	}
 
 	public match(encounter: Encounter) {
@@ -54,7 +77,7 @@ export class TokenNode extends Node {
 				const rootPartialAndFuzzy = encounter.isFuzzy && encounter.isPartialInput;
 				const score = (partialAndLastToken || rootPartialAndFuzzy)
 					? this.comparer.comparePartial(this.token, token)
-					: this.comparer.compare(this.token, token);
+					: (this.isOtherKnownWord(token) ? 0 : this.comparer.compare(this.token, token));
 
 				if(score > 0) {
 					return encounter.advance(score, 1);
