@@ -1,3 +1,5 @@
+import { foldMarks } from './foldMarks.js';
+
 /*
  * The Swedish words for numbers. Swedish writes the numbers up to 99 as a
  * single word, so `21` is `tjugoett` and not `tjugo ett`. The words are
@@ -263,11 +265,23 @@ function joinedLength(word: string, start: number, part: string): number | null 
 }
 
 /**
+ * The parts of a compound number word without the marks on their letters,
+ * such as `tva` for `två`, for words typed without `å`, `ä` and `ö`.
+ */
+const FOLDED_COMPOUND_PARTS = longestFirst([ ...new Set(COMPOUND_PARTS.map(foldMarks)) ]);
+
+const FOLDED_LAST_COMPOUND_PARTS = longestFirst([ ...new Set(LAST_COMPOUND_PARTS.map(foldMarks)) ]);
+
+/**
  * Split a compound number word into the words it is made of, such as
  * `tvåhundratjugotre` into `två`, `hundra` and `tjugotre`. Swedish writes the
  * numbers below a million as one word, and the words can then be read the
  * same way as `två hundra tjugotre`. The last word can be a position, so
  * `tvåhundrafemte` is `två`, `hundra` and `femte`.
+ *
+ * A word typed without `å`, `ä` and `ö`, such as `tvahundra`, is split into
+ * words without them, such as `tva` and `hundra`. The token comparer matches
+ * these with the words that have the letters.
  *
  * Only a word with `hundra` or `tusen` in it is split. A word below 100,
  * such as `tjugotre`, is a number word of its own.
@@ -280,6 +294,25 @@ function joinedLength(word: string, start: number, part: string): number | null 
 export function splitNumberWord(word: string): NumberWordPart[] | null {
 	if(! COMPOUND_SCALES.some(scale => word.includes(scale))) return null;
 
+	const parts = splitWith(word, COMPOUND_PARTS, LAST_COMPOUND_PARTS);
+	if(parts || foldMarks(word) !== word) return parts;
+
+	return splitWith(word, FOLDED_COMPOUND_PARTS, FOLDED_LAST_COMPOUND_PARTS);
+}
+
+/**
+ * Split a compound number word with the given parts.
+ *
+ * @param word -
+ *   the normalized word
+ * @param middleParts -
+ *   the parts that can be anywhere in the word, longest part first
+ * @param lastParts -
+ *   the parts that can end the word, longest part first
+ * @returns
+ *   the words of the number, or `null` if the word is not a compound number
+ */
+function splitWith(word: string, middleParts: string[], lastParts: string[]): NumberWordPart[] | null {
 	// The positions that are known to not start a valid split
 	const failed = new Set<number>();
 
@@ -287,7 +320,7 @@ export function splitNumberWord(word: string): NumberWordPart[] | null {
 		if(start === word.length) return [];
 		if(failed.has(start)) return null;
 
-		for(const part of LAST_COMPOUND_PARTS) {
+		for(const part of lastParts) {
 			if(! word.startsWith(part, start)) continue;
 
 			const end = start + part.length;
@@ -295,14 +328,14 @@ export function splitNumberWord(word: string): NumberWordPart[] | null {
 				return [ { word: part, length: part.length } ];
 			}
 
-			if(! COMPOUND_PARTS.includes(part)) continue;
+			if(! middleParts.includes(part)) continue;
 
 			const rest = splitFrom(end);
 			if(rest) return [ { word: part, length: part.length }, ...rest ];
 		}
 
 		// A part with a letter left out before a scale word, as in `ettusen`
-		for(const part of COMPOUND_PARTS) {
+		for(const part of middleParts) {
 			if(! word.startsWith(part, start)) continue;
 
 			const length = joinedLength(word, start, part);
