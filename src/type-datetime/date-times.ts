@@ -21,20 +21,48 @@ export function mapDateTime(r: DateTimeData, options: DateTimeOptions) {
 	 * morning.
 	 */
 	const now = currentTime(options);
-	const reference = date.equals(LocalDate.fromDate(now)) ? now : date.toDateAtMidnight();
-	const time = mapTimeToInstant(r, { ...options, reference, stayOnDay: hasDate(r) });
+	const isToday = date.equals(LocalDate.fromDate(now));
+	const reference = isToday ? now : date.toDateAtMidnight();
+
+	/*
+	 * The time is read on the day of the date, at the current time of day.
+	 * Reading it on the current day and then moving it to the date would
+	 * give a different time when the current day has a daylight saving time
+	 * change, such as 3:30 for 2:30 when the clocks skip that hour today.
+	 */
+	const base = isToday ? now : onDay(date, now);
+	const time = mapTimeToInstant(r, { ...options, now: base, reference, stayOnDay: hasDate(r) });
 
 	// An amount such as "in 9999999999 hours" moves past the times a Date can hold
 	if(isNaN(time.getTime())) return null;
 
 	/*
-	 * The time starts at now. When it passes midnight, for example with
+	 * The time starts at the base. When it passes midnight, for example with
 	 * "in 2 hours" late in the evening, move the date by the same days.
 	 */
-	const days = differenceInCalendarDays(time, now);
+	const days = differenceInCalendarDays(time, base);
 	const day = days === 0 ? date : date.add({ days });
 
 	return LocalDateTime.fromDateAndTime(day, LocalTime.fromDate(time));
+}
+
+/**
+ * Get the instant on a date that has the same time of day as another
+ * instant.
+ *
+ * @param date -
+ *   the date
+ * @param time -
+ *   the instant to take the time of day from
+ * @returns
+ *   the instant on the date
+ */
+function onDay(date: LocalDate, time: Date): Date {
+	// `setFullYear` also reads the years 0 to 99 as they are
+	const result = new Date(time.getTime());
+	result.setFullYear(date.year, date.month - 1, date.day);
+	result.setHours(time.getHours(), time.getMinutes(), time.getSeconds(), time.getMilliseconds());
+	return result;
 }
 
 /**

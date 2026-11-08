@@ -194,6 +194,17 @@ describe('English', function() {
 			millisecond: 0
 		}));
 
+		// The hour skipped by daylight saving time today is not skipped tomorrow
+		test('tomorrow at 2:30 am', { now: new Date(2026, 2, 29, 1, 30) }, LocalDateTime.from({
+			year: 2026,
+			month: 3,
+			day: 30,
+			hour: 2,
+			minute: 30,
+			second: 0,
+			millisecond: 0
+		}));
+
 		// 24:00 is the end of the day, which is the start of the next day
 		test('march 3 at 24:00', { now: new Date(2026, 10, 8, 10, 0) }, LocalDateTime.from({
 			year: 2027,
