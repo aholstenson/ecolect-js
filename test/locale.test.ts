@@ -1,6 +1,7 @@
 import { intentsBuilder } from '../src/index.js';
 import { en, english } from '../src/language/en/index.js';
 import type { Language } from '../src/language/index.js';
+import { localeMatchOptions } from '../src/matching/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
 import { DateOrder, MonthDayOrder } from '../src/type-datetime/index.js';
 import { dateValue } from '../src/values/date.js';
@@ -42,6 +43,28 @@ describe('Locale', function() {
 
 		it('a derived language shares the graphs it was derived from', function() {
 			expect(enGB.findGraph('date' as any)).toBe(en.findGraph('date' as any));
+		});
+
+		it('changing the options read from a locale does not change later matches', async function() {
+			const options = localeMatchOptions('en-AU');
+			const original = options.dateOrder;
+
+			try {
+				try {
+					options.dateOrder = DateOrder.YearMonthDay;
+				} catch {
+					// Options that can not be changed are fine
+				}
+
+				const match = await dateValue().matcher(en)
+					.match('1/2/2017', { now: now, locale: 'en-AU' });
+
+				expect(match).toEqual({ year: 2017, month: 2, day: 1 });
+			} finally {
+				if(! Object.isFrozen(options)) {
+					options.dateOrder = original;
+				}
+			}
 		});
 	});
 

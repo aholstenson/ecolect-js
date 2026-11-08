@@ -50,7 +50,8 @@ const cache = new Map<string, LocaleSettings>();
  * valid tag that `Intl` has no data for, such as `xx`, gets the settings of
  * the default locale of the JavaScript runtime.
  *
- * The result is cached, so the same tag always returns the same object.
+ * The result is cached, so the same tag always returns the same object. The
+ * object is frozen, as every match with the locale uses it.
  *
  * @param locale -
  *   the locale to read, as a BCP 47 language tag
@@ -65,7 +66,7 @@ export function resolveLocale(locale: string): LocaleSettings {
 		return cached;
 	}
 
-	const resolved = readLocale(locale);
+	const resolved = Object.freeze(readLocale(locale));
 	cache.set(locale, resolved);
 	return resolved;
 }

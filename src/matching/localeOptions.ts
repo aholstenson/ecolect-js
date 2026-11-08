@@ -9,7 +9,8 @@ const cache = new Map<string, MatchOptions>();
 
 /**
  * Get the match options that a locale describes. The result is cached, so the
- * same locale always returns the same object.
+ * same locale always returns the same object. The object is frozen, as every
+ * match with the locale uses it. Copy it to make options of your own.
  *
  * @param locale -
  *   the locale to read, as a BCP 47 language tag
@@ -23,12 +24,12 @@ export function localeMatchOptions(locale: string): MatchOptions {
 	}
 
 	const settings = resolveLocale(locale);
-	const options: MatchOptions = {
+	const options: MatchOptions = Object.freeze({
 		dateOrder: settings.dateOrder,
 		monthDayOrder: settings.monthDayOrder,
 		weekStartsOn: settings.weekStartsOn,
 		firstWeekContainsDate: settings.firstWeekContainsDate
-	};
+	});
 
 	cache.set(locale, options);
 	return options;
