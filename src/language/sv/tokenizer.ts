@@ -99,7 +99,12 @@ const NOT_STEMMED = new Set([
 
 /**
  * Normalized tokens that can be skipped if they are missing in the input.
+ *
+ * `på` and `till` are not in the list. They are often a part of the verb, as
+ * in `sätt på` (turn on), and without them a phrase can mean something
+ * different. The graphs for values, such as `på fredag`, have these words in
+ * their own rules.
  */
 const SKIPPABLE = new Set([
-	'i', 'på', 'för', 'en', 'ett', 'den', 'det', 'de', 'till'
+	'i', 'för', 'en', 'ett', 'den', 'det', 'de'
 ]);

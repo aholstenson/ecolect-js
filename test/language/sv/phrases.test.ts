@@ -75,6 +75,27 @@ describe('Swedish', function() {
 		});
 	});
 
+	describe('Particles', function() {
+		const matcher = intentsBuilder(sv)
+			.add('on', newPhrases().phrase('Sätt på lampan').build())
+			.add('move', newPhrases().phrase('Flytta mötet till fredag').build())
+			.build();
+
+		it('A phrase with a particle matches', async function() {
+			const match = await matcher.match('sätt på lampan', options);
+			assertNotNull(match);
+			expect(match.id).toEqual('on');
+		});
+
+		it('A particle can not be left out, as it changes the verb', async function() {
+			expect(await matcher.match('sätt lampan', options)).toBeNull();
+		});
+
+		it('till can not be left out', async function() {
+			expect(await matcher.match('flytta mötet fredag', options)).toBeNull();
+		});
+	});
+
 	describe('Vocabulary', function() {
 		const language = sv.withVocabulary({
 			synonyms: {
