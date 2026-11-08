@@ -6,6 +6,7 @@ import {
 	combine,
 	reverse,
 	hasHour,
+	hasPmHour,
 	isHour,
 
 	time12h,
@@ -115,9 +116,9 @@ export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 			 * Swedish has no AM and PM, but splits the day into `förmiddag`
 			 * and `eftermiddag`, written `fm` and `em`.
 			 */
-			.add([ GraphBuilder.result(hasHour), 'em' ], v => toPM(v[0]))
-			.add([ GraphBuilder.result(hasHour), 'e.m.' ], v => toPM(v[0]))
-			.add([ GraphBuilder.result(hasHour), 'eftermiddagen' ], v => toPM(v[0]))
+			.add([ GraphBuilder.result(hasPmHour), 'em' ], v => toPM(v[0]))
+			.add([ GraphBuilder.result(hasPmHour), 'e.m.' ], v => toPM(v[0]))
+			.add([ GraphBuilder.result(hasPmHour), 'eftermiddagen' ], v => toPM(v[0]))
 			.add([ GraphBuilder.result(hasHour), 'fm' ], v => toAM(v[0]))
 			.add([ GraphBuilder.result(hasHour), 'f.m.' ], v => toAM(v[0]))
 			.add([ GraphBuilder.result(hasHour), 'förmiddagen' ], v => toAM(v[0]))

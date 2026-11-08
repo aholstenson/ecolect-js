@@ -7,6 +7,7 @@ import {
 	combine,
 	reverse,
 	hasHour,
+	hasPmHour,
 	isHour,
 
 	time12h,
@@ -85,7 +86,7 @@ export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ 'approximately', GraphBuilder.result() ], v => withPrecision(v[0], Precision.Approximate))
 
 			.add([ GraphBuilder.result(), 'amish' ], v => combine(toAM(v[0]), { precision: Precision.Approximate }))
-			.add([ GraphBuilder.result(), 'pmish' ], v => combine(toPM(v[0]), { precision: Precision.Approximate }))
+			.add([ GraphBuilder.result(hasPmHour), 'pmish' ], v => combine(toPM(v[0]), { precision: Precision.Approximate }))
 
 			// Exact times
 			.add([ 'exactly', GraphBuilder.result() ], v => withPrecision(v[0], Precision.Exact))
@@ -124,8 +125,8 @@ export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 				return time12h(parseInt(v[0], 10), parseInt(v[1], 10), parseInt(v[2], 10));
 			})
 
-			.add([ GraphBuilder.result(hasHour), 'pm' ], v => toPM(v[0]))
-			.add([ GraphBuilder.result(hasHour), 'p.m.' ], v => toPM(v[0]))
+			.add([ GraphBuilder.result(hasPmHour), 'pm' ], v => toPM(v[0]))
+			.add([ GraphBuilder.result(hasPmHour), 'p.m.' ], v => toPM(v[0]))
 			.add([ GraphBuilder.result(hasHour), 'am' ], v => toAM(v[0]))
 			.add([ GraphBuilder.result(hasHour), 'a.m.' ], v => toAM(v[0]))
 

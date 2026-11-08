@@ -50,6 +50,20 @@ export function hasHour(v: DateTimeData): boolean {
 	return v && typeof v.hour !== 'undefined';
 }
 
+/**
+ * Get if the data has an hour that can be followed by `pm`. Hour 0 is
+ * midnight, so `0 pm` is not a time. An hour from 13 to 23 is read on the
+ * 24-hour clock, so `22 pm` is 22:00.
+ *
+ * @param v -
+ *   the data to check
+ * @returns
+ *   `true` if the hour is from 1 to 23
+ */
+export function hasPmHour(v: DateTimeData): boolean {
+	return hasHour(v) && (v.hour as number) >= 1 && (v.hour as number) <= 23;
+}
+
 export function isHour(v: DateTimeData): boolean {
 	return v && typeof v.hour !== 'undefined' && typeof v.minute === 'undefined';
 }
