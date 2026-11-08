@@ -354,6 +354,50 @@ while `en-ZA` reads `1 000,5` and `en-DE` reads `1.000,5`. A space can group
 the digits in every locale. A locale that groups digits with another
 character, such as `'` in `de-CH`, can only group them with a space.
 
+People do not always write numbers the way their locale does. Someone in
+Sweden often types `24.00` instead of `24,00`, in particular in an app that
+is in English. `numberSeparators` decides how to read the one of `.` and `,`
+that the locale does not use for fractions:
+
+Mode      | Effect
+----------|--------
+`strict`  | Read only the separators of the locale
+`auto`    | Also read the other separator when the locale does not use it to group digits. This is the default
+`lenient` | Always also read the other separator
+
+With `auto`, `sv-SE` reads `24.00` as 24, as it groups digits with a space.
+`en-US` groups digits with `,`, so it reads `24,00` only with `lenient`.
+
+A separator that can both group digits and separate a fraction is ambiguous
+when three digits come after it, as in `1.000`. `ambiguousSeparator` decides:
+`group` (the default) reads `1.000` as 1000, and `decimal` reads it as 1. A
+number with more than one separator, such as `1.000.000` or `1.000,5`, always
+groups its digits.
+
+```javascript
+// 24
+await numberValue().matcher(en).match('24,00', { numberSeparators: 'lenient' });
+
+// 1000
+await numberValue().matcher(sv).match('1.000');
+
+// 1
+await numberValue().matcher(sv).match('1.000', { ambiguousSeparator: 'decimal' });
+```
+
+To use these for every match, give them to the language. They change what
+the locale gives, so they also work when a match sets another locale:
+
+```javascript
+const language = english('en-US', { numberSeparators: 'lenient' });
+const matcher = intentsBuilder(language)
+  .add(...)
+  .build();
+```
+
+Generated text uses the decimal separator of the locale, so `sv` writes
+`2,4` even though it reads `2.4`.
+
 Swedish uses `swedish` the same way English uses `english`:
 
 ```javascript
@@ -372,11 +416,16 @@ Option                  | Default             | Description
 `monthDayOrder`         | From the locale     | The order of the month and the day in a numeric date without a year, such as `1/2`
 `weekStartsOn`          | From the locale     | The day the week starts on
 `firstWeekContainsDate` | From the locale     | The day of January which is always in the first week of the year
-`decimalSeparator`      | From the locale     | The character that separates the fraction of a number, `.` or `,`
-`groupSeparator`        | From the locale     | The character that groups the digits of a number, `,` or `.`. A space can always group digits
+`decimalSeparator`      | From the locale     | The character that separates the fraction of a number, `.` or `,`, or a list of them. The first one is used to write numbers
+`groupSeparator`        | From the locale     | The character that groups the digits of a number, `,` or `.`, or a list of them. A space can always group digits
+`numberSeparators`      | `auto`              | How to read the one of `.` and `,` that the locale does not use for fractions: `strict`, `auto` or `lenient`
+`ambiguousSeparator`    | `group`             | How to read a separator that can group digits and separate a fraction when three digits come after it: `group` or `decimal`
 
 An option set directly wins over the locale, so `dateOrder` given together
 with a locale is used as it is.
+
+A `decimalSeparator` or `groupSeparator` set directly names the separators in
+full, so `numberSeparators` adds nothing to them.
 
 The order of the month and the day is the same as in `dateOrder` for most
 locales, but not for all. `sv-SE` writes `2017-01-02` with the year first, but

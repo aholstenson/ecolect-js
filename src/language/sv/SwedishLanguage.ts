@@ -1,4 +1,4 @@
-import type { Language } from '../index.js';
+import type { Language, LanguageOptions } from '../index.js';
 
 import { booleanGraph } from './booleanGraph.js';
 import { dateDurationGraph } from './dateDurationGraph.js';
@@ -58,9 +58,12 @@ export const sv = new SwedishLanguage();
  *
  * @param locale -
  *   the locale to read expressions as, as a BCP 47 language tag
+ * @param options -
+ *   options used for every match that does not set them, such as
+ *   `{ numberSeparators: 'lenient' }`
  * @returns
  *   Swedish read as the given locale
  */
-export function swedish(locale: string): Language {
-	return sv.withLocale(locale);
+export function swedish(locale: string, options?: LanguageOptions): Language {
+	return sv.withLocale(locale, options);
 }

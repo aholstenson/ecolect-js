@@ -1,5 +1,6 @@
-import type { Language } from '../language/index.js';
+import type { Language, LanguageOptions } from '../language/index.js';
 import { resolveLocale } from '../language/index.js';
+import { resolveNumberSeparators } from '../type-numbers/separators.js';
 
 import type { MatchAllOptions } from './MatchAllOptions.js';
 import type { Matcher } from './Matcher.js';
@@ -42,14 +43,25 @@ export function localeMatchOptions(locale: string): MatchOptions {
  * in the options decides them, and the locale of the language decides them
  * when the options name none. Options set directly are left as they are.
  *
+ * The separators of numbers are always set as lists. The options of the
+ * language decide `numberSeparators` and `ambiguousSeparator` when the
+ * options of the match do not, and these then decide which separators the
+ * locale adds.
+ *
  * @param languageLocale -
  *   the locale of the language the matcher was created for
  * @param options -
  *   the options of the match, which are changed in place
+ * @param languageOptions -
+ *   the options of the language the matcher was created for
  * @returns
  *   the options of the match
  */
-export function applyLocale<O extends MatchOptions>(languageLocale: string, options: O): O {
+export function applyLocale<O extends MatchOptions>(
+	languageLocale: string,
+	options: O,
+	languageOptions: LanguageOptions = {}
+): O {
 	const defaults = localeMatchOptions(options.locale ?? languageLocale);
 
 	/*
@@ -72,13 +84,22 @@ export function applyLocale<O extends MatchOptions>(languageLocale: string, opti
 		options.firstWeekContainsDate = defaults.firstWeekContainsDate;
 	}
 
-	if(typeof options.decimalSeparator === 'undefined') {
-		options.decimalSeparator = defaults.decimalSeparator;
+	if(typeof options.numberSeparators === 'undefined' && languageOptions.numberSeparators) {
+		options.numberSeparators = languageOptions.numberSeparators;
 	}
 
-	if(typeof options.groupSeparator === 'undefined') {
-		options.groupSeparator = defaults.groupSeparator;
+	if(typeof options.ambiguousSeparator === 'undefined' && languageOptions.ambiguousSeparator) {
+		options.ambiguousSeparator = languageOptions.ambiguousSeparator;
 	}
+
+	/*
+	 * The separators are set as lists, so a match that is read again with
+	 * these options, such as a value within a phrase, gets the same ones.
+	 */
+	const separators = resolveNumberSeparators(resolveLocale(options.locale ?? languageLocale), options);
+	options.decimalSeparator = separators.decimal;
+	options.groupSeparator = separators.group;
+	options.ambiguousSeparator = separators.ambiguous;
 
 	return options;
 }
@@ -115,10 +136,12 @@ function checkWeekOptions(options: MatchOptions): void {
  */
 class LocaleAwareMatcher<V> implements Matcher<V> {
 	private readonly locale: string;
+	private readonly languageOptions: LanguageOptions;
 	private readonly matcher: Matcher<V>;
 
-	public constructor(locale: string, matcher: Matcher<V>) {
+	public constructor(locale: string, languageOptions: LanguageOptions, matcher: Matcher<V>) {
 		this.locale = locale;
+		this.languageOptions = languageOptions;
 		this.matcher = matcher;
 	}
 
@@ -145,7 +168,7 @@ class LocaleAwareMatcher<V> implements Matcher<V> {
 	 *   options that name every convention
 	 */
 	private resolve<O extends MatchOptions>(options: O): O {
-		const resolved = applyLocale(this.locale, { ...options });
+		const resolved = applyLocale(this.locale, { ...options }, this.languageOptions);
 		checkWeekOptions(resolved);
 		return resolved;
 	}
@@ -154,6 +177,7 @@ class LocaleAwareMatcher<V> implements Matcher<V> {
 /**
  * Wrap a matcher so that it reads expressions with the conventions of the
  * locale of a language, such as the order of the fields in a numeric date.
+ * The options of the language are used when a match does not set them.
  *
  * @param language -
  *   the language the matcher was created for
@@ -163,5 +187,5 @@ class LocaleAwareMatcher<V> implements Matcher<V> {
  *   a matcher that reads the conventions of the language
  */
 export function localeAwareMatcher<V>(language: Language, matcher: Matcher<V>): Matcher<V> {
-	return new LocaleAwareMatcher(language.locale, matcher);
+	return new LocaleAwareMatcher(language.locale, language.options ?? {}, matcher);
 }

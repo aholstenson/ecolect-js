@@ -3,6 +3,7 @@ import type { TokenComparer, Tokenizer } from '../tokenization/index.js';
 
 import type { KnownGraphs, KnownGraphsDataTypes } from './KnownGraphs.js';
 import type { LanguageGraphFactory } from './LanguageGraphFactory.js';
+import type { LanguageOptions } from './LanguageOptions.js';
 import type { Vocabulary } from './Vocabulary.js';
 
 /**
@@ -20,6 +21,12 @@ export interface Language {
 	 * of a match, such as the order of the fields in a numeric date.
 	 */
 	readonly locale: string;
+
+	/**
+	 * Options used for every match that does not set them, such as how to
+	 * read the separators of numbers.
+	 */
+	readonly options?: LanguageOptions;
 
 	readonly tokenizer: Tokenizer;
 
@@ -62,6 +69,9 @@ export interface Language {
 	 *
 	 * @param locale -
 	 *   the locale to read expressions as, as a BCP 47 language tag
+	 * @param options -
+	 *   options used for every match that does not set them. Without
+	 *   options the new language keeps the options of this one
 	 */
-	withLocale(locale: string): Language;
+	withLocale(locale: string, options?: LanguageOptions): Language;
 }

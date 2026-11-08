@@ -25,7 +25,7 @@ describe('Locale', function() {
 			const language = english('en-ZA');
 			expect(await numberValue().matcher(language).match('1,5')).toEqual(BigDecimal.parse('1.5'));
 			expect(await numberValue().matcher(language).match('1,000')).toEqual(BigDecimal.parse('1.000'));
-			expect(await numberValue().matcher(language).match('1.5')).toBeNull();
+			expect(await numberValue().matcher(language).match('1.5', { numberSeparators: 'strict' })).toBeNull();
 		});
 
 		it('en-ZA groups digits with a space', async function() {
@@ -42,8 +42,13 @@ describe('Locale', function() {
 
 		it('sv reads a comma as the decimal separator', async function() {
 			expect(await numberValue().matcher(sv).match('1,5')).toEqual(BigDecimal.parse('1.5'));
-			expect(await numberValue().matcher(sv).match('1.5')).toBeNull();
-			expect(await integerValue().matcher(sv).match('1.000')).toBeNull();
+			expect(await numberValue().matcher(sv).match('1,000')).toEqual(BigDecimal.parse('1.000'));
+		});
+
+		it('sv with strict separators reads only a comma', async function() {
+			const options = { numberSeparators: 'strict' } as const;
+			expect(await numberValue().matcher(sv).match('1.5', options)).toBeNull();
+			expect(await integerValue().matcher(sv).match('1.000', options)).toBeNull();
 		});
 
 		it('sv-FI reads numbers as sv-SE does', async function() {
@@ -76,6 +81,113 @@ describe('Locale', function() {
 				.buildGenerator();
 
 			expect(await generator.generate('pay', { amount: BigDecimal.parse('2.4') })).toEqual('pay 2,4');
+		});
+
+		describe('Separators the locale does not use', function() {
+			it('sv reads a point as a decimal separator by default', async function() {
+				const matcher = numberValue().matcher(sv);
+				expect(await matcher.match('24.00')).toEqual(BigDecimal.parse('24.00'));
+				expect(await matcher.match('1.5')).toEqual(BigDecimal.parse('1.5'));
+				expect(await matcher.match('1234.567')).toEqual(BigDecimal.parse('1234.567'));
+			});
+
+			it('sv reads a point before three digits as a group separator', async function() {
+				expect(await numberValue().matcher(sv).match('1.000')).toEqual(BigDecimal.parse('1000'));
+				expect(await integerValue().matcher(sv).match('1.000')).toEqual(BigInteger.fromNumber(1000));
+				expect(await integerValue().matcher(sv).match('1.000.000')).toEqual(BigInteger.fromNumber(1000000));
+				expect(await numberValue().matcher(sv).match('1.000,50')).toEqual(BigDecimal.parse('1000.50'));
+			});
+
+			it('sv reads a point before three digits as a decimal separator when asked', async function() {
+				const matcher = numberValue().matcher(sv);
+				const options = { ambiguousSeparator: 'decimal' } as const;
+				expect(await matcher.match('1.000', options)).toEqual(BigDecimal.parse('1.000'));
+				expect(await matcher.match('1.000.000', options)).toEqual(BigDecimal.parse('1000000'));
+				expect(await matcher.match('1.000,5', options)).toEqual(BigDecimal.parse('1000.5'));
+				expect(await integerValue().matcher(sv).match('1.000', options)).toBeNull();
+			});
+
+			it('en-US does not read a comma as a decimal separator by default', async function() {
+				expect(await numberValue().matcher(en).match('24,00')).toBeNull();
+			});
+
+			it('en-US reads a comma as a decimal separator when lenient', async function() {
+				const matcher = numberValue().matcher(en);
+				const options = { numberSeparators: 'lenient' } as const;
+				expect(await matcher.match('24,00', options)).toEqual(BigDecimal.parse('24.00'));
+				expect(await matcher.match('1,5', options)).toEqual(BigDecimal.parse('1.5'));
+				expect(await matcher.match('1,000', options)).toEqual(BigDecimal.parse('1000'));
+				expect(await matcher.match('1,000,000', options)).toEqual(BigDecimal.parse('1000000'));
+				expect(await matcher.match('1,000.5', options)).toEqual(BigDecimal.parse('1000.5'));
+			});
+
+			it('en-US reads a comma before three digits as a decimal separator when asked', async function() {
+				const matcher = numberValue().matcher(en);
+				const options = { numberSeparators: 'lenient', ambiguousSeparator: 'decimal' } as const;
+				expect(await matcher.match('1,000', options)).toEqual(BigDecimal.parse('1.000'));
+				expect(await matcher.match('1,000,000', options)).toEqual(BigDecimal.parse('1000000'));
+				expect(await matcher.match('1,000.5', options)).toEqual(BigDecimal.parse('1000.5'));
+			});
+
+			it('de-DE reads a point as a decimal separator when lenient', async function() {
+				const matcher = numberValue().matcher(english('en-DE'));
+				expect(await matcher.match('24.50')).toBeNull();
+				expect(await matcher.match('24.50', { numberSeparators: 'lenient' })).toEqual(BigDecimal.parse('24.50'));
+				expect(await matcher.match('1.000', { numberSeparators: 'lenient' })).toEqual(BigDecimal.parse('1000'));
+			});
+
+			it('A separator set directly turns off the other separator', async function() {
+				const matcher = numberValue().matcher(sv);
+				expect(await matcher.match('1.5', { decimalSeparator: ',' })).toBeNull();
+			});
+
+			it('A list of separators reads each of them', async function() {
+				const matcher = numberValue().matcher(en);
+				const options = { decimalSeparator: [ '.', ',' ], groupSeparator: [] };
+				expect(await matcher.match('1,5', options)).toEqual(BigDecimal.parse('1.5'));
+				expect(await matcher.match('1.5', options)).toEqual(BigDecimal.parse('1.5'));
+				expect(await matcher.match('1,000', options)).toEqual(BigDecimal.parse('1.000'));
+			});
+
+			it('The language decides the mode when the match does not', async function() {
+				const language = english('en-US', { numberSeparators: 'lenient' });
+				const matcher = numberValue().matcher(language);
+				expect(await matcher.match('24,00')).toEqual(BigDecimal.parse('24.00'));
+				expect(await matcher.match('24,00', { numberSeparators: 'strict' })).toBeNull();
+			});
+
+			it('The mode of the language works with the locale of a match', async function() {
+				const matcher = numberValue().matcher(swedish('sv-SE', { numberSeparators: 'lenient' }));
+				expect(await matcher.match('24,00', { locale: 'en-US' })).toEqual(BigDecimal.parse('24.00'));
+				expect(await matcher.match('1,000', { locale: 'en-US' })).toEqual(BigDecimal.parse('1000'));
+			});
+
+			it('The language decides how to read an ambiguous separator', async function() {
+				const matcher = numberValue().matcher(swedish('sv-SE', { ambiguousSeparator: 'decimal' }));
+				expect(await matcher.match('1.000')).toEqual(BigDecimal.parse('1.000'));
+			});
+
+			it('A language with options keeps them with a vocabulary', async function() {
+				const language = english('en-US', { numberSeparators: 'lenient' }).withVocabulary({});
+				expect(await numberValue().matcher(language).match('24,00')).toEqual(BigDecimal.parse('24.00'));
+			});
+
+			it('A number within an intent reads the other separator', async function() {
+				const matcher = intentsBuilder(sv)
+					.add('pay', newPhrases().value('amount', numberValue()).phrase('betala {amount} kr').build())
+					.build();
+
+				const match = await matcher.match('betala 24.50 kr');
+				expect(match?.values.amount).toEqual(BigDecimal.parse('24.50'));
+			});
+
+			it('sv writes numbers with a comma', async function() {
+				const generator = intentsBuilder(sv)
+					.add('pay', newPhrases().value('amount', numberValue()).phrase('betala {amount}').build())
+					.buildGenerator();
+
+				expect(await generator.generate('pay', { amount: BigDecimal.parse('2.4') })).toEqual('betala 2,4');
+			});
 		});
 
 		it('The options of a locale name its separators', function() {

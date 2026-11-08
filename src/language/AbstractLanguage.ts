@@ -4,6 +4,7 @@ import type { TokenComparer, Tokenizer } from '../tokenization/index.js';
 import type { KnownGraphs, KnownGraphsDataTypes } from './KnownGraphs.js';
 import type { Language } from './Language.js';
 import type { LanguageGraphFactory } from './LanguageGraphFactory.js';
+import type { LanguageOptions } from './LanguageOptions.js';
 import type { Vocabulary } from './Vocabulary.js';
 import { createVocabularyTokenizer } from './vocabularyTokenizer.js';
 
@@ -24,17 +25,20 @@ export abstract class AbstractLanguage implements Language {
 	public readonly tokenizer: Tokenizer;
 	public readonly tokenComparer: TokenComparer;
 	public readonly locale: string;
+	public readonly options: LanguageOptions;
 
 	public constructor(
 		tokenizer: Tokenizer,
 		tokenComparer: TokenComparer,
 		repeatingFactory: RepeatingFactory,
-		locale: string
+		locale: string,
+		options: LanguageOptions = {}
 	) {
 		this.tokenizer = tokenizer;
 		this.tokenComparer = tokenComparer;
 		this.repeatingFactory = repeatingFactory;
 		this.locale = locale;
+		this.options = Object.freeze({ ...options });
 	}
 
 	/**
@@ -83,7 +87,8 @@ export abstract class AbstractLanguage implements Language {
 			this.locale,
 			createVocabularyTokenizer(this.tokenizer, vocabulary),
 			this.tokenComparer,
-			this.repeatingFactory
+			this.repeatingFactory,
+			this.options
 		);
 
 		/*
@@ -97,8 +102,8 @@ export abstract class AbstractLanguage implements Language {
 		return derived;
 	}
 
-	public withLocale(locale: string): Language {
-		if(locale === this.locale) {
+	public withLocale(locale: string, options?: LanguageOptions): Language {
+		if(locale === this.locale && typeof options === 'undefined') {
 			return this;
 		}
 
@@ -107,7 +112,8 @@ export abstract class AbstractLanguage implements Language {
 			locale,
 			this.tokenizer,
 			this.tokenComparer,
-			this.repeatingFactory
+			this.repeatingFactory,
+			options ?? this.options
 		);
 
 		/*
@@ -124,8 +130,8 @@ export abstract class AbstractLanguage implements Language {
 
 /**
  * Language that shares everything with the language it was derived from
- * except for its tokenizer, which reads an extended vocabulary, and its
- * locale.
+ * except for its tokenizer, which reads an extended vocabulary, its locale
+ * and its options.
  */
 class DerivedLanguage extends AbstractLanguage {
 	public readonly id: string;
@@ -135,9 +141,10 @@ class DerivedLanguage extends AbstractLanguage {
 		locale: string,
 		tokenizer: Tokenizer,
 		tokenComparer: TokenComparer,
-		repeatingFactory: RepeatingFactory
+		repeatingFactory: RepeatingFactory,
+		options: LanguageOptions
 	) {
-		super(tokenizer, tokenComparer, repeatingFactory, locale);
+		super(tokenizer, tokenComparer, repeatingFactory, locale, options);
 
 		this.id = id;
 	}

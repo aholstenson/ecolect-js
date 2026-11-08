@@ -1,4 +1,4 @@
-import type { Language } from '../index.js';
+import type { Language, LanguageOptions } from '../index.js';
 
 import { booleanGraph } from './booleanGraph.js';
 import { dateDurationGraph } from './dateDurationGraph.js';
@@ -61,9 +61,12 @@ export const en = new EnglishLanguage();
  *
  * @param locale -
  *   the locale to read expressions as, as a BCP 47 language tag
+ * @param options -
+ *   options used for every match that does not set them, such as
+ *   `{ numberSeparators: 'lenient' }`
  * @returns
  *   English read as the given locale
  */
-export function english(locale: string): Language {
-	return en.withLocale(locale);
+export function english(locale: string, options?: LanguageOptions): Language {
+	return en.withLocale(locale, options);
 }
