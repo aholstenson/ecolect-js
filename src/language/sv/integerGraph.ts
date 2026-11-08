@@ -5,6 +5,7 @@ import {
 
 	literalNumber,
 	digitNumber,
+	tensNumber,
 
 	canFollowNumber,
 	combineNumbers,
@@ -16,7 +17,7 @@ import {
 } from '../../type-numbers/index.js';
 import type { LanguageGraphFactory } from '../index.js';
 
-import { CARDINAL_WORDS, MULTIPLIER_WORDS } from './numberWords.js';
+import { CARDINAL_WORDS, MULTIPLIER_WORDS, TENS_WORDS } from './numberWords.js';
 
 export const integerGraph: LanguageGraphFactory<NumberData> = {
 	id: 'integer',
@@ -31,6 +32,8 @@ export const integerGraph: LanguageGraphFactory<NumberData> = {
 			})
 
 			.map(CARDINAL_WORDS, l => literalNumber(l, String(l)))
+
+			.map(TENS_WORDS, l => tensNumber(l, String(l)))
 
 			.map(MULTIPLIER_WORDS, l => literalNumber(l, String(l), true))
 

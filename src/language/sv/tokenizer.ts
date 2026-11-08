@@ -3,6 +3,7 @@ import { tokenize } from '../../tokenization/index.js';
 import { characters } from '../algorithms/jaroWinkler.js';
 
 import { swedishStemmer } from './algorithms/swedishStemmer.js';
+import { CARDINAL_WORDS, TENS_WORDS } from './numberWords.js';
 
 /**
  * Words that are short enough that a misspelling of them is more likely to
@@ -30,7 +31,7 @@ export const tokenizer: Tokenizer = (value: string) => {
 				raw: word,
 				normalized: normalized,
 				short: characters(word).length <= SHORT_WORD_LENGTH,
-				stemmed: swedishStemmer(normalized),
+				stemmed: NOT_STEMMED.has(normalized) ? normalized : swedishStemmer(normalized),
 				skippable: SKIPPABLE.has(normalized)
 			}
 		];
@@ -56,6 +57,16 @@ function normalize(word: string): string {
 			return lcWord;
 	}
 }
+
+/**
+ * Words that are kept as they are instead of being stemmed. The stemmer
+ * removes the ending `en` as in `bilen`, which makes `tjugoen` the same word
+ * as `tjugo`, so the words for numbers are not stemmed.
+ */
+const NOT_STEMMED = new Set([
+	...Object.keys(CARDINAL_WORDS),
+	...Object.keys(TENS_WORDS)
+]);
 
 /**
  * Normalized tokens that can be skipped if they are missing in the input.

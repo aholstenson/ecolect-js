@@ -133,9 +133,16 @@ function buildWords(
 }
 
 /**
- * The words for the numbers 0 to 99.
+ * The words for the numbers 0 to 99, except the whole tens in
+ * {@link TENS_WORDS}.
  */
-export const CARDINAL_WORDS: Readonly<Record<string, number>> = buildWords(ONES, TENS, TEENS);
+export const CARDINAL_WORDS: Readonly<Record<string, number>> = buildWords(ONES, {}, TEENS);
+
+/**
+ * The words for the whole tens, such as `tjugo`. A smaller number can be
+ * added after them, so `tjugo ett` is 21 and not the digits `201`.
+ */
+export const TENS_WORDS: Readonly<Record<string, number>> = TENS;
 
 /**
  * The words for the positions 1 to 99.

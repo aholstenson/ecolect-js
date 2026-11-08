@@ -49,6 +49,21 @@ describe('Swedish', function() {
 
 		test('2 tusen 5', {}, BigInteger.fromNumber(2005));
 
+		test('tjugo', {}, BigInteger.fromNumber(20));
+
+		// The ones can follow the tens as a word of their own
+		test('tjugo ett', {}, BigInteger.fromNumber(21));
+
+		test('nittio nio', {}, BigInteger.fromNumber(99));
+
+		test('hundra tjugo', {}, BigInteger.fromNumber(120));
+
+		test('två hundra tjugo tre', {}, BigInteger.fromNumber(223));
+
+		test('tjugo tusen', {}, BigInteger.fromNumber(20000));
+
+		test('tjugo tjugo', {}, null);
+
 		test('ingenting', {}, null);
 	});
 });
