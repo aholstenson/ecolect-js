@@ -57,6 +57,10 @@ describe('English', function() {
 
 		test('1.5 2', {}, null);
 
+		test('minus minus 5', {}, null);
+
+		test('--5', {}, null);
+
 		test('1,000.5', {}, BigDecimal.fromNumber(1000.5));
 
 		describe('Long input', function() {

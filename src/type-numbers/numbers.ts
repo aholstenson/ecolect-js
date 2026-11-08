@@ -319,10 +319,18 @@ function sum(parts: NumberPart[]): number {
 	return result;
 }
 
+/**
+ * Change the sign of a number.
+ *
+ * @param o -
+ *   the number
+ * @returns
+ *   the number with the other sign
+ */
 export function negative(o: NumberData): NumberData {
 	return {
 		value: - o.value,
-		rawDigits: '-' + o.rawDigits,
+		rawDigits: o.rawDigits.startsWith('-') ? o.rawDigits.substring(1) : '-' + o.rawDigits,
 		integer: o.integer,
 		suffix: false,
 		literal: o.literal

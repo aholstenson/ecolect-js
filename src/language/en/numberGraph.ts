@@ -17,6 +17,19 @@ function isNumber(o: NumberData) {
 	return typeof o.value !== 'undefined';
 }
 
+/**
+ * Get if a number can get a minus sign. A number that already has a sign
+ * does not get another one, so `minus minus 5` is not read as a number.
+ *
+ * @param o -
+ *   the number to check
+ * @returns
+ *   `true` if the number is not negative
+ */
+function isPositiveNumber(o: NumberData): boolean {
+	return isNumber(o) && ! isNegative(o);
+}
+
 export const numberGraph: LanguageGraphFactory<NumberData> = {
 	id: 'number',
 
@@ -35,9 +48,9 @@ export const numberGraph: LanguageGraphFactory<NumberData> = {
 			.add([ GraphBuilder.result(isNumber), 'e', /^[0-9]$/ ], v => combineNumbers(v[0], powerOfTen(parseInt(v[1], 10))))
 			.add([ GraphBuilder.result(isNumber), 'e', '-', /^[0-9]$/ ], v => combineNumbers(v[0], powerOfTen(-parseInt(v[1], 10))))
 
-			.add([ '-', GraphBuilder.result(isNumber) ], v => negative(v[0]))
-			.add([ 'minus', GraphBuilder.result(isNumber) ], v => negative(v[0]))
-			.add([ 'negative', GraphBuilder.result(isNumber) ], v => negative(v[0]))
+			.add([ '-', GraphBuilder.result(isPositiveNumber) ], v => negative(v[0]))
+			.add([ 'minus', GraphBuilder.result(isPositiveNumber) ], v => negative(v[0]))
+			.add([ 'negative', GraphBuilder.result(isPositiveNumber) ], v => negative(v[0]))
 
 			.build();
 	}

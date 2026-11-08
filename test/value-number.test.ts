@@ -32,7 +32,20 @@ describe('Value: Number', function() {
 		}, 1000);
 	});
 
-	describe('Large integers in intents', function() {
+	describe('Large integers and signs in intents', function() {
+		const signs = new IntentsBuilder(en)
+			.add('pay', newPhrases()
+				.value('amount', numberValue())
+				.phrase('pay {amount} dollars')
+				.build()
+			)
+			.add('note', newPhrases()
+				.value('text', anyTextValue())
+				.phrase('pay {text}')
+				.build()
+			)
+			.build();
+
 		const intents = new IntentsBuilder(en)
 			.add('count', newPhrases()
 				.value('n', integerValue())
@@ -45,6 +58,21 @@ describe('Value: Number', function() {
 				.build()
 			)
 			.build();
+
+		it('Number with two signs still gives a match', function() {
+			return signs.match('pay - - 5 dollars')
+				.then(r => {
+					assertNotNull(r);
+				});
+		});
+
+		it('Number with two minus words still gives a match', function() {
+			return signs.match('pay minus minus 5 dollars')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.id).toEqual('note');
+				});
+		});
 
 		it('Integer too large for a number still gives a match', function() {
 			return intents.match('count 100 billion billion billion')
