@@ -35,6 +35,13 @@ export function templatesFrom(graph: Graph<any>): Template[] {
 	 */
 	const visited: Node[] = [];
 
+	/**
+	 * Keys of the templates found so far. Two paths through a graph can read
+	 * the same text, such as the paths of `[show] [show] orders` that read
+	 * `show orders`, and the text is only added once.
+	 */
+	const seen = new Set<string>();
+
 	const walk = (nodes: readonly Node[], parts: readonly TemplatePart[], tokens: readonly Token[]) => {
 		if(visited.length >= MAX_LENGTH) return;
 
@@ -56,7 +63,12 @@ export function templatesFrom(graph: Graph<any>): Template[] {
 					// Always present when the phrase matches and has no text
 					walk(node.outgoing, parts, tokens);
 				} else if(node instanceof CollectorNode) {
-					result.push(toTemplate(flush(parts, tokens)));
+					const template = toTemplate(flush(parts, tokens));
+					const key = templateKey(template);
+					if(! seen.has(key)) {
+						seen.add(key);
+						result.push(template);
+					}
 				}
 
 				/*
@@ -89,6 +101,22 @@ function flush(parts: readonly TemplatePart[], tokens: readonly Token[]): Templa
 	if(tokens.length === 0) return [ ...parts ];
 
 	return [ ...parts, { type: 'text', tokens: tokens } ];
+}
+
+/**
+ * Get a key that is the same for two templates with the same text and the
+ * same values in the same places.
+ *
+ * @param template -
+ *   the template
+ * @returns
+ *   the key
+ */
+function templateKey(template: Template): string {
+	return JSON.stringify(template.parts.map(part => part.type === 'value'
+		? { value: part.id }
+		: part.tokens.map(token => token.raw)
+	));
 }
 
 /**

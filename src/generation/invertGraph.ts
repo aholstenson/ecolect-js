@@ -60,6 +60,13 @@ export function invertGraph<V>(graph: Graph<V>): InvertedText<V>[] {
 	const paths: { tokens: Token[]; collector: CollectorNode<V> }[] = [];
 	const visited: Node[] = [];
 
+	/**
+	 * The texts found so far for each collector. Two paths through a graph
+	 * can read the same text to the same collector, and the text is only
+	 * read once.
+	 */
+	const seen = new Map<CollectorNode<V>, Set<string>>();
+
 	const walk = (nodes: readonly Node[], tokens: readonly Token[]) => {
 		if(visited.length >= MAX_LENGTH) return;
 
@@ -71,7 +78,17 @@ export function invertGraph<V>(graph: Graph<V>): InvertedText<V>[] {
 				if(node instanceof TokenNode) {
 					walk(node.outgoing, [ ...tokens, node.token ]);
 				} else if(node instanceof CollectorNode && tokens.length > 0) {
-					paths.push({ tokens: [ ...tokens ], collector: node });
+					let texts = seen.get(node);
+					if(! texts) {
+						texts = new Set();
+						seen.set(node, texts);
+					}
+
+					const text = JSON.stringify(tokens.map(token => token.raw));
+					if(! texts.has(text)) {
+						texts.add(text);
+						paths.push({ tokens: [ ...tokens ], collector: node });
+					}
 				}
 			} finally {
 				visited.pop();

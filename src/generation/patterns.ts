@@ -59,6 +59,13 @@ export function patternsFrom<V>(graph: Graph<V>): ValuePattern<V>[] {
 	const result: ValuePattern<V>[] = [];
 	const visited: Node[] = [];
 
+	/**
+	 * The texts around the value found so far for each collector. Two paths
+	 * through a graph can read the same text to the same collector, and the
+	 * pattern is only added once.
+	 */
+	const seen = new Map<CollectorNode<V>, Set<string>>();
+
 	const walk = (
 		nodes: readonly Node[],
 		before: readonly Token[],
@@ -82,9 +89,22 @@ export function patternsFrom<V>(graph: Graph<V>): ValuePattern<V>[] {
 					if(! seenValue) continue;
 
 					const collector = node;
+					const beforeText = joinTokens(before);
+					const afterText = joinTokens(after);
+
+					let texts = seen.get(collector);
+					if(! texts) {
+						texts = new Set();
+						seen.set(collector, texts);
+					}
+
+					const key = JSON.stringify([ beforeText, afterText ]);
+					if(texts.has(key)) continue;
+					texts.add(key);
+
 					result.push({
-						before: joinTokens(before),
-						after: joinTokens(after),
+						before: beforeText,
+						after: afterText,
 						resolve: data => {
 							try {
 								return collector.resolve([ data ]);

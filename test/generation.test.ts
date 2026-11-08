@@ -2,7 +2,7 @@ import { DateInterval, LocalDate, LocalDateTime, LocalTime } from 'datetime-type
 import { BigDecimal } from 'numeric-types/decimal';
 import { BigInteger } from 'numeric-types/integer';
 
-import { renderer, templatesFrom, TemplateGenerator, textsFor } from '../src/generation/index.js';
+import { patternsFrom, renderer, templatesFrom, TemplateGenerator, textsFor } from '../src/generation/index.js';
 import { intentsBuilder } from '../src/index.js';
 import { en } from '../src/language/en/index.js';
 import type { Language } from '../src/language/index.js';
@@ -397,6 +397,30 @@ describe('Generation', function() {
 			]);
 
 			expect(templates.map(t => t.words)).toEqual([ 2, 2, 3, 3 ]);
+		});
+
+		it('Text that two paths read is one template', () => {
+			// Both `[show]` groups can read the `show` of `show orders`
+			const templates = templatesFrom(newPhrases()
+				.phrase('[show] [show] orders')
+				.build()
+				.toGraph(en));
+
+			const texts = templates.map(t => t.parts.map(p => p.type === 'text'
+				? p.tokens.map(token => token.raw).join(' ')
+				: '{' + p.id + '}'
+			).join(' '));
+			expect(texts).toEqual([ 'orders', 'show orders', 'show show orders' ]);
+		});
+
+		it('Text around a value that two paths read is one pattern', () => {
+			const patterns = patternsFrom(newPhrases()
+				.value('when', dateIntervalValue())
+				.phrase('[show] [show] {when}')
+				.build()
+				.toGraph(en));
+
+			expect(patterns.map(p => p.before)).toEqual([ 'show show', 'show', '' ]);
 		});
 
 		it('The names of a month are read out of the language', () => {
