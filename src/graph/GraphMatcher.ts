@@ -59,7 +59,10 @@ export class GraphMatcher<G, V> {
 		const mapper = this.options.mapper;
 		return encounter.next(0, 0).then(() => {
 			const first = encounter.matches.first();
-			if(! first) return null;
+			if(! first) {
+				encounter.throwIfErrors();
+				return null;
+			}
 
 			return mapper(first, encounter.options, encounter);
 		});
@@ -97,6 +100,10 @@ export class GraphMatcher<G, V> {
 		const mapper = this.options.mapper;
 		return encounter.next(0, 0).then(() => {
 			let matches = encounter.matches.toArray();
+			if(matches.length === 0) {
+				encounter.throwIfErrors();
+			}
+
 			if(typeof limit === 'number') {
 				matches = matches.slice(0, Math.max(0, limit));
 			}
@@ -126,8 +133,13 @@ export class GraphMatcher<G, V> {
 		encounter.outgoing = this.graph.nodes;
 
 		const mapper = this.options.mapper;
-		return encounter.next(0, 0).then(() => encounter.matches.toArray()
-			.map(value => mapper(value, encounter.options, encounter))
-		);
+		return encounter.next(0, 0).then(() => {
+			const matches = encounter.matches.toArray();
+			if(matches.length === 0) {
+				encounter.throwIfErrors();
+			}
+
+			return matches.map(value => mapper(value, encounter.options, encounter));
+		});
 	}
 }

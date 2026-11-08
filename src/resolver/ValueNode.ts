@@ -35,6 +35,11 @@ export interface ValueNodeOptions<V> {
 	 * during matching so it is recommended to use caching to reduce network
 	 * traffic and latency for the user. The function may return a promise
 	 * if it needs to wait for something, such as a remote lookup.
+	 *
+	 * If the function throws or its promise rejects, the value does not
+	 * match, and other phrases can still match. If nothing matches, the
+	 * match rejects with an error that names the value and has the original
+	 * error as its `cause`.
 	 */
 	match: (encounter: ValueEncounter<V>) => Promise<void> | void;
 }
@@ -94,8 +99,8 @@ export class ValueNode<V> extends Node {
 
 		const onMatch = (m: Match<any>) => {
 			valueEncounter.matches.length = 0;
-			return after(this.options.match(valueEncounter), () => {
-				if(valueEncounter.matches.length === 0) return;
+			return after(this.matchValue(encounter, valueEncounter), matched => {
+				if(! matched || valueEncounter.matches.length === 0) return;
 
 				for(const v of valueEncounter.matches) {
 					const matchCopy = m.copy();
@@ -143,6 +148,42 @@ export class ValueNode<V> extends Node {
 			// Match all of the top matches
 			return sequence(limited.length, i => encounter.match(limited[i]));
 		});
+	}
+
+	/**
+	 * Ask the value if it matches the current text. An error from the value
+	 * is recorded on the encounter, and the value does not match.
+	 *
+	 * @param encounter -
+	 *   the encounter the value is matched in
+	 * @param valueEncounter -
+	 *   the encounter given to the value
+	 * @returns
+	 *   `true` if the value did not fail, via a promise if the value returned
+	 *   a promise
+	 */
+	private matchValue(encounter: Encounter, valueEncounter: ValueEncounterImpl<V>): MaybePromise<boolean> {
+		const fail = (err: unknown) => {
+			encounter.reportError(new Error(
+				'Value `' + this.id + '` could not be matched: '
+					+ (err instanceof Error ? err.message : String(err)),
+				{ cause: err }
+			));
+			return false;
+		};
+
+		let result;
+		try {
+			result = this.options.match(valueEncounter);
+		} catch(err) {
+			return fail(err);
+		}
+
+		if(result && typeof result.then === 'function') {
+			return result.then(() => true, fail);
+		}
+
+		return true;
 	}
 
 	public equals(obj: Node): boolean {

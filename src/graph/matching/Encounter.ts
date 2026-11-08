@@ -62,6 +62,13 @@ export class Encounter {
 	private _cache: Map<any, any>[];
 
 	/**
+	 * Errors from values that could not be matched, such as a remote lookup
+	 * that failed. A value with an error does not match. The errors are
+	 * reported when nothing else in the graph matched.
+	 */
+	public readonly errors: Error[];
+
+	/**
 	 * Evaluations of sub-graphs that are in progress, in the order they were
 	 * started. Used to stop a graph that refers to itself from recursing
 	 * forever.
@@ -94,6 +101,28 @@ export class Encounter {
 		this.outgoing = [];
 		this._cache = [];
 		this._evaluations = [];
+		this.errors = [];
+	}
+
+	/**
+	 * Record an error from a value that could not be matched. The value does
+	 * not match, and the error is reported if nothing else matches.
+	 *
+	 * @param error -
+	 *   the error
+	 */
+	public reportError(error: Error): void {
+		this.errors.push(error);
+	}
+
+	/**
+	 * Throw the first recorded error. Call this when nothing matched, so
+	 * that a failed value is not the same as text that does not match.
+	 */
+	public throwIfErrors(): void {
+		if(this.errors.length > 0) {
+			throw this.errors[0];
+		}
 	}
 
 	/**

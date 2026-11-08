@@ -1,3 +1,4 @@
+import { IntentsBuilder } from '../src/IntentsBuilder.js';
 import { en } from '../src/language/en/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
 import type { ValueEncounter } from '../src/resolver/ValueEncounter.js';
@@ -99,6 +100,60 @@ describe('Value: Custom', function() {
 					const match = r[0];
 					expect(match.values.company).toEqual('Cookie Co');
 				});
+		});
+	});
+
+	describe('Matcher that throws', function() {
+		const intents = new IntentsBuilder(en)
+			.add('ok', newPhrases()
+				.phrase('get stuff')
+				.build()
+			)
+			.add('bad', newPhrases()
+				.value('x', customValue(() => {
+					throw new Error('remote lookup failed');
+				}))
+				.phrase('get {x}')
+				.build()
+			)
+			.build();
+
+		it('Other intent still matches', function() {
+			return intents.match('get stuff')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.id).toEqual('ok');
+				});
+		});
+
+		it('Other intent still matches when the matcher rejects', function() {
+			const rejecting = new IntentsBuilder(en)
+				.add('ok', newPhrases()
+					.phrase('get stuff')
+					.build()
+				)
+				.add('bad', newPhrases()
+					.value('x', customValue(async () => {
+						throw new Error('remote lookup failed');
+					}))
+					.phrase('get {x}')
+					.build()
+				)
+				.build();
+
+			return rejecting.match('get stuff')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.id).toEqual('ok');
+				});
+		});
+
+		it('Match rejects with the value name when nothing else matches', async function() {
+			const error = await intents.match('get things').then(() => null, (err: Error) => err);
+			assertNotNull(error);
+			expect(error.message).toContain('`x`');
+			expect(error.message).toContain('remote lookup failed');
+			expect((error.cause as Error).message).toEqual('remote lookup failed');
 		});
 	});
 });
