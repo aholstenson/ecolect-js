@@ -51,6 +51,10 @@ describe('English', function() {
 
 		test('1.4e3', {}, BigDecimal.fromNumber(1400));
 
+		test('1.5 2', {}, null);
+
+		test('1,000.5', {}, BigDecimal.fromNumber(1000.5));
+
 		describe('Long input', function() {
 			const matcher = numberValue().matcher(en);
 

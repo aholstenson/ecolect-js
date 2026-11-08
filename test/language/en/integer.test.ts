@@ -43,6 +43,18 @@ describe('English', function() {
 
 		test('10,000', {}, BigInteger.fromNumber(10000));
 
+		test('1,000,000', {}, BigInteger.fromNumber(1000000));
+
+		test('1 000', {}, BigInteger.fromNumber(1000));
+
+		test('1,5', {}, null);
+
+		test('1,23', {}, null);
+
+		test('1,0000', {}, null);
+
+		test('1234,567', {}, null);
+
 		test('twenty one', {}, BigInteger.fromNumber(21));
 
 		test('a hundred', {}, BigInteger.fromNumber(100));

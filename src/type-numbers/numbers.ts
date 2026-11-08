@@ -227,16 +227,20 @@ function addToNumber(a: NumberData, parts: NumberPart[], b: NumberData): NumberD
 }
 
 /**
- * Join two numbers without scale words as groups of digits.
+ * Join two numbers without scale words as groups of digits. Digits can not
+ * be joined after a decimal part, as `1.5 2` is two numbers and not `1.52`.
  *
  * @param a -
  *   the number read so far
  * @param b -
  *   the group of digits after it
  * @returns
- *   the combined number
+ *   the combined number, or `null` if the number read so far has a decimal
+ *   part
  */
-function joinNumbers(a: NumberData, b: NumberData): NumberData {
+function joinNumbers(a: NumberData, b: NumberData): NumberData | null {
+	if(! a.integer) return null;
+
 	const raw = a.rawDigits + b.rawDigits;
 	return {
 		value: parseInt(raw, 10),

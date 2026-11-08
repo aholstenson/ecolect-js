@@ -17,6 +17,33 @@ import {
 } from '../../type-numbers/index.js';
 import type { LanguageGraphFactory } from '../index.js';
 
+/**
+ * Get if a number can come before a thousands separator, as the `1` in
+ * `1,000`. This is a group of one to three digits, or a number that already
+ * has a thousands separator.
+ *
+ * @param v -
+ *   the number to check
+ * @returns
+ *   `true` if a thousands separator can follow the number
+ */
+function isThousandsStart(v: NumberData): boolean {
+	return isDigits(v) && (v.combined === true || v.rawDigits.length <= 3);
+}
+
+/**
+ * Get if a number is a group of three digits that can come after a
+ * thousands separator, as the `000` in `1,000`.
+ *
+ * @param v -
+ *   the number to check
+ * @returns
+ *   `true` if the number is a group of three digits
+ */
+function isThousandsGroup(v: NumberData): boolean {
+	return isDigits(v) && canFollowNumber(v) && v.rawDigits.length === 3;
+}
+
 export const integerGraph: LanguageGraphFactory<NumberData> = {
 	id: 'integer',
 
@@ -104,8 +131,11 @@ export const integerGraph: LanguageGraphFactory<NumberData> = {
 			// `and` before the last part, as in `one hundred and five`
 			.add([ GraphBuilder.result(hasScaleWord), 'and', GraphBuilder.result(v => ! v.multiplier && canFollowNumber(v)) ], v => combineNumbers(v[0], v[1]))
 
-			// Thousands separator
-			.add([ GraphBuilder.result(isDigits), ',', GraphBuilder.result(v => isDigits(v) && canFollowNumber(v)) ], v => combineNumbers(v[0], v[1]))
+			/*
+			 * Thousands separator. The group after a comma has three digits,
+			 * so that `1,5` is not read as 15.
+			 */
+			.add([ GraphBuilder.result(isThousandsStart), ',', GraphBuilder.result(isThousandsGroup) ], v => combineNumbers(v[0], v[1]))
 
 			.build();
 	}
