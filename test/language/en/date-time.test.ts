@@ -3,7 +3,9 @@ import { LocalDateTime } from 'datetime-types';
 
 import { dateTimeGraph } from '../../../src/language/en/dateTimeGraph.js';
 import { EnglishLanguage } from '../../../src/language/en/EnglishLanguage.js';
+import { en } from '../../../src/language/en/index.js';
 import { mapDateTime } from '../../../src/type-datetime/index.js';
+import { dateTimeValue } from '../../../src/values/index.js';
 
 import { testRunner } from './helpers.js';
 
@@ -306,5 +308,13 @@ describe('English', function() {
 		}));
 
 		test('in 9999999999 hours', { now: new Date(2026, 10, 8, 0, 0) }, null);
+	});
+
+	describe('Date & Time with long input', function() {
+		const matcher = dateTimeValue().matcher(en);
+
+		it('a long list of numbers is matched quickly', { timeout: 1000 }, function() {
+			return matcher.match('1 '.repeat(250).trim(), { now: new Date(2026, 10, 8) });
+		});
 	});
 });

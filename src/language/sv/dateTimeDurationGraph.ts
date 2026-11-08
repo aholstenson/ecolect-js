@@ -7,26 +7,33 @@ import {
 } from '../../type-datetime/index.js';
 import type { LanguageGraphFactory } from '../index.js';
 
-import { dateDurationGraph } from './dateDurationGraph.js';
-import { timeDurationGraph } from './timeDurationGraph.js';
+import { dateDurationUnitGraph } from './dateDurationGraph.js';
+import { timeDurationUnitGraph } from './timeDurationGraph.js';
 
 export const dateTimeDurationGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'date-time-duration',
 
 	create(language) {
-		const timeDuration = language.graph(timeDurationGraph);
-		const dateDuration = language.graph(dateDurationGraph);
+		const timeUnit = language.graph(timeDurationUnitGraph);
+		const dateUnit = language.graph(dateDurationUnitGraph);
 
+		/*
+		 * Units are added one at a time from left to right, so that a list
+		 * of units can be read in only one way. If a list could be combined
+		 * with a list, the ways to read a long list would grow very fast.
+		 */
 		return new GraphBuilder<DateTimeData>(language)
 			.name('date-time-duration')
 
 			.skipPunctuation()
 
-			.add(timeDuration, v => v[0])
-			.add(dateDuration, v => v[0])
+			.add(timeUnit, v => v[0])
+			.add(dateUnit, v => v[0])
 
-			.add([ GraphBuilder.result(), GraphBuilder.result() ], v => combine(v[0], v[1]))
-			.add([ GraphBuilder.result(), 'och', GraphBuilder.result() ], v => combine(v[0], v[1]))
+			.add([ GraphBuilder.result(), timeUnit ], v => combine(v[0], v[1]))
+			.add([ GraphBuilder.result(), dateUnit ], v => combine(v[0], v[1]))
+			.add([ GraphBuilder.result(), 'och', timeUnit ], v => combine(v[0], v[1]))
+			.add([ GraphBuilder.result(), 'och', dateUnit ], v => combine(v[0], v[1]))
 
 			.build();
 	}

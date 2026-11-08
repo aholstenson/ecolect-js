@@ -1,7 +1,9 @@
 
 import { dateDurationGraph } from '../../../src/language/en/dateDurationGraph.js';
 import { EnglishLanguage } from '../../../src/language/en/EnglishLanguage.js';
+import { en } from '../../../src/language/en/index.js';
 import { mapDuration } from '../../../src/type-datetime/index.js';
+import { dateDurationValue } from '../../../src/values/index.js';
 
 import { testRunner } from './helpers.js';
 
@@ -59,6 +61,14 @@ describe('English', function() {
 
 		test('1 quarter', {}, {
 			quarters: 1
+		});
+	});
+
+	describe('Date Duration with long input', function() {
+		const matcher = dateDurationValue().matcher(en);
+
+		it('a long list of durations is matched quickly', { timeout: 1000 }, function() {
+			return matcher.match('1 day and '.repeat(400) + '1 day');
 		});
 	});
 
