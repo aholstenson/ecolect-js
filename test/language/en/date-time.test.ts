@@ -194,6 +194,17 @@ describe('English', function() {
 			millisecond: 0
 		}));
 
+		// 24:00 is the end of the day, which is the start of the next day
+		test('march 3 at 24:00', { now: new Date(2026, 10, 8, 10, 0) }, LocalDateTime.from({
+			year: 2027,
+			month: 3,
+			day: 4,
+			hour: 0,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
 		test('in 2 months and 2 days', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
 			year: 2010,
 			month: 3,

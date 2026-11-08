@@ -20,12 +20,32 @@ import { Period } from './Period.js';
 import { TimeRelationship } from './TimeRelationship.js';
 
 /**
+ * Check if the fields of a time are on a clock. The hour is 0 to 24, and the
+ * minute and the second are 0 to 59. Hour 24 is only valid as `24:00`, the
+ * end of a day.
+ *
+ * @param hour -
+ *   the hour
+ * @param minute -
+ *   the minute, if given
+ * @param second -
+ *   the second, if given
+ * @returns
+ *   `true` if the time is on a clock
+ */
+function isClockTime(hour: number, minute?: number, second?: number): boolean {
+	if(hour < 0 || hour > 24) return false;
+	if(typeof minute !== 'undefined' && (minute < 0 || minute > 59)) return false;
+	if(typeof second !== 'undefined' && (second < 0 || second > 59)) return false;
+
+	return hour < 24 || ((minute ?? 0) === 0 && (second ?? 0) === 0);
+}
+
+/**
  * Create a time in a 12-hour clock, which will guess the AM or PM.
  */
 export function time12h(hour: number, minute?: number, second?: number): DateTimeData | null {
-	if(hour < 0 || hour > 24) return null;
-	if(typeof minute !== 'undefined' && (minute < 0 || minute > 60)) return null;
-	if(typeof second !== 'undefined' && (second < 0 || second > 60)) return null;
+	if(! isClockTime(hour, minute, second)) return null;
 
 	return {
 		hour: hour,
@@ -39,9 +59,7 @@ export function time12h(hour: number, minute?: number, second?: number): DateTim
  * Create a time in 24-hour clock, which will not guess AM or PM.
  */
 export function time24h(hour: number, minute?: number, second?: number): DateTimeData | null {
-	if(hour < 0 || hour > 24) return null;
-	if(typeof minute !== 'undefined' && (minute < 0 || minute > 60)) return null;
-	if(typeof second !== 'undefined' && (second < 0 || second > 60)) return null;
+	if(! isClockTime(hour, minute, second)) return null;
 
 	return {
 		hour: hour,
