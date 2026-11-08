@@ -5,6 +5,7 @@ import type {
 	GraphBuildable,
 	GraphBuildableArray } from '../graph/index.js';
 import { GraphBuilder } from '../graph/index.js';
+import { reduceGraph } from '../graph/reduceGraph.js';
 import type { Language } from '../language/index.js';
 import type { NodeConvertable, Value } from '../values/base.js';
 import { LanguageSpecificValue } from '../values/base.js';
@@ -114,6 +115,19 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 			? (a, b) => deepEqual(a.values, b.values)
 			: () => true;
 
-		return super.build();
+		const graph = super.build();
+
+		/*
+		 * Each phrase is compiled on its own, so phrases that start or end
+		 * with the same words have their own nodes for them. Merging equal
+		 * nodes shares these words again, which gives fewer nodes and fewer
+		 * paths that give the same match.
+		 *
+		 * A phrase that is added later is compiled into new nodes at the
+		 * roots, so it never adds a node after a merged node.
+		 */
+		reduceGraph(graph.nodes);
+
+		return graph;
 	}
 }
