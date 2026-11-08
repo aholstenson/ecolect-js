@@ -146,7 +146,9 @@ export class ValueNode<V> extends Node {
 	}
 
 	public equals(obj: Node): boolean {
+		// Nodes for different names are never merged, as the name is part of the result
 		return obj instanceof ValueNode
+			&& this.id === obj.id
 			&& deepEqual(this.options, obj.options);
 	}
 

@@ -755,6 +755,71 @@ describe('Resolver', function() {
 		});
 	});
 
+	describe('Values of the same type', function() {
+		it('Two names that share an integer type', async function() {
+			const amount = integerValue();
+			const resolver = new PhrasesBuilder()
+				.value('a', amount)
+				.value('b', amount)
+				.phrase('{a} apples')
+				.phrase('{b} pears')
+				.toMatcher(en);
+
+			const pears = await resolver.match('3 pears');
+			assertNotNull(pears);
+			expect(pears.values).toEqual({ b: BigInteger.fromNumber(3) });
+
+			const apples = await resolver.match('3 apples');
+			assertNotNull(apples);
+			expect(apples.values).toEqual({ a: BigInteger.fromNumber(3) });
+		});
+
+		it('Two names with their own integer type', function() {
+			const resolver = new PhrasesBuilder()
+				.value('min', integerValue())
+				.value('max', integerValue())
+				.phrase('limit {min} lower')
+				.phrase('limit {max} upper')
+				.toMatcher(en);
+
+			return resolver.match('limit 5 upper')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values).toEqual({ max: BigInteger.fromNumber(5) });
+				});
+		});
+
+		it('Two names of free text', function() {
+			const resolver = new PhrasesBuilder()
+				.value('a', anyTextValue())
+				.value('b', anyTextValue())
+				.phrase('note {a} first')
+				.phrase('note {b} second')
+				.toMatcher(en);
+
+			return resolver.match('note x second')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values).toEqual({ b: 'x' });
+				});
+		});
+
+		it('Two names of dates', function() {
+			const resolver = new PhrasesBuilder()
+				.value('start', dateValue())
+				.value('end', dateValue())
+				.phrase('starting {start}')
+				.phrase('starting {end} and ending')
+				.toMatcher(en);
+
+			return resolver.match('starting today and ending', { now: new Date(2026, 10, 8) })
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values).toEqual({ end: { year: 2026, month: 11, day: 8 } });
+				});
+		});
+	});
+
 	describe('Graph contains matching expression', function() {
 		const resolver = new PhrasesBuilder()
 			.value('boolean', booleanValue())

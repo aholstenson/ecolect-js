@@ -155,6 +155,22 @@ describe('Phrases: Groups of alternatives', function() {
 		});
 	});
 
+	describe('Alternatives with values of the same type', function() {
+		const matcher = newPhrases()
+			.value('author', anyTextValue())
+			.value('publisher', anyTextValue())
+			.phrase('books (by {author}|by {publisher} press)')
+			.toMatcher(en);
+
+		it('Value is captured under the name of its alternative', function() {
+			return matcher.match('books by acme press')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values).toEqual({ publisher: 'acme' });
+				});
+		});
+	});
+
 	describe('Intents', function() {
 		const matcher = intentsBuilder(en)
 			.add('orders', newPhrases()

@@ -48,7 +48,10 @@ export class ValueParserNode<V> extends Node {
 	}
 
 	public equals(o: Node): boolean {
-		return o instanceof ValueParserNode && this.node.equals(o.node)
+		// Nodes for different names are never merged, as the name is part of the result
+		return o instanceof ValueParserNode
+			&& this.id === o.id
+			&& this.node.equals(o.node)
 			&& deepEqual(this.options, o.options);
 	}
 
