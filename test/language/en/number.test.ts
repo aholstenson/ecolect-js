@@ -51,6 +51,15 @@ describe('English', function() {
 
 		test('1.4e3', {}, BigDecimal.fromNumber(1400));
 
+		test('1e10', {}, BigDecimal.fromNumber(10000000000));
+
+		test('1e3e3', {}, null);
+
+		test('1e-10', {}, BigDecimal.fromNumber(1e-10));
+
+		// Too large for a number
+		test('1e999', {}, null);
+
 		test('1.15 hundred', {}, BigDecimal.fromNumber(115));
 
 		test('1.1e-1', {}, BigDecimal.fromNumber(0.11));

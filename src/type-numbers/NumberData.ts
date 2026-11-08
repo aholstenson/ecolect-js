@@ -24,6 +24,12 @@ export interface NumberData {
 	combined?: boolean;
 
 	/**
+	 * If the number has an exponent, as in `1e3`. A number with an exponent
+	 * does not get another one, so `1e3e3` is not a number.
+	 */
+	exponent?: boolean;
+
+	/**
 	 * The parts of a number that has scale words, from the largest scale to
 	 * the smallest. `two thousand three hundred five` has the parts 2000
 	 * (scale 1000), 300 (scale 100) and 5 (scale 1). Not set when the number
