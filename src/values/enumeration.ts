@@ -47,17 +47,42 @@ function isEntry<V>(item: EnumerationItem<V>): item is EnumerationEntry<V> {
 }
 
 /**
- * Read the text of an item as a list of texts.
+ * Describe a value of an enumeration for an error message.
+ *
+ * @param value -
+ *   the value to describe
+ * @returns
+ *   the value as text
+ */
+function describeValue(value: unknown): string {
+	try {
+		return JSON.stringify(value) ?? String(value);
+	} catch{
+		return String(value);
+	}
+}
+
+/**
+ * Read the text of an item as a list of texts. Every text must be a string
+ * with at least one character that is not white space.
  *
  * @param text -
  *   the text, either a single one or several
+ * @param value -
+ *   the value the text is for, used in error messages
  * @returns
  *   the texts that resolve to the value
  */
-function toTexts(text: string | string[]): string[] {
+function toTexts(text: string | string[], value: unknown): string[] {
 	const texts = Array.isArray(text) ? text : [ text ];
 	if(texts.length === 0) {
-		throw new Error('Enumeration values need at least one text to match');
+		throw new Error('Enumeration value ' + describeValue(value) + ' needs at least one text to match');
+	}
+
+	for(const t of texts) {
+		if(typeof t !== 'string' || t.trim() === '') {
+			throw new Error('Enumeration value ' + describeValue(value) + ' has a text that is empty or not a string: ' + describeValue(t));
+		}
 	}
 
 	return texts;
@@ -104,6 +129,10 @@ function groupTexts<V>(
 	for(const item of items) {
 		for(const text of item.texts) {
 			const tokens = language.tokenizer(text);
+			if(tokens.length === 0) {
+				throw new Error('Enumeration value ' + describeValue(item.value) + ' has a text without words: ' + describeValue(text));
+			}
+
 			const key = tokens.map(t => t.normalized).join(' ');
 
 			let group = groups.get(key);
@@ -181,7 +210,7 @@ export function enumerationValue<V>(
 
 			const groups = groupTexts(language, items.map(item => {
 				const value = isEntry(item) ? item.value : item;
-				const texts = isEntry(item) ? toTexts(item.text) : toTexts(mapper(value));
+				const texts = toTexts(isEntry(item) ? item.text : mapper(value), value);
 				return { value, texts };
 			}));
 
@@ -221,7 +250,7 @@ export function enumerationValue<V>(
 				const itemValue = isEntry(item) ? item.value : item;
 				if(! valueEqual(itemValue, value)) continue;
 
-				return isEntry(item) ? toTexts(item.text) : toTexts(mapper(itemValue));
+				return toTexts(isEntry(item) ? item.text : mapper(itemValue), itemValue);
 			}
 
 			return [];

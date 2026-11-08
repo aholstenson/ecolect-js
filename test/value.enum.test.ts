@@ -181,6 +181,24 @@ describe('Value: Enumeration', function() {
 		});
 	});
 
+	describe('Invalid texts', function() {
+		it('Mapper without text gives a clear error', function() {
+			expect(() => newPhrases()
+				.value('e', enumerationValue([ 'a' ], () => undefined as any))
+				.phrase('pick {e}')
+				.toMatcher(en)
+			).toThrow(/text/);
+		});
+
+		it('Empty text gives a clear error', function() {
+			expect(() => newPhrases()
+				.value('e', enumerationValue([ '', 'x' ]))
+				.phrase('pick {e}')
+				.toMatcher(en)
+			).toThrow(/empty/);
+		});
+	});
+
 	describe('Partial matching', function() {
 		const resolver = newPhrases()
 			.value('company', enumerationValue([ 'Balloons', 'Cookie Co', 'Banana Inc' ]))
