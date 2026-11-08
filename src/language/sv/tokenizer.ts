@@ -3,7 +3,7 @@ import { tokenize } from '../../tokenization/index.js';
 import { characters } from '../algorithms/jaroWinkler.js';
 
 import { swedishStemmer } from './algorithms/swedishStemmer.js';
-import { CARDINAL_WORDS, TENS_WORDS } from './numberWords.js';
+import { CARDINAL_WORDS, splitNumberWord, TENS_WORDS } from './numberWords.js';
 
 /**
  * Words that are short enough that a misspelling of them is more likely to
@@ -14,7 +14,9 @@ const SHORT_WORD_LENGTH = 4;
 /**
  * Tokenizer for Swedish. Swedish writes compounds as a single word and has
  * no contractions to split, so the words the shared tokenizer finds are kept
- * as they are and only normalized and stemmed.
+ * as they are and only normalized and stemmed. The exception is a compound
+ * number word, such as `tvåhundratjugotre`, which is split into the words it
+ * is made of.
  *
  * @param value -
  *   the text to tokenize
@@ -26,17 +28,44 @@ export const tokenizer: Tokenizer = (value: string) => {
 		const word = input.raw;
 		const normalized = normalize(word);
 
-		return [
-			{
-				raw: word,
-				normalized: normalized,
-				short: characters(word).length <= SHORT_WORD_LENGTH,
-				stemmed: NOT_STEMMED.has(normalized) ? normalized : swedishStemmer(normalized),
-				skippable: SKIPPABLE.has(normalized)
-			}
-		];
+		const parts = splitNumberWord(normalized);
+		if(parts && normalized.length === word.length) {
+			/*
+			 * A compound number word becomes one token for each of its
+			 * words. The text of each token is the part of the word as it
+			 * was typed.
+			 */
+			let offset = 0;
+			return parts.map(part => {
+				const raw = word.substring(offset, offset + part.length);
+				offset += part.length;
+				return createToken(raw, part);
+			});
+		}
+
+		return [ createToken(word, normalized) ];
 	});
 };
+
+/**
+ * Create the token for a word.
+ *
+ * @param raw -
+ *   the word as it was typed
+ * @param normalized -
+ *   the normalized word
+ * @returns
+ *   the token
+ */
+function createToken(raw: string, normalized: string) {
+	return {
+		raw: raw,
+		normalized: normalized,
+		short: characters(raw).length <= SHORT_WORD_LENGTH,
+		stemmed: NOT_STEMMED.has(normalized) ? normalized : swedishStemmer(normalized),
+		skippable: SKIPPABLE.has(normalized)
+	};
+}
 
 /**
  * Normalize a word so that words that mean the same thing are read as the

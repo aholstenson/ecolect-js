@@ -33,6 +33,31 @@ describe('Swedish', function() {
 			expect(tokens[3].punctuation).toBe(true);
 		});
 
+		it('A compound number word is split into its words', function() {
+			const tokens = tokenizer('Tvåhundratjugotre kronor');
+			expect(tokens.map(t => t.raw)).toEqual([ 'Två', 'hundra', 'tjugotre', 'kronor' ]);
+			expect(tokens.map(t => t.normalized)).toEqual([ 'två', 'hundra', 'tjugotre', 'kronor' ]);
+			expect(tokens.map(t => [ t.start, t.stop ])).toEqual([ [ 0, 3 ], [ 3, 9 ], [ 9, 17 ], [ 18, 24 ] ]);
+		});
+
+		it('The longest part of a compound number word is used', function() {
+			const tokens = tokenizer('sextiotusen');
+			expect(tokens.map(t => t.raw)).toEqual([ 'sextio', 'tusen' ]);
+		});
+
+		it('Words with a scale word that are not numbers are kept', function() {
+			const tokens = tokenizer('hundratals tusentals hundra');
+			expect(tokens.map(t => t.raw)).toEqual([ 'hundratals', 'tusentals', 'hundra' ]);
+		});
+
+		it('A long word that is almost a number is read without blocking', function() {
+			const word = 'tre'.repeat(5000) + 'hundrax';
+			const start = performance.now();
+			const tokens = tokenizer(word);
+			expect(tokens.length).toEqual(1);
+			expect(performance.now() - start).toBeLessThan(1000);
+		});
+
 		it('Abbreviations keep their period as a token', function() {
 			const tokens = tokenizer('kl. 15');
 			expect(tokens.map(t => t.raw)).toEqual([ 'kl', '.', '15' ]);

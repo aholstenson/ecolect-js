@@ -64,6 +64,33 @@ describe('Swedish', function() {
 
 		test('tjugo tjugo', {}, null);
 
+		// Swedish writes the numbers below a million as one word
+		test('etthundra', {}, BigInteger.fromNumber(100));
+
+		test('hundrafem', {}, BigInteger.fromNumber(105));
+
+		test('hundratjugo', {}, BigInteger.fromNumber(120));
+
+		test('tvåhundratjugotre', {}, BigInteger.fromNumber(223));
+
+		test('tvåtusen', {}, BigInteger.fromNumber(2000));
+
+		test('tusenfem', {}, BigInteger.fromNumber(1005));
+
+		test('sextiotusen', {}, BigInteger.fromNumber(60000));
+
+		test('tvåtusentjugofem', {}, BigInteger.fromNumber(2025));
+
+		test('niohundranittionio', {}, BigInteger.fromNumber(999));
+
+		test('tvåhundratusen', {}, BigInteger.fromNumber(200000));
+
+		test('niohundranittioniotusenniohundranittionio', {}, BigInteger.fromNumber(999999));
+
+		test('tvåhundra tusen', {}, BigInteger.fromNumber(200000));
+
+		test('tre miljoner fyrahundratusen', {}, BigInteger.fromNumber(3400000));
+
 		test('ingenting', {}, null);
 	});
 });

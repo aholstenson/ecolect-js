@@ -155,8 +155,8 @@ export const ORDINAL_WORDS: Readonly<Record<string, number>> = buildWords(
 
 /**
  * The words that multiply the number in front of them, such as `tusen` in
- * `två tusen`. The hundreds are written as a single word in Swedish, so
- * `tvåhundra` is here as well.
+ * `två tusen`. A word such as `tvåhundra` is split into `två` and `hundra`
+ * by the tokenizer, see {@link splitNumberWord}.
  */
 export const MULTIPLIER_WORDS: Readonly<Record<string, number>> = {
 	'dussin': 12,
@@ -169,11 +169,62 @@ export const MULTIPLIER_WORDS: Readonly<Record<string, number>> = {
 	'miljarder': 1000000000,
 
 	'K': 1000,
-	'M': 1000000,
-
-	...Object.fromEntries(
-		Object.entries(ONES)
-			.filter(([ , value ]) => value > 0)
-			.map(([ word, value ]) => [ word + 'hundra', value * 100 ])
-	)
+	'M': 1000000
 };
+
+/**
+ * The scale words that Swedish writes in the same word as the numbers
+ * around them, as in `tvåhundratjugotre`. Larger scales, such as `miljon`,
+ * are written as words of their own.
+ */
+const COMPOUND_SCALES = [ 'hundra', 'tusen' ];
+
+/**
+ * The parts that a compound number word is made of, longest part first. The
+ * longest part is tried first, so that `sextiotusen` is `sextio` and `tusen`
+ * and not `sex`, `tio` and `tusen`.
+ */
+const COMPOUND_PARTS = [
+	...Object.keys(CARDINAL_WORDS).filter(word => CARDINAL_WORDS[word] !== 0),
+	...Object.keys(TENS_WORDS),
+	...COMPOUND_SCALES
+].sort((a, b) => b.length - a.length);
+
+/**
+ * Split a compound number word into the words it is made of, such as
+ * `tvåhundratjugotre` into `två`, `hundra` and `tjugotre`. Swedish writes the
+ * numbers below a million as one word, and the words can then be read the
+ * same way as `två hundra tjugotre`.
+ *
+ * Only a word with `hundra` or `tusen` in it is split. A word below 100,
+ * such as `tjugotre`, is a number word of its own.
+ *
+ * @param word -
+ *   the normalized word
+ * @returns
+ *   the words of the number, or `null` if the word is not a compound number
+ */
+export function splitNumberWord(word: string): string[] | null {
+	if(! COMPOUND_SCALES.some(scale => word.includes(scale))) return null;
+
+	// The positions that are known to not start a valid split
+	const failed = new Set<number>();
+
+	const splitFrom = (start: number): string[] | null => {
+		if(start === word.length) return [];
+		if(failed.has(start)) return null;
+
+		for(const part of COMPOUND_PARTS) {
+			if(! word.startsWith(part, start)) continue;
+
+			const rest = splitFrom(start + part.length);
+			if(rest) return [ part, ...rest ];
+		}
+
+		failed.add(start);
+		return null;
+	};
+
+	const parts = splitFrom(0);
+	return parts && parts.length > 1 ? parts : null;
+}
