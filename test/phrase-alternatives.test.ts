@@ -4,7 +4,7 @@ import { en } from '../src/language/en/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
 import type { PhraseSegment } from '../src/resolver/phraseSyntax.js';
 import { parsePhraseSyntax } from '../src/resolver/phraseSyntax.js';
-import { anyTextValue, dateIntervalValue } from '../src/values/index.js';
+import { anyTextValue, dateIntervalValue, enumerationValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';
 
@@ -243,6 +243,59 @@ describe('Phrases: Groups of alternatives', function() {
 				.phrase(optionalWords(8), optionalWords(8))
 				.toMatcher(en)
 			).toThrow(/split it into several phrases/);
+		});
+
+		it('Parts with an item that is not text between them are counted together', function() {
+			expect(() => newPhrases()
+				.phrase(optionalWords(7), /^x$/, optionalWords(7))
+				.toMatcher(en)
+			).toThrow(/split it into several phrases/);
+		});
+	});
+
+	describe('Groups next to an item that is not text', function() {
+		const matcher = newPhrases()
+			.phrase('[show] order[s]', /^[0-9]+$/, '[now]')
+			.toMatcher(en);
+
+		it('Groups are left out', function() {
+			return matcher.match('order 12 now')
+				.then(r => assertNotNull(r));
+		});
+
+		it('Text item with only groups is not left out', function() {
+			// Each text item of a phrase must read something
+			return matcher.match('order 12')
+				.then(r => expect(r).toBeNull());
+		});
+
+		it('Groups are given', function() {
+			return matcher.match('show orders 12 now')
+				.then(r => assertNotNull(r));
+		});
+
+		it('Item that is not text is left out', function() {
+			return matcher.match('orders now')
+				.then(r => expect(r).toBeNull());
+		});
+	});
+
+	describe('Groups and words that may be skipped', function() {
+		const matcher = newPhrases()
+			.value('color', enumerationValue([ 'red', 'blue' ]))
+			.skippable('please')
+			.phrase('[show] orders [please] {color}')
+			.toMatcher(en);
+
+		it('Partial match after a skipped word suggests every value', function() {
+			return matcher.matchPartial('orders please')
+				.then(r => expect(r.map(m => m.values.color)).toEqual([ 'red', 'blue' ]));
+		});
+
+		it('Partial match after a group suggests every value', function() {
+			// The first match continues with `please` and has no color yet
+			return matcher.matchPartial('show orders')
+				.then(r => expect(r.map(m => m.values.color)).toEqual([ undefined, 'red', 'blue' ]));
 		});
 	});
 
