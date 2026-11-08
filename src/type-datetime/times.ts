@@ -122,6 +122,14 @@ export type MapTimeOptions = DateTimeOptions & {
 	 * The time used to guess AM or PM for a bare hour. Defaults to `now`.
 	 */
 	reference?: Date;
+
+	/**
+	 * If the time must stay on the day of the reference. Set this when the
+	 * expression names the day, such as `today at 9`. When it is not set, an
+	 * hour that has passed is moved to the next time it occurs, which can be
+	 * on the next day.
+	 */
+	stayOnDay?: boolean;
 };
 
 /**
@@ -188,7 +196,17 @@ export function mapTimeToInstant(r: DateTimeData, options: MapTimeOptions = {}):
 			hourToSet = r.hour;
 		}
 
-		// TODO: Move time ahead by a day?
+		/*
+		 * An hour that has passed is the next time it occurs. A bare hour
+		 * occurs two times each day, so it moves to the next half of the
+		 * day. Other hours move to the next day.
+		 */
+		if(hourToSet < now.getHours()
+			&& ! options.stayOnDay
+			&& r.relationToCurrent !== TimeRelationship.Past) {
+			hourToSet += meridiem === Meridiem.Auto ? 12 : 24;
+		}
+
 		time = setHours(time, hourToSet);
 
 		time = startOfHour(time);

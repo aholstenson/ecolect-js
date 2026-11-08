@@ -252,5 +252,57 @@ describe('English', function() {
 			second: 0,
 			millisecond: 0
 		}));
+
+		// A time that has passed today is the same time tomorrow
+		test('at 9', { now: new Date(2026, 10, 8, 22, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 9,
+			hour: 9,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('at 1', { now: new Date(2026, 10, 8, 14, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 9,
+			hour: 1,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('at 14:00', { now: new Date(2026, 10, 8, 22, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 9,
+			hour: 14,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		// A time on a day that the expression names stays on that day
+		test('today at 9', { now: new Date(2026, 10, 8, 22, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 8,
+			hour: 21,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('at 10', { now: new Date(2026, 10, 8, 23, 30) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 9,
+			hour: 10,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
 	});
 });
