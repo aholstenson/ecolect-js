@@ -131,7 +131,7 @@ describe('Time', () => {
 					hour: 15,
 					minute: 0,
 					second: 0,
-					milliOfSecond: 0
+					millisecond: 0
 				});
 			});
 
@@ -142,7 +142,7 @@ describe('Time', () => {
 					hour: 8,
 					minute: 0,
 					second: 0,
-					milliOfSecond: 0
+					millisecond: 0
 				});
 			});
 
@@ -153,7 +153,7 @@ describe('Time', () => {
 					hour: 8,
 					minute: 0,
 					second: 0,
-					milliOfSecond: 0
+					millisecond: 0
 				});
 			});
 
@@ -164,7 +164,7 @@ describe('Time', () => {
 					hour: 0,
 					minute: 0,
 					second: 0,
-					milliOfSecond: 0
+					millisecond: 0
 				});
 			});
 
@@ -175,7 +175,7 @@ describe('Time', () => {
 					hour: 20,
 					minute: 0,
 					second: 0,
-					milliOfSecond: 0
+					millisecond: 0
 				});
 			});
 
@@ -186,7 +186,7 @@ describe('Time', () => {
 					hour: 12,
 					minute: 0,
 					second: 0,
-					milliOfSecond: 0
+					millisecond: 0
 				});
 			});
 
@@ -200,7 +200,7 @@ describe('Time', () => {
 					hour: 20,
 					minute: 0,
 					second: 0,
-					milliOfSecond: 0
+					millisecond: 0
 				});
 			});
 
@@ -214,7 +214,7 @@ describe('Time', () => {
 					hour: 8,
 					minute: 0,
 					second: 0,
-					milliOfSecond: 0
+					millisecond: 0
 				});
 			});
 
@@ -228,7 +228,7 @@ describe('Time', () => {
 					hour: 20,
 					minute: 0,
 					second: 0,
-					milliOfSecond: 0
+					millisecond: 0
 				});
 			});
 
@@ -242,7 +242,7 @@ describe('Time', () => {
 					hour: 12,
 					minute: 0,
 					second: 0,
-					milliOfSecond: 0
+					millisecond: 0
 				});
 			});
 
@@ -256,7 +256,7 @@ describe('Time', () => {
 					hour: 0,
 					minute: 0,
 					second: 0,
-					milliOfSecond: 0
+					millisecond: 0
 				});
 			});
 		});

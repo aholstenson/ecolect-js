@@ -14,25 +14,25 @@ describe('Swedish', function() {
 			test('på tisdag', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 31
+				day: 31
 			});
 
 			test('nästa fredag', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 27
+				day: 27
 			});
 
 			test('denna måndag', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 30
+				day: 30
 			});
 
 			test('förra måndagen', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 23
+				day: 23
 			});
 		});
 
@@ -40,31 +40,31 @@ describe('Swedish', function() {
 			test('idag', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 24
+				day: 24
 			});
 
 			test('imorgon', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 25
+				day: 25
 			});
 
 			test('i övermorgon', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 26
+				day: 26
 			});
 
 			test('igår', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 23
+				day: 23
 			});
 
 			test('i förrgår', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 22
+				day: 22
 			});
 		});
 
@@ -73,31 +73,31 @@ describe('Swedish', function() {
 			test('12 januari', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 12
+				day: 12
 			});
 
 			test('den 12:e januari', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 12
+				day: 12
 			});
 
 			test('1 februari', now, {
 				year: 2017,
 				month: 2,
-				dayOfMonth: 1
+				day: 1
 			});
 
 			test('jan 12', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 12
+				day: 12
 			});
 
 			test('12 januari 2018', now, {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 12
+				day: 12
 			});
 
 			test('32 januari', now, null);
@@ -107,13 +107,13 @@ describe('Swedish', function() {
 			test('2010-02-22', now, {
 				year: 2010,
 				month: 2,
-				dayOfMonth: 22
+				day: 22
 			});
 
 			test('2017-01-24', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 24
+				day: 24
 			});
 		});
 
@@ -121,25 +121,25 @@ describe('Swedish', function() {
 			test('om 2 dagar', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 26
+				day: 26
 			});
 
 			test('2 dagar sedan', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 22
+				day: 22
 			});
 
 			test('om en vecka', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 31
+				day: 31
 			});
 
 			test('3 dagar efter imorgon', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 28
+				day: 28
 			});
 		});
 
@@ -147,25 +147,25 @@ describe('Swedish', function() {
 			test('slutet av månaden', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 31
+				day: 31
 			});
 
 			test('början av året', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			});
 
 			test('sista dagen av februari', now, {
 				year: 2017,
 				month: 2,
-				dayOfMonth: 28
+				day: 28
 			});
 
 			test('början av nästa vecka', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 30
+				day: 30
 			});
 		});
 
@@ -173,13 +173,13 @@ describe('Swedish', function() {
 			test('första fredagen 2020', now, {
 				year: 2020,
 				month: 1,
-				dayOfMonth: 3
+				day: 3
 			});
 
 			test('sista fredagen i januari', now, {
 				year: 2017,
 				month: 1,
-				dayOfMonth: 27
+				day: 27
 			});
 		});
 
@@ -187,7 +187,7 @@ describe('Swedish', function() {
 			test('vecka 2 2018', now, {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 8
+				day: 8
 			});
 		});
 	});

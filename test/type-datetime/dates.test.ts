@@ -16,7 +16,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 3,
-					dayOfMonth: 24
+					day: 24
 				});
 			});
 
@@ -26,7 +26,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2019,
 					month: 3,
-					dayOfMonth: 24
+					day: 24
 				});
 			});
 
@@ -36,7 +36,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2015,
 					month: 3,
-					dayOfMonth: 24
+					day: 24
 				});
 			});
 
@@ -46,7 +46,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2018,
 					month: 1,
-					dayOfMonth: 1
+					day: 1
 				});
 			});
 
@@ -56,7 +56,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 3,
-					dayOfMonth: 24
+					day: 24
 				});
 			});
 
@@ -66,7 +66,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 6,
-					dayOfMonth: 24
+					day: 24
 				});
 			});
 
@@ -76,7 +76,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 7,
-					dayOfMonth: 1
+					day: 1
 				});
 			});
 
@@ -86,7 +86,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2018,
 					month: 1,
-					dayOfMonth: 1
+					day: 1
 				});
 			});
 
@@ -96,7 +96,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 3,
-					dayOfMonth: 24
+					day: 24
 				});
 			});
 
@@ -106,7 +106,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 4,
-					dayOfMonth: 7
+					day: 7
 				});
 			});
 
@@ -116,7 +116,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 3,
-					dayOfMonth: 26
+					day: 26
 				});
 			});
 
@@ -126,7 +126,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2018,
 					month: 3,
-					dayOfMonth: 11
+					day: 11
 				});
 			});
 
@@ -136,7 +136,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 3,
-					dayOfMonth: 12
+					day: 12
 				});
 			});
 
@@ -146,7 +146,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 5,
-					dayOfMonth: 24
+					day: 24
 				});
 			});
 
@@ -156,7 +156,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 5,
-					dayOfMonth: 1
+					day: 1
 				});
 			});
 
@@ -166,7 +166,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2018,
 					month: 2,
-					dayOfMonth: 1
+					day: 1
 				});
 			});
 
@@ -176,7 +176,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 2,
-					dayOfMonth: 1
+					day: 1
 				});
 			});
 
@@ -186,7 +186,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 2,
-					dayOfMonth: 1
+					day: 1
 				});
 			});
 
@@ -196,7 +196,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 7,
-					dayOfMonth: 1
+					day: 1
 				});
 			});
 
@@ -206,7 +206,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 3,
-					dayOfMonth: 28
+					day: 28
 				});
 			});
 
@@ -216,7 +216,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 4,
-					dayOfMonth: 2
+					day: 2
 				});
 			});
 
@@ -226,7 +226,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2018,
 					month: 5,
-					dayOfMonth: 24
+					day: 24
 				});
 			});
 
@@ -236,7 +236,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2018,
 					month: 5,
-					dayOfMonth: 24
+					day: 24
 				});
 			});
 
@@ -246,7 +246,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2019,
 					month: 2,
-					dayOfMonth: 2
+					day: 2
 				});
 			});
 
@@ -256,7 +256,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2016,
 					month: 12,
-					dayOfMonth: 24
+					day: 24
 				});
 			});
 
@@ -270,7 +270,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 3,
-					dayOfMonth: 18
+					day: 18
 				});
 			});
 		});
@@ -400,7 +400,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 3,
-					dayOfMonth: 31
+					day: 31
 				});
 			});
 
@@ -410,7 +410,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 1,
-					dayOfMonth: 31
+					day: 31
 				});
 			});
 
@@ -420,7 +420,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2020,
 					month: 2,
-					dayOfMonth: 29
+					day: 29
 				});
 			});
 
@@ -430,7 +430,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2016,
 					month: 2,
-					dayOfMonth: 29
+					day: 29
 				});
 			});
 		});
@@ -449,7 +449,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 1,
-					dayOfMonth: 2
+					day: 2
 				});
 			});
 
@@ -459,7 +459,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 1,
-					dayOfMonth: 1
+					day: 1
 				});
 			});
 
@@ -469,7 +469,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2020,
 					month: 12,
-					dayOfMonth: 28
+					day: 28
 				});
 			});
 
@@ -479,17 +479,17 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 1,
-					dayOfMonth: 30
+					day: 30
 				});
 			});
 
 			it('Sunday within a week starting on Monday is the last day', () => {
-				const r = mapDate({ year: 2017, week: 5, dayOfWeek: 0 }, iso);
+				const r = mapDate({ year: 2017, week: 5, dayOfWeek: 7 }, iso);
 
 				expect(r).toEqual({
 					year: 2017,
 					month: 2,
-					dayOfMonth: 5
+					day: 5
 				});
 			});
 		});
@@ -506,7 +506,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 1,
-					dayOfMonth: 27
+					day: 27
 				});
 			});
 
@@ -516,7 +516,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 1,
-					dayOfMonth: 31
+					day: 31
 				});
 			});
 
@@ -526,7 +526,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 1,
-					dayOfMonth: 23
+					day: 23
 				});
 			});
 
@@ -536,7 +536,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 1,
-					dayOfMonth: 17
+					day: 17
 				});
 			});
 
@@ -547,7 +547,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2015,
 					month: 5,
-					dayOfMonth: 1
+					day: 1
 				});
 			});
 
@@ -558,7 +558,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2016,
 					month: 1,
-					dayOfMonth: 1
+					day: 1
 				});
 			});
 
@@ -568,7 +568,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 1,
-					dayOfMonth: 20
+					day: 20
 				});
 			});
 
@@ -578,7 +578,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 1,
-					dayOfMonth: 27
+					day: 27
 				});
 			});
 
@@ -588,7 +588,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2018,
 					month: 12,
-					dayOfMonth: 31
+					day: 31
 				});
 			});
 
@@ -606,7 +606,7 @@ describe('Time', () => {
 				expect(r).toEqual({
 					year: 2017,
 					month: 2,
-					dayOfMonth: 7
+					day: 7
 				});
 			});
 		});

@@ -12,22 +12,22 @@ describe('Locale', function() {
 	describe('Language locale', function() {
 		it('en reads a numeric date as month, day and year', async function() {
 			const match = await dateValue().matcher(en).match('1/2/2017', { now: now });
-			expect(match).toEqual({ year: 2017, month: 1, dayOfMonth: 2 });
+			expect(match).toEqual({ year: 2017, month: 1, day: 2 });
 		});
 
 		it('en-GB reads a numeric date as day, month and year', async function() {
 			const match = await dateValue().matcher(enGB).match('1/2/2017', { now: now });
-			expect(match).toEqual({ year: 2017, month: 2, dayOfMonth: 1 });
+			expect(match).toEqual({ year: 2017, month: 2, day: 1 });
 		});
 
 		it('en starts weeks on Sunday', async function() {
 			const match = await dateValue().matcher(en).match('start of week', { now: now });
-			expect(match).toEqual({ year: 2017, month: 1, dayOfMonth: 22 });
+			expect(match).toEqual({ year: 2017, month: 1, day: 22 });
 		});
 
 		it('en-GB starts weeks on Monday', async function() {
 			const match = await dateValue().matcher(enGB).match('start of week', { now: now });
-			expect(match).toEqual({ year: 2017, month: 1, dayOfMonth: 23 });
+			expect(match).toEqual({ year: 2017, month: 1, day: 23 });
 		});
 
 		it('the locale of a language is left unchanged', function() {
@@ -49,14 +49,14 @@ describe('Locale', function() {
 			const match = await dateValue().matcher(en)
 				.match('1/2/2017', { now: now, locale: 'en-GB' });
 
-			expect(match).toEqual({ year: 2017, month: 2, dayOfMonth: 1 });
+			expect(match).toEqual({ year: 2017, month: 2, day: 1 });
 		});
 
 		it('an option set directly wins over the locale', async function() {
 			const match = await dateValue().matcher(enGB)
 				.match('1/2/2017', { now: now, dateOrder: DateOrder.MonthDayYear });
 
-			expect(match).toEqual({ year: 2017, month: 1, dayOfMonth: 2 });
+			expect(match).toEqual({ year: 2017, month: 1, day: 2 });
 		});
 	});
 
@@ -68,17 +68,17 @@ describe('Locale', function() {
 
 		it('en reads a numeric date as month, day and year', async function() {
 			const match = await phrases().match('due 1/2/2017', { now: now });
-			expect(match?.values.when).toEqual({ year: 2017, month: 1, dayOfMonth: 2 });
+			expect(match?.values.when).toEqual({ year: 2017, month: 1, day: 2 });
 		});
 
 		it('en-GB reads a numeric date as day, month and year', async function() {
 			const match = await phrases(enGB).match('due 1/2/2017', { now: now });
-			expect(match?.values.when).toEqual({ year: 2017, month: 2, dayOfMonth: 1 });
+			expect(match?.values.when).toEqual({ year: 2017, month: 2, day: 1 });
 		});
 
 		it('the locale of the match wins over the one of the language', async function() {
 			const match = await phrases().match('due 1/2/2017', { now: now, locale: 'en-GB' });
-			expect(match?.values.when).toEqual({ year: 2017, month: 2, dayOfMonth: 1 });
+			expect(match?.values.when).toEqual({ year: 2017, month: 2, day: 1 });
 		});
 	});
 });

@@ -8,17 +8,17 @@ const test = testRunner(new SwedishLanguage(), dayOfWeekGraph, d => d);
 
 describe('Swedish', function() {
 	describe('Day of Week', function() {
-		test('fredag', {}, DayOfWeek.Friday);
+		test('fredag', {}, DayOfWeek.FRIDAY);
 
-		test('tis', {}, DayOfWeek.Tuesday);
+		test('tis', {}, DayOfWeek.TUESDAY);
 
-		test('på tisdag', {}, DayOfWeek.Tuesday);
+		test('på tisdag', {}, DayOfWeek.TUESDAY);
 
-		test('lördag', {}, DayOfWeek.Saturday);
+		test('lördag', {}, DayOfWeek.SATURDAY);
 
-		test('söndag', {}, DayOfWeek.Sunday);
+		test('söndag', {}, DayOfWeek.SUNDAY);
 
 		// The genitive form is used when talking about a day that has passed
-		test('måndags', {}, DayOfWeek.Monday);
+		test('måndags', {}, DayOfWeek.MONDAY);
 	});
 });

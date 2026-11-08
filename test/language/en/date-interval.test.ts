@@ -14,12 +14,12 @@ describe('English', () => {
 			start: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2018,
 				month: 12,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -27,12 +27,12 @@ describe('English', () => {
 			start: {
 				year: 2018,
 				month: 2,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2018,
 				month: 2,
-				dayOfMonth: 28
+				day: 28
 			}
 		});
 
@@ -40,12 +40,12 @@ describe('English', () => {
 			start: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2019,
 				month: 12,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -53,12 +53,12 @@ describe('English', () => {
 			start: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2019,
 				month: 12,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -66,12 +66,12 @@ describe('English', () => {
 			start: {
 				year: 2010,
 				month: 2,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2010,
 				month: 3,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -79,12 +79,12 @@ describe('English', () => {
 			start: {
 				year: 2009,
 				month: 2,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2009,
 				month: 3,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -92,12 +92,12 @@ describe('English', () => {
 			start: {
 				year: 2009,
 				month: 2,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2010,
 				month: 3,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -105,12 +105,12 @@ describe('English', () => {
 			start: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -118,12 +118,12 @@ describe('English', () => {
 			start: {
 				year: 2010,
 				month: 2,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2010,
 				month: 3,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -131,12 +131,12 @@ describe('English', () => {
 			start: {
 				year: 2009,
 				month: 2,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2009,
 				month: 3,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -144,12 +144,12 @@ describe('English', () => {
 			start: {
 				year: 2009,
 				month: 2,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2009,
 				month: 3,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -157,12 +157,12 @@ describe('English', () => {
 			start: {
 				year: 2018,
 				month: 5,
-				dayOfMonth: 2
+				day: 2
 			},
 			end: {
 				year: 2018,
 				month: 5,
-				dayOfMonth: 2
+				day: 2
 			}
 		});
 
@@ -170,12 +170,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 10,
-				dayOfMonth: 14
+				day: 14
 			},
 			end: {
 				year: 2012,
 				month: 10,
-				dayOfMonth: 20
+				day: 20
 			}
 		});
 
@@ -183,12 +183,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 7
+				day: 7
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 11
+				day: 11
 			}
 		});
 
@@ -196,12 +196,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 7
+				day: 7
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 11
+				day: 11
 			}
 		});
 
@@ -209,12 +209,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 1,
-				dayOfMonth: 12
+				day: 12
 			},
 			end: {
 				year: 2012,
 				month: 1,
-				dayOfMonth: 15
+				day: 15
 			}
 		});
 
@@ -222,12 +222,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 1
+				day: 1
 			}
 		});
 
@@ -235,12 +235,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 2
+				day: 2
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 2
+				day: 2
 			}
 		});
 
@@ -248,12 +248,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 2
+				day: 2
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 2
+				day: 2
 			}
 		});
 
@@ -266,7 +266,7 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 4
+				day: 4
 			},
 			end: null
 		});
@@ -276,7 +276,7 @@ describe('English', () => {
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 2
+				day: 2
 			}
 		});
 
@@ -284,7 +284,7 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 4
+				day: 4
 			},
 			end: null
 		});
@@ -293,7 +293,7 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 3
+				day: 3
 			},
 			end: null
 		});
@@ -302,7 +302,7 @@ describe('English', () => {
 			start: {
 				year: 2020,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: null
 		});
@@ -311,12 +311,12 @@ describe('English', () => {
 			start: {
 				year: 2020,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2030,
 				month: 12,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -325,7 +325,7 @@ describe('English', () => {
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 2
+				day: 2
 			}
 		});
 
@@ -334,7 +334,7 @@ describe('English', () => {
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 3
+				day: 3
 			}
 		});
 
@@ -347,12 +347,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 8,
-				dayOfMonth: 30
+				day: 30
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -360,12 +360,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 8,
-				dayOfMonth: 30
+				day: 30
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -373,12 +373,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 8,
-				dayOfMonth: 30
+				day: 30
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -386,12 +386,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 8,
-				dayOfMonth: 30
+				day: 30
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -399,12 +399,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 8,
-				dayOfMonth: 30
+				day: 30
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -412,12 +412,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -425,12 +425,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 4
+				day: 4
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -438,12 +438,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 6,
-				dayOfMonth: 6
+				day: 6
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -451,12 +451,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 8,
-				dayOfMonth: 23
+				day: 23
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -464,12 +464,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 11
+				day: 11
 			}
 		});
 
@@ -477,12 +477,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 11
+				day: 11
 			}
 		});
 
@@ -490,12 +490,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 11
+				day: 11
 			}
 		});
 
@@ -504,12 +504,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 8,
-				dayOfMonth: 26
+				day: 26
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 1
+				day: 1
 			}
 		});
 
@@ -517,12 +517,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 8,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2012,
 				month: 8,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -530,12 +530,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 9
+				day: 9
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 15
+				day: 15
 			}
 		});
 
@@ -543,12 +543,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 3
+				day: 3
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -556,12 +556,12 @@ describe('English', () => {
 			start: {
 				year: 2011,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -569,12 +569,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 8,
-				dayOfMonth: 26
+				day: 26
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -582,12 +582,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -595,12 +595,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -608,12 +608,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 7,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -621,12 +621,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -634,12 +634,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 2
+				day: 2
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -647,12 +647,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 8,
-				dayOfMonth: 30
+				day: 30
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -660,12 +660,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 8,
-				dayOfMonth: 30
+				day: 30
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -673,12 +673,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 8,
-				dayOfMonth: 30
+				day: 30
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 5
+				day: 5
 			}
 		});
 
@@ -687,12 +687,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 12
+				day: 12
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 12
+				day: 12
 			}
 		});
 
@@ -700,12 +700,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 2
+				day: 2
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 2
+				day: 2
 			}
 		});
 
@@ -713,12 +713,12 @@ describe('English', () => {
 			start: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 9
+				day: 9
 			},
 			end: {
 				year: 2012,
 				month: 9,
-				dayOfMonth: 15
+				day: 15
 			}
 		});
 	});

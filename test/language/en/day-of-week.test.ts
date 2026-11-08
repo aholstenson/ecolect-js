@@ -9,10 +9,10 @@ const test = testRunner(new EnglishLanguage(), dayOfWeekGraph, d => d as DayOfWe
 
 describe('English', function() {
 	describe('Day of Week', function() {
-		test('Friday', {}, DayOfWeek.Friday);
+		test('Friday', {}, DayOfWeek.FRIDAY);
 
-		test('Tue', {}, DayOfWeek.Tuesday);
+		test('Tue', {}, DayOfWeek.TUESDAY);
 
-		test('on Tue', {}, DayOfWeek.Tuesday);
+		test('on Tue', {}, DayOfWeek.TUESDAY);
 	});
 });

@@ -20,23 +20,23 @@ describe('Value: Matchers', () => {
 
 		it('now is used for relative dates', () => {
 			return matcher.match('tomorrow', options)
-				.then(v => expect(v).toEqual({ year: 2020, month: 6, dayOfMonth: 16 }));
+				.then(v => expect(v).toEqual({ year: 2020, month: 6, day: 16 }));
 		});
 
 		it('now is used when a date is mapped after matching', () => {
 			// January is before now, so it resolves to next year
 			return matcher.match('jan 12', options)
-				.then(v => expect(v).toEqual({ year: 2021, month: 1, dayOfMonth: 12 }));
+				.then(v => expect(v).toEqual({ year: 2021, month: 1, day: 12 }));
 		});
 
 		it('now is used for dates relative to other dates', () => {
 			return matcher.match('3 days after jan 20', options)
-				.then(v => expect(v).toEqual({ year: 2021, month: 1, dayOfMonth: 23 }));
+				.then(v => expect(v).toEqual({ year: 2021, month: 1, day: 23 }));
 		});
 
 		it('partial matches use now', () => {
 			return matcher.matchPartial('jan 12', options)
-				.then(v => expect(v).toEqual([ { year: 2021, month: 1, dayOfMonth: 12 } ]));
+				.then(v => expect(v).toEqual([ { year: 2021, month: 1, day: 12 } ]));
 		});
 	});
 });

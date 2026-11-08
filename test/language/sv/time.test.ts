@@ -13,7 +13,7 @@ describe('Swedish', function() {
 			hour: 0,
 			minute: 0,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 
 		// Swedish writes the clock with a period as often as with a colon
@@ -21,35 +21,35 @@ describe('Swedish', function() {
 			hour: 14,
 			minute: 30,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 
 		test('kl 15', morning, {
 			hour: 15,
 			minute: 0,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 
 		test('klockan 15:30', morning, {
 			hour: 15,
 			minute: 30,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 
 		test('midnatt', morning, {
 			hour: 0,
 			minute: 0,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 
 		test('middag', morning, {
 			hour: 12,
 			minute: 0,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 
 		/*
@@ -60,56 +60,56 @@ describe('Swedish', function() {
 			hour: 11,
 			minute: 30,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 
 		test('kvart i tolv', morning, {
 			hour: 11,
 			minute: 45,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 
 		test('kvart över tolv', morning, {
 			hour: 12,
 			minute: 15,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 
 		test('fem i tolv', morning, {
 			hour: 11,
 			minute: 55,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 
 		test('3 em', morning, {
 			hour: 15,
 			minute: 0,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 
 		test('9 fm', morning, {
 			hour: 9,
 			minute: 0,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 
 		test('om 2 timmar', morning, {
 			hour: 12,
 			minute: 0,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 
 		test('2 timmar sedan', morning, {
 			hour: 8,
 			minute: 0,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		});
 	});
 });

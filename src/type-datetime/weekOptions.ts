@@ -1,4 +1,5 @@
-import { FirstWeekContainsDate, WeekOptions } from 'date-fns';
+import { Day, FirstWeekContainsDate, WeekOptions } from 'date-fns';
+import { DayOfWeek } from 'datetime-types';
 
 import { DateTimeOptions } from './DateTimeOptions.js';
 
@@ -8,6 +9,20 @@ import { DateTimeOptions } from './DateTimeOptions.js';
 export type WeekNumberingOptions = WeekOptions & {
 	firstWeekContainsDate?: FirstWeekContainsDate;
 };
+
+/**
+ * Convert a day of week to the number that `date-fns` uses. `DayOfWeek`
+ * follows ISO 8601, where Monday is 1 and Sunday is 7. `date-fns` follows
+ * `Date.getDay()`, where Sunday is 0.
+ *
+ * @param day -
+ *   the day of week
+ * @returns
+ *   the same day as `date-fns` counts it
+ */
+export function toDateFnsDay(day: DayOfWeek): Day {
+	return (day % 7) as Day;
+}
 
 /**
  * Extract the week numbering settings from the given options.
@@ -23,7 +38,7 @@ export type WeekNumberingOptions = WeekOptions & {
  */
 export function toWeekOptions(options: DateTimeOptions): WeekNumberingOptions {
 	return {
-		weekStartsOn: options.weekStartsOn,
+		weekStartsOn: typeof options.weekStartsOn === 'undefined' ? undefined : toDateFnsDay(options.weekStartsOn),
 		firstWeekContainsDate: options.firstWeekContainsDate as FirstWeekContainsDate | undefined
 	};
 }

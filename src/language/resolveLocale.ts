@@ -1,3 +1,5 @@
+import { DayOfWeek } from 'datetime-types';
+
 import { DateOrder } from '../type-datetime/index.js';
 
 import { FirstWeekContainsDate, LocaleSettings, WeekStartsOn } from './LocaleSettings.js';
@@ -115,8 +117,8 @@ function readDateOrder(locale: string): DateOrder {
 }
 
 /**
- * Read the day that weeks start on. `Intl` counts Monday as 1 and Sunday as
- * 7, while the options count Sunday as 0.
+ * Read the day that weeks start on. `Intl` and `DayOfWeek` both follow
+ * ISO 8601, where Monday is 1 and Sunday is 7.
  *
  * @param locale -
  *   the locale to read
@@ -129,7 +131,7 @@ function readWeekStartsOn(locale: Intl.Locale): WeekStartsOn {
 		? withWeekInfo.getWeekInfo()
 		: withWeekInfo.weekInfo;
 
-	return (weekInfo?.firstDay ?? 7) % 7;
+	return (weekInfo?.firstDay ?? DayOfWeek.SUNDAY) as WeekStartsOn;
 }
 
 /**

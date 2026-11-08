@@ -15,7 +15,7 @@ import { RenderContext, renderer, ValueRenderer } from '../ValueRenderer.js';
  *   the date as text
  */
 export function isoDate(date: LocalDate): string {
-	return pad(date.year, 4) + '-' + pad(date.month, 2) + '-' + pad(date.dayOfMonth, 2);
+	return pad(date.year, 4) + '-' + pad(date.month, 2) + '-' + pad(date.day, 2);
 }
 
 /**
@@ -133,8 +133,8 @@ export function dateIntervalRenderer(): ValueRenderer<DateInterval> {
  */
 function isWholeYear(start: LocalDate, end: LocalDate): boolean {
 	return start.year === end.year
-		&& start.month === 1 && start.dayOfMonth === 1
-		&& end.month === 12 && end.dayOfMonth === 31;
+		&& start.month === 1 && start.day === 1
+		&& end.month === 12 && end.day === 31;
 }
 
 /**
@@ -149,22 +149,8 @@ function isWholeYear(start: LocalDate, end: LocalDate): boolean {
  */
 function isWholeMonth(start: LocalDate, end: LocalDate): boolean {
 	return start.year === end.year && start.month === end.month
-		&& start.dayOfMonth === 1
-		&& end.dayOfMonth === daysInMonth(start.year, start.month);
-}
-
-/**
- * Get the number of days in a month.
- *
- * @param year -
- *   the year the month is in
- * @param month -
- *   the month, where January is 1
- * @returns
- *   the number of days
- */
-function daysInMonth(year: number, month: number): number {
-	return new Date(year, month, 0).getDate();
+		&& start.day === 1
+		&& end.day === end.daysInMonth;
 }
 
 /**

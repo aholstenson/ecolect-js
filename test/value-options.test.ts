@@ -164,8 +164,8 @@ describe('Value: Options', function() {
 				assertNotNull(option);
 				expect(option.option).toEqual('deadline');
 				expect(option.values.deadline).toEqual({
-					start: { year: 2010, month: 1, dayOfMonth: 12 },
-					end: { year: 2010, month: 1, dayOfMonth: 12 }
+					start: { year: 2010, month: 1, day: 12 },
+					end: { year: 2010, month: 1, day: 12 }
 				});
 			})
 		);
@@ -262,8 +262,8 @@ describe('Value: Options', function() {
 					assertNotNull(v);
 					expect(v.option).toEqual('deadline');
 					expect(v.values.deadline).toEqual({
-						start: { year: 2018, month: 1, dayOfMonth: 12 },
-						end: { year: 2018, month: 1, dayOfMonth: 12 }
+						start: { year: 2018, month: 1, day: 12 },
+						end: { year: 2018, month: 1, day: 12 }
 					});
 				});
 		});
@@ -279,16 +279,16 @@ describe('Value: Options', function() {
 					assertNotNull(v0);
 					expect(v0.option).toEqual('deadline');
 					expect(v0.values.deadline).toEqual({
-						start: { year: 2018, month: 1, dayOfMonth: 12 },
-						end: { year: 2018, month: 1, dayOfMonth: 12 }
+						start: { year: 2018, month: 1, day: 12 },
+						end: { year: 2018, month: 1, day: 12 }
 					});
 
 					const v1 = r.values.queryOptions.get('completed');
 					assertNotNull(v1);
 					expect(v1.option).toEqual('completed');
 					expect(v1.values.completed).toEqual({
-						start: { year: 2018, month: 1, dayOfMonth: 2 },
-						end: { year: 2018, month: 1, dayOfMonth: 2 }
+						start: { year: 2018, month: 1, day: 2 },
+						end: { year: 2018, month: 1, day: 2 }
 					});
 				});
 		});
@@ -508,8 +508,8 @@ describe('Value: Options', function() {
 					assertNotNull(v);
 					expect(v.option).toEqual('deadline');
 					expect(v.values.deadline).toEqual({
-						start: { year: 2018, month: 1, dayOfMonth: 12 },
-						end: { year: 2018, month: 1, dayOfMonth: 12 }
+						start: { year: 2018, month: 1, day: 12 },
+						end: { year: 2018, month: 1, day: 12 }
 					});
 				});
 		});
@@ -525,16 +525,16 @@ describe('Value: Options', function() {
 					assertNotNull(v0);
 					expect(v0.option).toEqual('deadline');
 					expect(v0.values.deadline).toEqual({
-						start: { year: 2018, month: 1, dayOfMonth: 12 },
-						end: { year: 2018, month: 1, dayOfMonth: 12 }
+						start: { year: 2018, month: 1, day: 12 },
+						end: { year: 2018, month: 1, day: 12 }
 					});
 
 					const v1 = r.values.queryOptions.get('completed');
 					assertNotNull(v1);
 					expect(v1.option).toEqual('completed');
 					expect(v1.values.completed).toEqual({
-						start: { year: 2018, month: 1, dayOfMonth: 2 },
-						end: { year: 2018, month: 1, dayOfMonth: 2 }
+						start: { year: 2018, month: 1, day: 2 },
+						end: { year: 2018, month: 1, day: 2 }
 					});
 				});
 		});
@@ -570,8 +570,8 @@ describe('Value: Options', function() {
 					assertNotNull(v0);
 					expect(v0.option).toEqual('deadline');
 					expect(v0.values.deadline).toEqual({
-						start: { year: 2018, month: 1, dayOfMonth: 12 },
-						end: { year: 2018, month: 1, dayOfMonth: 12 }
+						start: { year: 2018, month: 1, day: 12 },
+						end: { year: 2018, month: 1, day: 12 }
 					});
 				});
 		});

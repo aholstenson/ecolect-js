@@ -13,12 +13,12 @@ describe('English', function() {
 			start: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2018,
 				month: 3,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -26,12 +26,12 @@ describe('English', function() {
 			start: {
 				year: 2018,
 				month: 4,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2018,
 				month: 6,
-				dayOfMonth: 30
+				day: 30
 			}
 		});
 
@@ -39,12 +39,12 @@ describe('English', function() {
 			start: {
 				year: 2018,
 				month: 7,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2018,
 				month: 9,
-				dayOfMonth: 30
+				day: 30
 			}
 		});
 
@@ -52,12 +52,12 @@ describe('English', function() {
 			start: {
 				year: 2018,
 				month: 10,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2018,
 				month: 12,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -65,12 +65,12 @@ describe('English', function() {
 			start: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2018,
 				month: 3,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -82,12 +82,12 @@ describe('English', function() {
 			start: {
 				year: 2018,
 				month: 4,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2018,
 				month: 6,
-				dayOfMonth: 30
+				day: 30
 			}
 		});
 
@@ -95,12 +95,12 @@ describe('English', function() {
 			start: {
 				year: 2019,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2019,
 				month: 3,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -108,12 +108,12 @@ describe('English', function() {
 			start: {
 				year: 2017,
 				month: 10,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2017,
 				month: 12,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -121,12 +121,12 @@ describe('English', function() {
 			start: {
 				year: 2017,
 				month: 10,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2017,
 				month: 12,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 	});

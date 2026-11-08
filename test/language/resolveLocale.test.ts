@@ -26,12 +26,12 @@ describe('Locale', function() {
 	});
 
 	/*
-	 * Days are counted as `DateTimeOptions` counts them, so Sunday is 0 and
-	 * Saturday is 6.
+	 * Days follow ISO 8601 as `DayOfWeek` counts them, so Monday is 1 and
+	 * Sunday is 7.
 	 */
 	describe('Start of week', function() {
 		it('en-US starts weeks on Sunday', function() {
-			expect(resolveLocale('en-US').weekStartsOn).toEqual(0);
+			expect(resolveLocale('en-US').weekStartsOn).toEqual(7);
 		});
 
 		it('en-GB starts weeks on Monday', function() {

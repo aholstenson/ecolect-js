@@ -361,11 +361,13 @@ first week of the year, so a week number can mean two different dates. Setting
 the locale is the shortest way to get this right, but the two settings can
 also be given on their own.
 
-`weekStartsOn` is `0` for weeks that start on Sunday, which North America,
-India, Japan, Israel, Egypt, South Africa, the Philippines and most of Latin
-America use. It is `1` for weeks that start on Monday, which the EU, most of
-Asia and Oceania use, and `6` for weeks that start on Saturday, which is
-common in the Middle East.
+`weekStartsOn` is a `DayOfWeek` from `datetime-types`. The numbers follow
+ISO 8601, so Monday is `1` and Sunday is `7`. Use `DayOfWeek.SUNDAY` (`7`) for
+weeks that start on Sunday, which North America, India, Japan, Israel, Egypt,
+South Africa, the Philippines and most of Latin America use. Use
+`DayOfWeek.MONDAY` (`1`) for weeks that start on Monday, which the EU, most of
+Asia and Oceania use, and `DayOfWeek.SATURDAY` (`6`) for weeks that start on
+Saturday, which is common in the Middle East.
 
 `firstWeekContainsDate` is `1` when the first week of the year is the one with
 January 1st in it, and `4` for the ISO week system, where the first week is

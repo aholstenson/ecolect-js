@@ -26,7 +26,7 @@ describe('Swedish', function() {
 			expect(match.values.when.start).toEqual(LocalDate.from({
 				year: 2020,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			}));
 		});
 
@@ -64,7 +64,7 @@ describe('Swedish', function() {
 			expect(match.values.when).toEqual(LocalDate.from({
 				year: 2020,
 				month: 1,
-				dayOfMonth: 2
+				day: 2
 			}));
 		});
 

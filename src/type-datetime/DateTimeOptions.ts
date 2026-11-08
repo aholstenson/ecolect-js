@@ -6,8 +6,9 @@ import { DateOrder } from './DateOrder.js';
  * Options that can be used with date and times.
  *
  * It's important to set weekStartsOn and firstWeekContainsDate to something
- * expected by the user. The default value for weekStartsOn is 0 which
- * indicates that weeks start on Sunday.
+ * expected by the user. weekStartsOn is a `DayOfWeek`, which follows ISO 8601:
+ * `DayOfWeek.MONDAY` is 1 and `DayOfWeek.SUNDAY` is 7. Without a value weeks
+ * start on Sunday.
  *
  * firstWeekContainsDate defaults to 1 which is commonly used in North America
  * and Islamic date systems. Countries that use this week numbering include
@@ -15,7 +16,7 @@ import { DateOrder } from './DateOrder.js';
  * Egypt, South Africa, the Philippines and most of Latin America.
  *
  * For EU countries most of them use Mondays as the start of the week and the
- * ISO week system. Settings weekStartsOn to 1 and firstWeekContainsDate to 4
+ * ISO week system. Setting weekStartsOn to 1 and firstWeekContainsDate to 4
  * will set weeks to a style used in EU and most other European countries,
  * most of Asia and Oceania.
  *

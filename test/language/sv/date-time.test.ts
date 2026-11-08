@@ -15,91 +15,91 @@ describe('Swedish', function() {
 		test('12 januari', now, LocalDateTime.from({
 			year: 2010,
 			month: 1,
-			dayOfMonth: 12,
+			day: 12,
 			hour: 13,
 			minute: 30,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		}));
 
 		test('januari 12', now, LocalDateTime.from({
 			year: 2010,
 			month: 1,
-			dayOfMonth: 12,
+			day: 12,
 			hour: 13,
 			minute: 30,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		}));
 
 		test('januari 2018', now, LocalDateTime.from({
 			year: 2018,
 			month: 1,
-			dayOfMonth: 1,
+			day: 1,
 			hour: 13,
 			minute: 30,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		}));
 
 		test('12 januari 12:10', now, LocalDateTime.from({
 			year: 2010,
 			month: 1,
-			dayOfMonth: 12,
+			day: 12,
 			hour: 12,
 			minute: 10,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		}));
 
 		test('12:e januari', now, LocalDateTime.from({
 			year: 2010,
 			month: 1,
-			dayOfMonth: 12,
+			day: 12,
 			hour: 13,
 			minute: 30,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		}));
 
 		test('12 jan 12:10', now, LocalDateTime.from({
 			year: 2010,
 			month: 1,
-			dayOfMonth: 12,
+			day: 12,
 			hour: 12,
 			minute: 10,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		}));
 
 		test('kl 15 den 12 januari', now, LocalDateTime.from({
 			year: 2010,
 			month: 1,
-			dayOfMonth: 12,
+			day: 12,
 			hour: 15,
 			minute: 0,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		}));
 
 		test('14:00', now, LocalDateTime.from({
 			year: 2010,
 			month: 1,
-			dayOfMonth: 1,
+			day: 1,
 			hour: 14,
 			minute: 0,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		}));
 
 		test('om 2 dagar och 2 timmar', now, LocalDateTime.from({
 			year: 2010,
 			month: 1,
-			dayOfMonth: 3,
+			day: 3,
 			hour: 15,
 			minute: 30,
 			second: 0,
-			milliOfSecond: 0
+			millisecond: 0
 		}));
 	});
 });

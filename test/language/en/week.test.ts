@@ -16,12 +16,12 @@ describe('English', function() {
 			start: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 8
+				day: 8
 			},
 			end: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 14
+				day: 14
 			}
 		});
 
@@ -29,12 +29,12 @@ describe('English', function() {
 			start: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 8
+				day: 8
 			},
 			end: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 14
+				day: 14
 			}
 		});
 
@@ -46,12 +46,12 @@ describe('English', function() {
 			start: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 1
+				day: 1
 			},
 			end: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 7
+				day: 7
 			}
 		});
 
@@ -59,12 +59,12 @@ describe('English', function() {
 			start: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 8
+				day: 8
 			},
 			end: {
 				year: 2018,
 				month: 1,
-				dayOfMonth: 14
+				day: 14
 			}
 		});
 
@@ -72,12 +72,12 @@ describe('English', function() {
 			start: {
 				year: 2017,
 				month: 12,
-				dayOfMonth: 25
+				day: 25
 			},
 			end: {
 				year: 2017,
 				month: 12,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 
@@ -85,12 +85,12 @@ describe('English', function() {
 			start: {
 				year: 2017,
 				month: 12,
-				dayOfMonth: 25
+				day: 25
 			},
 			end: {
 				year: 2017,
 				month: 12,
-				dayOfMonth: 31
+				day: 31
 			}
 		});
 	});

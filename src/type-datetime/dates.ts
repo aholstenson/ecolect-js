@@ -35,7 +35,7 @@ import { toStart, toEnd } from './intervals.js';
 import { combine, isRelative } from './matching.js';
 import { Period } from './Period.js';
 import { TimeRelationship } from './TimeRelationship.js';
-import { toWeekOptions } from './weekOptions.js';
+import { toDateFnsDay, toWeekOptions } from './weekOptions.js';
 
 export function today(r: any, options: DateTimeOptions) {
 	const time = currentTime(options);
@@ -261,7 +261,7 @@ export const LAST_DAY_OF_WEEK = -1;
  *   number of days, 0 to 6
  */
 function daysForwardTo(from: Date, day: DayOfWeek): number {
-	return (day - getDay(from) + 7) % 7;
+	return (toDateFnsDay(day) - getDay(from) + 7) % 7;
 }
 
 /**
@@ -276,7 +276,7 @@ function daysForwardTo(from: Date, day: DayOfWeek): number {
  *   number of days, 0 to 6
  */
 function daysBackTo(from: Date, day: DayOfWeek): number {
-	return (getDay(from) - day + 7) % 7;
+	return (getDay(from) - toDateFnsDay(day) + 7) % 7;
 }
 
 /**
@@ -557,7 +557,7 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 			return null;
 		}
 
-		time = startOfWeek(time, options);
+		time = startOfWeek(time, toWeekOptions(options));
 	}
 
 	// Resolve the month
@@ -601,7 +601,7 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 
 		if(period === Period.Week) {
 			// A day within a specific week, such as Tuesday next week
-			time = setDay(time, dayOfWeek, toWeekOptions(options));
+			time = setDay(time, toDateFnsDay(dayOfWeek), toWeekOptions(options));
 		} else if(typeof r.dayOfWeekOrdinal !== 'undefined') {
 			/*
 			 * A numbered occurrence within the period, such as the first or

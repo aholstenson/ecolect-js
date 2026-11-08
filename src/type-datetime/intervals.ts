@@ -20,6 +20,7 @@ import {
 
 import { DateTimeOptions } from './DateTimeOptions.js';
 import { Period } from './Period.js';
+import { toWeekOptions } from './weekOptions.js';
 
 export function toStart(time: Date, period: Period, options?: DateTimeOptions) {
 	switch(period) {
@@ -28,7 +29,7 @@ export function toStart(time: Date, period: Period, options?: DateTimeOptions) {
 		case Period.Quarter:
 			return startOfQuarter(time);
 		case Period.Week:
-			return startOfWeek(time, options);
+			return startOfWeek(time, toWeekOptions(options ?? {}));
 		case Period.Month:
 			return startOfMonth(time);
 		case Period.Day:
@@ -52,7 +53,7 @@ export function toEnd(time: Date, period: Period, options?: DateTimeOptions) {
 		case Period.Quarter:
 			return endOfQuarter(time);
 		case Period.Week:
-			return endOfWeek(time, options);
+			return endOfWeek(time, toWeekOptions(options ?? {}));
 		case Period.Month:
 			return endOfMonth(time);
 		case Period.Day:

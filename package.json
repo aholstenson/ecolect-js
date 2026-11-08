@@ -87,7 +87,7 @@
   },
   "dependencies": {
     "date-fns": "^4.4.0",
-    "datetime-types": "^0.3.0",
+    "datetime-types": "^0.4.0",
     "fast-equals": "^6.0.3",
     "numeric-types": "^0.4.0",
     "rfdc": "^1.4.1"

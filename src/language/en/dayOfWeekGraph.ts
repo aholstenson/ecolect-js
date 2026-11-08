@@ -1,37 +1,39 @@
+import { DayOfWeek } from 'datetime-types';
+
 import { GraphBuilder } from '../../graph/index.js';
 import { LanguageGraphFactory } from '../index.js';
 
-export const dayOfWeekGraph: LanguageGraphFactory<number> = {
+export const dayOfWeekGraph: LanguageGraphFactory<DayOfWeek> = {
 	id: 'day-of-week',
 
 	create(language) {
-		return new GraphBuilder<number>(language)
+		return new GraphBuilder<DayOfWeek>(language)
 			.name('day-of-week')
 
 			// Day of week
 			.map(
 				{
-					'mon': 1,
-					'monday': 1,
+					'mon': DayOfWeek.MONDAY,
+					'monday': DayOfWeek.MONDAY,
 
-					'tue': 2,
-					'tuesday': 2,
+					'tue': DayOfWeek.TUESDAY,
+					'tuesday': DayOfWeek.TUESDAY,
 
-					'wed': 3,
-					'wednesday': 3,
+					'wed': DayOfWeek.WEDNESDAY,
+					'wednesday': DayOfWeek.WEDNESDAY,
 
-					'thu': 4,
-					'thurs': 4,
-					'thursday': 4,
+					'thu': DayOfWeek.THURSDAY,
+					'thurs': DayOfWeek.THURSDAY,
+					'thursday': DayOfWeek.THURSDAY,
 
-					'fri': 5,
-					'friday': 5,
+					'fri': DayOfWeek.FRIDAY,
+					'friday': DayOfWeek.FRIDAY,
 
-					'sat': 6,
-					'saturday': 6,
+					'sat': DayOfWeek.SATURDAY,
+					'saturday': DayOfWeek.SATURDAY,
 
-					'sun': 0,
-					'sunday': 0
+					'sun': DayOfWeek.SUNDAY,
+					'sunday': DayOfWeek.SUNDAY
 				},
 				l => l
 			)

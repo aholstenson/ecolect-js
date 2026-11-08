@@ -11,33 +11,33 @@ const iso = { weekStartsOn: 1, firstWeekContainsDate: 4 };
 describe('Swedish', function() {
 	describe('Week', function() {
 		test('vecka 2', { now: new Date(2018, 0, 1), ...iso }, {
-			start: { year: 2018, month: 1, dayOfMonth: 8 },
-			end: { year: 2018, month: 1, dayOfMonth: 14 }
+			start: { year: 2018, month: 1, day: 8 },
+			end: { year: 2018, month: 1, day: 14 }
 		});
 
 		test('v 42', { now: new Date(2018, 0, 1), ...iso }, {
-			start: { year: 2018, month: 10, dayOfMonth: 15 },
-			end: { year: 2018, month: 10, dayOfMonth: 21 }
+			start: { year: 2018, month: 10, day: 15 },
+			end: { year: 2018, month: 10, day: 21 }
 		});
 
 		test('andra veckan', { now: new Date(2018, 0, 1), ...iso }, {
-			start: { year: 2018, month: 1, dayOfMonth: 8 },
-			end: { year: 2018, month: 1, dayOfMonth: 14 }
+			start: { year: 2018, month: 1, day: 8 },
+			end: { year: 2018, month: 1, day: 14 }
 		});
 
 		test('denna vecka', { now: new Date(2018, 0, 10), ...iso }, {
-			start: { year: 2018, month: 1, dayOfMonth: 8 },
-			end: { year: 2018, month: 1, dayOfMonth: 14 }
+			start: { year: 2018, month: 1, day: 8 },
+			end: { year: 2018, month: 1, day: 14 }
 		});
 
 		test('förra veckan', { now: new Date(2018, 0, 10), ...iso }, {
-			start: { year: 2018, month: 1, dayOfMonth: 1 },
-			end: { year: 2018, month: 1, dayOfMonth: 7 }
+			start: { year: 2018, month: 1, day: 1 },
+			end: { year: 2018, month: 1, day: 7 }
 		});
 
 		test('nästa vecka', { now: new Date(2018, 0, 10), ...iso }, {
-			start: { year: 2018, month: 1, dayOfMonth: 15 },
-			end: { year: 2018, month: 1, dayOfMonth: 21 }
+			start: { year: 2018, month: 1, day: 15 },
+			end: { year: 2018, month: 1, day: 21 }
 		});
 	});
 });
