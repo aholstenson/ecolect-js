@@ -61,6 +61,13 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 
 		this.supportsFuzzy();
 		this.allowPartial();
+
+		/*
+		 * People end chat and voice input with `.`, `?` or `!`, and put commas
+		 * between words. A phrase matches when the expression has punctuation
+		 * that the phrase does not have.
+		 */
+		this.skipPunctuation();
 	}
 
 	public value(id: string, type: Value<any>): this {

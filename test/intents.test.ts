@@ -1,7 +1,9 @@
+import { BigInteger } from 'numeric-types/integer';
+
 import { IntentsBuilder } from '../src/IntentsBuilder.js';
 import { en } from '../src/language/en/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
-import { anyTextValue, customValue, dateTimeValue } from '../src/values/index.js';
+import { anyTextValue, customValue, dateTimeValue, integerValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';
 
@@ -322,6 +324,88 @@ describe('Intents', function() {
 						expect(m.values.when).toBeDefined();
 						expect(m.values.what).toBeDefined();
 					}
+				});
+		});
+	});
+
+	describe('Punctuation in the expression', function() {
+		const intents = new IntentsBuilder(en)
+			.add('orders', newPhrases()
+				.phrase('Orders')
+				.phrase('Show orders')
+				.build()
+			)
+			.add('customer:orders', newPhrases()
+				.value('customer', anyTextValue())
+				.phrase('Orders for {customer}')
+				.build()
+			)
+			.add('lights', newPhrases()
+				.phrase('turn on the lights')
+				.build()
+			)
+			.build();
+
+		it('Match: trailing period', function() {
+			return intents.match('turn on the lights.')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.id).toEqual('lights');
+				});
+		});
+
+		it('Match: trailing exclamation mark', function() {
+			return intents.match('Show orders!')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.id).toEqual('orders');
+				});
+		});
+
+		it('Match: trailing question mark does not change the intent', function() {
+			return intents.match('orders?')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.id).toEqual('orders');
+				});
+		});
+
+		it('Match: comma between words', function() {
+			return intents.match('show, orders')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.id).toEqual('orders');
+				});
+		});
+
+		it('Match: trailing period is not part of free text', function() {
+			return intents.match('orders for acme.')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.id).toEqual('customer:orders');
+					if(r.id === 'customer:orders') {
+						expect(r.values.customer).toEqual('acme');
+					}
+				});
+		});
+
+		it('Partial: trailing question mark', function() {
+			return intents.matchPartial('show orders?')
+				.then(r => {
+					expect(r.map(m => m.id)).toContain('orders');
+				});
+		});
+
+		it('Match: number followed by a period', function() {
+			const matcher = newPhrases()
+				.value('n', integerValue())
+				.phrase('set volume to {n}')
+				.toMatcher(en);
+
+			return matcher.match('set volume to 5.')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.n).toEqual(BigInteger.fromNumber(5));
 				});
 		});
 	});
