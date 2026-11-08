@@ -24,6 +24,9 @@ export function mapDateTime(r: DateTimeData, options: DateTimeOptions) {
 	const reference = date.equals(LocalDate.fromDate(now)) ? now : date.toDateAtMidnight();
 	const time = mapTimeToInstant(r, { ...options, reference, stayOnDay: hasDate(r) });
 
+	// An amount such as "in 9999999999 hours" moves past the times a Date can hold
+	if(isNaN(time.getTime())) return null;
+
 	/*
 	 * The time starts at now. When it passes midnight, for example with
 	 * "in 2 hours" late in the evening, move the date by the same days.

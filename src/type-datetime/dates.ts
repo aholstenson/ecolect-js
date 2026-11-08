@@ -647,6 +647,9 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 		time = addDays(time, r.intervalAdjustment);
 	}
 
+	// An amount such as "in 999999999 days" moves past the dates a Date can hold
+	if(isNaN(time.getTime())) return null;
+
 	// Move the time into the result
 	return LocalDate.fromDate(time);
 }

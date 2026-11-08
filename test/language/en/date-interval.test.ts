@@ -722,6 +722,8 @@ describe('English', () => {
 			}
 		});
 
+		test('in 99999999999 days', { now: new Date(2026, 10, 8) }, null);
+
 		// A date that does not exist does not give an interval
 		test('until feb 30', { now: new Date(2026, 10, 8) }, null);
 

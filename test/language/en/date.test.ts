@@ -486,6 +486,11 @@ describe('English', function() {
 				month: 11,
 				day: 28
 			});
+
+			// An amount that moves past the dates that can be shown gives no date
+			test('in 999999999 days', { now: new Date(2026, 10, 8) }, null);
+
+			test('in 999999999999999999999999999999 years', { now: new Date(2026, 10, 8) }, null);
 		});
 
 		describe('Relative dates within year', function() {

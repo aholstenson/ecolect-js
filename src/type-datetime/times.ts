@@ -140,10 +140,15 @@ export type MapTimeOptions = DateTimeOptions & {
  * @param options -
  *   the options to use
  * @returns
- *   the time of day
+ *   the time of day, or `null` if the time is outside of the times a Date can hold
  */
-export function mapTime(r: DateTimeData, options: MapTimeOptions = {}) {
-	return LocalTime.fromDate(mapTimeToInstant(r, options));
+export function mapTime(r: DateTimeData, options: MapTimeOptions = {}): LocalTime | null {
+	const time = mapTimeToInstant(r, options);
+
+	// An amount such as "in 9999999999999 minutes" moves past the times a Date can hold
+	if(isNaN(time.getTime())) return null;
+
+	return LocalTime.fromDate(time);
 }
 
 /**

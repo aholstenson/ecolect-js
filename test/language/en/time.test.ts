@@ -257,6 +257,9 @@ describe('English', function() {
 				millisecond: 0
 			});
 
+			// An amount that moves past the times that can be shown gives no time
+			test('in 9999999999999 minutes', { now: new Date(2026, 10, 8, 13, 30) }, null);
+
 			test('at in 4 hours', { now: new Date(2010, 0, 1, 13, 30) }, {
 				hour: 17,
 				minute: 30,

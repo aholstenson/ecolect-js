@@ -304,5 +304,7 @@ describe('English', function() {
 			second: 0,
 			millisecond: 0
 		}));
+
+		test('in 9999999999 hours', { now: new Date(2026, 10, 8, 0, 0) }, null);
 	});
 });
