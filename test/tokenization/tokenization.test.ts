@@ -203,6 +203,29 @@ describe('Utils: Tokenization', function() {
 		});
 	});
 
+	describe('Invisible characters', function() {
+		it('Zero width space', function() {
+			checkTokens(
+				tokenize('show\u200B orders', testTokenizer),
+				[ 'show', 'orders' ]
+			);
+		});
+
+		it('Right-to-left mark', function() {
+			checkTokens(
+				tokenize('show orders\u200F', testTokenizer),
+				[ 'show', 'orders' ]
+			);
+		});
+
+		it('Control characters', function() {
+			checkTokens(
+				tokenize('\u0000\u0007abc', testTokenizer),
+				[ 'abc' ]
+			);
+		});
+	});
+
 	describe('Emoji', function() {
 		it('Single emoji', function() {
 			checkTokens(

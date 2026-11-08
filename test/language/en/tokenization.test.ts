@@ -1,7 +1,11 @@
+import { LocalDate } from 'datetime-types';
+
 import { porterStemmer } from '../../../src/language/en/algorithms/porterStemmer.js';
 import { en } from '../../../src/language/en/index.js';
 import { tokenizer } from '../../../src/language/en/tokenizer.js';
 import { newPhrases } from '../../../src/resolver/newPhrases.js';
+import { dateValue } from '../../../src/values/index.js';
+import { assertNotNull } from '../../assertions.js';
 
 describe('English', function() {
 	describe('Tokenization', function() {
@@ -132,6 +136,28 @@ describe('English', function() {
 	});
 
 	describe('Phrases', function() {
+		const matcher = newPhrases()
+			.value('when', dateValue())
+			.phrase('show orders')
+			.phrase('due {when}')
+			.toMatcher(en);
+
+		it('Zero width space between words', async function() {
+			const m = await matcher.match('show\u200B orders');
+			expect(m).not.toBeNull();
+		});
+
+		it('Trailing right-to-left mark', async function() {
+			const m = await matcher.match('show orders\u200F');
+			expect(m).not.toBeNull();
+		});
+
+		it('Zero width space after a value', async function() {
+			const m = await matcher.match('due tomorrow\u200B', { now: new Date(2026, 10, 8) });
+			assertNotNull(m);
+			expect(m.values.when).toEqual(LocalDate.of(2026, 11, 9));
+		});
+
 		it('Curly apostrophe matches phrase with straight apostrophe', async function() {
 			const resolver = newPhrases()
 				.phrase('don\'t remind me')

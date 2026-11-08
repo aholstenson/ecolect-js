@@ -145,6 +145,15 @@ function tokenizeSingle(index: number, original: string, tokenizer: PartialToken
 }
 
 /**
+ * Text between white space. Control characters and invisible format
+ * characters, such as the zero width space and the right-to-left mark, are
+ * read as white space, because text copied from web pages and chat apps often
+ * contains them. The zero width joiners and the tag characters of flags are
+ * kept, because they are part of emoji and of words in some scripts.
+ */
+const WORD_CHUNK = /(?:[^\s\p{Cc}\p{Cf}]|[\p{Join_Control}\u{E0020}-\u{E007F}])+/gu;
+
+/**
  * Tokenize the input on white space and special characters. This should be
  * useful for many languages, but is probably not the right strategy for every
  * language in use.
@@ -155,13 +164,8 @@ function tokenizeSingle(index: number, original: string, tokenizer: PartialToken
 export function tokenize(text: string, tokenizer: PartialTokenizer) {
 	const result = Tokens.empty();
 
-	const NON_SPACE = /\S+/gu;
-	let match;
-	while((match = NON_SPACE.exec(text))) {
-		const index = match.index;
-		const raw = match[0];
-
-		tokenizeSingle(index, raw, tokenizer, result);
+	for(const match of text.matchAll(WORD_CHUNK)) {
+		tokenizeSingle(match.index, match[0], tokenizer, result);
 	}
 
 	return result;
