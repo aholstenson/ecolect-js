@@ -2,6 +2,11 @@ import rfdc from 'rfdc';
 
 const clone = rfdc();
 
+/**
+ * Symbol for a method that copies the data of a match. Data that has this
+ * method is copied with it when the match is copied. Other data is copied
+ * deeply, which makes class instances in it into plain objects.
+ */
 export const cloneData = Symbol('cloneData');
 
 export interface ScoreData {
@@ -34,9 +39,10 @@ export class Match<V> {
 	}
 
 	public copy() {
-		return new Match(
+		const data = this.data as any;
+		return new Match<V>(
 			this.index,
-			clone(this.data),
+			typeof data?.[cloneData] === 'function' ? data[cloneData]() : clone(this.data),
 			clone(this.scoreData)
 		);
 	}

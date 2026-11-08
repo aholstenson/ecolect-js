@@ -122,7 +122,12 @@ export class ValueNode<V> extends Node {
 			const len = idx - currentIndex;
 
 			valueEncounter._adjust(currentIndex, idx);
-			return encounter.branchWithOnMatch(onMatch, () => encounter.advance(0, len));
+
+			/*
+			 * The rest of the phrase is in the same graph, so its collector
+			 * must also see the values matched before this value.
+			 */
+			return encounter.branchWithOnMatch(onMatch, () => encounter.advance(0, len), false);
 		};
 
 		return after(sequence(steps, attempt), () => {

@@ -1,8 +1,9 @@
 import { BigDecimal } from 'numeric-types/decimal';
+import { BigInteger } from 'numeric-types/integer';
 
 import { en } from '../src/language/en/index.js';
 import { PhrasesBuilder } from '../src/resolver/PhrasesBuilder.js';
-import { anyTextValue, dateValue, numberValue, booleanValue, customValue } from '../src/values/index.js';
+import { anyTextValue, dateValue, numberValue, booleanValue, customValue, integerValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';
 
@@ -667,6 +668,30 @@ describe('Resolver', function() {
 						expect(r.length).toEqual(2);
 					});
 			});
+		});
+	});
+
+	describe('Parsed value before free text', function() {
+		const resolver = new PhrasesBuilder()
+			.value('n', integerValue())
+			.value('t', anyTextValue())
+			.phrase('buy {n} {t}')
+			.toMatcher(en);
+
+		it('Match keeps both values', function() {
+			return resolver.match('buy 3 apples')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values).toEqual({ n: BigInteger.fromNumber(3), t: 'apples' });
+				});
+		});
+
+		it('Match all keeps both values', function() {
+			return resolver.matchAll('buy 3 apples')
+				.then(r => {
+					expect(r.length).toBeGreaterThan(0);
+					expect(r[0].values).toEqual({ n: BigInteger.fromNumber(3), t: 'apples' });
+				});
 		});
 	});
 

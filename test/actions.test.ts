@@ -1,5 +1,8 @@
+import { BigInteger } from 'numeric-types/integer';
+
 import { actionsBuilder, newPhrases } from '../src/index.js';
 import { en } from '../src/language/en/index.js';
+import { customValue, integerValue } from '../src/values/index.js';
 
 
 import { assertNotNull } from './assertions.js';
@@ -117,6 +120,32 @@ describe('Actions', function() {
 
 					const p = r.activate(1234);
 					expect(p).toEqual('active 1234');
+				});
+		});
+	});
+
+	describe('Parsed value before a custom value', function() {
+		const actions = actionsBuilder<void, Record<string, unknown>>(en)
+			.add({
+				id: 'set',
+				phrases: newPhrases()
+					.value('n', integerValue())
+					.value('c', customValue<string>(encounter => {
+						if(encounter.text === 'red') {
+							encounter.match('RED');
+						}
+					}))
+					.phrase('set {n} to {c}')
+					.build(),
+				handler: match => match.values
+			})
+			.build();
+
+		it('activate() passes both values to the handler', function() {
+			return actions.match('set 5 to red')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.activate()).toEqual({ n: BigInteger.fromNumber(5), c: 'RED' });
 				});
 		});
 	});

@@ -1,7 +1,7 @@
 import { IntentsBuilder } from '../src/IntentsBuilder.js';
 import { en } from '../src/language/en/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
-import { anyTextValue, customValue } from '../src/values/index.js';
+import { anyTextValue, customValue, dateTimeValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';
 
@@ -289,6 +289,39 @@ describe('Intents', function() {
 					const scores = r.map(m => m.score);
 					expect([ ...scores ].sort((a, b) => b - a)).toEqual(scores);
 					expect(scores[0]).toBeGreaterThan(scores[scores.length - 1]);
+				});
+		});
+	});
+
+	describe('Parsed value before free text', function() {
+		const now = new Date(2026, 10, 8, 9, 0, 0);
+
+		const intents = new IntentsBuilder(en)
+			.add('reminder', newPhrases()
+				.value('when', dateTimeValue())
+				.value('what', anyTextValue())
+				.phrase('remind me {when} to {what}')
+				.build()
+			)
+			.build();
+
+		it('Match: both values are returned', function() {
+			return intents.match('remind me tomorrow at 10 to call mom', { now })
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.what).toEqual('call mom');
+					expect(r.values.when).toMatchObject({ year: 2026, month: 11, day: 9 });
+				});
+		});
+
+		it('Match all: every match has both values', function() {
+			return intents.matchAll('remind me tomorrow at 10 to call mom', { now })
+				.then(r => {
+					expect(r.length).toBeGreaterThan(0);
+					for(const m of r) {
+						expect(m.values.when).toBeDefined();
+						expect(m.values.what).toBeDefined();
+					}
 				});
 		});
 	});

@@ -342,14 +342,25 @@ export class Encounter {
 	 *   handler that receives the matches
 	 * @param func -
 	 *   function to run
+	 * @param isolateData -
+	 *   if collectors in the branch see only the data pushed in the branch.
+	 *   Use `true` for a sub-graph, which has its own collectors. Use `false`
+	 *   when the branch continues in the same graph, so that its collectors
+	 *   also see the data pushed before the branch.
 	 * @returns
 	 *   nothing, via a promise if the function returned a promise
 	 */
-	public branchWithOnMatch(newOnMatch: MatchHandler, func: () => MaybePromise<unknown>): MaybePromise<void> {
+	public branchWithOnMatch(
+		newOnMatch: MatchHandler,
+		func: () => MaybePromise<unknown>,
+		isolateData: boolean = true
+	): MaybePromise<void> {
 		const onMatch = this.onMatch;
 		const currentDataDepth = this.currentDataDepth;
 		this.onMatch = newOnMatch;
-		this.currentDataDepth = this.currentData.length;
+		if(isolateData) {
+			this.currentDataDepth = this.currentData.length;
+		}
 
 		return after(func(), () => {
 			this.currentDataDepth = currentDataDepth;
