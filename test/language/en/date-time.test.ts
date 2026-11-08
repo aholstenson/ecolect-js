@@ -23,6 +23,27 @@ describe('English', function() {
 			millisecond: 0
 		}));
 
+		// A number after a month and a day is a time and not a year
+		test('march 5 10', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2010,
+			month: 3,
+			day: 5,
+			hour: 10,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('jan 5 \'26 at 10', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2026,
+			month: 1,
+			day: 5,
+			hour: 10,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
 		test('12 january', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
 			year: 2010,
 			month: 1,

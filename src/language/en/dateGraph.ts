@@ -32,16 +32,33 @@ import {
 	thisWeek,
 	thisYear
 } from '../../type-datetime/index.js';
+import { TimeRelationship } from '../../type-datetime/TimeRelationship.js';
 import type { OrdinalData } from '../../type-numbers/index.js';
 import type { LanguageGraphFactory } from '../index.js';
 
 import { dateDurationGraph } from './dateDurationGraph.js';
 import { dayOfWeekGraph } from './dayOfWeekGraph.js';
 import { monthGraph } from './monthGraph.js';
+import { MONTH_NAMES } from './monthNames.js';
 import { ordinalGraph } from './ordinalGraph.js';
 import { quarterGraph } from './quarterGraph.js';
 import { weekGraph } from './weekGraph.js';
 import { yearGraph } from './yearGraph.js';
+
+/**
+ * Set how a date relates to the current time, such as in the future for
+ * `next march`.
+ *
+ * @param date -
+ *   the date
+ * @param relation -
+ *   how the date relates to the current time
+ * @returns
+ *   copy of the date with the relation set
+ */
+function withRelation(date: DateTimeData, relation: TimeRelationship): DateTimeData {
+	return combine(date, { relationToCurrent: relation });
+}
 
 export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'date',
@@ -56,6 +73,17 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 		const dateDuration = language.graph(dateDurationGraph);
 
 		const day = GraphBuilder.result(ordinal, (v: OrdinalData) => v.value >= 1 && v.value <= 31);
+
+		/*
+		 * Months by name only. A month written as a number, such as `3rd`,
+		 * is not used after `next` and `last`, as `last 2` is not a month.
+		 */
+		const namedMonth = new GraphBuilder<DateTimeData>(language)
+			.name('namedMonth')
+			.map(MONTH_NAMES, l => ({ month: l }))
+			.build();
+
+		const twoDigitYear = /^[0-9]{2}$/;
 
 		// A field in a numeric date, one or two digits or a four digit year
 		const numericField = /^([0-9]{1,2}|[0-9]{4})$/;
@@ -121,6 +149,20 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 
 			// Month
 			.add([ month ], v => v[0])
+
+			/*
+			 * A named month relative to the current one. `next march` and
+			 * `last march` are never the current month, `this march` is the
+			 * month in the current year.
+			 */
+			.add([ 'next', namedMonth ], v => withRelation(v[0], TimeRelationship.Future))
+			.add([ 'next', namedMonth, day ], v => withRelation(withDay(v[0], v[1].value), TimeRelationship.Future))
+			.add([ 'last', namedMonth ], v => withRelation(v[0], TimeRelationship.Past))
+			.add([ 'last', namedMonth, day ], v => withRelation(withDay(v[0], v[1].value), TimeRelationship.Past))
+			.add([ 'previous', namedMonth ], v => withRelation(v[0], TimeRelationship.Past))
+			.add([ 'previous', namedMonth, day ], v => withRelation(withDay(v[0], v[1].value), TimeRelationship.Past))
+			.add([ 'this', namedMonth ], v => withRelation(v[0], TimeRelationship.CurrentPeriod))
+			.add([ 'this', namedMonth, day ], v => withRelation(withDay(v[0], v[1].value), TimeRelationship.CurrentPeriod))
 			.add([ 'last month', year ], v => combine(v[0], { month: 11 }))
 			.add([ 'first month', year ], v => combine(v[0], { month: 0 }))
 
@@ -128,6 +170,14 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			// With day: 12 Jan 2018, 1st February 2018
 			// Without day: Jan 2018, this month 2018
 			.add([ GraphBuilder.result(hasMonth), year ], v => combine(v[0], v[1]))
+
+			/*
+			 * Month and day followed by a two digit year, such as Jan 5 '26.
+			 * The apostrophe can be left out, as in Jan 5 26, but that
+			 * reading scores lower. A date and time then reads the number as
+			 * a time, so `march 5 10` is 10:00 on March 5th.
+			 */
+			.add([ month, day, '\'', twoDigitYear ], (v, e) => withYear(withDay(v[0], v[1].value), parseInt(v[2], 10), e))
 
 			.add([ month, 'in', /^[0-9]{1,2}$/ ], (v, e) => withYear(v[0], parseInt(v[1], 10), e))
 			.add([ month, 'of', /^[0-9]{1,2}$/ ], (v, e) => withYear(v[0], parseInt(v[1], 10), e))

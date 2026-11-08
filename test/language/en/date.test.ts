@@ -844,6 +844,18 @@ describe('English', function() {
 				month: 1,
 				day: 1
 			});
+
+			test('jan 5 \'99', { now: tuesday }, {
+				year: 1999,
+				month: 1,
+				day: 5
+			});
+
+			test('jan 5 26', { now: tuesday }, {
+				year: 2026,
+				month: 1,
+				day: 5
+			});
 		});
 
 		describe('Years relative to today', function() {
@@ -879,6 +891,57 @@ describe('English', function() {
 		});
 
 		describe('Months relative to today', function() {
+			test('next march', { now: new Date(2026, 10, 8) }, {
+				year: 2027,
+				month: 3,
+				day: 1
+			});
+
+			test('next november', { now: new Date(2026, 10, 8) }, {
+				year: 2027,
+				month: 11,
+				day: 1
+			});
+
+			test('next march 5', { now: new Date(2026, 10, 8) }, {
+				year: 2027,
+				month: 3,
+				day: 5
+			});
+
+			test('last march', { now: new Date(2026, 10, 8) }, {
+				year: 2026,
+				month: 3,
+				day: 1
+			});
+
+			test('last november', { now: new Date(2026, 10, 8) }, {
+				year: 2025,
+				month: 11,
+				day: 1
+			});
+
+			test('previous march', { now: new Date(2026, 10, 8) }, {
+				year: 2026,
+				month: 3,
+				day: 1
+			});
+
+			test('last feb 29', { now: new Date(2026, 10, 8) }, {
+				year: 2024,
+				month: 2,
+				day: 29
+			});
+
+			test('this march', { now: new Date(2026, 10, 8) }, {
+				year: 2026,
+				month: 3,
+				day: 1
+			});
+
+			// A month written as a number is not a month after last
+			test('last 2', { now: new Date(2026, 10, 8) }, null);
+
 			test('next month', { now: tuesday }, {
 				year: 2017,
 				month: 2,
