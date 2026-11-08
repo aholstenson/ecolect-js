@@ -29,7 +29,7 @@ export const tokenizer: Tokenizer = (value: string) => {
 				raw: raw[i],
 				normalized: normalized,
 				short: word.length <= 4,
-				stemmed: porterStemmer(normalized),
+				stemmed: NOT_STEMMED.has(normalized) ? normalized : porterStemmer(normalized),
 				skippable: SKIPPABLE.has(normalized)
 			};
 		}
@@ -117,6 +117,15 @@ function normalize(word: string, next?: string) {
 			return lcWord;
 	}
 }
+
+/**
+ * Words that look like a form of another word, but have their own meaning.
+ * The stemmer would read `news` as the plural of `new`, so these words are
+ * not stemmed.
+ */
+const NOT_STEMMED = new Set([
+	'news'
+]);
 
 /**
  * Normalized tokens that can be skipped if they are missing in the input.

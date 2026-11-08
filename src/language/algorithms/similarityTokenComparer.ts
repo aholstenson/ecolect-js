@@ -54,31 +54,70 @@ function hasAddedPrefix(a: string, b: string): boolean {
 }
 
 /**
- * Token comparer that scores an exact word highest, a shared stem slightly
- * lower and otherwise falls back to how similar the words are spelled. A word
- * with an added prefix, such as `unlock` for `lock`, is not a spelling match. It
- * reads nothing but the token data, so every language whose tokenizer fills
- * in a stem can use it.
+ * Options for a token comparer made with `createSimilarityTokenComparer`.
  */
-export const similarityTokenComparer: TokenComparer = {
-	compare(a, b) {
-		if(a.normalized === b.normalized) return 1.0;
+export interface SimilarityTokenComparerOptions {
+	/**
+	 * Check if two words with the same stem are forms of the same word, such
+	 * as `order` and `orders`. A stemmer can also give the same stem to words
+	 * with different meanings, such as `universe` and `university`. Such words
+	 * do not match. Without this check every two words with the same stem
+	 * are forms of the same word.
+	 *
+	 * @param a -
+	 *   the normalized text of the first word
+	 * @param b -
+	 *   the normalized text of the second word
+	 * @returns
+	 *   `true` if the words are forms of the same word
+	 */
+	isSameWord?: (a: string, b: string) => boolean;
+}
 
-		if(a.stemmed === b.stemmed) return 0.95;
+/**
+ * Create a token comparer that scores an exact word highest, a shared stem
+ * slightly lower and otherwise falls back to how similar the words are
+ * spelled. A word with an added prefix, such as `unlock` for `lock`, is not a
+ * spelling match. It reads nothing but the token data, so every language
+ * whose tokenizer fills in a stem can use it.
+ *
+ * @param options -
+ *   options for the comparer
+ * @returns
+ *   the token comparer
+ */
+export function createSimilarityTokenComparer(options: SimilarityTokenComparerOptions = {}): TokenComparer {
+	const isSameWord = options.isSameWord;
 
-		if(a.short || b.short) return 0;
+	return {
+		compare(a, b) {
+			if(a.normalized === b.normalized) return 1.0;
 
-		if(hasAddedPrefix(a.normalized, b.normalized) || hasAddedPrefix(a.stemmed, b.stemmed)) {
-			// Words such as `subscribe` and `unsubscribe` have different meanings
-			return 0;
+			if(a.stemmed === b.stemmed) {
+				// Words with the same stem but different meanings do not match
+				return ! isSameWord || isSameWord(a.normalized, b.normalized) ? 0.95 : 0;
+			}
+
+			if(a.short || b.short) return 0;
+
+			if(hasAddedPrefix(a.normalized, b.normalized) || hasAddedPrefix(a.stemmed, b.stemmed)) {
+				// Words such as `subscribe` and `unsubscribe` have different meanings
+				return 0;
+			}
+
+			return fuzzyScore(a.normalized, b.normalized);
+		},
+
+		comparePartial(a, b) {
+			if(a.normalized.indexOf(b.normalized) === 0) return 1.0;
+
+			return fuzzyScore(a.normalized.substring(0, b.normalized.length), b.normalized);
 		}
+	};
+}
 
-		return fuzzyScore(a.normalized, b.normalized);
-	},
-
-	comparePartial(a, b) {
-		if(a.normalized.indexOf(b.normalized) === 0) return 1.0;
-
-		return fuzzyScore(a.normalized.substring(0, b.normalized.length), b.normalized);
-	}
-};
+/**
+ * Token comparer made with `createSimilarityTokenComparer` without options,
+ * so every two words with the same stem are forms of the same word.
+ */
+export const similarityTokenComparer: TokenComparer = createSimilarityTokenComparer();
