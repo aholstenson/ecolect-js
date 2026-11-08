@@ -264,7 +264,9 @@ function applyRelationAndEdge(r: DateTimeData, edge: IntervalEdge): DateTimeData
  *
  * Only a start that describes a period within the one the end gives is
  * filled in, so that a start such as `Monday` or the first day of the
- * current year keeps its own meaning when the end is a full date.
+ * current year keeps its own meaning when the end is a full date. A start
+ * that says how it relates to the current time, such as the start of
+ * `since the 10th`, is read from the current time and is also left as it is.
  *
  * @param start -
  *   the data describing the start of the interval
@@ -275,6 +277,7 @@ function applyRelationAndEdge(r: DateTimeData, edge: IntervalEdge): DateTimeData
  */
 function withPeriodsFromEnd(start: DateTimeData, end: DateTimeData): DateTimeData {
 	const result: DateTimeData = { ...start };
+	if(typeof start.relationToCurrent !== 'undefined') return result;
 
 	const withinYear = typeof result.quarter !== 'undefined'
 		|| typeof result.week !== 'undefined'

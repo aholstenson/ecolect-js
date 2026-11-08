@@ -722,6 +722,48 @@ describe('English', () => {
 			}
 		});
 
+		// A start later in the year than today is in the previous year
+		test('since the 10th', { now: new Date(2026, 10, 8) }, {
+			start: {
+				year: 2026,
+				month: 10,
+				day: 10
+			},
+			end: {
+				year: 2026,
+				month: 11,
+				day: 8
+			}
+		});
+
+		test('since december 25', { now: new Date(2027, 0, 5) }, {
+			start: {
+				year: 2026,
+				month: 12,
+				day: 25
+			},
+			end: {
+				year: 2027,
+				month: 1,
+				day: 5
+			}
+		});
+
+		test('since december', { now: new Date(2026, 10, 8) }, {
+			start: {
+				year: 2025,
+				month: 12,
+				day: 1
+			},
+			end: {
+				year: 2026,
+				month: 11,
+				day: 8
+			}
+		});
+
+		test('since tomorrow', { now: new Date(2026, 10, 8) }, null);
+
 		// A range where the end is earlier in the year continues into the next year
 		test('december 20 to january 5', { now: new Date(2026, 10, 8) }, {
 			start: {
