@@ -43,7 +43,7 @@ export class GraphMatcher<G, V> {
 	 * @param options
 	 * @returns
 	 */
-	public match(expression: string, options: GraphMatchOptions={}): Promise<V | null> {
+	public async match(expression: string, options: GraphMatchOptions={}): Promise<V | null> {
 		if(typeof expression !== 'string') {
 			throw new Error('Can only match against string expressions');
 		}
@@ -81,7 +81,7 @@ export class GraphMatcher<G, V> {
 	 * @returns
 	 *   the matches, best one first
 	 */
-	public matchAll(expression: string, options: GraphMatchAllOptions={}): Promise<V[]> {
+	public async matchAll(expression: string, options: GraphMatchAllOptions={}): Promise<V[]> {
 		if(typeof expression !== 'string') {
 			throw new Error('Can only match against string expressions');
 		}
@@ -118,7 +118,7 @@ export class GraphMatcher<G, V> {
 	 * @param expression
 	 * @param options
 	 */
-	public matchPartial(expression: string, options: GraphMatchOptions={}): Promise<V[]> {
+	public async matchPartial(expression: string, options: GraphMatchOptions={}): Promise<V[]> {
 		if(typeof expression !== 'string') {
 			throw new Error('Can only match against string expressions');
 		}

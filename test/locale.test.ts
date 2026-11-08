@@ -1,3 +1,4 @@
+import { intentsBuilder } from '../src/index.js';
 import { en, english } from '../src/language/en/index.js';
 import type { Language } from '../src/language/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
@@ -57,6 +58,41 @@ describe('Locale', function() {
 				.match('1/2/2017', { now: now, dateOrder: DateOrder.MonthDayYear });
 
 			expect(match).toEqual({ year: 2017, month: 1, day: 2 });
+		});
+
+		it('an invalid locale rejects the match of a value', function() {
+			let result: Promise<unknown> | undefined;
+			expect(() => {
+				result = dateValue().matcher(en).match('1/2/2017', { now: now, locale: 'not a locale' });
+			}).not.toThrow();
+
+			return expect(result).rejects.toThrow(/not a locale/);
+		});
+
+		it('an invalid locale rejects the match of an intent', function() {
+			const intents = intentsBuilder(en)
+				.add('x', newPhrases().phrase('x').build())
+				.build();
+
+			let result: Promise<unknown> | undefined;
+			expect(() => {
+				result = intents.match('x', { locale: 'not a locale' });
+			}).not.toThrow();
+
+			return expect(result).rejects.toThrow(/not a valid locale/);
+		});
+
+		it('an empty locale rejects matching everything', function() {
+			const intents = intentsBuilder(en)
+				.add('x', newPhrases().phrase('x').build())
+				.build();
+
+			let result: Promise<unknown> | undefined;
+			expect(() => {
+				result = intents.matchAll('x', { locale: '' });
+			}).not.toThrow();
+
+			return expect(result).rejects.toThrow(/not a valid locale/);
 		});
 	});
 

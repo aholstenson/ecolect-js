@@ -243,6 +243,15 @@ describe('Intents', function() {
 				});
 		});
 
+		it('Expression that is not a string rejects', function() {
+			let result: Promise<unknown> | undefined;
+			expect(() => {
+				result = intents.match(undefined as unknown as string);
+			}).not.toThrow();
+
+			return expect(result).rejects.toThrow(/string/);
+		});
+
 		it('No match: find', function() {
 			return intents.matchAll('find')
 				.then(r => {

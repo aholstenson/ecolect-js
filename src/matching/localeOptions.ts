@@ -65,7 +65,8 @@ export function applyLocale<O extends MatchOptions>(languageLocale: string, opti
 
 /**
  * Matcher that reads the conventions of a locale for anything the options of
- * a match leave out.
+ * a match leave out. An invalid locale rejects the promise of the match, it
+ * does not throw.
  */
 class LocaleAwareMatcher<V> implements Matcher<V> {
 	private readonly locale: string;
@@ -76,15 +77,15 @@ class LocaleAwareMatcher<V> implements Matcher<V> {
 		this.matcher = matcher;
 	}
 
-	public match(expression: string, options: MatchOptions = {}): Promise<V | null> {
+	public async match(expression: string, options: MatchOptions = {}): Promise<V | null> {
 		return this.matcher.match(expression, this.resolve(options));
 	}
 
-	public matchAll(expression: string, options: MatchAllOptions = {}): Promise<V[]> {
+	public async matchAll(expression: string, options: MatchAllOptions = {}): Promise<V[]> {
 		return this.matcher.matchAll(expression, this.resolve(options));
 	}
 
-	public matchPartial(expression: string, options: MatchOptions = {}): Promise<V[]> {
+	public async matchPartial(expression: string, options: MatchOptions = {}): Promise<V[]> {
 		return this.matcher.matchPartial(expression, this.resolve(options));
 	}
 
