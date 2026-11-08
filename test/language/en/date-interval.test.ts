@@ -1,7 +1,9 @@
 
 import { dateIntervalGraph } from '../../../src/language/en/dateIntervalGraph.js';
 import { EnglishLanguage } from '../../../src/language/en/EnglishLanguage.js';
+import { en } from '../../../src/language/en/index.js';
 import { mapDateInterval } from '../../../src/type-datetime/index.js';
+import { dateIntervalValue, dateValue } from '../../../src/values/index.js';
 
 import { testRunner } from './helpers.js';
 
@@ -111,6 +113,20 @@ describe('English', () => {
 				year: 2018,
 				month: 1,
 				day: 5
+			}
+		});
+
+		// A single month is read as a date is read, so it is the next February
+		test('February', { now: new Date(2010, 8, 1) }, {
+			start: {
+				year: 2011,
+				month: 2,
+				day: 1
+			},
+			end: {
+				year: 2011,
+				month: 2,
+				day: 28
 			}
 		});
 
@@ -720,6 +736,15 @@ describe('English', () => {
 				month: 9,
 				day: 15
 			}
+		});
+
+		it('a day of the month is the same day as a date', async function() {
+			const options = { now: new Date(2026, 10, 8, 13) };
+			const date = await dateValue().matcher(en).match('the 5th', options);
+			const interval = await dateIntervalValue().matcher(en).match('the 5th', options);
+
+			expect(interval?.start).toEqual(date);
+			expect(interval?.end).toEqual(date);
 		});
 
 		test('in 99999999999 days', { now: new Date(2026, 10, 8) }, null);

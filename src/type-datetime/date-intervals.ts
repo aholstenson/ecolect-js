@@ -242,18 +242,29 @@ export function weekToDate(r: any, options: DateTimeOptions): IntervalData {
  * change the data it was given, which matters as the same data may describe
  * both the start and the end of an interval.
  *
+ * Data that does not say how it relates to the current time is read in the
+ * current period, so `February to March` in September is the months of the
+ * current year. A single date, such as `the 5th` or `February`, is read as a
+ * date is read instead, see `mapDateInterval`.
+ *
  * @param r -
  *   the data describing one edge of the interval
  * @param edge -
  *   the edge the data describes
+ * @param relation -
+ *   the relation to use if the data does not have one
  * @returns
  *   copy of the data with the relation and edge applied
  */
-function applyRelationAndEdge(r: DateTimeData, edge: IntervalEdge): DateTimeData {
+function applyRelationAndEdge(
+	r: DateTimeData,
+	edge: IntervalEdge,
+	relation: TimeRelationship = TimeRelationship.CurrentPeriod
+): DateTimeData {
 	return {
 		...r,
 		intervalEdge: r.intervalEdge ?? edge,
-		relationToCurrent: r.relationToCurrent ?? TimeRelationship.CurrentPeriod
+		relationToCurrent: r.relationToCurrent ?? relation
 	};
 }
 
@@ -298,6 +309,11 @@ function withPeriodsFromEnd(start: DateTimeData, end: DateTimeData): DateTimeDat
 /**
  * Map the data of an interval to a date interval.
  *
+ * The edges of a range, such as `February to March`, are read in the current
+ * period, so in September this is February and March of the current year. A
+ * single date, such as `the 5th` or `February`, is read as a date value reads
+ * it, so on November 8th `the 5th` is December 5th.
+ *
  * An end that leaves out the year, such as in `December 20 to January 5`, is
  * moved forward when it would otherwise be before the start. A start that
  * takes its year from the end, such as in `December 20 to January 5 2027`, is
@@ -315,7 +331,15 @@ export function mapDateInterval(r: IntervalData, options: DateTimeOptions): Date
 	let start: LocalDate | null = null;
 	let end: LocalDate | null = null;
 
-	if(r.start && r.end) {
+	if(r.start && r.end && r.start === r.end) {
+		/*
+		 * A single date, such as `the 5th`, describes both edges. It is read
+		 * as a date value reads it, so the interval and the date are the
+		 * same days.
+		 */
+		start = mapDate(applyRelationAndEdge(r.start, IntervalEdge.Start, TimeRelationship.Auto), options);
+		end = mapDate(applyRelationAndEdge(r.end, IntervalEdge.End, TimeRelationship.Auto), options);
+	} else if(r.start && r.end) {
 		let startData = withPeriodsFromEnd(r.start, r.end);
 
 		start = mapDate(applyRelationAndEdge(startData, IntervalEdge.Start), options);
@@ -360,9 +384,6 @@ export function mapDateInterval(r: IntervalData, options: DateTimeOptions): Date
  * it relates to the current time and still lands before the start, such as
  * `January 5` in `December 20 to January 5`, the next matching date is used.
  *
- * A single date describing both edges is read from the current time instead,
- * as reading it twice would apply an offset such as `3 days ago` to itself.
- *
  * @param r -
  *   the data describing the interval
  * @param start -
@@ -374,10 +395,6 @@ export function mapDateInterval(r: IntervalData, options: DateTimeOptions): Date
  */
 function mapEnd(r: IntervalData, start: LocalDate, options: DateTimeOptions): LocalDate | null {
 	const data = r.end as DateTimeData;
-	if(r.start === r.end) {
-		return mapDate(applyRelationAndEdge(data, IntervalEdge.End), options);
-	}
-
 	const endOptions = { ...options, now: start.toDateAtMidnight() };
 	const end = mapDate(applyRelationAndEdge(data, IntervalEdge.End), endOptions);
 	if(! end || start.compare(end) <= 0 || typeof data.relationToCurrent !== 'undefined') {

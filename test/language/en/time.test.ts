@@ -139,6 +139,8 @@ describe('English', function() {
 			test('10:75', { now: new Date(2010, 0, 1, 13, 30) }, null);
 
 			test('5 minutes to 25', { now: new Date(2010, 0, 1, 13, 30) }, null);
+
+			test('1,000', { now: new Date(2026, 10, 8, 13, 0) }, null);
 		});
 
 		describe('Expressive', function() {

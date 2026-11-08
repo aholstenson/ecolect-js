@@ -1,3 +1,4 @@
+import type { Encounter } from '../../graph/index.js';
 import { GraphBuilder } from '../../graph/index.js';
 import type {
 	DateTimeData} from '../../type-datetime/index.js';
@@ -37,6 +38,20 @@ function adjustMinutes(time: DateTimeData, minutes: number) {
 	return combine(time, {
 		relativeMinutes: minutes
 	});
+}
+
+/**
+ * Check if the last token that was read is a number with three or more
+ * digits. Minutes are never written like that, so `1,000` is not a time.
+ *
+ * @param encounter -
+ *   the encounter that read the tokens
+ * @returns
+ *   `true` if the last token is a number with three or more digits
+ */
+function endsWithLongNumber(encounter: Encounter): boolean {
+	const token = encounter.tokens[encounter.currentIndex - 1];
+	return typeof token !== 'undefined' && /^[0-9]{3,}$/.test(token.raw);
 }
 
 export const timeGraph: LanguageGraphFactory<DateTimeData> = {
@@ -94,7 +109,9 @@ export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ /^[0-9]{1,2}$/, ':', /^[0-9]{1,2}$/ ], v => {
 				return time12h(parseInt(v[0], 10), parseInt(v[1], 10));
 			})
-			.add([ integer, ':', integer ], v => time12h(v[0].value, v[1].value))
+			.add([ integer, ':', integer ], (v, options, encounter) => endsWithLongNumber(encounter)
+				? null
+				: time12h(v[0].value, v[1].value))
 			.add(/^[0-9]{3,4}$/, v => {
 				const t = v[0];
 				const h = t.length === 3 ? t.substring(0, 1) : t.substring(0, 2);
