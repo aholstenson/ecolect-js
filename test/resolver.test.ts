@@ -182,6 +182,66 @@ describe('Resolver', function() {
 		});
 	});
 
+	describe('Long free text', function() {
+		const words = (count: number) => Array.from({ length: count }, () => 'abc').join(' ');
+
+		const resolver = new PhrasesBuilder()
+			.value('a', anyTextValue())
+			.phrase('note {a}')
+			.toMatcher(en);
+
+		it('Eleven words at the end of a phrase', function() {
+			return resolver.match('note ' + words(11))
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.a).toEqual(words(11));
+				});
+		});
+
+		it('Eleven words at the end of a phrase, match all', function() {
+			return resolver.matchAll('note ' + words(11))
+				.then(r => {
+					expect(r.length).toEqual(1);
+				});
+		});
+
+		it('Twenty words as the only part of a phrase', function() {
+			const only = new PhrasesBuilder()
+				.value('a', anyTextValue())
+				.phrase('{a}')
+				.toMatcher(en);
+
+			return only.match(words(20))
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.a).toEqual(words(20));
+				});
+		});
+
+		it('Words that are split into several tokens', function() {
+			return resolver.match('note w0 w1 w2 w3 w4 w5')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.a).toEqual('w0 w1 w2 w3 w4 w5');
+				});
+		});
+
+		it('Custom value with fifteen words', function() {
+			const custom = new PhrasesBuilder()
+				.value('a', customValue<string>(encounter => {
+					encounter.match(encounter.text);
+				}))
+				.phrase('note {a}')
+				.toMatcher(en);
+
+			return custom.match('note ' + words(15))
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.a).toEqual(words(15));
+				});
+		});
+	});
+
 	describe('Graph with date', function() {
 		const resolver = new PhrasesBuilder()
 			.value('date', dateValue())

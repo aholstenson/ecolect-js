@@ -131,8 +131,13 @@ export class ValueNode<V> extends Node {
 		};
 
 		return after(sequence(steps, attempt), () => {
-			// Sort and limit the matches
-			const sorted = results.sort((a, b) => b.score - a.score);
+			/*
+			 * Sort and limit the matches. Matches with the same score are
+			 * sorted so that the one that reads the most input comes first.
+			 * Without this the limit keeps the shortest values and can drop
+			 * the only match that reads all of the input.
+			 */
+			const sorted = results.sort((a, b) => (b.score - a.score) || (b.index - a.index));
 			const limited = sorted.slice(0, Math.min(sorted.length, this.options.max || 10));
 
 			// Match all of the top matches
