@@ -6,6 +6,7 @@ import { EnglishLanguage } from '../../../src/language/en/EnglishLanguage.js';
 import { integerGraph } from '../../../src/language/en/integerGraph.js';
 import { mapInteger } from '../../../src/type-numbers/index.js';
 import { integerValue } from '../../../src/values/index.js';
+import { expectGrowth } from '../../growth.js';
 
 import { testRunner } from './helpers.js';
 
@@ -82,18 +83,20 @@ describe('English', function() {
 		describe('Long input', function() {
 			const matcher = integerValue().matcher(en);
 
-			it('Repeated number words are matched quickly', async function() {
-				const start = performance.now();
-				await matcher.match('one '.repeat(260));
-				expect(performance.now() - start).toBeLessThan(500);
-			}, 1000);
+			it('Repeated number words are matched quickly', function() {
+				return expectGrowth(
+					size => matcher.match('one '.repeat(size)),
+					{ from: 65, to: 260, degree: 2 }
+				);
+			});
 
-			it('Repeated scale words are matched quickly', async function() {
-				const start = performance.now();
-				// The value is too large for an integer, only the time is checked
-				await matcher.match('hundred '.repeat(260)).catch(() => null);
-				expect(performance.now() - start).toBeLessThan(500);
-			}, 1000);
+			it('Repeated scale words are matched quickly', function() {
+				return expectGrowth(
+					// The value is too large for an integer, only the time is checked
+					size => matcher.match('hundred '.repeat(size)).catch(() => null),
+					{ from: 65, to: 260, degree: 2 }
+				);
+			});
 		});
 
 		test('one hundred five', {}, BigInteger.fromNumber(105));

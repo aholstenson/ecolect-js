@@ -6,6 +6,7 @@ import { EnglishLanguage } from '../../../src/language/en/EnglishLanguage.js';
 import { numberGraph } from '../../../src/language/en/numberGraph.js';
 import { mapNumber } from '../../../src/type-numbers/index.js';
 import { numberValue } from '../../../src/values/index.js';
+import { expectGrowth } from '../../growth.js';
 
 import { testRunner } from './helpers.js';
 
@@ -75,11 +76,12 @@ describe('English', function() {
 		describe('Long input', function() {
 			const matcher = numberValue().matcher(en);
 
-			it('Repeated suffix words are matched quickly', async function() {
-				const start = performance.now();
-				await matcher.match(Array(18).fill('1 thousand').join(' '));
-				expect(performance.now() - start).toBeLessThan(500);
-			}, 1000);
+			it('Repeated suffix words are matched quickly', function() {
+				return expectGrowth(
+					size => matcher.match(Array(size).fill('1 thousand').join(' ')),
+					{ from: 6, to: 24, degree: 2 }
+				);
+			});
 		});
 	});
 });

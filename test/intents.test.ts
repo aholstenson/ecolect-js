@@ -7,6 +7,7 @@ import { newPhrases } from '../src/resolver/newPhrases.js';
 import { anyTextValue, customValue, dateTimeValue, dateValue, integerValue, numberValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';
+import { expectGrowth } from './growth.js';
 
 describe('Intents', function() {
 	describe('Orders', function() {
@@ -466,25 +467,31 @@ describe('Intents', function() {
 			)
 			.build();
 
-		it('Free text with the separator word repeated many times', { timeout: 1000 }, function() {
-			const expression = 'remind me to ' + 'on '.repeat(160) + 'on friday';
-			return intents.match(expression, { now })
-				.then(r => {
-					assertNotNull(r);
-					expect(r.id).toEqual('remind');
-				});
+		it('Free text with the separator word repeated many times', async function() {
+			const expression = (size: number) => 'remind me to ' + 'on '.repeat(size) + 'on friday';
+			const r = await intents.match(expression(160), { now });
+			assertNotNull(r);
+			expect(r.id).toEqual('remind');
+
+			await expectGrowth(
+				size => intents.match(expression(size), { now }),
+				{ from: 40, to: 160, degree: 2 }
+			);
 		});
 
-		it('Free text with many skippable words', { timeout: 1000 }, function() {
-			const expression = 'note ' + 'the '.repeat(200) + 'x';
-			return intents.match(expression, { now })
-				.then(r => {
-					assertNotNull(r);
-					expect(r.id).toEqual('note');
-					if(r.id === 'note') {
-						expect(r.values.text?.endsWith('x')).toBe(true);
-					}
-				});
+		it('Free text with many skippable words', async function() {
+			const expression = (size: number) => 'note ' + 'the '.repeat(size) + 'x';
+			const r = await intents.match(expression(200), { now });
+			assertNotNull(r);
+			expect(r.id).toEqual('note');
+			if(r.id === 'note') {
+				expect(r.values.text?.endsWith('x')).toBe(true);
+			}
+
+			await expectGrowth(
+				size => intents.match(expression(size), { now }),
+				{ from: 50, to: 200, degree: 2 }
+			);
 		});
 	});
 

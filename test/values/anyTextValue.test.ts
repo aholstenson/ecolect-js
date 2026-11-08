@@ -2,6 +2,7 @@ import { en } from '../../src/language/en/index.js';
 import { newPhrases } from '../../src/resolver/newPhrases.js';
 import { anyTextValue, dateValue } from '../../src/values/index.js';
 import { assertNotNull } from '../assertions.js';
+import { expectGrowth } from '../growth.js';
 
 describe('Value: anyTextValue', function() {
 	describe('Phrases', function() {
@@ -30,11 +31,14 @@ describe('Value: anyTextValue', function() {
 
 		it('Prefixed: long word is matched fast', async function() {
 			const word = 'a'.repeat(50000) + 'b';
-			const start = performance.now();
 			const m = await resolver.match('prefix ' + word);
 			assertNotNull(m);
 			expect(m.values.value).toBe(word);
-			expect(performance.now() - start).toBeLessThan(100);
+
+			await expectGrowth(
+				size => resolver.match('prefix ' + 'a'.repeat(size) + 'b'),
+				{ from: 12500, to: 50000, degree: 1 }
+			);
 		});
 
 		it.skip('Prefixed: URL 2', async function() {

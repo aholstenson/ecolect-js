@@ -6,6 +6,7 @@ import { EnglishLanguage } from '../../../src/language/en/EnglishLanguage.js';
 import { en } from '../../../src/language/en/index.js';
 import { mapDateTime } from '../../../src/type-datetime/index.js';
 import { dateTimeValue } from '../../../src/values/index.js';
+import { expectGrowth } from '../../growth.js';
 
 import { testRunner } from './helpers.js';
 
@@ -356,8 +357,12 @@ describe('English', function() {
 	describe('Date & Time with long input', function() {
 		const matcher = dateTimeValue().matcher(en);
 
-		it('a long list of numbers is matched quickly', { timeout: 1000 }, function() {
-			return matcher.match('1 '.repeat(250).trim(), { now: new Date(2026, 10, 8) });
+		it('a long list of numbers is matched quickly', function() {
+			const now = new Date(2026, 10, 8);
+			return expectGrowth(
+				size => matcher.match('1 '.repeat(size).trim(), { now }),
+				{ from: 60, to: 240, degree: 2 }
+			);
 		});
 	});
 });

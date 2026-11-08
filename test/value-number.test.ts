@@ -6,6 +6,7 @@ import { newPhrases } from '../src/resolver/newPhrases.js';
 import { anyTextValue, integerValue, numberValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';
+import { expectGrowth } from './growth.js';
 
 describe('Value: Number', function() {
 	describe('In intents', function() {
@@ -25,11 +26,12 @@ describe('Value: Number', function() {
 				});
 		});
 
-		it('Long number phrase is matched quickly', async function() {
-			const start = performance.now();
-			await intents.match('pay ' + Array(18).fill('1 thousand').join(' ') + ' dollars');
-			expect(performance.now() - start).toBeLessThan(500);
-		}, 1000);
+		it('Long number phrase is matched quickly', function() {
+			return expectGrowth(
+				size => intents.match('pay ' + Array(size).fill('1 thousand').join(' ') + ' dollars'),
+				{ from: 6, to: 24, degree: 2 }
+			);
+		});
 	});
 
 	describe('Large integers and signs in intents', function() {

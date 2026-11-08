@@ -7,6 +7,7 @@ import { parsePhraseSyntax } from '../src/resolver/phraseSyntax.js';
 import { anyTextValue, dateIntervalValue, enumerationValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';
+import { expectGrowth } from './growth.js';
 
 describe('Phrases: Groups of alternatives', function() {
 	/**
@@ -192,16 +193,27 @@ describe('Phrases: Groups of alternatives', function() {
 			return Array.from({ length: count }, (_, i) => '[w' + i + ']').join(' ') + ' end';
 		}
 
-		it('Matcher is built in reasonable time', function() {
-			const start = performance.now();
+		it('Matcher is built in reasonable time', async function() {
 			const matcher = newPhrases()
 				.phrase(optionalWords(12))
 				.toMatcher(en);
 
-			expect(performance.now() - start).toBeLessThan(1000);
+			assertNotNull(await matcher.match('w3 end'));
 
-			return matcher.match('w3 end')
-				.then(r => assertNotNull(r));
+			// Each group doubles the ways to write the phrase
+			await expectGrowth(
+				async size => {
+					const phrases = newPhrases()
+						.phrase('start ' + optionalWords(size))
+						.build();
+
+					const m = phrases.toMatcher(en);
+					await m.match('start w3 w7 w9 end');
+					await m.matchPartial('start w3');
+					await phrases.toGenerator(en).generateAll({});
+				},
+				{ from: 10, to: 40, degree: 2 }
+			);
 		});
 
 		it('Graph grows with the words and not with the ways to write the phrase', function() {
@@ -229,7 +241,6 @@ describe('Phrases: Groups of alternatives', function() {
 		});
 
 		it('Phrase that can be written in very many ways works', async function() {
-			const start = performance.now();
 			const phrases = newPhrases()
 				.phrase('start ' + optionalWords(40))
 				.build();
@@ -246,8 +257,6 @@ describe('Phrases: Groups of alternatives', function() {
 			const texts = await generator.generateAll({});
 			expect(texts[0]).toEqual('start end');
 			expect(texts[1]).toEqual('start w 0 end');
-
-			expect(performance.now() - start).toBeLessThan(2000);
 		});
 
 		it('Parts with an item that is not text between them can have many groups', async function() {

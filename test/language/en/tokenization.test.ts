@@ -6,6 +6,7 @@ import { tokenizer } from '../../../src/language/en/tokenizer.js';
 import { newPhrases } from '../../../src/resolver/newPhrases.js';
 import { dateValue } from '../../../src/values/index.js';
 import { assertNotNull } from '../../assertions.js';
+import { expectGrowth } from '../../growth.js';
 
 describe('English', function() {
 	describe('Tokenization', function() {
@@ -137,17 +138,21 @@ describe('English', function() {
 	});
 
 	describe('Long words', function() {
-		it('Tokenizing a long word is fast', function() {
-			const start = performance.now();
+		it('Tokenizing a long word is fast', async function() {
 			const tokens = tokenizer('a'.repeat(50000));
 			expect(tokens.length).toEqual(1);
-			expect(performance.now() - start).toBeLessThan(100);
+
+			await expectGrowth(
+				size => tokenizer('a'.repeat(size)),
+				{ from: 12500, to: 50000, degree: 1 }
+			);
 		});
 
 		it('Stemming a long word is fast', function() {
-			const start = performance.now();
-			porterStemmer('a'.repeat(50000) + 'b');
-			expect(performance.now() - start).toBeLessThan(100);
+			return expectGrowth(
+				size => porterStemmer('a'.repeat(size) + 'b'),
+				{ from: 12500, to: 50000, degree: 1 }
+			);
 		});
 	});
 

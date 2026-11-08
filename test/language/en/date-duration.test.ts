@@ -4,6 +4,7 @@ import { EnglishLanguage } from '../../../src/language/en/EnglishLanguage.js';
 import { en } from '../../../src/language/en/index.js';
 import { mapDuration } from '../../../src/type-datetime/index.js';
 import { dateDurationValue } from '../../../src/values/index.js';
+import { expectGrowth } from '../../growth.js';
 
 import { testRunner } from './helpers.js';
 
@@ -69,8 +70,11 @@ describe('English', function() {
 	describe('Date Duration with long input', function() {
 		const matcher = dateDurationValue().matcher(en);
 
-		it('a long list of durations is matched quickly', { timeout: 1000 }, function() {
-			return matcher.match('1 day and '.repeat(400) + '1 day');
+		it('a long list of durations is matched quickly', function() {
+			return expectGrowth(
+				size => matcher.match('1 day and '.repeat(size) + '1 day'),
+				{ from: 100, to: 400, degree: 1 }
+			);
 		});
 
 		test('3 days and 2 days', {}, {
