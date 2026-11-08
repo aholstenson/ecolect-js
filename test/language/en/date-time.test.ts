@@ -190,5 +190,36 @@ describe('English', function() {
 			second: 0,
 			millisecond: 0
 		}));
+
+		// A bare hour on a given day is read as a time in the morning
+		test('tomorrow at 9', { now: new Date(2026, 10, 8, 8, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 9,
+			hour: 9,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('march 3 at 10:15', { now: new Date(2026, 10, 8, 10, 0) }, LocalDateTime.from({
+			year: 2027,
+			month: 3,
+			day: 3,
+			hour: 10,
+			minute: 15,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('september 6 2026 at 9', { now: new Date(2026, 8, 1, 0, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 9,
+			day: 6,
+			hour: 9,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
 	});
 });

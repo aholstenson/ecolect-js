@@ -116,6 +116,13 @@ describe('English', function() {
 				millisecond: 0
 			});
 
+			test('at 9', { now: new Date(2026, 10, 8, 0, 30) }, {
+				hour: 9,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
 			test('11:12:13', { now: new Date(2010, 0, 1, 13, 30) }, {
 				hour: 23,
 				minute: 12,

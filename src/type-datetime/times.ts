@@ -133,8 +133,9 @@ export function mapTime(r: DateTimeData, options: DateTimeOptions & { reference?
 		// Hours are a bit special and require some special meridiem handling
 		let hourToSet;
 		if(meridiem === Meridiem.Auto) {
-			// Automatic meridiem
-			const hour12 = now.getHours() % 12 || 12;
+			// Automatic meridiem. Hour 0 (midnight) starts the AM half of the
+			// day, so a bare hour after midnight is a time in the morning.
+			const hour12 = now.getHours() === 12 ? 12 : now.getHours() % 12;
 			if(r.hour < hour12 || (now.getHours() > 12 && r.hour ===  12)) {
 				// Requested time is before the current hour - adjust forward in time
 				hourToSet = r.hour + 12;
