@@ -77,6 +77,47 @@ export function combineDateAndTime(date: DateTimeData, time: DateTimeData): Date
 	return asTime(combine(date, time));
 }
 
+/**
+ * The fields of a duration, which `addDurations` adds together.
+ */
+const DURATION_FIELDS = [
+	'relativeYears',
+	'relativeQuarters',
+	'relativeWeeks',
+	'relativeMonths',
+	'relativeDays',
+	'relativeHours',
+	'relativeMinutes',
+	'relativeSeconds',
+	'relativeMilliseconds'
+] as const;
+
+/**
+ * Add two durations, such as the parts of `3 days and 2 days`. A unit that is
+ * in both durations is added together, so the result is 5 days. Other fields
+ * are combined as by `combine`.
+ *
+ * @param a -
+ *   the first duration
+ * @param b -
+ *   the duration to add
+ * @returns
+ *   the sum of the durations
+ */
+export function addDurations(a: DateTimeData, b: DateTimeData): DateTimeData {
+	const result = combine(a, b);
+	for(const field of DURATION_FIELDS) {
+		const first = a[field];
+		const second = b[field];
+		if(typeof first === 'number' && typeof second === 'number') {
+			// Round away the error of binary fractions, so 0.1 + 0.2 is 0.3
+			result[field] = Number.parseFloat((first + second).toPrecision(15));
+		}
+	}
+
+	return result;
+}
+
 export function combine(a: DateTimeData, b: DateTimeData) {
 	const result = clone(a) as any;
 	for(const key of Object.keys(b)) {

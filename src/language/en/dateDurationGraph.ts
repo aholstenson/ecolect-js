@@ -1,6 +1,6 @@
 import { GraphBuilder } from '../../graph/index.js';
 import type { DateTimeData } from '../../type-datetime/index.js';
-import { combine } from '../../type-datetime/index.js';
+import { addDurations } from '../../type-datetime/index.js';
 import type { NumberData } from '../../type-numbers/index.js';
 import { literalNumber } from '../../type-numbers/index.js';
 import type { Language, LanguageGraphFactory } from '../index.js';
@@ -80,8 +80,8 @@ export const dateDurationGraph: LanguageGraphFactory<DateTimeData> = {
 			.name('date-duration')
 			.skipPunctuation()
 		)
-			.add([ GraphBuilder.result(), unit ], v => combine(v[0], v[1]))
-			.add([ GraphBuilder.result(), 'and', unit ], v => combine(v[0], v[1]))
+			.add([ GraphBuilder.result(), unit ], v => addDurations(v[0], v[1]))
+			.add([ GraphBuilder.result(), 'and', unit ], v => addDurations(v[0], v[1]))
 
 			.build();
 	}

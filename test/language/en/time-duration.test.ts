@@ -21,6 +21,10 @@ describe('English', function() {
 			hours: 5
 		});
 
+		test('2 hours and 2 hours', {}, {
+			hours: 4
+		});
+
 		test('10 minutes', {}, {
 			minutes: 10
 		});

@@ -3,7 +3,7 @@ import type {
 	DateTimeData} from '../../type-datetime/index.js';
 import {
 
-	combine
+	addDurations
 } from '../../type-datetime/index.js';
 import type { Language, LanguageGraphFactory } from '../index.js';
 
@@ -75,8 +75,8 @@ export const timeDurationGraph: LanguageGraphFactory<DateTimeData> = {
 			.name('time-duration')
 			.skipPunctuation()
 		)
-			.add([ GraphBuilder.result(), unit ], v => combine(v[0], v[1]))
-			.add([ GraphBuilder.result(), 'och', unit ], v => combine(v[0], v[1]))
+			.add([ GraphBuilder.result(), unit ], v => addDurations(v[0], v[1]))
+			.add([ GraphBuilder.result(), 'och', unit ], v => addDurations(v[0], v[1]))
 
 			.build();
 	}

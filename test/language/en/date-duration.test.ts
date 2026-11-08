@@ -72,6 +72,10 @@ describe('English', function() {
 		it('a long list of durations is matched quickly', { timeout: 1000 }, function() {
 			return matcher.match('1 day and '.repeat(400) + '1 day');
 		});
+
+		test('3 days and 2 days', {}, {
+			days: 5
+		});
 	});
 
 });
