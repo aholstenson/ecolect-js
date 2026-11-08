@@ -36,5 +36,22 @@ describe('English', function() {
 		test('20 billion billion billion', {}, null);
 
 		test('1' + '0'.repeat(400), {}, null);
+
+		// Too large to be exact as a number
+		test('12345678901234567891st', {}, null);
+
+		test('11th', {}, BigInteger.fromNumber(11));
+
+		test('112th', {}, BigInteger.fromNumber(112));
+
+		test('22nd', {}, BigInteger.fromNumber(22));
+
+		test('103rd', {}, BigInteger.fromNumber(103));
+
+		test('21th', {}, null);
+
+		test('2st', {}, null);
+
+		test('11st', {}, null);
 	});
 });

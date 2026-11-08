@@ -11,7 +11,44 @@ import type { LanguageGraphFactory } from '../index.js';
 
 import { integerGraph } from './integerGraph.js';
 
-const specific = (v: any) => specificOrdinal(v[0].value);
+/**
+ * Get the suffix that a number takes as an ordinal, such as `st` for 21 and
+ * `th` for 11.
+ *
+ * @param value -
+ *   the number
+ * @returns
+ *   the suffix of the number
+ */
+function suffixOf(value: number): string {
+	const lastTwo = Math.abs(value) % 100;
+	if(lastTwo >= 11 && lastTwo <= 13) return 'th';
+
+	switch(lastTwo % 10) {
+		case 1:
+			return 'st';
+		case 2:
+			return 'nd';
+		case 3:
+			return 'rd';
+		default:
+			return 'th';
+	}
+}
+
+/**
+ * Create the value of a number followed by an ordinal suffix. Only the
+ * suffix of the number gives a value, so `21st` is an ordinal but `21th` is
+ * not.
+ *
+ * @param suffix -
+ *   the suffix that follows the number
+ * @returns
+ *   function that reads the ordinal
+ */
+function withSuffix(suffix: string) {
+	return (v: any) => suffixOf(v[0].value) === suffix ? specificOrdinal(v[0].value) : null;
+}
 
 /**
  * Ordinal words below ten. These can come after a number, as in
@@ -44,10 +81,10 @@ export const ordinalGraph: LanguageGraphFactory<OrdinalData> = {
 			.name('ordinal')
 
 			.add(integer, v => ambiguousOrdinal(v[0].value))
-			.add([ integer, 'st' ], specific)
-			.add([ integer, 'nd' ], specific)
-			.add([ integer, 'rd' ], specific)
-			.add([ integer, 'th' ], specific)
+			.add([ integer, 'st' ], withSuffix('st'))
+			.add([ integer, 'nd' ], withSuffix('nd'))
+			.add([ integer, 'rd' ], withSuffix('rd'))
+			.add([ integer, 'th' ], withSuffix('th'))
 
 			.add(units, v => v[0])
 
