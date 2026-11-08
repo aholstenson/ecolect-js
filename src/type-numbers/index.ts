@@ -1,5 +1,6 @@
 export * from './NumberData.js';
 export * from './numbers.js';
+export * from './separators.js';
 
 export * from './OrdinalData.js';
 export * from './OrdinalPrecision.js';

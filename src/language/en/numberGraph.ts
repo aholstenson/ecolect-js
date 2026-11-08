@@ -5,7 +5,8 @@ import {
 	canFollowNumber,
 	canHaveExponent,
 	combineNumbers,
-	float,
+	decimalNumber,
+	isFraction,
 	isNegative,
 	negative,
 	withExponent
@@ -43,8 +44,9 @@ export const numberGraph: LanguageGraphFactory<NumberData> = {
 
 			// A negative number is not combined further, so that a minus sign applies to all of the number
 			.add([ GraphBuilder.result(v => isNumber(v) && ! isNegative(v)), GraphBuilder.result(integer, canFollowNumber) ], v => combineNumbers(v[0], v[1]))
-			// The decimal part is one group of digits, so that `1.5 2` is not read as 1.52
-			.add([ integer, '.', GraphBuilder.result(integer, v => ! v.suffix && ! v.combined && ! isNegative(v)) ], v => float(v[0], v[1]))
+			// The locale decides which character separates the fraction
+			.add([ integer, '.', GraphBuilder.result(integer, isFraction) ], decimalNumber(language.locale, '.'))
+			.add([ integer, ',', GraphBuilder.result(integer, isFraction) ], decimalNumber(language.locale, ','))
 
 			.add([ GraphBuilder.result(canHaveExponent), 'e', /^[0-9]+$/ ], v => withExponent(v[0], v[1], 1))
 			.add([ GraphBuilder.result(canHaveExponent), 'e', '-', /^[0-9]+$/ ], v => withExponent(v[0], v[1], -1))

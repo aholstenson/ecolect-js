@@ -308,8 +308,9 @@ such as `4` for `for`, may also be left out.
 
 A language decides which words are understood. A locale decides the
 conventions of the person writing the expression, such as whether `1/2/2017`
-is January 2nd or February 1st and which day weeks start on. `en-GB` and
-`en-US` share a language but not these conventions.
+is January 2nd or February 1st, which day weeks start on and whether `1,5` is
+a decimal number. `en-GB` and `en-US` share a language but not these
+conventions.
 
 Set the locale on the language to use it for every match:
 
@@ -348,6 +349,11 @@ const settings = resolveLocale('en-GB');
 English reads expressions as `en-US` when no locale is given, and Swedish reads
 them as `sv-SE`.
 
+The locale also decides how numbers are written. `en-US` reads `1,000.5`,
+while `en-ZA` reads `1 000,5` and `en-DE` reads `1.000,5`. A space can group
+the digits in every locale. A locale that groups digits with another
+character, such as `'` in `de-CH`, can only group them with a space.
+
 Swedish uses `swedish` the same way English uses `english`:
 
 ```javascript
@@ -366,6 +372,8 @@ Option                  | Default             | Description
 `monthDayOrder`         | From the locale     | The order of the month and the day in a numeric date without a year, such as `1/2`
 `weekStartsOn`          | From the locale     | The day the week starts on
 `firstWeekContainsDate` | From the locale     | The day of January which is always in the first week of the year
+`decimalSeparator`      | From the locale     | The character that separates the fraction of a number, `.` or `,`
+`groupSeparator`        | From the locale     | The character that groups the digits of a number, `,` or `.`. A space can always group digits
 
 An option set directly wins over the locale, so `dateOrder` given together
 with a locale is used as it is.
@@ -427,7 +435,8 @@ import { numberValue } from 'ecolect';
 const value = numberValue();
 ```
 
-Capture any number, including numbers with a fractional element.
+Capture any number, including numbers with a fractional element. The locale
+decides the decimal and the group separator, see [Locale](#locale).
 
 Language         | Examples
 -----------------|-------------

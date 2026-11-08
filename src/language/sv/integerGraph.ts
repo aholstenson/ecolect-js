@@ -14,6 +14,10 @@ import {
 	isDigits,
 	isDigitsCompatible,
 	isLiteral,
+
+	groupedNumber,
+	isThousandsGroup,
+	isThousandsStart
 } from '../../type-numbers/index.js';
 import type { LanguageGraphFactory } from '../index.js';
 
@@ -45,6 +49,13 @@ export const integerGraph: LanguageGraphFactory<NumberData> = {
 
 			// Scale word + digits, combines 2 tusen 5
 			.add([ GraphBuilder.result(hasScaleWord), GraphBuilder.result(v => isDigits(v) && canFollowNumber(v)) ], v => combineNumbers(v[0], v[1]))
+
+			/*
+			 * Group separators. Swedish groups digits with a space, but a
+			 * locale or the options of a match can name another character.
+			 */
+			.add([ GraphBuilder.result(isThousandsStart), ',', GraphBuilder.result(isThousandsGroup) ], groupedNumber(language.locale, ','))
+			.add([ GraphBuilder.result(isThousandsStart), '.', GraphBuilder.result(isThousandsGroup) ], groupedNumber(language.locale, '.'))
 
 			.build();
 	}

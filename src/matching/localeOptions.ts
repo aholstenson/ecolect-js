@@ -28,7 +28,9 @@ export function localeMatchOptions(locale: string): MatchOptions {
 		dateOrder: settings.dateOrder,
 		monthDayOrder: settings.monthDayOrder,
 		weekStartsOn: settings.weekStartsOn,
-		firstWeekContainsDate: settings.firstWeekContainsDate
+		firstWeekContainsDate: settings.firstWeekContainsDate,
+		decimalSeparator: settings.decimalSeparator,
+		groupSeparator: settings.groupSeparator
 	});
 
 	cache.set(locale, options);
@@ -68,6 +70,14 @@ export function applyLocale<O extends MatchOptions>(languageLocale: string, opti
 
 	if(typeof options.firstWeekContainsDate === 'undefined') {
 		options.firstWeekContainsDate = defaults.firstWeekContainsDate;
+	}
+
+	if(typeof options.decimalSeparator === 'undefined') {
+		options.decimalSeparator = defaults.decimalSeparator;
+	}
+
+	if(typeof options.groupSeparator === 'undefined') {
+		options.groupSeparator = defaults.groupSeparator;
 	}
 
 	return options;
