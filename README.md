@@ -19,6 +19,11 @@ English and `ecolect/language/sv` for Swedish.
 The package is ESM only and needs Node 22 or later. To use it from CommonJS,
 load it with a dynamic `import()`.
 
+The package also runs in browsers that support ES2022. The test suite runs in
+Chromium, Firefox and WebKit. Text is split into words with the Unicode data of
+the JavaScript engine, so very new characters can give different results in
+different engines.
+
 # Features
 
 * Natural language parsing of different values, such as:
