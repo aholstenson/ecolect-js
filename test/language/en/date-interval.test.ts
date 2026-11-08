@@ -722,6 +722,15 @@ describe('English', () => {
 			}
 		});
 
+		// A date that does not exist does not give an interval
+		test('until feb 30', { now: new Date(2026, 10, 8) }, null);
+
+		test('march 3 to feb 30', { now: new Date(2026, 10, 8) }, null);
+
+		test('feb 30 to march 3', { now: new Date(2026, 10, 8) }, null);
+
+		test('before feb 29 2027', { now: new Date(2026, 10, 8) }, null);
+
 		// After and before a longer period exclude the whole period
 		test('after december', { now: new Date(2026, 10, 8) }, {
 			start: {

@@ -308,40 +308,39 @@ function withPeriodsFromEnd(start: DateTimeData, end: DateTimeData): DateTimeDat
  * @param options -
  *   options with the current time
  * @returns
- *   the interval, or `null` if the start is after the end
+ *   the interval, or `null` if an edge is not a valid date or the start is
+ *   after the end
  */
 export function mapDateInterval(r: IntervalData, options: DateTimeOptions): DateInterval | null {
-	let start = null;
-	let end = null;
+	let start: LocalDate | null = null;
+	let end: LocalDate | null = null;
 
-	if(r.end) {
-		if(r.start) {
-			let startData = withPeriodsFromEnd(r.start, r.end);
+	if(r.start && r.end) {
+		let startData = withPeriodsFromEnd(r.start, r.end);
 
+		start = mapDate(applyRelationAndEdge(startData, IntervalEdge.Start), options);
+		end = start && mapEnd(r, start, options);
+
+		if(start && end && start.compare(end) > 0 && typeof r.start.year === 'undefined' && typeof startData.year !== 'undefined') {
+			// The start took its year from the end, use the year before
+			startData = { ...startData, year: startData.year - 1 };
 			start = mapDate(applyRelationAndEdge(startData, IntervalEdge.Start), options);
-			if(! start) throw new Error();
-
-			end = mapEnd(r, start, options);
-
-			if(end && start.compare(end) > 0 && typeof r.start.year === 'undefined' && typeof startData.year !== 'undefined') {
-				// The start took its year from the end, use the year before
-				startData = { ...startData, year: startData.year - 1 };
-				start = mapDate(applyRelationAndEdge(startData, IntervalEdge.Start), options);
-				if(! start) throw new Error();
-
-				end = mapEnd(r, start, options);
-			}
-		} else {
-			end = mapDate(applyRelationAndEdge(r.end, IntervalEdge.End), options);
+			end = start && mapEnd(r, start, options);
 		}
-	} else {
+	} else if(r.start) {
 		// This interval has no end
-		if(r.start) {
-			// There is a start available - map it
-			start = mapDate(applyRelationAndEdge(r.start, IntervalEdge.Start), options);
-		} else {
-			// No start and no end, represents all time
-		}
+		start = mapDate(applyRelationAndEdge(r.start, IntervalEdge.Start), options);
+	} else if(r.end) {
+		// This interval has no start
+		end = mapDate(applyRelationAndEdge(r.end, IntervalEdge.End), options);
+	}
+
+	if((r.start && ! start) || (r.end && ! end)) {
+		/*
+		 * An edge is not a valid date, such as February 30th. A missing edge
+		 * means that the interval is open, so the interval is not valid.
+		 */
+		return null;
 	}
 
 	if(start && end && start.compare(end) > 0) {
