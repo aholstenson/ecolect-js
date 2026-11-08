@@ -201,6 +201,17 @@ describe('Resolver', function() {
 					expect(r.values.a).toEqual('one');
 				});
 		});
+
+		it('Partial match of an empty expression has a score', async function() {
+			const matcher = new PhrasesBuilder()
+				.value('a', anyTextValue())
+				.phrase('{a}')
+				.toMatcher(en);
+
+			const results = await matcher.matchPartial('');
+			expect(results.length).toBe(1);
+			expect(results[0].score).toBe(1);
+		});
 	});
 
 	describe('Long free text', function() {

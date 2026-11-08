@@ -51,10 +51,12 @@ export class Match<V> {
 /**
  * Perform partial scoring. Currently implemented so that shorter graph "depth"
  * scores higher with a normalized score added to differentiate between hits
- * at the same depth.
+ * at the same depth. A match that read no tokens, such as a value that the
+ * empty expression ends before, has the score of a match with depth 1.
  */
 function scorePartial(scoreData: ScoreData) {
-	return 1 / scoreData.depth + scoreData.score / scoreData.depth;
+	const depth = Math.max(scoreData.depth, 1);
+	return 1 / depth + scoreData.score / depth;
 }
 
 /**
