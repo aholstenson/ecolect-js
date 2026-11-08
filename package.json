@@ -78,6 +78,7 @@
     "clean": "rm -rf dist",
     "prebuild": "pnpm run clean",
     "build": "node build/unicode.js && tsc --project tsconfig.build.json",
+    "ci": "pnpm run typecheck && pnpm run lint && pnpm run coverage",
     "prepublishOnly": "pnpm run build",
     "coverage": "vitest run --coverage",
     "lint": "eslint .",
