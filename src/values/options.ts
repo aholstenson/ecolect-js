@@ -26,7 +26,22 @@ export class OptionsBuilder<CurrentOptions extends object> {
 		this.defs = [];
 	}
 
+	/**
+	 * Add an option. Each option needs its own identifier. Use one option
+	 * with several phrases to match an option in several ways.
+	 *
+	 * @param options -
+	 *   the identifier and the phrases of the option
+	 * @returns
+	 *   self
+	 * @throws
+	 *   if an option with the same identifier has already been added
+	 */
 	public add<Id extends string, Values extends object>(options: OptionDef<Id, Values>): OptionsBuilder<CurrentOptions & { [K in Id]: Values }> {
+		if(this.defs.some(def => def.id === options.id)) {
+			throw new Error('Option `' + options.id + '` has already been added, use one option with several phrases instead');
+		}
+
 		this.defs.push(options);
 		return this as any;
 	}

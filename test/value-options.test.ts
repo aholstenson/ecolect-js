@@ -181,6 +181,27 @@ describe('Value: Options', function() {
 		);
 	});
 
+	describe('Duplicate option id', () => {
+		it('Adding the same id twice throws', () => {
+			const builder = optionsValue()
+				.add({
+					id: 'color',
+					phrases: newPhrases()
+						.value('c', enumerationValue([ 'red', 'blue' ]))
+						.phrase('in {c}')
+						.build()
+				});
+
+			expect(() => builder.add({
+				id: 'color',
+				phrases: newPhrases()
+					.value('c', enumerationValue([ 'green' ]))
+					.phrase('colored {c}')
+					.build()
+			})).toThrow(/color/);
+		});
+	});
+
 	describe('Single option - no value', () => {
 		const queryOptions = optionsValue()
 			.add({
