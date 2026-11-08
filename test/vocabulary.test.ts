@@ -112,6 +112,20 @@ describe('Language: Vocabulary', function() {
 		});
 	});
 
+	describe('Synonym of a skippable word', function() {
+		const language = en.withVocabulary({
+			synonyms: {
+				for: [ '4' ]
+			}
+		});
+
+		it('Synonym is skippable like the word', function() {
+			const tokens = language.tokenizer('4');
+			expect(tokens[0].normalized).toEqual('for');
+			expect(tokens[0].skippable).toBe(true);
+		});
+	});
+
 	describe('Known graphs', function() {
 		const language = en.withVocabulary({
 			synonyms: {
@@ -153,6 +167,15 @@ describe('Language: Vocabulary', function() {
 					customers: [ 'paying clients' ]
 				}
 			})).toThrow();
+		});
+
+		it('Synonym used for two words', function() {
+			expect(() => en.withVocabulary({
+				synonyms: {
+					a: [ 'x' ],
+					b: [ 'x' ]
+				}
+			})).toThrow(/x/);
 		});
 
 		it('Skippable word of several words', function() {

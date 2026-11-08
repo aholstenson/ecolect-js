@@ -297,7 +297,9 @@ await matcher.match('please show accounts');
 ```
 
 Synonyms work in both directions, so a phrase may be written with any of the
-words in a group. Every word in a vocabulary must be a single word.
+words in a group. Every word in a vocabulary must be a single word, and a word
+can be a synonym for only one word. A synonym of a word that may be left out,
+such as `4` for `for`, may also be left out.
 
 ## Locale
 

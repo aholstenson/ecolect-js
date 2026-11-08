@@ -10,6 +10,7 @@ interface Synonym {
 	normalized: string;
 	stemmed: string;
 	short: boolean;
+	skippable: boolean;
 }
 
 /**
@@ -36,7 +37,8 @@ function tokenizeWord(tokenizer: Tokenizer, word: string, role: string): Token {
 /**
  * Create a tokenizer that reads the given vocabulary. Words that are synonyms
  * are read as the word they are a synonym for, and words that the vocabulary
- * marks as skippable are marked so that they can be left out.
+ * marks as skippable are marked so that they can be left out. A synonym of a
+ * word that can be left out, such as `4` for `for`, can also be left out.
  *
  * @param tokenizer -
  *   tokenizer of the language the vocabulary extends
@@ -44,6 +46,9 @@ function tokenizeWord(tokenizer: Tokenizer, word: string, role: string): Token {
  *   the vocabulary to read
  * @returns
  *   tokenizer that reads the vocabulary
+ * @throws
+ *   if a word is not a single word, or if a word is a synonym for two
+ *   different words
  */
 export function createVocabularyTokenizer(tokenizer: Tokenizer, vocabulary: Vocabulary): Tokenizer {
 	const synonyms = new Map<string, Synonym>();
@@ -51,10 +56,17 @@ export function createVocabularyTokenizer(tokenizer: Tokenizer, vocabulary: Voca
 		const target = tokenizeWord(tokenizer, word, 'synonym');
 		for(const synonym of words) {
 			const token = tokenizeWord(tokenizer, synonym, 'synonym');
+			const existing = synonyms.get(token.normalized);
+			if(existing && existing.normalized !== target.normalized) {
+				throw new Error('Vocabulary synonym `' + synonym + '` is a synonym for both `'
+					+ existing.normalized + '` and `' + target.normalized + '`');
+			}
+
 			synonyms.set(token.normalized, {
 				normalized: target.normalized,
 				stemmed: target.stemmed,
-				short: target.short
+				short: target.short,
+				skippable: target.skippable
 			});
 		}
 	}
@@ -74,6 +86,7 @@ export function createVocabularyTokenizer(tokenizer: Tokenizer, vocabulary: Voca
 				token.normalized = synonym.normalized;
 				token.stemmed = synonym.stemmed;
 				token.short = synonym.short;
+				token.skippable = synonym.skippable;
 			}
 
 			if(skippable.has(token.normalized)) {
