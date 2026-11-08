@@ -1,6 +1,7 @@
 import { BigDecimal } from 'numeric-types/decimal';
 import { BigInteger } from 'numeric-types/integer';
 
+import { addDecimals, multiplyDecimals, powerOfTenDecimal } from './decimals.js';
 import type { NumberData, NumberPart } from './NumberData.js';
 
 export function isDigits(o: NumberData): boolean {
@@ -57,7 +58,7 @@ export function literalNumber(value: number, raw: string, suffix=false): NumberD
 
 		suffix: suffix,
 		integer: value % 1 === 0,
-		...scaleWord(value, suffix)
+		...scaleWord(value, raw, suffix)
 	};
 }
 
@@ -69,8 +70,21 @@ export function digitNumber(value: number, raw: string, suffix=false): NumberDat
 
 		suffix: suffix,
 		integer: value % 1 === 0,
-		...scaleWord(value, suffix)
+		...scaleWord(value, raw, suffix)
 	};
+}
+
+/**
+ * Create a number for ten to the given power, which multiplies the number
+ * before it, as the `e3` in `1.5e3`.
+ *
+ * @param exponent -
+ *   the power, such as `3` or `-2`
+ * @returns
+ *   the number
+ */
+export function powerOfTen(exponent: number): NumberData {
+	return digitNumber(Math.pow(10, exponent), powerOfTenDecimal(exponent), true);
 }
 
 /**
@@ -92,7 +106,7 @@ export function tensNumber(value: number, raw: string): NumberData {
 
 		suffix: false,
 		integer: true,
-		parts: [ { scale: 10, value: value } ]
+		parts: [ { scale: 10, value: value, digits: raw } ]
 	};
 }
 
@@ -101,17 +115,19 @@ export function tensNumber(value: number, raw: string): NumberData {
  *
  * @param value -
  *   the value of the word
+ * @param raw -
+ *   the digits of the value
  * @param suffix -
  *   if the word multiplies the number before it
  * @returns
  *   the scale fields to add to the number
  */
-function scaleWord(value: number, suffix: boolean): Partial<NumberData> {
+function scaleWord(value: number, raw: string, suffix: boolean): Partial<NumberData> {
 	if(! suffix) return {};
 
 	return {
 		multiplier: true,
-		parts: [ { scale: value, value: value } ]
+		parts: [ { scale: value, value: value, digits: raw } ]
 	};
 }
 
@@ -163,10 +179,12 @@ function multiplyNumber(a: NumberData, b: NumberData): NumberData | null {
 
 	let kept: NumberPart[];
 	let multiplied: number;
+	let multipliedDigits: string;
 	if(! parts || parts.every(p => p.scale <= scale)) {
 		// No part has a larger scale, multiply all of the number
 		kept = [];
 		multiplied = a.value;
+		multipliedDigits = a.rawDigits;
 	} else {
 		// Multiply only the parts after the last part with a larger scale
 		const smaller = parts.filter(p => p.scale < scale);
@@ -176,13 +194,18 @@ function multiplyNumber(a: NumberData, b: NumberData): NumberData | null {
 
 		kept = parts.filter(p => p.scale > scale);
 		multiplied = sum(smaller);
+		multipliedDigits = sumDigits(smaller);
 	}
 
-	const part = { scale: scale, value: multiplied * scale };
+	const part = {
+		scale: scale,
+		value: multiplied * scale,
+		digits: multiplyDecimals(multipliedDigits, b.rawDigits)
+	};
 	const value = sum(kept) + part.value;
 	return {
 		value: value,
-		rawDigits: String(value),
+		rawDigits: addDecimals(sumDigits(kept), part.digits),
 		integer: a.integer && b.integer,
 		suffix: true,
 		literal: true,
@@ -212,12 +235,12 @@ function addToNumber(a: NumberData, parts: NumberPart[], b: NumberData): NumberD
 		return null;
 	}
 
-	const added = b.parts ?? [ { scale: 1, value: b.value } ];
+	const added = b.parts ?? [ { scale: 1, value: b.value, digits: b.rawDigits } ];
 
 	const value = a.value + b.value;
 	return {
 		value: value,
-		rawDigits: String(value),
+		rawDigits: addDecimals(a.rawDigits, b.rawDigits),
 		integer: a.integer && b.integer,
 		literal: a.literal || b.literal,
 		suffix: false,
@@ -250,6 +273,22 @@ function joinNumbers(a: NumberData, b: NumberData): NumberData | null {
 		suffix: false,
 		combined: true
 	};
+}
+
+/**
+ * Get the exact sum of the values of the given parts.
+ *
+ * @param parts -
+ *   the parts to sum
+ * @returns
+ *   the sum as a decimal number
+ */
+function sumDigits(parts: NumberPart[]): string {
+	let result = '0';
+	for(const p of parts) {
+		result = addDecimals(result, p.digits);
+	}
+	return result;
 }
 
 /**

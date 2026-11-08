@@ -47,4 +47,10 @@ export interface NumberPart {
 	 * The value of the part, such as `300` for `three hundred`.
 	 */
 	value: number;
+
+	/**
+	 * The exact value of the part as a decimal number, such as `150` for
+	 * `1.5 hundred`.
+	 */
+	digits: string;
 }

@@ -4,10 +4,10 @@ import type {
 import {
 	canFollowNumber,
 	combineNumbers,
-	digitNumber,
 	float,
 	isNegative,
-	negative
+	negative,
+	powerOfTen
 } from '../../type-numbers/index.js';
 import type { LanguageGraphFactory } from '../index.js';
 
@@ -33,16 +33,8 @@ export const numberGraph: LanguageGraphFactory<NumberData> = {
 			// Swedish writes the fraction after a comma, as in 1,5
 			.add([ integer, ',', GraphBuilder.result(integer, v => ! v.suffix && ! isNegative(v)) ], v => float(v[0], v[1]))
 
-			.add([ GraphBuilder.result(isNumber), 'e', /^[0-9]$/ ], v => combineNumbers(v[0], digitNumber(
-				Math.pow(10, parseInt(v[1], 10)),
-				'e' + v[1],
-				true
-			)))
-			.add([ GraphBuilder.result(isNumber), 'e', '-', /^[0-9]$/ ], v => combineNumbers(v[0], digitNumber(
-				Math.pow(10, -parseInt(v[1], 10)),
-				'e-' + v[1],
-				true
-			)))
+			.add([ GraphBuilder.result(isNumber), 'e', /^[0-9]$/ ], v => combineNumbers(v[0], powerOfTen(parseInt(v[1], 10))))
+			.add([ GraphBuilder.result(isNumber), 'e', '-', /^[0-9]$/ ], v => combineNumbers(v[0], powerOfTen(-parseInt(v[1], 10))))
 
 			.add([ '-', GraphBuilder.result(isNumber) ], v => negative(v[0]))
 			.add([ 'minus', GraphBuilder.result(isNumber) ], v => negative(v[0]))
