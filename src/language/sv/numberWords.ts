@@ -180,21 +180,94 @@ export const MULTIPLIER_WORDS: Readonly<Record<string, number>> = {
 const COMPOUND_SCALES = [ 'hundra', 'tusen' ];
 
 /**
- * The parts that a compound number word is made of, longest part first. The
- * longest part is tried first, so that `sextiotusen` is `sextio` and `tusen`
- * and not `sex`, `tio` and `tusen`.
+ * The positions of the scale words, such as `hundrade` in `tvåhundrade`.
  */
-const COMPOUND_PARTS = [
+export const ORDINAL_SCALE_WORDS: Readonly<Record<string, number>> = {
+	'hundrade': 100,
+	'tusende': 1000
+};
+
+/**
+ * Sort words so that the longest word comes first. The longest part is tried
+ * first, so that `sextiotusen` is `sextio` and `tusen` and not `sex`, `tio`
+ * and `tusen`.
+ *
+ * @param words -
+ *   the words to sort
+ * @returns
+ *   the words, longest word first
+ */
+function longestFirst(words: string[]): string[] {
+	return words.sort((a, b) => b.length - a.length);
+}
+
+/**
+ * The parts that a compound number word is made of, except for the last.
+ */
+const COMPOUND_PARTS = longestFirst([
 	...Object.keys(CARDINAL_WORDS).filter(word => CARDINAL_WORDS[word] !== 0),
 	...Object.keys(TENS_WORDS),
 	...COMPOUND_SCALES
-].sort((a, b) => b.length - a.length);
+]);
+
+/**
+ * The parts that can end a compound number word. A position, such as `femte`
+ * in `tvåhundrafemte`, can only be the last part.
+ */
+const LAST_COMPOUND_PARTS = longestFirst([
+	...COMPOUND_PARTS,
+	...Object.keys(ORDINAL_WORDS),
+	...Object.keys(ORDINAL_SCALE_WORDS)
+]);
+
+/**
+ * A word in a compound number word.
+ */
+export interface NumberWordPart {
+	/**
+	 * The word, such as `ett` or `tusen`.
+	 */
+	readonly word: string;
+
+	/**
+	 * The number of characters the word has in the compound. This is one
+	 * less than the length of the word when a letter is left out where two
+	 * words join, as the second `t` of `ett` in `ettusen`.
+	 */
+	readonly length: number;
+}
+
+/**
+ * Get the length of a part in a compound when it is written together with
+ * the scale word after it. Swedish does not write the same consonant three
+ * times in a row, so `ett` and `tusen` are written `ettusen`.
+ *
+ * @param word -
+ *   the compound
+ * @param start -
+ *   where the part starts in the compound
+ * @param part -
+ *   the part
+ * @returns
+ *   the shorter length of the part, or `null` if no scale word follows it
+ *   with a letter left out
+ */
+function joinedLength(word: string, start: number, part: string): number | null {
+	const last = part[part.length - 1];
+	if(part.length < 2 || part[part.length - 2] !== last) return null;
+
+	const next = start + part.length - 1;
+	return COMPOUND_SCALES.some(scale => scale[0] === last && word.startsWith(scale, next))
+		? part.length - 1
+		: null;
+}
 
 /**
  * Split a compound number word into the words it is made of, such as
  * `tvåhundratjugotre` into `två`, `hundra` and `tjugotre`. Swedish writes the
  * numbers below a million as one word, and the words can then be read the
- * same way as `två hundra tjugotre`.
+ * same way as `två hundra tjugotre`. The last word can be a position, so
+ * `tvåhundrafemte` is `två`, `hundra` and `femte`.
  *
  * Only a word with `hundra` or `tusen` in it is split. A word below 100,
  * such as `tjugotre`, is a number word of its own.
@@ -204,21 +277,39 @@ const COMPOUND_PARTS = [
  * @returns
  *   the words of the number, or `null` if the word is not a compound number
  */
-export function splitNumberWord(word: string): string[] | null {
+export function splitNumberWord(word: string): NumberWordPart[] | null {
 	if(! COMPOUND_SCALES.some(scale => word.includes(scale))) return null;
 
 	// The positions that are known to not start a valid split
 	const failed = new Set<number>();
 
-	const splitFrom = (start: number): string[] | null => {
+	const splitFrom = (start: number): NumberWordPart[] | null => {
 		if(start === word.length) return [];
 		if(failed.has(start)) return null;
 
+		for(const part of LAST_COMPOUND_PARTS) {
+			if(! word.startsWith(part, start)) continue;
+
+			const end = start + part.length;
+			if(end === word.length) {
+				return [ { word: part, length: part.length } ];
+			}
+
+			if(! COMPOUND_PARTS.includes(part)) continue;
+
+			const rest = splitFrom(end);
+			if(rest) return [ { word: part, length: part.length }, ...rest ];
+		}
+
+		// A part with a letter left out before a scale word, as in `ettusen`
 		for(const part of COMPOUND_PARTS) {
 			if(! word.startsWith(part, start)) continue;
 
-			const rest = splitFrom(start + part.length);
-			if(rest) return [ part, ...rest ];
+			const length = joinedLength(word, start, part);
+			if(length === null) continue;
+
+			const rest = splitFrom(start + length);
+			if(rest) return [ { word: part, length: length }, ...rest ];
 		}
 
 		failed.add(start);

@@ -31,6 +31,34 @@ describe('Swedish', function() {
 
 		test('den femte', {}, BigInteger.fromNumber(5));
 
+		test('hundrade', {}, BigInteger.fromNumber(100));
+
+		test('tusende', {}, BigInteger.fromNumber(1000));
+
+		// A position can end a compound number word
+		test('hundraförsta', {}, BigInteger.fromNumber(101));
+
+		test('tvåhundrafemte', {}, BigInteger.fromNumber(205));
+
+		test('tvåhundratjugoandra', {}, BigInteger.fromNumber(222));
+
+		test('tvåhundrade', {}, BigInteger.fromNumber(200));
+
+		test('tretusende', {}, BigInteger.fromNumber(3000));
+
+		test('tusentredje', {}, BigInteger.fromNumber(1003));
+
+		test('den tvåhundrafemte', {}, BigInteger.fromNumber(205));
+
+		test('hundra femte', {}, BigInteger.fromNumber(105));
+
+		test('tjugo första', {}, BigInteger.fromNumber(21));
+
+		// The number before a position must end in a scale word or a whole ten
+		test('fem första', {}, null);
+
+		test('tjugo tjugonde', {}, null);
+
 		test('något :e', {}, null);
 	});
 });

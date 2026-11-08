@@ -45,6 +45,17 @@ describe('Swedish', function() {
 			expect(tokens.map(t => t.raw)).toEqual([ 'sextio', 'tusen' ]);
 		});
 
+		it('A letter left out where two number words join is read back', function() {
+			const tokens = tokenizer('ettusen');
+			expect(tokens.map(t => t.raw)).toEqual([ 'et', 'tusen' ]);
+			expect(tokens.map(t => t.normalized)).toEqual([ 'ett', 'tusen' ]);
+		});
+
+		it('A position can only be the last part of a compound number word', function() {
+			expect(tokenizer('tvåhundrafemte').map(t => t.normalized)).toEqual([ 'två', 'hundra', 'femte' ]);
+			expect(tokenizer('femtehundra').map(t => t.normalized)).toEqual([ 'femtehundra' ]);
+		});
+
 		it('Words with a scale word that are not numbers are kept', function() {
 			const tokens = tokenizer('hundratals tusentals hundra');
 			expect(tokens.map(t => t.raw)).toEqual([ 'hundratals', 'tusentals', 'hundra' ]);

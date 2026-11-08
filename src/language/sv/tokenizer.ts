@@ -39,7 +39,7 @@ export const tokenizer: Tokenizer = (value: string) => {
 			return parts.map(part => {
 				const raw = word.substring(offset, offset + part.length);
 				offset += part.length;
-				return createToken(raw, part);
+				return createToken(raw, part.word);
 			});
 		}
 

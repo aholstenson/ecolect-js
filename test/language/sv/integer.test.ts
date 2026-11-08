@@ -89,6 +89,15 @@ describe('Swedish', function() {
 
 		test('tvåhundra tusen', {}, BigInteger.fromNumber(200000));
 
+		// Swedish leaves out the third `t` in `ett` and `tusen`
+		test('ettusen', {}, BigInteger.fromNumber(1000));
+
+		test('etttusen', {}, BigInteger.fromNumber(1000));
+
+		test('tjugoettusen', {}, BigInteger.fromNumber(21000));
+
+		test('ettusenetthundra', {}, BigInteger.fromNumber(1100));
+
 		test('tre miljoner fyrahundratusen', {}, BigInteger.fromNumber(3400000));
 
 		test('ingenting', {}, null);
