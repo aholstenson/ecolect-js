@@ -148,6 +148,10 @@ function scaleWord(value: number, raw: string, suffix: boolean): Partial<NumberD
  *   the number read so far
  * @param b -
  *   the word or group of digits after it
+ * A number that is too large for a JavaScript number is not combined
+ * further. No real input has such a number, and the exact math on its
+ * digits gets slow.
+ *
  * @returns
  *   the combined number, or `null` if the numbers do not form one number
  */
@@ -197,12 +201,15 @@ function multiplyNumber(a: NumberData, b: NumberData): NumberData | null {
 		multipliedDigits = sumDigits(smaller);
 	}
 
+	const partValue = multiplied * scale;
+	const value = sum(kept) + partValue;
+	if(! Number.isFinite(value)) return null;
+
 	const part = {
 		scale: scale,
-		value: multiplied * scale,
+		value: partValue,
 		digits: multiplyDecimals(multipliedDigits, b.rawDigits)
 	};
-	const value = sum(kept) + part.value;
 	return {
 		value: value,
 		rawDigits: addDecimals(sumDigits(kept), part.digits),
@@ -238,6 +245,8 @@ function addToNumber(a: NumberData, parts: NumberPart[], b: NumberData): NumberD
 	const added = b.parts ?? [ { scale: 1, value: b.value, digits: b.rawDigits } ];
 
 	const value = a.value + b.value;
+	if(! Number.isFinite(value)) return null;
+
 	return {
 		value: value,
 		rawDigits: addDecimals(a.rawDigits, b.rawDigits),
@@ -265,8 +274,11 @@ function joinNumbers(a: NumberData, b: NumberData): NumberData | null {
 	if(! a.integer) return null;
 
 	const raw = a.rawDigits + b.rawDigits;
+	const value = parseInt(raw, 10);
+	if(! Number.isFinite(value)) return null;
+
 	return {
-		value: parseInt(raw, 10),
+		value: value,
 		rawDigits: raw,
 		integer: a.integer && b.integer,
 		literal: a.literal || b.literal,
