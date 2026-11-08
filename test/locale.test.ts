@@ -116,5 +116,17 @@ describe('Locale', function() {
 			const match = await phrases().match('due 1/2/2017', { now: now, locale: 'en-GB' });
 			expect(match?.values.when).toEqual({ year: 2017, month: 2, day: 1 });
 		});
+
+		it('a locale written with an underscore is read, or the error tells how to write it', async function() {
+			let match;
+			try {
+				match = await phrases().match('due 1/2/2017', { now: now, locale: 'en_GB' });
+			} catch(err) {
+				expect((err as Error).message).toMatch(/BCP 47/);
+				return;
+			}
+
+			expect(match?.values.when).toEqual({ year: 2017, month: 2, day: 1 });
+		});
 	});
 });

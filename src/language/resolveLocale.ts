@@ -46,12 +46,18 @@ const cache = new Map<string, LocaleSettings>();
  * Get the conventions of a locale, such as `en-GB` or `sv-SE`. The settings
  * are read from `Intl`, so no locale data is bundled.
  *
+ * The POSIX form with an underscore, such as `en_GB`, is read as `en-GB`. A
+ * valid tag that `Intl` has no data for, such as `xx`, gets the settings of
+ * the default locale of the JavaScript runtime.
+ *
  * The result is cached, so the same tag always returns the same object.
  *
  * @param locale -
  *   the locale to read, as a BCP 47 language tag
  * @returns
  *   the settings of the locale
+ * @throws
+ *   if the locale is not a valid BCP 47 language tag
  */
 export function resolveLocale(locale: string): LocaleSettings {
 	const cached = cache.get(locale);
@@ -73,18 +79,21 @@ export function resolveLocale(locale: string): LocaleSettings {
  *   the settings of the locale
  */
 function readLocale(locale: string): LocaleSettings {
+	// Read the POSIX form, such as `en_GB`, as the BCP 47 tag `en-GB`
+	const tag = locale.replaceAll('_', '-');
+
 	let parsed;
 	try {
-		parsed = new Intl.Locale(locale);
+		parsed = new Intl.Locale(tag);
 	} catch{
-		throw new Error('`' + locale + '` is not a valid locale');
+		throw new Error('`' + locale + '` is not a valid locale, use a BCP 47 language tag such as `en-US`');
 	}
 
 	return {
-		dateOrder: readDateOrder(locale),
+		dateOrder: readDateOrder(tag),
 		weekStartsOn: readWeekStartsOn(parsed),
 		firstWeekContainsDate: readFirstWeekContainsDate(parsed),
-		...readSeparators(locale)
+		...readSeparators(tag)
 	};
 }
 

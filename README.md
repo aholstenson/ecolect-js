@@ -325,6 +325,11 @@ people at once needs:
 const match = await matcher.match('1/2/2017', { locale: 'en-GB' });
 ```
 
+A locale is a BCP 47 language tag, such as `en-GB`. The POSIX form `en_GB` is
+read as `en-GB`. A tag that is not valid, such as `en GB`, rejects the match
+with an error. A valid tag that `Intl` has no data for, such as `xx`, uses the
+conventions of the default locale of the JavaScript runtime.
+
 The conventions are read from `Intl`, so no locale data is bundled. Read them
 directly with `resolveLocale` if you need them yourself:
 
