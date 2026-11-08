@@ -725,6 +725,10 @@ describe('English', () => {
 			}
 		});
 
+		test('last 0 days', { now: new Date(2026, 10, 8) }, null);
+
+		test('next 0 days', { now: new Date(2026, 10, 8) }, null);
+
 		test('a week', { now: new Date(2012, 8, 5) }, {
 			start: {
 				year: 2012,
