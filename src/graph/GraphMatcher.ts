@@ -112,8 +112,9 @@ export class GraphMatcher<G, V> {
 				encounter.throwIfErrors();
 			}
 
-			if(typeof limit === 'number') {
-				matches = matches.slice(0, Math.max(0, limit));
+			// A limit that is not a number, such as `NaN`, is no limit
+			if(typeof limit === 'number' && ! Number.isNaN(limit)) {
+				matches = matches.slice(0, Math.max(0, Math.floor(limit)));
 			}
 
 			return matches.map(value => mapper(value, encounter.options, encounter));

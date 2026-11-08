@@ -265,6 +265,13 @@ describe('Intents', function() {
 					expect(r.map(m => m.id)).toEqual([ 'customer:orders' ]);
 				});
 		});
+
+		it('Limit that is not a number keeps every match', function() {
+			return intents.matchAll('find orders for Test', { limit: NaN })
+				.then(r => {
+					expect(r.map(m => m.id)).toEqual([ 'customer:orders', 'search' ]);
+				});
+		});
 	});
 
 	describe('Scoring with values', function() {
