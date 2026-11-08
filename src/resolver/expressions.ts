@@ -35,9 +35,14 @@ export function refresh(v: Phrase<any>) {
 }
 
 /**
+ * The parts of an encounter that an expression is described from.
+ */
+export type DescribedPath = Pick<Encounter, 'currentNodes' | 'currentTokens' | 'currentIndex' | 'tokens'>;
+
+/**
  * Describe the expression for the given encounter.
  */
-export function describe(encounter: Encounter): ExpressionPart[] {
+export function describe(encounter: DescribedPath): ExpressionPart[] {
 	// Partial matching so expose the full expression that would match
 	const path: (TextPart | ValuePart)[] = [];
 	const text: string[] = [];

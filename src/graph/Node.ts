@@ -15,10 +15,17 @@ export abstract class Node {
 	 */
 	public readsAnyText: boolean;
 
+	/**
+	 * The number the matcher uses for this node when more than one edge leads
+	 * to it, else `-1`. Set by `scanSharedNodes` for graphs of phrases.
+	 */
+	public sharedId: number;
+
 	public constructor() {
 		this.outgoing = [];
 		this.supportsPunctuation = false;
 		this.readsAnyText = false;
+		this.sharedId = -1;
 	}
 
 	/**

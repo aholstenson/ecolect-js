@@ -89,4 +89,11 @@ export interface SubGraphEvaluation {
 	 * and must not be cached.
 	 */
 	dependsOnSeed: boolean;
+
+	/**
+	 * The number of states that the encounter was evaluating when the
+	 * evaluation started. Only states after these can be reached again while
+	 * the evaluation is in progress.
+	 */
+	readonly activeEntries?: number;
 }

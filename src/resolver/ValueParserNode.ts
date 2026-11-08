@@ -2,6 +2,7 @@ import { deepEqual } from 'fast-equals';
 
 import type { Graph, Encounter } from '../graph/index.js';
 import { Node, SubNode } from '../graph/index.js';
+import { markUnread } from '../graph/matching/DominanceMemo.js';
 import type { MatchOptions } from '../matching/index.js';
 
 export interface ValueParserOptions<V, O> {
@@ -31,13 +32,18 @@ export class ValueParserNode<V> extends Node {
 		this.partialBlankWhenNoToken = ! this.node.supportsPartial || options.partialBlankWhenNoToken || false;
 
 		/*
+		 * The result of a phrase only reads data that has a value, so paths
+		 * that differ only in which values are empty give the same values.
+		 */
+		this.node.partialFallback = markUnread({
+			id: this.id,
+		});
+
+		/*
 		 * Make sure that the result of evaluating this sub-graph is mapped
 		 * using the same mapper as would be used if graph is directly matched
 		 * on.
 		 */
-		this.node.partialFallback = {
-			id: this.id,
-		};
 		this.node.mapper = (r, encounter) => {
 			// Map it into a value format
 			return {

@@ -62,9 +62,15 @@ export class MatchSet<V> {
 	private matches: Match<V>[];
 	private isEqual: (a: any, b: any) => boolean;
 
+	/**
+	 * The match that the last call to `add` replaced, if any.
+	 */
+	public replaced: Match<V> | null;
+
 	public constructor(options: MatchSetOptions = {}) {
 		this.matches = [];
 		this.isEqual = options.isEqual || deepEqual;
+		this.replaced = null;
 	}
 
 	/**
@@ -73,6 +79,8 @@ export class MatchSet<V> {
 	 * @param {Match} match
 	 */
 	public add(match: Match<V>) {
+		this.replaced = null;
+
 		// Check if this is a duplicate match
 		for(let i=0; i<this.matches.length; i++) {
 			const matchInfo = this.matches[i];
@@ -85,6 +93,7 @@ export class MatchSet<V> {
 
 				// Delete the current match
 				this.matches.splice(i, 1);
+				this.replaced = matchInfo;
 				break;
 			}
 		}
@@ -92,6 +101,30 @@ export class MatchSet<V> {
 		const idx = findInsertLocation(this.matches, match.score);
 		this.matches.splice(idx, 0, match);
 		return true;
+	}
+
+	/**
+	 * Get if the given match is kept in this set.
+	 *
+	 * @param match -
+	 *   the match
+	 * @returns
+	 *   `true` if the match is in the set
+	 */
+	public has(match: Match<V>): boolean {
+		return this.matches.includes(match);
+	}
+
+	/**
+	 * Find the match that the given data is a duplicate of.
+	 *
+	 * @param data -
+	 *   the data
+	 * @returns
+	 *   the match with equal data, or `undefined`
+	 */
+	public findEqual(data: V): Match<V> | undefined {
+		return this.matches.find(match => this.isEqual(match.data, data));
 	}
 
 	public first(): Match<V> {

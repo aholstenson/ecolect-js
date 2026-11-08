@@ -1,8 +1,11 @@
 import type { Tokens, Token } from '../../tokenization/index.js';
 import type { Node } from '../Node.js';
 
+import type { MemoEntry, MemoRecord } from './DominanceMemo.js';
+import { DataStackIds, MemoFrame } from './DominanceMemo.js';
 import type { EncounterOptions } from './EncounterOptions.js';
-import { Match } from './Match.js';
+import type { MatchPath } from './Match.js';
+import { Match, rebaseData } from './Match.js';
 import type { MatchHandler } from './MatchHandler.js';
 import { MatchSet } from './MatchSet.js';
 import type { MaybePromise } from './maybePromise.js';
@@ -50,6 +53,15 @@ export class Encounter {
 	public currentTokens: number[];
 	private currentData: any[];
 	private currentDataDepth: number;
+
+	/**
+	 * The number of the data stack, from `dataStackIds`, for each length of
+	 * the data stack up to `dataIdsKnown`. Numbers are found when they are
+	 * needed, as most data stacks are never compared.
+	 */
+	private dataIds: number[];
+	private dataIdsKnown: number;
+	private readonly dataStackIds: DataStackIds;
 
 	public matches: MatchSet<any>;
 
@@ -110,6 +122,25 @@ export class Encounter {
 	 */
 	private partialScores: (Map<object, Map<string, number>> | undefined)[];
 
+	/**
+	 * The states of the paths that have been evaluated with the current
+	 * match handler.
+	 */
+	private memoFrame: MemoFrame | null;
+
+	/**
+	 * The entries whose nodes are being evaluated, from the outermost to the
+	 * innermost.
+	 */
+	private activeEntries: MemoEntry[];
+
+	/**
+	 * If matches found now can reach the result of the encounter, so that
+	 * their path must be kept. Matches in a sub-graph go to the sub-graph
+	 * and do not need it.
+	 */
+	private keepPaths: boolean;
+
 	public constructor(tokens: Tokens, options: EncounterOptions) {
 		this.tokens = tokens;
 
@@ -139,6 +170,13 @@ export class Encounter {
 		this._evaluations = [];
 		this.errors = [];
 		this.partialScores = [];
+
+		this.memoFrame = null;
+		this.dataIds = [ 0 ];
+		this.dataIdsKnown = 0;
+		this.dataStackIds = new DataStackIds();
+		this.activeEntries = [];
+		this.keepPaths = true;
 	}
 
 	/**
@@ -332,6 +370,23 @@ export class Encounter {
 			this.currentData.push(data);
 		}
 
+		/*
+		 * Only paths that continue after a node that more than one edge leads
+		 * to are compared with earlier paths, see `dominatingEntry`.
+		 */
+		let entry: MemoEntry | undefined;
+		const current = this.currentNodes[this.currentNodes.length - 1];
+		if(current !== undefined && current.sharedId >= 0) {
+			const found = this.dominatingEntry(current, nextIndex, nextScore, skipSkippable);
+			if(found === null) {
+				// An earlier path continued in the same state with the same or a better score
+				if(pushedData) this.popData();
+				return;
+			}
+
+			entry = found;
+		}
+
 		const currentIndex = this.currentIndex;
 		const currentScore = this.currentScore;
 		const outgoing = this.outgoing;
@@ -380,7 +435,7 @@ export class Encounter {
 		};
 
 		const finish = (): MaybePromise<void> => {
-			if(pushedData) this.currentData.pop();
+			if(pushedData) this.popData();
 
 			/*
 			 * If the input token is skippable also evaluate the expression
@@ -437,7 +492,192 @@ export class Encounter {
 			return this.advance((score || 0), (consumedTokens || 0) + 1, data);
 		};
 
+		if(entry) {
+			return this.withEntry(entry, () => after(sequence(nodes.length, branchInto), finish));
+		}
+
 		return after(sequence(nodes.length, branchInto), finish);
+	}
+
+	/**
+	 * Find the entry for the state in which the current path continues after
+	 * the current node. The state is the node, the token index that the
+	 * nodes after it start at, the data that the path pushed and the flags
+	 * of the encounter. The nodes after the node give the same matches for
+	 * every path that continues in the same state, apart from the score and
+	 * the nodes of the path. The score of the path only adds to the score of
+	 * these matches, so a path with a lower score gives only matches that
+	 * are worse than the matches of the earlier path, and they are thrown
+	 * away.
+	 *
+	 * A path with the same score gives the same matches again, through other
+	 * nodes. It is also removed, and the matches of the earlier path are
+	 * added again for its nodes, see `replayRecords`.
+	 *
+	 * @param node -
+	 *   the current node, which more than one edge leads to
+	 * @param nextIndex -
+	 *   the token index that the nodes after the current node start at
+	 * @param nextScore -
+	 *   the score of the path when it continues
+	 * @param skipSkippable -
+	 *   if a skippable word at the next index is also skipped
+	 * @returns
+	 *   the entry to continue with, `undefined` to continue without an entry,
+	 *   or `null` if the path can be removed
+	 */
+	private dominatingEntry(node: Node, nextIndex: number, nextScore: number, skipSkippable: boolean): MemoEntry | undefined | null {
+		/*
+		 * The nodes after a node that more than one edge leads to are where
+		 * paths that met continue in the same way. A node that branches into
+		 * other nodes than the nodes after it, such as a sub-graph or a
+		 * skipped word, is not looked up.
+		 */
+		if(this.outgoing !== node.outgoing) {
+			return undefined;
+		}
+
+		this.memoFrame ??= new MemoFrame();
+		const frame = this.memoFrame;
+		const entry = frame.find(
+			node.sharedId,
+			(nextIndex * 2) + (skipSkippable ? 1 : 0),
+			this.allowContinuation,
+			this.currentDataId(),
+			nextScore
+		);
+		if(! entry) return entry;
+		if(frame.created) {
+			entry.depth = this.currentNodes.length;
+			return entry;
+		}
+
+		/*
+		 * The same state can only be reached again while it is evaluated if
+		 * the graph has a loop that reads nothing. Such a path is evaluated
+		 * as before.
+		 */
+		if(entry.active > 0) return undefined;
+
+		let dominated;
+		let same;
+		if(entry.cutOff && this.options.partial) {
+			// The matches a value keeps depend on the score, see `MemoEntry.cutOff`
+			same = nextScore === entry.walkScore
+				|| (entry.walkScores !== null && entry.walkScores.has(nextScore));
+			dominated = same;
+		} else {
+			same = nextScore === entry.score;
+			dominated = nextScore <= entry.score;
+		}
+		if(dominated) {
+			if(entry.seedUses) {
+				for(const evaluation of entry.seedUses) {
+					if(this._evaluations.includes(evaluation)) {
+						this.useSeed(evaluation);
+					}
+				}
+			}
+
+			if(same && ! this.onMatch && entry.records) {
+				this.replayRecords(entry.records, nextScore);
+			}
+
+			return null;
+		}
+
+		if(entry.cutOff) {
+			entry.walkScores ??= new Set();
+			const scores = entry.walkScores;
+			scores.add(entry.walkScore);
+		}
+
+		entry.score = Math.max(entry.score, nextScore);
+		entry.walkScore = nextScore;
+		entry.depth = this.currentNodes.length;
+		return entry;
+	}
+
+	/**
+	 * Record that a value dropped some of its matches as it keeps only the
+	 * best ones. See `MemoEntry.cutOff`.
+	 */
+	public reportCutOff(): void {
+		for(const entry of this.activeEntries) {
+			entry.cutOff = true;
+		}
+	}
+
+	/**
+	 * Get the number of the current data stack. Numbers of the stacks below
+	 * it that are not known yet are found first.
+	 *
+	 * @returns
+	 *   the number of the stack
+	 */
+	private currentDataId(): number {
+		const ids = this.dataIds;
+		const ofStacks = this.dataStackIds;
+		const length = this.currentData.length;
+		for(let i=this.dataIdsKnown+1; i<=length; i++) {
+			// The stack with length i has the item at i - 1 on top
+			ids[i] = ofStacks.push(ids[i - 1], this.currentData[i - 1]);
+		}
+
+		this.dataIdsKnown = length;
+		return ids[length];
+	}
+
+	/**
+	 * Remove the top item of the data stack.
+	 */
+	private popData(): void {
+		this.currentData.pop();
+
+		// The number of a stack with an item on this place is no longer known
+		if(this.dataIdsKnown > this.currentData.length) {
+			this.dataIdsKnown = this.currentData.length;
+		}
+	}
+
+	/**
+	 * Run the given function while the given entry is marked as being
+	 * evaluated.
+	 *
+	 * @param entry -
+	 *   the entry of the state the path continues in
+	 * @param func -
+	 *   the function that evaluates the nodes after the current node
+	 * @returns
+	 *   nothing, via a promise if the function returned a promise
+	 */
+	private withEntry(entry: MemoEntry, func: () => MaybePromise<void>): MaybePromise<void> {
+		entry.active++;
+		this.activeEntries.push(entry);
+
+		let result;
+		try {
+			result = func();
+		} catch(err) {
+			entry.active--;
+			this.activeEntries.pop();
+			throw err;
+		}
+
+		if(isThenable(result)) {
+			return result.then(() => {
+				entry.active--;
+				this.activeEntries.pop();
+			}, err => {
+				entry.active--;
+				this.activeEntries.pop();
+				throw err;
+			});
+		}
+
+		entry.active--;
+		this.activeEntries.pop();
+		return result;
 	}
 
 	/**
@@ -479,14 +719,28 @@ export class Encounter {
 	): MaybePromise<void> {
 		const onMatch = this.onMatch;
 		const currentDataDepth = this.currentDataDepth;
+		const memoFrame = this.memoFrame;
+		const keepPaths = this.keepPaths;
 		this.onMatch = newOnMatch;
 		if(isolateData) {
 			this.currentDataDepth = this.currentData.length;
+
+			// Matches of a sub-graph go to the sub-graph, not to the result
+			this.keepPaths = false;
 		}
+
+		/*
+		 * Matches in the branch go to another handler, so paths in the branch
+		 * are only compared with each other. The frame is created when it is
+		 * first used.
+		 */
+		this.memoFrame = null;
 
 		return after(func(), () => {
 			this.currentDataDepth = currentDataDepth;
 			this.onMatch = onMatch;
+			this.memoFrame = memoFrame;
+			this.keepPaths = keepPaths;
 		});
 	}
 
@@ -562,6 +816,17 @@ export class Encounter {
 			};
 
 			match = new Match(this.currentIndex, data, scoreData);
+			/*
+			 * The path is only needed to add the match again for another
+			 * path, which can only happen while a state is evaluated.
+			 */
+			if(this.keepPaths && this.activeEntries.length > 0) {
+				match.path = {
+					nodes: this.currentNodes.slice(),
+					tokens: this.currentTokens.slice(),
+					index: this.currentIndex
+				};
+			}
 		}
 
 		if(this.onMatch) {
@@ -572,7 +837,83 @@ export class Encounter {
 				return;
 			}
 
-			this.matches.add(match);
+			if(this.matches.add(match) && this.activeEntries.length > 0) {
+				this.recordMatch(match);
+			}
+		}
+	}
+
+	/**
+	 * Record a match that was added to the result in every state that is
+	 * being evaluated. Only the last match of each kind is kept.
+	 *
+	 * @param match -
+	 *   the match
+	 */
+	private recordMatch(match: Match<any>): void {
+		/*
+		 * The result kept one match for each kind, so the match it replaced
+		 * is the earlier match of the same kind.
+		 */
+		const replaced = this.matches.replaced;
+		for(const entry of this.activeEntries) {
+			entry.records ??= [];
+			const records = entry.records;
+			if(replaced) {
+				for(let i=0; i<records.length; i++) {
+					if(records[i].match === replaced) {
+						records.splice(i, 1);
+						break;
+					}
+				}
+			}
+
+			records.push({ match: match, depth: entry.depth, score: entry.walkScore });
+		}
+	}
+
+	/**
+	 * Add the matches of an earlier path again, as the current path gives
+	 * them. The current path reached the same state with the same score as
+	 * the earlier path, so it gives the same matches through other nodes.
+	 * The result keeps the last of two equal matches with the same score,
+	 * and so it keeps the matches of the current path. Matches that the
+	 * result no longer keeps are left out, as the current path does not
+	 * change them.
+	 *
+	 * @param records -
+	 *   the matches the earlier paths added
+	 * @param score -
+	 *   the score of the current path, only matches of an earlier path with
+	 *   this score are added again
+	 */
+	private replayRecords(records: readonly MemoRecord[], score: number): void {
+		const prefixNodes = this.currentNodes;
+		const prefixTokens = this.currentTokens;
+		for(const record of records.slice()) {
+			if(record.score !== score) continue;
+
+			const match = record.match;
+			const kept = this.matches.has(match) ? match : this.matches.findEqual(match.data);
+			if(! kept || kept.score !== match.score || ! match.path) continue;
+
+			const path: MatchPath = {
+				nodes: [ ...prefixNodes, ...match.path.nodes.slice(record.depth) ],
+				tokens: [ ...prefixTokens, ...match.path.tokens.slice(record.depth) ],
+				index: match.path.index
+			};
+
+			const data: any = match.data;
+			const rebased = new Match(
+				match.index,
+				typeof data?.[rebaseData] === 'function' ? data[rebaseData](path, this) : data,
+				{ ...match.scoreData }
+			);
+			rebased.path = path;
+
+			if(this.matches.add(rebased) && this.activeEntries.length > 0) {
+				this.recordMatch(rebased);
+			}
 		}
 	}
 
@@ -639,6 +980,17 @@ export class Encounter {
 		evaluation.seedUsed = true;
 		evaluation.seedRoots.add(this.currentNodes[evaluation.depth]);
 
+		/*
+		 * Only entries that started after the evaluation can be reached again
+		 * while the evaluation is in progress.
+		 */
+		const entries = this.activeEntries;
+		for(let i=evaluation.activeEntries ?? 0; i<entries.length; i++) {
+			const entry = entries[i];
+			if(! entry.seedUses) entry.seedUses = new Set();
+			entry.seedUses.add(evaluation);
+		}
+
 		const evaluations = this._evaluations;
 		for(let i=evaluations.length-1; i>=0; i--) {
 			const other = evaluations[i];
@@ -666,7 +1018,8 @@ export class Encounter {
 			delta: [],
 			seedUsed: false,
 			seedRoots: new Set(),
-			dependsOnSeed: false
+			dependsOnSeed: false,
+			activeEntries: this.activeEntries.length
 		};
 
 		this._evaluations.push(evaluation);

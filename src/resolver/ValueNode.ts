@@ -166,13 +166,17 @@ export class ValueNode<V> extends Node {
 			const max = this.options.max || 10;
 			const limited: Match<any>[] = [];
 			for(const match of sorted) {
-				if(limited.length >= max) break;
-
 				const isCopy = limited.some(other => other.index === match.index
 					&& deepEqual(other.data.values, match.data.values));
-				if(! isCopy) {
-					limited.push(match);
+				if(isCopy) continue;
+
+				if(limited.length >= max) {
+					// A match that is not a copy is dropped
+					encounter.reportCutOff();
+					break;
 				}
+
+				limited.push(match);
 			}
 
 			// Match all of the top matches

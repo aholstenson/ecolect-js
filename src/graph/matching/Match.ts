@@ -1,5 +1,7 @@
 import rfdc from 'rfdc';
 
+import type { Node } from '../Node.js';
+
 const clone = rfdc();
 
 /**
@@ -8,6 +10,33 @@ const clone = rfdc();
  * deeply, which makes class instances in it into plain objects.
  */
 export const cloneData = Symbol('cloneData');
+
+/**
+ * Symbol for a method that gives the data of a match as another path would
+ * have given it. The method gets the `MatchPath` of the other path and the
+ * encounter. Data that does not have this method is the same for every path.
+ */
+export const rebaseData = Symbol('rebaseData');
+
+/**
+ * The path through the graph that gave a match.
+ */
+export interface MatchPath {
+	/**
+	 * The nodes of the path, in order.
+	 */
+	readonly nodes: readonly Node[];
+
+	/**
+	 * The token index at each node of the path.
+	 */
+	readonly tokens: readonly number[];
+
+	/**
+	 * The token index when the match was found.
+	 */
+	readonly index: number;
+}
 
 export interface ScoreData {
 	partial: boolean;
@@ -23,6 +52,12 @@ export class Match<V> {
 	public index: number;
 	public data: V;
 	public scoreData: ScoreData;
+
+	/**
+	 * The path that gave the match. Only kept while a later path can reuse
+	 * the match, see `Encounter.replayRecords`.
+	 */
+	public path?: MatchPath;
 
 	public constructor(index: number, data: V, scoreData: ScoreData) {
 		this.index = index;
@@ -40,11 +75,13 @@ export class Match<V> {
 
 	public copy() {
 		const data = this.data as any;
-		return new Match<V>(
+		const result = new Match<V>(
 			this.index,
 			typeof data?.[cloneData] === 'function' ? data[cloneData]() : clone(this.data),
 			clone(this.scoreData)
 		);
+		result.path = this.path;
+		return result;
 	}
 }
 
@@ -56,7 +93,7 @@ export class Match<V> {
  */
 function scorePartial(scoreData: ScoreData) {
 	const depth = Math.max(scoreData.depth, 1);
-	return 1 / depth + scoreData.score / depth;
+	return (1 / depth) + (scoreData.score / depth);
 }
 
 /**

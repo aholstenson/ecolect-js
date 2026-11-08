@@ -5,7 +5,7 @@ import { IntentsGenerator, renderersFor } from './generation/Generator.js';
 import { templatesFrom } from './generation/templates.js';
 import { TemplateGenerator } from './generation/TemplateGenerator.js';
 import type { Graph } from './graph/index.js';
-import { GraphBuilder, GraphMatcher } from './graph/index.js';
+import { GraphBuilder, GraphMatcher, rebaseData } from './graph/index.js';
 import type { Language } from './language/index.js';
 import type { Matcher } from './matching/index.js';
 import { localeAwareMatcher } from './matching/index.js';
@@ -121,5 +121,17 @@ export class Intent<K extends string, V extends object> extends Phrase<V> {
 		this.score = phrase.score;
 		this.expression = phrase.expression;
 		this.values = phrase.values;
+	}
+
+	/**
+	 * The expression of an intent comes from the phrase it matched, and not
+	 * from the path through the graph of intents, so every path gives the
+	 * same intent.
+	 *
+	 * @returns
+	 *   this intent
+	 */
+	public [rebaseData](): this {
+		return this;
 	}
 }

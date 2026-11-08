@@ -5,6 +5,7 @@ import type {
 	GraphBuildable,
 	GraphBuildableArray } from '../graph/index.js';
 import { GraphBuilder } from '../graph/index.js';
+import { scanSharedNodes } from '../graph/matching/DominanceMemo.js';
 import { mergeSiblings } from '../graph/mergeSiblings.js';
 import { reduceGraph } from '../graph/reduceGraph.js';
 import type { Language } from '../language/index.js';
@@ -137,6 +138,14 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 		if(! stats.cycle) {
 			mergeSiblings(graph.nodes, 4 * stats.nodesAfter);
 		}
+
+		/*
+		 * Paths through a phrase with groups meet at the words after each
+		 * group. The matcher keeps the state in which each path continues
+		 * after such a word, and does not evaluate a later path that is not
+		 * better than an earlier path in the same state.
+		 */
+		scanSharedNodes(graph.nodes);
 
 		return graph;
 	}

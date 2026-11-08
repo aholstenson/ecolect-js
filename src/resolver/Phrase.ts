@@ -1,7 +1,7 @@
 import rfdc from 'rfdc';
 
-import type { Encounter } from '../graph/index.js';
-import { cloneData } from '../graph/index.js';
+import type { Encounter, MatchPath } from '../graph/index.js';
+import { cloneData, rebaseData } from '../graph/index.js';
 
 import type { ExpressionPart } from './expression/ExpressionPart.js';
 import { describe, refresh } from './expressions.js';
@@ -59,6 +59,28 @@ export class Phrase<Values extends object> {
 	 */
 	public [cloneData](): Phrase<Values> {
 		return this.clone();
+	}
+
+	/**
+	 * Create a copy of this phrase with the expression that another path
+	 * through the phrase gives.
+	 *
+	 * @param path -
+	 *   the other path
+	 * @param encounter -
+	 *   the encounter the path is in
+	 * @returns
+	 *   copy of this phrase
+	 */
+	public [rebaseData](path: MatchPath, encounter: Encounter): Phrase<Values> {
+		const r = this.clone();
+		r.expression = describe({
+			currentNodes: path.nodes as any,
+			currentTokens: path.tokens as any,
+			currentIndex: path.index,
+			tokens: encounter.tokens
+		});
+		return r;
 	}
 }
 

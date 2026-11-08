@@ -1,6 +1,6 @@
 import { deepEqual } from 'fast-equals';
 
-import { GraphBuilder, GraphMatcher } from './graph/index.js';
+import { GraphBuilder, GraphMatcher, rebaseData } from './graph/index.js';
 import type { Language } from './language/index.js';
 import type { Matcher } from './matching/index.js';
 import { localeAwareMatcher } from './matching/index.js';
@@ -105,5 +105,17 @@ export class Action<Context, ReturnType, Values extends object> extends Phrase<V
 
 	public activate(context: Context): ReturnType {
 		return this.handler(this, context);
+	}
+
+	/**
+	 * The expression of an action comes from the phrase it matched, and not
+	 * from the path through the graph of actions, so every path gives the
+	 * same action.
+	 *
+	 * @returns
+	 *   this action
+	 */
+	public [rebaseData](): this {
+		return this;
 	}
 }
