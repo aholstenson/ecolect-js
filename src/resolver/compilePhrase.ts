@@ -3,7 +3,7 @@ import { CollectorNode, Node, RegExpNode, SubNode, TokenNode } from '../graph/in
 import type { Token, Tokens } from '../tokenization/index.js';
 import type { NodeConvertable } from '../values/base.js';
 
-import { checkVariantCount, describeLeftover, LEFTOVER_BRACE, parsePhraseSyntax, VALUE } from './phraseSyntax.js';
+import { describeLeftover, LEFTOVER_BRACE, parsePhraseSyntax, VALUE } from './phraseSyntax.js';
 
 /**
  * What the phrase compiler needs from the parser.
@@ -62,12 +62,6 @@ interface Fragment {
 	 * The names of the values on any path through the part.
 	 */
 	names: Set<string>;
-
-	/**
-	 * The number of ways the part can be written, which is the number of
-	 * paths through it. A path that reads nothing is included.
-	 */
-	ways: number;
 }
 
 /**
@@ -77,7 +71,7 @@ interface Fragment {
  *   the part
  */
 function empty(): Fragment {
-	return { first: [], last: [], nullable: true, names: new Set(), ways: 1 };
+	return { first: [], last: [], nullable: true, names: new Set() };
 }
 
 /**
@@ -91,7 +85,7 @@ function empty(): Fragment {
  *   the part
  */
 function single(first: Node, last: Node = first): Fragment {
-	return { first: [ first ], last: [ last ], nullable: false, names: new Set(), ways: 1 };
+	return { first: [ first ], last: [ last ], nullable: false, names: new Set() };
 }
 
 /**
@@ -109,8 +103,7 @@ function single(first: Node, last: Node = first): Fragment {
  * @returns
  *   the joined part
  * @throws
- *   if a path has a value name two times, or the joined part can be
- *   written in more than `MAX_PHRASE_VARIANTS` ways
+ *   if a path has a value name two times
  */
 function sequence(a: Fragment, b: Fragment, text: string): Fragment {
 	for(const name of b.names) {
@@ -118,9 +111,6 @@ function sequence(a: Fragment, b: Fragment, text: string): Fragment {
 			throw usedTwice(name, text);
 		}
 	}
-
-	const ways = a.ways * b.ways;
-	checkVariantCount(ways, text);
 
 	for(const node of a.last) {
 		node.outgoing.push(...b.first);
@@ -134,8 +124,7 @@ function sequence(a: Fragment, b: Fragment, text: string): Fragment {
 		first: a.nullable ? [ ...a.first, ...b.first ] : a.first,
 		last: b.nullable ? [ ...b.last, ...a.last ] : b.last,
 		nullable: a.nullable && b.nullable,
-		names: new Set([ ...a.names, ...b.names ]),
-		ways: ways
+		names: new Set([ ...a.names, ...b.names ])
 	};
 }
 
@@ -150,13 +139,11 @@ function sequence(a: Fragment, b: Fragment, text: string): Fragment {
 function alternation(parts: Fragment[]): Fragment {
 	const result = empty();
 	result.nullable = parts.length === 0;
-	result.ways = parts.length === 0 ? 1 : 0;
 
 	for(const part of parts) {
 		result.first.push(...part.first);
 		result.last.push(...part.last);
 		result.nullable ||= part.nullable;
-		result.ways += part.ways;
 		for(const name of part.names) {
 			result.names.add(name);
 		}
@@ -194,9 +181,13 @@ function usedTwice(id: string, text: string): Error {
  * value of the phrase becomes one node (a Glushkov construction), and a group
  * becomes extra edges between the nodes before and after it. A phrase with
  * `n` groups that can be left out thus gives `O(n)` nodes and `O(n^2)` edges,
- * not `2^n` paths. Only a word that has groups in it, such as `order[s]`, is
- * expanded, as each way to write it is a different word. The number of
- * paths is still limited by `MAX_PHRASE_VARIANTS`.
+ * and not a node for each of its `2^n` ways. Only a word that has groups in
+ * it, such as `order[s]`, is expanded, as each way to write it is a different
+ * word. The number of ways to write such a word is limited by
+ * `MAX_WORD_VARIANTS`.
+ *
+ * Matching and the generation of text do not look at each way to write the
+ * phrase, so the number of ways to write a phrase has no limit.
  *
  * The matcher keeps the state of a path in the encounter, so a node that is
  * on several paths gives the same matches as a copy of the node for each
@@ -312,10 +303,8 @@ function compileText(context: CompileContext, text: string): Fragment {
 	let result = empty();
 	for(const segment of parsePhraseSyntax(text)) {
 		const part = alternation(segment.alternatives.map(alternative => compileLiteral(context, alternative, text)));
-		if(segment.optional && ! part.nullable) {
-			// Leaving the part out is one more way to write it
+		if(segment.optional) {
 			part.nullable = true;
-			part.ways++;
 		}
 
 		result = sequence(result, part, text);
@@ -325,11 +314,8 @@ function compileText(context: CompileContext, text: string): Fragment {
 		throw new Error('Phrase does not contain anything to match: ' + text);
 	}
 
-	if(result.nullable) {
-		// The path that reads nothing is left out
-		result.nullable = false;
-		result.ways--;
-	}
+	// The path that reads nothing is left out
+	result.nullable = false;
 
 	return result;
 }

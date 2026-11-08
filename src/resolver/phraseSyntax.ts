@@ -1,27 +1,23 @@
 /**
- * The highest number of ways a phrase can be written. Each group multiplies
- * the number of ways, so 12 groups that may be left out give 4096 ways.
- *
- * The graph of a phrase grows with the number of groups and not with the
- * number of ways. But partial matching of an expression that ends before
- * the groups, and the generation of text, look at each way. More ways make
- * these slow.
+ * The highest number of ways a word with groups, such as `order[s|ed]`, can
+ * be written. Each way to write the word is a word of its own, and so a node
+ * of its own in the graph.
  */
-export const MAX_PHRASE_VARIANTS = 4096;
+export const MAX_WORD_VARIANTS = 4096;
 
 /**
- * Throw an error if a phrase can be written in too many ways.
+ * Throw an error if a word with groups can be written in too many ways.
  *
  * @param count -
- *   the number of ways the phrase can be written
+ *   the number of ways the word can be written
  * @param text -
  *   the phrase, for the error message
  */
-export function checkVariantCount(count: number, text: string): void {
-	if(count > MAX_PHRASE_VARIANTS) {
+function checkVariantCount(count: number, text: string): void {
+	if(count > MAX_WORD_VARIANTS) {
 		throw new Error(
-			'Phrase can be written in more than ' + MAX_PHRASE_VARIANTS + ' ways,'
-			+ ' split it into several phrases or use fewer groups, in phrase: ' + text
+			'A word in the phrase can be written in more than ' + MAX_WORD_VARIANTS + ' ways,'
+			+ ' put a space between groups that are not one word, in phrase: ' + text
 		);
 	}
 }
@@ -121,9 +117,6 @@ interface GroupAtom {
  * have an empty alternative. There is no escape character, so a phrase can
  * not match the characters `(`, `)`, `[`, `]`, `{`, `}` and `|`.
  *
- * The number of ways is only checked for each word with groups here. The
- * caller checks the number of ways of the full phrase.
- *
  * @param text -
  *   the phrase to read
  * @returns
@@ -131,7 +124,7 @@ interface GroupAtom {
  * @throws
  *   if a group is not closed, groups are nested, `|` is used outside of a
  *   group, a group in `(` and `)` has an empty alternative, or a word with
- *   groups can be written in more than `MAX_PHRASE_VARIANTS` ways
+ *   groups can be written in more than `MAX_WORD_VARIANTS` ways
  */
 export function parsePhraseSyntax(text: string): PhraseSegment[] {
 	const atoms = readAtoms(text);

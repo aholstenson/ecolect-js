@@ -228,28 +228,42 @@ describe('Phrases: Groups of alternatives', function() {
 			expect(nodes.size).toEqual((12 * 2) + 2);
 		});
 
-		it('Phrase that can be written in too many ways is reported', function() {
+		it('Phrase that can be written in very many ways works', async function() {
 			const start = performance.now();
-			expect(() => newPhrases()
-				.phrase(optionalWords(16))
-				.toMatcher(en)
-			).toThrow(/split it into several phrases/);
+			const phrases = newPhrases()
+				.phrase('start ' + optionalWords(40))
+				.build();
 
-			expect(performance.now() - start).toBeLessThan(1000);
+			const matcher = phrases.toMatcher(en);
+			assertNotNull(await matcher.match('start w3 w17 w39 end'));
+			expect(await matcher.match('start w17 w3 end')).toBeNull();
+
+			const partial = await matcher.matchPartial('start w3');
+			expect(partial.length).toBe(1);
+
+			// The shortest ways to write it come first, `w0` is written as two words
+			const generator = phrases.toGenerator(en);
+			const texts = await generator.generateAll({});
+			expect(texts[0]).toEqual('start end');
+			expect(texts[1]).toEqual('start w 0 end');
+
+			expect(performance.now() - start).toBeLessThan(2000);
 		});
 
-		it('Parts that together can be written in too many ways are reported', function() {
-			expect(() => newPhrases()
-				.phrase(optionalWords(8), optionalWords(8))
-				.toMatcher(en)
-			).toThrow(/split it into several phrases/);
+		it('Parts with an item that is not text between them can have many groups', async function() {
+			const matcher = newPhrases()
+				.phrase(optionalWords(16), /^x$/, optionalWords(16))
+				.toMatcher(en);
+
+			assertNotNull(await matcher.match('w1 end x w2 end'));
 		});
 
-		it('Parts with an item that is not text between them are counted together', function() {
+		it('Word that can be written in too many ways is reported', function() {
+			const glued = 'w' + Array.from({ length: 13 }, (_, i) => '[a' + i + '|b' + i + ']').join('');
 			expect(() => newPhrases()
-				.phrase(optionalWords(7), /^x$/, optionalWords(7))
+				.phrase(glued)
 				.toMatcher(en)
-			).toThrow(/split it into several phrases/);
+			).toThrow(/can be written in more than 4096 ways/);
 		});
 	});
 
