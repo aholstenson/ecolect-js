@@ -2,9 +2,7 @@ import { deepEqual } from 'fast-equals';
 
 import type { IntentGenerator } from './generation/Generator.js';
 import { IntentsGenerator, renderersFor } from './generation/Generator.js';
-import { templatesFrom } from './generation/templates.js';
 import { TemplateGenerator } from './generation/TemplateGenerator.js';
-import type { Graph } from './graph/index.js';
 import { GraphBuilder, GraphMatcher, rebaseData } from './graph/index.js';
 import type { Language } from './language/index.js';
 import type { Matcher } from './matching/index.js';
@@ -31,7 +29,7 @@ function intentIsEqual(a: Intent<any, any>, b: Intent<any, any>): boolean {
 export class IntentsBuilder<Intents extends Intent<any, any> = never> {
 	private language: Language;
 	private builder: GraphBuilder<Intent<any, any>>;
-	private intents: { id: string; phrases: Phrases<any>; graph: Graph<Phrase<any>> }[];
+	private intents: { id: string; phrases: Phrases<any> }[];
 
 	public constructor(language: Language) {
 		if(! language) {
@@ -60,7 +58,7 @@ export class IntentsBuilder<Intents extends Intent<any, any> = never> {
 		}
 
 		const graph = phrases.toGraph(this.language);
-		this.intents.push({ id: id, phrases: phrases, graph: graph });
+		this.intents.push({ id: id, phrases: phrases });
 
 		this.builder.add(graph, v => new Intent(id, v[0]));
 
@@ -98,7 +96,7 @@ export class IntentsBuilder<Intents extends Intent<any, any> = never> {
 		for(const intent of this.intents) {
 			generators.set(intent.id, new TemplateGenerator(
 				this.language,
-				templatesFrom(intent.graph),
+				intent.phrases.toTemplates(this.language),
 				renderersFor(intent.phrases.valueTypes, this.language),
 				async (text, options) => {
 					const match = await matcher.match(text, options) as Intent<any, any> | null;

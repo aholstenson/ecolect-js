@@ -9,6 +9,7 @@ import type { Language } from '../src/language/index.js';
 import { KnownGraphs } from '../src/language/index.js';
 import { sv } from '../src/language/sv/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
+import type { Phrases } from '../src/resolver/Phrases.js';
 import type { DateTimeData } from '../src/type-datetime/index.js';
 import { MutableDuration } from '../src/type-datetime/index.js';
 import {
@@ -411,6 +412,79 @@ describe('Generation', function() {
 				: '{' + p.id + '}'
 			).join(' '));
 			expect(texts).toEqual([ 'orders', 'show orders', 'show show orders' ]);
+		});
+
+		/**
+		 * Get the text of the templates of phrases with the given values.
+		 *
+		 * @param phrases -
+		 *   the phrases
+		 * @param values -
+		 *   the identifiers of the values
+		 * @returns
+		 *   the text of each template, values as `{id}`
+		 */
+		function textsOf(phrases: Phrases<any>, values: string[] = []) {
+			return [ ...phrases.toTemplates(en)(values) ].map(t => t.parts.map(p => p.type === 'text'
+				? p.tokens.map(token => token.raw).join(' ')
+				: '{' + p.id + '}'
+			).join(' '));
+		}
+
+		it('Alternatives come in the order they are written', () => {
+			expect(textsOf(newPhrases()
+				.phrase('(show|list|find) orders')
+				.build()
+			)).toEqual([ 'show orders', 'list orders', 'find orders' ]);
+		});
+
+		it('Groups of the same length come in the order they are written', () => {
+			expect(textsOf(newPhrases()
+				.phrase('[show] [list] orders')
+				.build()
+			)).toEqual([ 'orders', 'show orders', 'list orders', 'show list orders' ]);
+		});
+
+		it('Phrases of the same length come in the order they are added', () => {
+			expect(textsOf(newPhrases()
+				.phrase('list orders')
+				.phrase('show orders')
+				.phrase('orders')
+				.build()
+			)).toEqual([ 'orders', 'list orders', 'show orders' ]);
+		});
+
+		it('Phrases that start with the same words keep their order', () => {
+			expect(textsOf(newPhrases()
+				.phrase('show (open|new) orders')
+				.phrase('show (all|new) items')
+				.build()
+			)).toEqual([ 'show open orders', 'show new orders', 'show all items', 'show new items' ]);
+		});
+
+		it('Only templates with the given values are read', () => {
+			const phrases = newPhrases()
+				.value('when', dateIntervalValue())
+				.value('who', anyTextValue())
+				.phrase('[show] orders [for {who}] [in {when}]')
+				.build();
+
+			expect(textsOf(phrases, [ 'when' ])).toEqual([ 'orders in {when}', 'show orders in {when}' ]);
+			expect(textsOf(phrases, [ 'when', 'who' ])).toEqual([
+				'orders for {who} in {when}',
+				'show orders for {who} in {when}'
+			]);
+		});
+
+		it('Intents are written in the order of their phrases', async () => {
+			const generator = intentsBuilder(en)
+				.add('orders', newPhrases()
+					.phrase('(show|list) orders')
+					.build()
+				)
+				.buildGenerator();
+
+			expect(await generator.generateAll('orders')).toEqual([ 'show orders', 'list orders' ]);
 		});
 
 		it('Text around a value that two paths read is one pattern', () => {

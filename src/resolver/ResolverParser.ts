@@ -103,7 +103,18 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 		};
 	}
 
-	public build() {
+	/**
+	 * Build the graph of the phrases.
+	 *
+	 * @param optimize -
+	 *   if equal nodes are merged and the matcher may skip paths, which makes
+	 *   matching faster. Without it each phrase keeps its own nodes, and the
+	 *   nodes after a node are in the order the phrase is written, which is
+	 *   what the generation of text reads.
+	 * @returns
+	 *   the graph
+	 */
+	public build(optimize = true) {
 		/*
 		 * A match that only exposes the highest scoring result counts every
 		 * match as a duplicate, so that the set keeps the best one.
@@ -118,6 +129,9 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 			: () => true;
 
 		const graph = super.build();
+		if(! optimize) {
+			return graph;
+		}
 
 		/*
 		 * Each phrase is compiled on its own, so phrases that start or end

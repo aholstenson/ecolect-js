@@ -4,6 +4,7 @@ import type { MatchOptions } from '../matching/index.js';
 import type { GenerateOptions } from './GenerateOptions.js';
 import { joinTemplate } from './join.js';
 import type { Template } from './Template.js';
+import type { TemplateSource } from './templates.js';
 import type { RenderContext, ValueRenderer } from './ValueRenderer.js';
 import { definedKeys, valuesEqual } from './valuesEqual.js';
 
@@ -46,18 +47,20 @@ interface RenderedValue {
  */
 export class TemplateGenerator {
 	private readonly language: Language;
-	private readonly templates: readonly Template[];
+	private readonly templates: TemplateSource;
 	private readonly renderers: ReadonlyMap<string, ValueRenderer<any>>;
 	private readonly verify: Verification;
 
 	public constructor(
 		language: Language,
-		templates: readonly Template[],
+		templates: readonly Template[] | TemplateSource,
 		renderers: ReadonlyMap<string, ValueRenderer<any>>,
 		verify: Verification
 	) {
 		this.language = language;
-		this.templates = templates;
+		this.templates = typeof templates === 'function'
+			? templates
+			: ids => templates.filter(template => sameValues(template.values, ids));
 		this.renderers = renderers;
 		this.verify = verify;
 	}
@@ -95,12 +98,15 @@ export class TemplateGenerator {
 		const found: string[] = [];
 		const tried = new Set<string>();
 
-		for(const template of this.templates) {
+		for(const template of this.templates(ids)) {
 			if(budget <= 0) break;
-			if(! sameValues(template.values, ids)) continue;
 
+			/*
+			 * Every template has the same values, so a value that can not be
+			 * written can not be written in any of them.
+			 */
 			const rendered = await this.renderValues(template, values, context);
-			if(! rendered) continue;
+			if(! rendered) break;
 
 			for(const combination of combinations(rendered)) {
 				if(budget <= 0) break;

@@ -1,7 +1,8 @@
 import type { Generator } from '../generation/Generator.js';
 import { PhraseGenerator, renderersFor } from '../generation/Generator.js';
-import { templatesFrom } from '../generation/templates.js';
 import { TemplateGenerator } from '../generation/TemplateGenerator.js';
+import type { TemplateSource } from '../generation/templates.js';
+import { searchTemplates } from '../generation/templates.js';
 import type {
 	Match as GraphMatch,
 	Graph,
@@ -47,6 +48,33 @@ export class Phrases<Values extends object> {
 	}
 
 	public toGraph(language: Language) {
+		return this.createParser(language).build();
+	}
+
+	/**
+	 * Get the ways these phrases can be written, for the generation of text.
+	 * The phrases are read in the order they were added, and each phrase in
+	 * the order it is written, so text that is as long as other text comes
+	 * out in the order the phrases describe it.
+	 *
+	 * @param language -
+	 *   the language of the phrases
+	 * @returns
+	 *   the ways to write the phrases
+	 */
+	public toTemplates(language: Language): TemplateSource {
+		return searchTemplates(this.createParser(language).build(false));
+	}
+
+	/**
+	 * Create a parser with these phrases added.
+	 *
+	 * @param language -
+	 *   the language of the phrases
+	 * @returns
+	 *   the parser, not yet built
+	 */
+	private createParser(language: Language): ResolverParser<Phrase<Values>> {
 		const parser = new ResolverParser<Phrase<Values>>(language);
 		parser.skippable(...this.skippableWords);
 
@@ -78,7 +106,7 @@ export class Phrases<Values extends object> {
 			parser.add(phrase, resultHandler);
 		}
 
-		return parser.build();
+		return parser;
 	}
 
 	public toMatcher(language: Language): Matcher<Phrase<Values>> {
@@ -102,7 +130,7 @@ export class Phrases<Values extends object> {
 
 		return new PhraseGenerator<Values>(new TemplateGenerator(
 			language,
-			templatesFrom(graph),
+			this.toTemplates(language),
 			renderersFor(this.values, language),
 			async (text, options) => {
 				const match = await matcher.match(text, options);
