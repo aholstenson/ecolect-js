@@ -1,7 +1,9 @@
 
 import { dateGraph } from '../../../src/language/en/dateGraph.js';
 import { EnglishLanguage } from '../../../src/language/en/EnglishLanguage.js';
+import { en } from '../../../src/language/en/index.js';
 import { DateOrder, mapDate } from '../../../src/type-datetime/index.js';
+import { dateValue } from '../../../src/values/index.js';
 
 import { testRunner } from './helpers.js';
 
@@ -322,6 +324,29 @@ describe('English', function() {
 				year: 2010,
 				month: 1,
 				day: 2
+			});
+
+			it('a start of week that is not a day of the week is rejected', function() {
+				const result = dateValue().matcher(en)
+					.match('start of the week', { now: new Date(2026, 10, 8), weekStartsOn: -1 } as any);
+
+				return expect(result).rejects.toThrow(/weekStartsOn/);
+			});
+
+			it('a first week that does not start in the first week of January is rejected', function() {
+				const result = dateValue().matcher(en)
+					.match('week 2', { now: new Date(2026, 10, 8), firstWeekContainsDate: 8 } as any);
+
+				return expect(result).rejects.toThrow(/firstWeekContainsDate/);
+			});
+
+			// Earlier versions counted Sunday as 0
+			it('a start of week of 0 is Sunday', async function() {
+				const options = { now: new Date(2026, 10, 11) };
+				const zero = await dateValue().matcher(en).match('start of the week', { ...options, weekStartsOn: 0 } as any);
+				const sunday = await dateValue().matcher(en).match('start of the week', { ...options, weekStartsOn: 7 });
+
+				expect(zero).toEqual(sunday);
 			});
 		});
 

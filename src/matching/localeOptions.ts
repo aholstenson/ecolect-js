@@ -74,9 +74,34 @@ export function applyLocale<O extends MatchOptions>(languageLocale: string, opti
 }
 
 /**
+ * Check that the week settings of the options are days that exist.
+ * `weekStartsOn` is a `DayOfWeek` from 1 for Monday to 7 for Sunday. Earlier
+ * versions counted Sunday as 0, so 0 is also read as Sunday.
+ * `firstWeekContainsDate` is a day of January from 1 to 7.
+ *
+ * @param options -
+ *   the options to check
+ * @throws
+ *   if a week setting is not a valid day
+ */
+function checkWeekOptions(options: MatchOptions): void {
+	const weekStartsOn = options.weekStartsOn as number | undefined;
+	if(typeof weekStartsOn !== 'undefined'
+		&& ! (Number.isInteger(weekStartsOn) && weekStartsOn >= 0 && weekStartsOn <= 7)) {
+		throw new Error('`weekStartsOn` must be a day of the week from 1 (Monday) to 7 (Sunday), got ' + weekStartsOn);
+	}
+
+	const firstWeekContainsDate = options.firstWeekContainsDate as number | undefined;
+	if(typeof firstWeekContainsDate !== 'undefined'
+		&& ! (Number.isInteger(firstWeekContainsDate) && firstWeekContainsDate >= 1 && firstWeekContainsDate <= 7)) {
+		throw new Error('`firstWeekContainsDate` must be a day of January from 1 to 7, got ' + firstWeekContainsDate);
+	}
+}
+
+/**
  * Matcher that reads the conventions of a locale for anything the options of
- * a match leave out. An invalid locale rejects the promise of the match, it
- * does not throw.
+ * a match leave out. An invalid locale or week setting rejects the promise of
+ * the match, it does not throw.
  */
 class LocaleAwareMatcher<V> implements Matcher<V> {
 	private readonly locale: string;
@@ -101,7 +126,8 @@ class LocaleAwareMatcher<V> implements Matcher<V> {
 
 	/**
 	 * Copy the options of a match and fill in the conventions they leave out.
-	 * The copy keeps the options of the caller unchanged.
+	 * The copy keeps the options of the caller unchanged. The week settings
+	 * are checked, so that a match with a day that does not exist rejects.
 	 *
 	 * @param options -
 	 *   the options of the match
@@ -109,7 +135,9 @@ class LocaleAwareMatcher<V> implements Matcher<V> {
 	 *   options that name every convention
 	 */
 	private resolve<O extends MatchOptions>(options: O): O {
-		return applyLocale(this.locale, { ...options });
+		const resolved = applyLocale(this.locale, { ...options });
+		checkWeekOptions(resolved);
+		return resolved;
 	}
 }
 
