@@ -548,6 +548,9 @@ describe('English', function() {
 				month: 5,
 				day: 6
 			});
+
+			// A sign before the amount is not ignored
+			test('in -1 days', { now: new Date(2026, 10, 8) }, null);
 		});
 
 		describe('Interval modifiers', function() {

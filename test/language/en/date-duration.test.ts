@@ -62,6 +62,8 @@ describe('English', function() {
 		test('1 quarter', {}, {
 			quarters: 1
 		});
+
+		test('-3 days', {}, null);
 	});
 
 	describe('Date Duration with long input', function() {

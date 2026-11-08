@@ -1,9 +1,10 @@
+import { BigDecimal } from 'numeric-types/decimal';
 import { BigInteger } from 'numeric-types/integer';
 
 import { IntentsBuilder } from '../src/IntentsBuilder.js';
 import { en } from '../src/language/en/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
-import { anyTextValue, customValue, dateTimeValue, integerValue } from '../src/values/index.js';
+import { anyTextValue, customValue, dateTimeValue, integerValue, numberValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';
 
@@ -393,6 +394,19 @@ describe('Intents', function() {
 			return intents.matchPartial('show orders?')
 				.then(r => {
 					expect(r.map(m => m.id)).toContain('orders');
+				});
+		});
+
+		it('Match: minus sign before a number is kept', function() {
+			const matcher = newPhrases()
+				.value('n', numberValue())
+				.phrase('set temperature to {n}')
+				.toMatcher(en);
+
+			return matcher.match('set temperature to -5')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.n).toEqual(BigDecimal.fromNumber(-5));
 				});
 		});
 

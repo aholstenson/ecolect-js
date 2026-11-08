@@ -10,6 +10,25 @@ import { after, isThenable, sequence, toPromise } from './maybePromise.js';
 import type { SubGraphEvaluation } from './SubGraphEvaluation.js';
 
 /**
+ * Get if a punctuation token in the expression can be skipped. A `-` written
+ * right before the next token is a minus sign, as in `-5`, and is not
+ * skipped, as `-5` and `5` are different amounts. A `-` with a space after
+ * it, as in a list item, can be skipped.
+ *
+ * @param token -
+ *   the token to check
+ * @param next -
+ *   the token after it, if any
+ * @returns
+ *   `true` if the token is punctuation that can be skipped
+ */
+function isSkippablePunctuation(token: Token, next: Token | undefined): boolean {
+	if(! token.punctuation) return false;
+
+	return ! (token.normalized === '-' && next && next.start === token.stop);
+}
+
+/**
  * Set used when a graph does not declare any extra skippable tokens.
  */
 export const NO_SKIPPABLE_TOKENS: ReadonlySet<string> = new Set();
@@ -408,7 +427,7 @@ export class Encounter {
 	 */
 	public afterPunctuation(index: number): number {
 		let token = this.tokens[index];
-		while(token && token.punctuation) {
+		while(token && isSkippablePunctuation(token, this.tokens[index + 1])) {
 			token = this.tokens[++index];
 		}
 		return index;
@@ -438,7 +457,7 @@ export class Encounter {
 
 		let idx = index - 1;
 		let token = this.tokens[idx];
-		while(token && token.punctuation) {
+		while(token && isSkippablePunctuation(token, this.tokens[idx + 1])) {
 			token = this.tokens[--idx];
 		}
 		return idx + 1;
