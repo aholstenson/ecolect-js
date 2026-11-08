@@ -546,7 +546,7 @@ Capture a time of day.
 
 Language         | Examples
 -----------------|-------------
-English          | `09:00`, `3 pm`, `at 3:30 am`, `noon`, `quarter to twelve`, `in 2 hours`, `in 45 minutes`
+English          | `09:00`, `12.30`, `3 pm`, `at 3:30 am`, `noon`, `quarter to twelve`, `in 2 hours`, `in 45 minutes`
 Swedish          | `09:00`, `14.30`, `kl 15`, `midnatt`, `kvart i tolv`, `halv tolv`, `om 2 timmar`
 
 #### Returned value
