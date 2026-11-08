@@ -26,7 +26,8 @@ export function literalNumber(value: number, raw: string, suffix=false): NumberD
 		literal: true,
 
 		suffix: suffix,
-		integer: value % 1 === 0
+		integer: value % 1 === 0,
+		...scaleWord(value, suffix)
 	};
 }
 
@@ -37,33 +38,86 @@ export function digitNumber(value: number, raw: string, suffix=false): NumberDat
 		literal: false,
 
 		suffix: suffix,
-		integer: value % 1 === 0
+		integer: value % 1 === 0,
+		...scaleWord(value, suffix)
 	};
 }
 
 /**
- * Combine two numbers when parsing.
+ * Get the scale fields of a single number word.
+ *
+ * @param value -
+ *   the value of the word
+ * @param suffix -
+ *   if the word multiplies the number before it
+ * @returns
+ *   the scale fields to add to the number
  */
-export function combineNumbers(a: NumberData, b: NumberData): NumberData {
-	if(a.suffix && b.suffix) {
+function scaleWord(value: number, suffix: boolean): Partial<NumberData> {
+	if(! suffix) return {};
+
+	return {
+		multiplier: true,
+		scale: value,
+		largestScale: value
+	};
+}
+
+/**
+ * Combine two numbers when parsing. There are three ways to combine them:
+ *
+ * - A scale word multiplies the number before it, as in `three hundred`.
+ *   The number before it must not have a larger scale, so that
+ *   `two thousand three hundred` is not read as `2003 * 100`.
+ * - A number after a scale word is added if it is smaller than the scale,
+ *   as in `three hundred five` and `two thousand three hundred`.
+ * - Two numbers without scale words are joined as groups of digits, as in
+ *   `1 400`.
+ *
+ * @param a -
+ *   the first number
+ * @param b -
+ *   the number after it
+ * @returns
+ *   the combined number, or `null` if the numbers do not form one number
+ */
+export function combineNumbers(a: NumberData, b: NumberData): NumberData | null {
+	if(b.multiplier) {
+		if(typeof a.largestScale !== 'undefined' && a.largestScale > b.value) {
+			return null;
+		}
+
 		const value = a.value * b.value;
 		return {
 			value: value,
 			rawDigits: String(value),
 			integer: a.integer && b.integer,
 			suffix: true,
-			literal: true
+			literal: true,
+			scale: b.value,
+			largestScale: b.value
 		};
-	} else if(b.suffix) {
-		const value = a.value * b.value;
+	} else if(typeof a.scale !== 'undefined') {
+		if(b.value < 0 || b.value >= a.scale) {
+			return null;
+		}
+
+		const value = a.value + b.value;
 		return {
 			value: value,
 			rawDigits: String(value),
 			integer: a.integer && b.integer,
-			suffix: true,
-			literal: true
+			literal: a.literal || b.literal,
+			suffix: false,
+			scale: b.scale,
+			largestScale: a.largestScale
 		};
 	} else {
+		if(typeof a.largestScale !== 'undefined' || typeof b.largestScale !== 'undefined') {
+			// A number with a scale word can not be joined as digits
+			return null;
+		}
+
 		const raw = a.rawDigits + b.rawDigits;
 		const value = parseInt(raw, 10);
 

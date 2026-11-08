@@ -40,5 +40,9 @@ describe('English', function() {
 		test('one 000', {}, null);
 
 		test('10,000', {}, BigInteger.fromNumber(10000));
+
+		test('one hundred five', {}, BigInteger.fromNumber(105));
+
+		test('two thousand three hundred', {}, BigInteger.fromNumber(2300));
 	});
 });
