@@ -155,7 +155,25 @@ export class ValueNode<V> extends Node {
 			 * the only match that reads all of the input.
 			 */
 			const sorted = results.sort((a, b) => (b.score - a.score) || (b.index - a.index));
-			const limited = sorted.slice(0, Math.min(sorted.length, this.options.max || 10));
+
+			/*
+			 * The phrase can continue after the value in several ways that
+			 * give the same match, for example when a partial expression ends
+			 * before a group that may be left out. Only the first of matches
+			 * that end at the same index with the same values counts toward
+			 * the limit, so that copies do not push out other values.
+			 */
+			const max = this.options.max || 10;
+			const limited: Match<any>[] = [];
+			for(const match of sorted) {
+				if(limited.length >= max) break;
+
+				const isCopy = limited.some(other => other.index === match.index
+					&& deepEqual(other.data.values, match.data.values));
+				if(! isCopy) {
+					limited.push(match);
+				}
+			}
 
 			// Match all of the top matches
 			return sequence(limited.length, i => encounter.match(limited[i]));

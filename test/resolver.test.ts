@@ -80,6 +80,25 @@ describe('Resolver', function() {
 					expect(second.values).toEqual({ a: 'for test' });
 				});
 		});
+
+		it('Many ways to continue a value do not push out other values', function() {
+			/*
+			 * Each value of `a` can continue the phrase in many ways, and every
+			 * way gives the same match. The value keeps its 10 best matches,
+			 * and copies of one match must not take the place of other values.
+			 */
+			const resolver = new PhrasesBuilder()
+				.value('a', anyTextValue())
+				.phrase('show {a} [new] [open|new] the [show|list] [list] new')
+				.toMatcher(en);
+
+			return resolver.matchPartial('show a the list new')
+				.then(r => {
+					expect(r.map(m => m.values.a)).toEqual([
+						'a', 'a the', 'a the list', 'a the list new'
+					]);
+				});
+		});
 	});
 
 	describe('Complete matches and duplicate values', function() {
