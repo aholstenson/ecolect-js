@@ -162,6 +162,103 @@ describe('Utils: Tokenization', function() {
 			);
 		});
 	});
+
+	describe('Scripts', function() {
+		it('Letters with combining marks', function() {
+			checkTokens(
+				tokenize('café ok', testTokenizer),
+				[ 'café', 'ok' ]
+			);
+		});
+
+		it('Letters outside the Basic Multilingual Plane', function() {
+			// Gothic letters
+			checkTokens(
+				tokenize('𐌰𐌱𐌲 abc', testTokenizer),
+				[ '𐌰𐌱𐌲', 'abc' ]
+			);
+		});
+
+		it('CJK ideographs added after Unicode 9', function() {
+			// U+31350 is in CJK Unified Ideographs Extension H (Unicode 15)
+			checkTokens(
+				tokenize('\u{31350}\u{31351}', testTokenizer),
+				[ '\u{31350}\u{31351}' ]
+			);
+		});
+
+		it('Digits outside the Basic Multilingual Plane', function() {
+			// Mathematical bold digits
+			checkTokens(
+				tokenize('𝟏𝟐a', testTokenizer),
+				[ '𝟏𝟐', 'a' ]
+			);
+		});
+
+		it('Punctuation is marked', function() {
+			const tokens = tokenize('hi!', testTokenizer);
+			expect(tokens[1].raw).toEqual('!');
+			expect(tokens[1].punctuation).toEqual(true);
+			expect(tokens[0].punctuation).toBeFalsy();
+		});
+	});
+
+	describe('Emoji', function() {
+		it('Single emoji', function() {
+			checkTokens(
+				tokenize('hi😀', testTokenizer),
+				[ 'hi', '😀' ]
+			);
+		});
+
+		it('Emoji with skin tone', function() {
+			checkTokens(
+				tokenize('👍🏽👍', testTokenizer),
+				[ '👍🏽', '👍' ]
+			);
+		});
+
+		it('Emoji with presentation selector', function() {
+			checkTokens(
+				tokenize('❤️ok', testTokenizer),
+				[ '❤️', 'ok' ]
+			);
+		});
+
+		it('Zero width joiner sequence', function() {
+			checkTokens(
+				tokenize('👩‍💻👨‍👩‍👧', testTokenizer),
+				[ '👩‍💻', '👨‍👩‍👧' ]
+			);
+		});
+
+		it('Zero width joiner sequence with skin tones', function() {
+			checkTokens(
+				tokenize('🧑🏽‍🚀', testTokenizer),
+				[ '🧑🏽‍🚀' ]
+			);
+		});
+
+		it('Country flags', function() {
+			checkTokens(
+				tokenize('🇸🇪🇺🇸', testTokenizer),
+				[ '🇸🇪', '🇺🇸' ]
+			);
+		});
+
+		it('Subdivision flag', function() {
+			const england = '\u{1F3F4}\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}';
+			checkTokens(
+				tokenize(england + 'x', testTokenizer),
+				[ england, 'x' ]
+			);
+		});
+
+		it('Emoji are not punctuation', function() {
+			const tokens = tokenize('😀', testTokenizer);
+			expect(tokens[0].punctuation).toBeFalsy();
+		});
+	});
 });
 
 describe('Utils: Raw Value', function() {

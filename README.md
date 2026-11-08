@@ -658,7 +658,8 @@ $ pnpm test
 
 Command | Description
 --------|------------
-`pnpm build` | Generate the Unicode matchers and compile `src` to `dist`
+`pnpm build` | Compile `src` to `dist`
+`pnpm ci` | Type check, lint and run the test suite with coverage, as CI does
 `pnpm test` | Run the test suite once with Vitest
 `pnpm test:watch` | Run the test suite in watch mode
 `pnpm coverage` | Run the test suite and report coverage

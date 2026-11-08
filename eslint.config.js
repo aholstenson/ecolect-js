@@ -11,8 +11,7 @@ export default tseslint.config(
 		ignores: [
 			'**/dist/**',
 			'**/node_modules/**',
-			'**/apidocs/**',
-			'src/tokenization/matchers.ts'
+			'**/apidocs/**'
 		]
 	},
 

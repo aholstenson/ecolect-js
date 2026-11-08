@@ -1,22 +1,40 @@
-import {
-	punctuation,
-	wordish,
-	numeric,
-	emoji,
-	emojiModifier
-} from './matchers.js';
 import type { Token } from './Token.js';
 import type { TokenData } from './TokenData.js';
 import { Tokens } from './Tokens.js';
 
-const MATCHER_PUNCTUATION = new RegExp('^(' + punctuation + ')+$');
+/*
+ * The character classes use Unicode property escapes. The JavaScript engine
+ * supplies the Unicode data, so the classes follow the Unicode version of the
+ * runtime. All of them work with the `u` flag, which every engine that runs
+ * ES2022 supports.
+ */
+
+const MATCHER_PUNCTUATION = /^\p{P}+$/u;
 function isPunctuation(text: string) {
 	return MATCHER_PUNCTUATION.test(text);
 }
 
-const MATCHER_ALPHABETIC = '(?:' + wordish + ')+';
-const MATCHER_NUMERIC = '(?:' + numeric + ')+';
-const MATCHER_EMOJI = emoji + '(?:' + emojiModifier + ')*';
+/**
+ * Letters, combining marks, connectors such as `_`, the zero width joiners
+ * and the apostrophe. A run of these is one word.
+ */
+const MATCHER_ALPHABETIC = '[\\p{Alphabetic}\\p{M}\\p{Pc}\\p{Join_Control}\']+';
+
+const MATCHER_NUMERIC = '\\p{Nd}+';
+
+/**
+ * The parts that can follow an emoji in the same sequence: a skin tone, the
+ * emoji presentation selector and the tag characters of subdivision flags.
+ */
+const EMOJI_SUFFIX = '[\\p{Emoji_Modifier}\\uFE0F\\u{E0020}-\\u{E007F}]*';
+const EMOJI_PART = '\\p{Extended_Pictographic}' + EMOJI_SUFFIX;
+
+/**
+ * One emoji as the user sees it. This is a flag made from two regional
+ * indicators, or emoji parts with zero width joiners between them.
+ */
+const MATCHER_EMOJI = '\\p{Regional_Indicator}{2}|' + EMOJI_PART + '(?:\\u200D' + EMOJI_PART + ')*';
+
 const MATCHER = new RegExp('(' + MATCHER_ALPHABETIC + '|' + MATCHER_NUMERIC + '|' + MATCHER_EMOJI + '|.)', 'gu');
 function tokenizeSingle(index: number, text: string, tokenizer: PartialTokenizer, result: Tokens) {
 	MATCHER.lastIndex = 0;
