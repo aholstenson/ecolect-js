@@ -83,6 +83,7 @@
     "coverage": "vitest run --coverage",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:browser": "vitest run --config vitest.browser.config.ts",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit --project tsconfig.eslint.json"
   },
@@ -96,16 +97,18 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.4.1",
-    "@vitest/coverage-v8": "^5.0.0",
+    "@vitest/browser-playwright": "^5.1.0",
+    "@vitest/coverage-v8": "^5.1.0",
     "eslint": "^10.9.1",
     "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-import-x": "^4.17.1",
     "eslint-plugin-jsdoc": "^64.3.5",
     "eslint-plugin-tsdoc": "^0.5.2",
     "globals": "^17.12.0",
+    "playwright": "^1.65.0",
     "typedoc": "^0.28.20",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.69.0",
-    "vitest": "^5.0.0"
+    "vitest": "^5.1.0"
   }
 }

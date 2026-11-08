@@ -6,7 +6,6 @@
 	"include": [
 		"src",
 		"test",
-		"build",
 		"*.ts",
 		"*.js"
 	],

@@ -662,6 +662,7 @@ Command | Description
 `pnpm ci` | Type check, lint and run the test suite with coverage, as CI does
 `pnpm test` | Run the test suite once with Vitest
 `pnpm test:watch` | Run the test suite in watch mode
+`pnpm test:browser` | Run the test suite in headless Chromium, Firefox and WebKit
 `pnpm coverage` | Run the test suite and report coverage
 `pnpm typecheck` | Type check the sources and the tests
 `pnpm lint` | Run ESLint

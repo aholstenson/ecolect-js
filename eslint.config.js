@@ -161,7 +161,7 @@ export default tseslint.config(
 
 	{
 		// Tool configuration is addressed by its default export.
-		files: [ 'eslint.config.js', 'vitest.config.ts' ],
+		files: [ 'eslint.config.js', 'vitest.config.ts', 'vitest.browser.config.ts' ],
 		rules: {
 			'import-x/no-default-export': 'off'
 		}
