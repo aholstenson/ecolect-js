@@ -166,13 +166,17 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 
 		let previousIndex = 0;
 		const seen = new Set<string>();
-		VALUE.lastIndex = 0;
-		let match;
-		while((match = VALUE.exec(text))) {
+
+		/*
+		 * `matchAll` reads the text with a copy of the expression, so a value
+		 * that reads another phrase in `toNode` does not move the place this
+		 * phrase is read from.
+		 */
+		for(const match of text.matchAll(VALUE)) {
 			if(match.index !== 0) {
 				parse(previousIndex, match.index);
 			}
-			previousIndex = VALUE.lastIndex;
+			previousIndex = match.index + match[0].length;
 
 			const id = match[1];
 			const value = this.values.get(id);

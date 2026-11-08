@@ -3,6 +3,8 @@ import { BigInteger } from 'numeric-types/integer';
 
 import { en } from '../src/language/en/index.js';
 import { PhrasesBuilder } from '../src/resolver/PhrasesBuilder.js';
+import { ValueNode } from '../src/resolver/ValueNode.js';
+import type { NodeConvertable } from '../src/values/index.js';
 import { anyTextValue, dateValue, numberValue, booleanValue, customValue, integerValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';
@@ -843,6 +845,39 @@ describe('Resolver', function() {
 				.then(r => {
 					assertNotNull(r);
 					expect(r.values).toEqual({ end: { year: 2026, month: 11, day: 8 } });
+				});
+		});
+	});
+
+	describe('Value that builds other phrases', function() {
+		it('Phrases built while a phrase is read do not affect it', function() {
+			// A value that builds a graph of its own phrases when it is turned into a node
+			const nested: NodeConvertable<string> = {
+				toNode(id: string) {
+					new PhrasesBuilder()
+						.value('inner', integerValue())
+						.phrase('x {inner}')
+						.build()
+						.toGraph(en);
+
+					return new ValueNode<string>(id, {
+						match: encounter => {
+							encounter.match(encounter.text);
+						}
+					});
+				}
+			};
+
+			const resolver = new PhrasesBuilder()
+				.value('a', nested)
+				.value('b', anyTextValue())
+				.phrase('first {a} then {b}')
+				.toMatcher(en);
+
+			return resolver.match('first q then r')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values).toEqual({ a: 'q', b: 'r' });
 				});
 		});
 	});
