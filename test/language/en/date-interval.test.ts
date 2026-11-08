@@ -738,6 +738,47 @@ describe('English', () => {
 			}
 		});
 
+		// The month after January 30th ends at the end of February
+		test('next 1 month', { now: new Date(2026, 0, 30) }, {
+			start: {
+				year: 2026,
+				month: 1,
+				day: 30
+			},
+			end: {
+				year: 2026,
+				month: 2,
+				day: 28
+			}
+		});
+
+		test('next 1 month', { now: new Date(2026, 0, 31) }, {
+			start: {
+				year: 2026,
+				month: 1,
+				day: 31
+			},
+			end: {
+				year: 2026,
+				month: 2,
+				day: 28
+			}
+		});
+
+		// February has a 28th, so the month ends the day before it
+		test('next 1 month', { now: new Date(2026, 0, 28) }, {
+			start: {
+				year: 2026,
+				month: 1,
+				day: 28
+			},
+			end: {
+				year: 2026,
+				month: 2,
+				day: 27
+			}
+		});
+
 		it('a day of the month is the same day as a date', async function() {
 			const options = { now: new Date(2026, 10, 8, 13) };
 			const date = await dateValue().matcher(en).match('the 5th', options);

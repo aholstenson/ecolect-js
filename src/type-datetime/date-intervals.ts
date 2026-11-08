@@ -110,8 +110,30 @@ export function lastDuration(duration: DateTimeData, options: DateTimeOptions): 
 }
 
 /**
+ * Check if a duration is only made of whole calendar periods that can move
+ * the day of the month, which are years, quarters and months.
+ *
+ * @param duration -
+ *   the duration to check
+ * @returns
+ *   `true` if the duration only has years, quarters and months
+ */
+function hasOnlyMonths(duration: DateTimeData): boolean {
+	return (typeof duration.relativeYears !== 'undefined'
+		|| typeof duration.relativeQuarters !== 'undefined'
+		|| typeof duration.relativeMonths !== 'undefined')
+		&& typeof duration.relativeWeeks === 'undefined'
+		&& typeof duration.relativeDays === 'undefined'
+		&& ! hasTimeOfDay(duration);
+}
+
+/**
  * Create an interval that starts today and covers the given duration, as in
  * `the next 7 days`. The length is measured as by `lastDuration`.
+ *
+ * A month from January 30th ends at the end of February. Adding a month
+ * gives February 28th, as February has no 30th, and this day is then the
+ * last day of the interval.
  *
  * @param duration -
  *   the length of the interval
@@ -124,7 +146,8 @@ export function nextDuration(duration: DateTimeData, options: DateTimeOptions): 
 	const now = currentTime(options);
 
 	let end = mapDuration(duration).toDate(now);
-	if(! hasTimeOfDay(duration)) {
+	const movedToEndOfMonth = hasOnlyMonths(duration) && end.getDate() < now.getDate();
+	if(! hasTimeOfDay(duration) && ! movedToEndOfMonth) {
 		end = addDays(end, -1);
 	}
 
