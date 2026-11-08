@@ -5,8 +5,8 @@ import type { Tokens } from '../tokenization/index.js';
  */
 export interface ValueEncounter<V> {
 	/**
-	 * If this is a partial search. Partial searches may add several matches,
-	 * while non-partial matches will error if several matches are added.
+	 * If this is a partial search. A partial search can stop in the middle of
+	 * the value, so the text can be the start of a longer value.
 	 */
 	readonly partial: boolean;
 
@@ -21,7 +21,10 @@ export interface ValueEncounter<V> {
 	readonly text: string;
 
 	/**
-	 * Add a match for this value.
+	 * Add a match for this value. A value can add several matches for the
+	 * same text, such as two contacts with the same name. A single match then
+	 * uses the one with the highest score, and a match of everything returns
+	 * all of them.
 	 *
 	 * @param value
 	 *   value matched

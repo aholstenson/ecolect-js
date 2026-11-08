@@ -243,10 +243,6 @@ class ValueEncounterImpl<V> implements ValueEncounter<V> {
 	 * @param score
 	 */
 	public match(value: V, score=1) {
-		if(! this.partial && this.matches.length >= 1) {
-			throw new Error('Multiple matches are only supported when in partial mode');
-		}
-
 		this.matches.push({ value, score });
 	}
 }

@@ -729,6 +729,33 @@ describe('Resolver', function() {
 					});
 			});
 		});
+
+		describe('Several candidates for the same text', function() {
+			const resolver = new PhrasesBuilder()
+				.value('person', customValue<string>(encounter => {
+					if(encounter.text === 'john') {
+						encounter.match('John Smith', 0.9);
+						encounter.match('John Doe', 0.8);
+					}
+				}))
+				.phrase('call {person}')
+				.toMatcher(en);
+
+			it('Match', function() {
+				return resolver.match('call john')
+					.then(r => {
+						assertNotNull(r);
+						expect(r.values.person).toEqual('John Smith');
+					});
+			});
+
+			it('Match all', function() {
+				return resolver.matchAll('call john')
+					.then(r => {
+						expect(r.map(m => m.values.person)).toEqual([ 'John Smith', 'John Doe' ]);
+					});
+			});
+		});
 	});
 
 	describe('Parsed value before free text', function() {
