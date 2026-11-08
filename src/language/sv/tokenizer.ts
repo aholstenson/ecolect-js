@@ -1,5 +1,6 @@
 import type { Tokenizer } from '../../tokenization/index.js';
 import { tokenize } from '../../tokenization/index.js';
+import { characters } from '../algorithms/jaroWinkler.js';
 
 import { swedishStemmer } from './algorithms/swedishStemmer.js';
 
@@ -28,7 +29,7 @@ export const tokenizer: Tokenizer = (value: string) => {
 			{
 				raw: word,
 				normalized: normalized,
-				short: word.length <= SHORT_WORD_LENGTH,
+				short: characters(word).length <= SHORT_WORD_LENGTH,
 				stemmed: swedishStemmer(normalized),
 				skippable: SKIPPABLE.has(normalized)
 			}

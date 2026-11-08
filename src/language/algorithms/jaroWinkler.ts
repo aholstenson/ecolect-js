@@ -22,7 +22,29 @@ const BOOST_THRESHOLD = 0.7;
 const SCALING_FACTOR = 0.1;
 
 /**
- * Calculate the Jaro similarity of two strings.
+ * Surrogate code units, which are half of a character outside the Basic
+ * Multilingual Plane, such as `𝐡` or `𠀀`.
+ */
+const SURROGATE = /[\uD800-\uDFFF]/;
+
+/**
+ * Get the characters of a string. A string without surrogates is returned as
+ * it is, as each code unit is then a character. Other strings are split into
+ * code points, so that a character outside the Basic Multilingual Plane is
+ * one character and not two halves that can match the halves of another.
+ *
+ * @param text -
+ *   the string
+ * @returns
+ *   the characters of the string
+ */
+export function characters(text: string): ArrayLike<string> {
+	return SURROGATE.test(text) ? Array.from(text) : text;
+}
+
+/**
+ * Calculate the Jaro similarity of two strings. The strings are compared by
+ * code points.
  *
  * @param a -
  *   the first string
@@ -34,8 +56,22 @@ const SCALING_FACTOR = 0.1;
 export function jaroSimilarity(a: string, b: string): number {
 	if(a === b) return 1;
 
-	let max: string;
-	let min: string;
+	return jaro(characters(a), characters(b));
+}
+
+/**
+ * Calculate the Jaro similarity of two lists of characters.
+ *
+ * @param a -
+ *   the characters of the first string
+ * @param b -
+ *   the characters of the second string
+ * @returns
+ *   similarity between 0 and 1, where 1 means the strings are equal
+ */
+function jaro(a: ArrayLike<string>, b: ArrayLike<string>): number {
+	let max: ArrayLike<string>;
+	let min: ArrayLike<string>;
 
 	if(a.length > b.length) {
 		max = a;
@@ -99,7 +135,8 @@ export function jaroSimilarity(a: string, b: string): number {
 
 /**
  * Calculate the Jaro-Winkler similarity of two strings. Jaro-Winkler gives a
- * higher score to strings that share a prefix of up to four characters.
+ * higher score to strings that share a prefix of up to four characters. The
+ * strings are compared by code points.
  *
  * @param a -
  *   the first string
@@ -111,13 +148,16 @@ export function jaroSimilarity(a: string, b: string): number {
 export function jaroWinklerSimilarity(a: string, b: string): number {
 	if(a === b) return 1;
 
-	const dj = jaroSimilarity(a, b);
+	const ca = characters(a);
+	const cb = characters(b);
+
+	const dj = jaro(ca, cb);
 	if(dj < BOOST_THRESHOLD) return dj;
 
 	let l = 0;
-	const prefixLimit = Math.min(a.length, b.length, 4);
+	const prefixLimit = Math.min(ca.length, cb.length, 4);
 	for(let i = 0; i < prefixLimit; i++) {
-		if(a[i] === b[i]) {
+		if(ca[i] === cb[i]) {
 			l++;
 		} else {
 			break;

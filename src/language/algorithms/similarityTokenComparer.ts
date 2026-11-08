@@ -1,6 +1,6 @@
 import type { TokenComparer } from '../../tokenization/index.js';
 
-import { jaroWinklerSimilarity } from './jaroWinkler.js';
+import { characters, jaroWinklerSimilarity } from './jaroWinkler.js';
 
 /**
  * The lowest Jaro-Winkler similarity that counts as a fuzzy match.
@@ -24,8 +24,10 @@ const SIMILARITY_THRESHOLD = 0.9;
  *   the similarity scaled to a score, or 0 if not similar
  */
 function fuzzyScore(a: string, b: string): number {
-	const min = Math.min(a.length, b.length);
-	const max = Math.max(a.length, b.length);
+	const aLength = characters(a).length;
+	const bLength = characters(b).length;
+	const min = Math.min(aLength, bLength);
+	const max = Math.max(aLength, bLength);
 	if(min * 2 <= max) return 0;
 
 	const d = jaroWinklerSimilarity(a, b);
@@ -111,7 +113,9 @@ export function createSimilarityTokenComparer(options: SimilarityTokenComparerOp
 		comparePartial(a, b) {
 			if(a.normalized.indexOf(b.normalized) === 0) return 1.0;
 
-			return fuzzyScore(a.normalized.substring(0, b.normalized.length), b.normalized);
+			// Compare the start of the word with the same number of characters
+			const start = Array.prototype.slice.call(characters(a.normalized), 0, characters(b.normalized).length).join('');
+			return fuzzyScore(start, b.normalized);
 		}
 	};
 }

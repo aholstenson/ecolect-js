@@ -1,5 +1,6 @@
 import type { Tokenizer } from '../../tokenization/index.js';
 import { tokenize } from '../../tokenization/index.js';
+import { characters } from '../algorithms/jaroWinkler.js';
 
 import { porterStemmer } from './algorithms/porterStemmer.js';
 import { treebankTokenizer } from './algorithms/treebankTokenizer.js';
@@ -28,7 +29,7 @@ export const tokenizer: Tokenizer = (value: string) => {
 			result[i] = {
 				raw: raw[i],
 				normalized: normalized,
-				short: word.length <= 4,
+				short: characters(word).length <= 4,
 				stemmed: NOT_STEMMED.has(normalized) ? normalized : porterStemmer(normalized),
 				skippable: SKIPPABLE.has(normalized) || word.toLowerCase() === '\'s'
 			};

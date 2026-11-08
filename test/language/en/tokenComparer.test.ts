@@ -60,6 +60,23 @@ describe('English', function() {
 			});
 		});
 
+		describe('Letters outside the Basic Multilingual Plane', function() {
+			it('Different words are not similar', function() {
+				expect(tokenComparer.compare(token('hello'), token('helps'))).toEqual(0);
+				// Mathematical bold letters
+				expect(tokenComparer.compare(token('𝐡𝐞𝐥𝐥𝐨'), token('𝐡𝐞𝐥𝐩𝐬'))).toEqual(0);
+			});
+
+			it('Different CJK ideographs are not similar', function() {
+				// CJK Unified Ideographs Extension B
+				expect(tokenComparer.compare(token('\u{20000}\u{20001}\u{20002}'), token('\u{20000}\u{20001}\u{20003}'))).toEqual(0);
+			});
+
+			it('A word with a typo is similar', function() {
+				expect(tokenComparer.compare(token('𝐨𝐫𝐝𝐞𝐫𝐬𝐬'), token('𝐨𝐫𝐝𝐞𝐫𝐬'))).toBeGreaterThan(0);
+			});
+		});
+
 		describe('Words with a negating prefix', function() {
 			it('activate is not deactivate', function() {
 				expect(tokenComparer.compare(token('deactivate'), token('activate'))).toEqual(0);
