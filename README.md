@@ -161,7 +161,10 @@ newPhrases()
   .phrase('Order[s] (today|{when})')
 ```
 
-Groups can not contain other groups.
+Groups can not contain other groups. `|` can only be used in a group, and a
+group within `(` and `)` can not have an empty alternative, so use `[a]` and
+not `(a|)`. There is no escape character, so a phrase can not match the
+characters `(`, `)`, `[`, `]`, `{`, `}` and `|`.
 
 ## Generating text
 

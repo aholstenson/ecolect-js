@@ -47,15 +47,18 @@ export function checkVariantCount(count: number, text: string): void {
  *
  * Alternatives are text and may contain both several words and values, so
  * `Orders (for|belonging to) {customer}` and `Orders (today|{when})` both
- * work.
+ * work. `|` can only be used in a group, and a group in `(` and `)` can not
+ * have an empty alternative. There is no escape character, so a phrase can
+ * not match the characters `(`, `)`, `[`, `]`, `{`, `}` and `|`.
  *
  * @param text -
  *   the phrase to expand
  * @returns
  *   every phrase the given text can be written as, without duplicates
  * @throws
- *   if a group is not closed, groups are nested, or the phrase can be written
- *   in more than `MAX_PHRASE_VARIANTS` ways
+ *   if a group is not closed, groups are nested, `|` is used outside of a
+ *   group, a group in `(` and `)` has an empty alternative, or the phrase can
+ *   be written in more than `MAX_PHRASE_VARIANTS` ways
  */
 export function expandPhrase(text: string): string[] {
 	let variants: string[] = [ '' ];
@@ -73,6 +76,10 @@ export function expandPhrase(text: string): string[] {
 			throw new Error('Unexpected `' + char + '`, no group has been opened, in phrase: ' + text);
 		}
 
+		if(char === '|') {
+			throw new Error('`|` separates alternatives and can only be used in a group such as `(a|b)`, in phrase: ' + text);
+		}
+
 		if(char !== '(' && char !== '[') continue;
 
 		const end = text.indexOf(GROUP_END[char], i + 1);
@@ -86,6 +93,13 @@ export function expandPhrase(text: string): string[] {
 		}
 
 		const alternatives = body.split('|');
+		if(char === '(' && alternatives.some(alternative => alternative.trim() === '')) {
+			throw new Error(
+				'A group in `(` and `)` must match, so it can not have an empty alternative.'
+				+ ' Use `[` and `]` for a group that may be left out, in phrase: ' + text
+			);
+		}
+
 		if(char === '[') {
 			// The group may be left out, so it also expands into nothing
 			alternatives.push('');

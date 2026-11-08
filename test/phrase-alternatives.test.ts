@@ -85,6 +85,14 @@ describe('Phrases: Groups of alternatives', function() {
 		it('Phrase without anything to match', function() {
 			expect(() => expandPhrase('[]')).toThrow();
 		});
+
+		it('Separator outside a group', function() {
+			expect(() => expandPhrase('on | off')).toThrow(/\|/);
+		});
+
+		it('Empty alternative in a group that must match', function() {
+			expect(() => expandPhrase('a (|b)')).toThrow();
+		});
 	});
 
 	describe('Matcher', function() {
