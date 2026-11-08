@@ -1,6 +1,7 @@
 import { intentsBuilder } from '../src/index.js';
 import { en } from '../src/language/en/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
+import { enumerationValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';
 
@@ -67,6 +68,18 @@ describe('Phrases: Skippable words', function() {
 		it('Trailing stop word keeps continuations', function() {
 			return resolver.matchPartial('show orders for')
 				.then(r => expect(r.length).toEqual(1));
+		});
+
+		it('Phrases that differ only in a skippable word give each value once', function() {
+			const withValue = newPhrases()
+				.value('color', enumerationValue([ 'red', 'blue' ]))
+				.skippable('please')
+				.phrase('show orders {color}')
+				.phrase('show orders please {color}')
+				.toMatcher(en);
+
+			return withValue.matchPartial('show orders please')
+				.then(r => expect(r.map(m => m.values.color)).toEqual([ 'red', 'blue' ]));
 		});
 	});
 

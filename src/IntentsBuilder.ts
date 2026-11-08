@@ -43,7 +43,7 @@ export class IntentsBuilder<Intents extends Intent<any, any> = never> {
 
 		this.builder = new GraphBuilder<Intent<any, any>>(language)
 			.allowPartial()
-			.matchIsEqual(options => options.all ? intentIsEqual : deepEqual);
+			.matchIsEqual(options => options.partial || options.all ? intentIsEqual : deepEqual);
 	}
 
 	public add<I extends string, V extends object>(

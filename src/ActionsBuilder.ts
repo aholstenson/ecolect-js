@@ -49,7 +49,7 @@ export class ActionsBuilder<Context=void, ReturnType=void> {
 
 		this.builder = new GraphBuilder<Action<any, any, any>>(language)
 			.allowPartial()
-			.matchIsEqual(options => options.all ? actionIsEqual : deepEqual);
+			.matchIsEqual(options => options.partial || options.all ? actionIsEqual : deepEqual);
 	}
 
 	public add<V extends object>(def: ActionDef<Context, ReturnType, V>) {

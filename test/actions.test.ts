@@ -59,6 +59,13 @@ describe('Actions', function() {
 				});
 		});
 
+		it('Partial: empty expression lists each action once', function() {
+			return actions.matchPartial('')
+				.then(r => {
+					expect(r.map(a => a.id).sort()).toEqual([ 'activeOrders', 'orders' ]);
+				});
+		});
+
 		it('Partial: or', function() {
 			return actions.matchPartial('or')
 				.then(r => {

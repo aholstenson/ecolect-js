@@ -93,6 +93,15 @@ describe('Intents', function() {
 				});
 		});
 
+		it('Partial: empty expression lists each intent once', function() {
+			return intents.matchPartial('')
+				.then(r => {
+					const ids = r.map(m => m.id);
+					expect(ids.length).toBeGreaterThan(0);
+					expect(ids).toEqual([ ...new Set(ids) ]);
+				});
+		});
+
 		it('Partial: or', function() {
 			return intents.matchPartial('or')
 				.then(r => {
