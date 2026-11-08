@@ -26,7 +26,8 @@ export class PhrasesBuilder<Values extends object = object> {
 
 	/**
 	 * Add a phrase that may be matched. Values are referred to by name, as in
-	 * `Orders for {customer}`.
+	 * `Orders for {customer}`. Each name can be used once in a phrase, so
+	 * `from {start} to {end}` needs two names.
 	 *
 	 * A phrase can describe several ways to say the same thing via groups of
 	 * alternatives. Alternatives within `(` and `)` must match, alternatives

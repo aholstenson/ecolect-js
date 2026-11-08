@@ -917,6 +917,10 @@ describe('Resolver', function() {
 			expect(build('orders when}')).toThrow(/is not a value/);
 		});
 
+		it('A value named twice is reported', function() {
+			expect(build('orders from {when} to {when}')).toThrow(/`{when}`/);
+		});
+
 		it('A name of letters and digits is read as a value', function() {
 			expect(build('orders {when}')).not.toThrow();
 		});

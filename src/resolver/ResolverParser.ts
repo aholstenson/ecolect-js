@@ -163,6 +163,7 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 		};
 
 		let previousIndex = 0;
+		const seen = new Set<string>();
 		VALUE.lastIndex = 0;
 		let match;
 		while((match = VALUE.exec(text))) {
@@ -176,6 +177,18 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 			if(! value) {
 				throw new Error('No type registered for ' + id);
 			}
+
+			/*
+			 * A phrase gives one value for each name, so a second use of the
+			 * same name would replace the value of the first.
+			 */
+			if(seen.has(id)) {
+				throw new Error(
+					'`{' + id + '}` is used more than once in `' + text + '`,'
+					+ ' give each value in a phrase its own name'
+				);
+			}
+			seen.add(id);
 
 			const nextNode = value.toNode(id);
 
