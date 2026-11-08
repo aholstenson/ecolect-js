@@ -51,6 +51,13 @@ describe('English', function() {
 				await matcher.match('one '.repeat(260));
 				expect(performance.now() - start).toBeLessThan(500);
 			}, 1000);
+
+			it('Repeated scale words are matched quickly', async function() {
+				const start = performance.now();
+				// The value is too large for an integer, only the time is checked
+				await matcher.match('hundred '.repeat(260)).catch(() => null);
+				expect(performance.now() - start).toBeLessThan(500);
+			}, 1000);
 		});
 
 		test('one hundred five', {}, BigInteger.fromNumber(105));

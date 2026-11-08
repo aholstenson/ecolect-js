@@ -17,24 +17,34 @@ export interface NumberData {
 	multiplier?: boolean;
 
 	/**
-	 * The scale of the last group of the number, such as `100` for
-	 * `three hundred` and for `two thousand three hundred`. A number that is
-	 * smaller than the scale can be added after it, as in
-	 * `three hundred five`. Not set when the number does not end with a
-	 * scale word.
+	 * If the number was combined from more than one word or group of digits.
+	 * Numbers are combined from left to right, so only a number that is not
+	 * combined can come after another number.
 	 */
-	scale?: number;
+	combined?: boolean;
 
 	/**
-	 * How the number was combined from smaller numbers. Not set for a single
-	 * word or a single group of digits.
+	 * The parts of a number that has scale words, from the largest scale to
+	 * the smallest. `two thousand three hundred five` has the parts 2000
+	 * (scale 1000), 300 (scale 100) and 5 (scale 1). Not set when the number
+	 * has no scale word.
 	 */
-	combinedBy?: 'multiply' | 'add' | 'join';
+	parts?: NumberPart[];
+}
+
+/**
+ * A part of a number that has scale words, such as `three hundred` in
+ * `two thousand three hundred`.
+ */
+export interface NumberPart {
+	/**
+	 * The scale of the part, such as `100` for `three hundred`. A part that
+	 * has no scale word has the scale `1`.
+	 */
+	scale: number;
 
 	/**
-	 * The largest scale word in the number, such as `1000` for
-	 * `two thousand three hundred`. Not set when the number has no scale
-	 * word.
+	 * The value of the part, such as `300` for `three hundred`.
 	 */
-	largestScale?: number;
+	value: number;
 }
