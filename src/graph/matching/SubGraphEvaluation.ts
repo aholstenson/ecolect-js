@@ -30,7 +30,8 @@ export interface SubGraphVariant {
  * two numbers into one. When such a graph is evaluated and it reaches itself
  * at the same index it can not be evaluated again, as that would go on
  * forever. Instead the variants found so far are used as a seed, and the
- * graph is evaluated again until the seed stops growing.
+ * graph is evaluated again until the seed stops growing. Each pass only
+ * combines the variants that the pass before it found.
  */
 export interface SubGraphEvaluation {
 	/**
@@ -53,6 +54,21 @@ export interface SubGraphEvaluation {
 	 * The variants found so far.
 	 */
 	readonly seed: SubGraphVariant[];
+
+	/**
+	 * The variants found so far, grouped by their index, to find a variant
+	 * that is already in the seed without looking through all of it.
+	 */
+	readonly seedByIndex: Map<number, SubGraphVariant[]>;
+
+	/**
+	 * The variants that were added to the seed, or that got a better score,
+	 * in the last pass. When the sub-graph refers to itself it only uses
+	 * these, as combinations with the other variants of the seed were found
+	 * in earlier passes. Without this every pass would combine all variants
+	 * again, and long inputs would take a very long time.
+	 */
+	delta: SubGraphVariant[];
 
 	/**
 	 * If the seed has been used by the sub-graph referring to itself during

@@ -529,6 +529,8 @@ export class Encounter {
 			index: this.currentIndex,
 			depth: this.currentNodes.length,
 			seed: [],
+			seedByIndex: new Map(),
+			delta: [],
 			seedUsed: false,
 			seedRoots: new Set(),
 			dependsOnSeed: false

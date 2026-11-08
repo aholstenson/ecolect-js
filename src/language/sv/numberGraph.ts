@@ -2,6 +2,7 @@ import { GraphBuilder } from '../../graph/index.js';
 import type {
 	NumberData} from '../../type-numbers/index.js';
 import {
+	canFollowNumber,
 	combineNumbers,
 	digitNumber,
 	float,
@@ -26,7 +27,7 @@ export const numberGraph: LanguageGraphFactory<NumberData> = {
 
 			.add(integer, v => v[0])
 
-			.add([ GraphBuilder.result(isNumber), integer ], v => combineNumbers(v[0], v[1]))
+			.add([ GraphBuilder.result(isNumber), GraphBuilder.result(integer, canFollowNumber) ], v => combineNumbers(v[0], v[1]))
 
 			// Swedish writes the fraction after a comma, as in 1,5
 			.add([ integer, ',', GraphBuilder.result(integer, v => ! v.suffix && ! isNegative(v)) ], v => float(v[0], v[1]))

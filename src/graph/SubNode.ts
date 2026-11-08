@@ -6,6 +6,7 @@ import type {
 	Encounter,
 	Match,
 	MaybePromise,
+	SubGraphEvaluation,
 	SubGraphVariant} from './matching/index.js';
 import {
 	NO_SKIPPABLE_TOKENS,
@@ -116,12 +117,12 @@ export class SubNode<V> extends Node {
 		const evaluation = encounter.evaluationOf(this.roots);
 		if(evaluation) {
 			/*
-			 * The sub-graph refers to itself, use the variants found so far
-			 * as the seed. The evaluation in progress will run again if the
-			 * seed grows, so the seed is not cached.
+			 * The sub-graph refers to itself, use the variants that the last
+			 * pass found as the seed. The evaluation in progress will run
+			 * again if the seed grows, so the seed is not cached.
 			 */
 			encounter.useSeed(evaluation);
-			return this.branchIntoVariants(encounter, this.mapVariants(encounter, evaluation.seed));
+			return this.branchIntoVariants(encounter, this.mapVariants(encounter, evaluation.delta));
 		}
 
 		return after(this.evaluate(encounter), variants => {
@@ -209,8 +210,8 @@ export class SubNode<V> extends Node {
 				encounter.skipPunctuation = skipPunctuation;
 				encounter.skippableTokens = skippableTokens;
 
-				const grew = mergeVariants(evaluation.seed, found);
-				if(grew && evaluation.seedUsed && --passesLeft > 0) {
+				evaluation.delta = mergeVariants(evaluation, found);
+				if(evaluation.delta.length > 0 && evaluation.seedUsed && --passesLeft > 0) {
 					/*
 					 * Only the roots that used the seed can find something
 					 * new when the seed has grown, so only those are
@@ -334,24 +335,29 @@ export class SubNode<V> extends Node {
 }
 
 /**
- * Merge newly found variants into the seed of an evaluation. Variants that
- * end at the same index with equal data are the same variant, and only the
- * best score is kept for them.
+ * Merge the variants found in a pass into the seed of an evaluation. A
+ * variant that is already in the seed keeps the better of the two scores.
  *
- * @param seed -
- *   the variants found so far, which is changed in place
+ * @param evaluation -
+ *   the evaluation with the seed to merge into
  * @param found -
- *   the variants found during the latest pass
+ *   the variants found in the pass
  * @returns
- *   true if the seed changed
+ *   the variants that were added to the seed or that got a better score
  */
-function mergeVariants(seed: SubGraphVariant[], found: SubGraphVariant[]): boolean {
-	let changed = false;
+function mergeVariants(evaluation: SubGraphEvaluation, found: SubGraphVariant[]): SubGraphVariant[] {
+	const changed: SubGraphVariant[] = [];
 
 	for(const candidate of found) {
+		let sameIndex = evaluation.seedByIndex.get(candidate.index);
+		if(! sameIndex) {
+			sameIndex = [];
+			evaluation.seedByIndex.set(candidate.index, sameIndex);
+		}
+
 		let existing: SubGraphVariant | undefined;
-		for(const v of seed) {
-			if(v.index === candidate.index && deepEqual(v.data, candidate.data)) {
+		for(const v of sameIndex) {
+			if(deepEqual(v.data, candidate.data)) {
 				existing = v;
 				break;
 			}
@@ -360,11 +366,14 @@ function mergeVariants(seed: SubGraphVariant[], found: SubGraphVariant[]): boole
 		if(existing) {
 			if(candidate.score > existing.score) {
 				existing.score = candidate.score;
-				changed = true;
+				if(! changed.includes(existing)) {
+					changed.push(existing);
+				}
 			}
 		} else {
-			seed.push(candidate);
-			changed = true;
+			evaluation.seed.push(candidate);
+			sameIndex.push(candidate);
+			changed.push(candidate);
 		}
 	}
 

@@ -6,6 +6,7 @@ import {
 	literalNumber,
 	digitNumber,
 
+	canFollowNumber,
 	combineNumbers,
 
 	isDigits,
@@ -73,13 +74,13 @@ export const integerGraph: LanguageGraphFactory<NumberData> = {
 			)
 
 			// Digits + digits or digits + suffix, combines 1 000 and 1 thousand but not one 000
-			.add([ GraphBuilder.result(isDigits), GraphBuilder.result(isDigitsCompatible) ], v => combineNumbers(v[0], v[1]))
+			.add([ GraphBuilder.result(isDigits), GraphBuilder.result(v => isDigitsCompatible(v) && canFollowNumber(v)) ], v => combineNumbers(v[0], v[1]))
 
 			// Literal + literal - to avoid combining things as `one 000`
-			.add([ GraphBuilder.result(isLiteral), GraphBuilder.result(isLiteral) ], v => combineNumbers(v[0], v[1]))
+			.add([ GraphBuilder.result(isLiteral), GraphBuilder.result(v => isLiteral(v) && canFollowNumber(v)) ], v => combineNumbers(v[0], v[1]))
 
 			// Thousands separator
-			.add([ GraphBuilder.result(isDigits), ',', GraphBuilder.result(isDigits) ], v => combineNumbers(v[0], v[1]))
+			.add([ GraphBuilder.result(isDigits), ',', GraphBuilder.result(v => isDigits(v) && canFollowNumber(v)) ], v => combineNumbers(v[0], v[1]))
 
 			.build();
 	}

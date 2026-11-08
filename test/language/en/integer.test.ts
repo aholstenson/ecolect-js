@@ -1,9 +1,11 @@
 import { BigInteger } from 'numeric-types/integer';
 
 
+import { en } from '../../../src/language/en/index.js';
 import { EnglishLanguage } from '../../../src/language/en/EnglishLanguage.js';
 import { integerGraph } from '../../../src/language/en/integerGraph.js';
 import { mapInteger } from '../../../src/type-numbers/index.js';
+import { integerValue } from '../../../src/values/index.js';
 
 import { testRunner } from './helpers.js';
 
@@ -40,6 +42,16 @@ describe('English', function() {
 		test('one 000', {}, null);
 
 		test('10,000', {}, BigInteger.fromNumber(10000));
+
+		describe('Long input', function() {
+			const matcher = integerValue().matcher(en);
+
+			it('Repeated number words are matched quickly', async function() {
+				const start = performance.now();
+				await matcher.match('one '.repeat(260));
+				expect(performance.now() - start).toBeLessThan(500);
+			}, 1000);
+		});
 
 		test('one hundred five', {}, BigInteger.fromNumber(105));
 

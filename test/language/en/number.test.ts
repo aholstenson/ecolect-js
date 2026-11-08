@@ -1,9 +1,11 @@
 import { BigDecimal } from 'numeric-types/decimal';
 
 
+import { en } from '../../../src/language/en/index.js';
 import { EnglishLanguage } from '../../../src/language/en/EnglishLanguage.js';
 import { numberGraph } from '../../../src/language/en/numberGraph.js';
 import { mapNumber } from '../../../src/type-numbers/index.js';
+import { numberValue } from '../../../src/values/index.js';
 
 import { testRunner } from './helpers.js';
 
@@ -44,5 +46,15 @@ describe('English', function() {
 		test('1e-3', {}, BigDecimal.fromNumber(0.001));
 
 		test('1.4e3', {}, BigDecimal.fromNumber(1400));
+
+		describe('Long input', function() {
+			const matcher = numberValue().matcher(en);
+
+			it('Repeated suffix words are matched quickly', async function() {
+				const start = performance.now();
+				await matcher.match(Array(18).fill('1 thousand').join(' '));
+				expect(performance.now() - start).toBeLessThan(500);
+			}, 1000);
+		});
 	});
 });

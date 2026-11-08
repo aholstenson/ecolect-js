@@ -26,6 +26,12 @@ export interface NumberData {
 	scale?: number;
 
 	/**
+	 * How the number was combined from smaller numbers. Not set for a single
+	 * word or a single group of digits.
+	 */
+	combinedBy?: 'multiply' | 'add' | 'join';
+
+	/**
 	 * The largest scale word in the number, such as `1000` for
 	 * `two thousand three hundred`. Not set when the number has no scale
 	 * word.

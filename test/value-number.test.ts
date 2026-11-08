@@ -24,5 +24,11 @@ describe('Value: Number', function() {
 					expect(r.values.amount).toEqual(BigDecimal.fromNumber(2005));
 				});
 		});
+
+		it('Long number phrase is matched quickly', async function() {
+			const start = performance.now();
+			await intents.match('pay ' + Array(18).fill('1 thousand').join(' ') + ' dollars');
+			expect(performance.now() - start).toBeLessThan(500);
+		}, 1000);
 	});
 });

@@ -19,6 +19,22 @@ export function isNegative(o: NumberData): boolean {
 	return o.value < 0;
 }
 
+/**
+ * Get if a number can be the second part of a combined number. A number
+ * that was made by adding or by joining digits can only be the first part.
+ * This gives each sequence of numbers only one way to be read, as in
+ * `(one hundred) five` but not `one (hundred five)`. Without this the number
+ * of ways to read a long sequence grows very fast.
+ *
+ * @param o -
+ *   the number to check
+ * @returns
+ *   `true` if the number can come after another number
+ */
+export function canFollowNumber(o: NumberData): boolean {
+	return o.combinedBy !== 'add' && o.combinedBy !== 'join';
+}
+
 export function literalNumber(value: number, raw: string, suffix=false): NumberData {
 	return {
 		value: value,
@@ -94,6 +110,7 @@ export function combineNumbers(a: NumberData, b: NumberData): NumberData | null 
 			integer: a.integer && b.integer,
 			suffix: true,
 			literal: true,
+			combinedBy: 'multiply',
 			scale: b.value,
 			largestScale: b.value
 		};
@@ -109,6 +126,7 @@ export function combineNumbers(a: NumberData, b: NumberData): NumberData | null 
 			integer: a.integer && b.integer,
 			literal: a.literal || b.literal,
 			suffix: false,
+			combinedBy: 'add',
 			scale: b.scale,
 			largestScale: a.largestScale
 		};
@@ -126,7 +144,8 @@ export function combineNumbers(a: NumberData, b: NumberData): NumberData | null 
 			rawDigits: raw,
 			integer: a.integer && b.integer,
 			literal: a.literal || b.literal,
-			suffix: false
+			suffix: false,
+			combinedBy: 'join'
 		};
 	}
 }
