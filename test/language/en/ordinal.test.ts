@@ -32,5 +32,9 @@ describe('English', function() {
 		test('twenty twelfth', {}, null);
 
 		test('one first', {}, null);
+
+		test('20 billion billion billion', {}, null);
+
+		test('1' + '0'.repeat(400), {}, null);
 	});
 });

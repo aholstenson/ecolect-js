@@ -3,7 +3,7 @@ import { BigDecimal } from 'numeric-types/decimal';
 import { IntentsBuilder } from '../src/IntentsBuilder.js';
 import { en } from '../src/language/en/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
-import { numberValue } from '../src/values/index.js';
+import { anyTextValue, integerValue, numberValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';
 
@@ -30,5 +30,27 @@ describe('Value: Number', function() {
 			await intents.match('pay ' + Array(18).fill('1 thousand').join(' ') + ' dollars');
 			expect(performance.now() - start).toBeLessThan(500);
 		}, 1000);
+	});
+
+	describe('Large integers in intents', function() {
+		const intents = new IntentsBuilder(en)
+			.add('count', newPhrases()
+				.value('n', integerValue())
+				.phrase('count {n}')
+				.build()
+			)
+			.add('free', newPhrases()
+				.value('t', anyTextValue())
+				.phrase('count {t}')
+				.build()
+			)
+			.build();
+
+		it('Integer too large for a number still gives a match', function() {
+			return intents.match('count 100 billion billion billion')
+				.then(r => {
+					assertNotNull(r);
+				});
+		});
 	});
 });

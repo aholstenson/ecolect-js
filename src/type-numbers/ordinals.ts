@@ -18,12 +18,18 @@ export function ambiguousOrdinal(value: number): OrdinalData {
 }
 
 /**
- * Map data collected for an ordinal into a value.
+ * Map data collected for an ordinal into a value. An ordinal that is too
+ * large to be exact as a JavaScript number, such as the `1e30`th, is not
+ * real input and gives no value.
  *
- * @param r
+ * @param r -
+ *   the data collected for the ordinal
+ * @returns
+ *   the ordinal, or `null` if there is no value or it is too large
  */
 export function mapOrdinal(r: OrdinalData): BigInteger | null {
 	if(typeof r.value === 'undefined') return null;
+	if(! Number.isSafeInteger(r.value)) return null;
 
 	return BigInteger.fromNumber(r.value);
 }

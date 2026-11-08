@@ -43,6 +43,8 @@ describe('English', function() {
 
 		test('10,000', {}, BigInteger.fromNumber(10000));
 
+		test('20 billion billion billion', {}, BigInteger.parse('2' + '0'.repeat(28)));
+
 		test('9007199254740993 thousand', {}, BigInteger.parse('9007199254740993000'));
 
 		test('1,000,000', {}, BigInteger.fromNumber(1000000));
