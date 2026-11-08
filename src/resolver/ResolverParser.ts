@@ -5,6 +5,7 @@ import type {
 	GraphBuildable,
 	GraphBuildableArray } from '../graph/index.js';
 import { GraphBuilder } from '../graph/index.js';
+import { mergeSiblings } from '../graph/mergeSiblings.js';
 import { reduceGraph } from '../graph/reduceGraph.js';
 import type { Language } from '../language/index.js';
 import type { NodeConvertable, Value } from '../values/base.js';
@@ -126,7 +127,16 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 		 * A phrase that is added later is compiled into new nodes at the
 		 * roots, so it never adds a node after a merged node.
 		 */
-		reduceGraph(graph.nodes);
+		const stats = reduceGraph(graph.nodes);
+
+		/*
+		 * Phrases that start with the same word, but go on in other ways,
+		 * still have a node each for the word. Merging these nodes tests the
+		 * word one time for all of them.
+		 */
+		if(! stats.cycle) {
+			mergeSiblings(graph.nodes, 4 * stats.nodesAfter);
+		}
 
 		return graph;
 	}
