@@ -35,8 +35,28 @@ function fuzzyScore(a: string, b: string): number {
 }
 
 /**
+ * Get if one word is the other word with a prefix of two or more letters
+ * added, such as `deactivate` and `activate`. Such a prefix often gives the
+ * word the opposite meaning, so the words are not a spelling match even
+ * though they are spelled almost the same. A prefix of one letter can be a
+ * typo and is not counted.
+ *
+ * @param a -
+ *   the first word
+ * @param b -
+ *   the second word
+ * @returns
+ *   `true` if the longer word is the shorter word with a prefix added
+ */
+function hasAddedPrefix(a: string, b: string): boolean {
+	const [ shorter, longer ] = a.length <= b.length ? [ a, b ] : [ b, a ];
+	return longer.length - shorter.length >= 2 && longer.endsWith(shorter);
+}
+
+/**
  * Token comparer that scores an exact word highest, a shared stem slightly
- * lower and otherwise falls back to how similar the words are spelled. It
+ * lower and otherwise falls back to how similar the words are spelled. A word
+ * with an added prefix, such as `unlock` for `lock`, is not a spelling match. It
  * reads nothing but the token data, so every language whose tokenizer fills
  * in a stem can use it.
  */
@@ -47,6 +67,11 @@ export const similarityTokenComparer: TokenComparer = {
 		if(a.stemmed === b.stemmed) return 0.95;
 
 		if(a.short || b.short) return 0;
+
+		if(hasAddedPrefix(a.normalized, b.normalized) || hasAddedPrefix(a.stemmed, b.stemmed)) {
+			// Words such as `subscribe` and `unsubscribe` have different meanings
+			return 0;
+		}
 
 		return fuzzyScore(a.normalized, b.normalized);
 	},
