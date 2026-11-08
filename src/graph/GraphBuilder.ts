@@ -233,6 +233,19 @@ export class GraphBuilder<V> {
 		return this;
 	}
 
+	/**
+	 * Add nodes to the start of the graph, after the nodes that are there.
+	 * The nodes are not merged with the nodes that are there, so a builder
+	 * can add nodes that are on more than one path, and a later `add` does
+	 * not put a node after them.
+	 *
+	 * @param nodes -
+	 *   the nodes to add
+	 */
+	protected addRoots(nodes: Node[]): void {
+		this.nodes.push(...nodes);
+	}
+
 	protected parse(text: string): Node {
 		let first;
 		let last: Node;

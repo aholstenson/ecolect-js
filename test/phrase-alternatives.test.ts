@@ -1,97 +1,144 @@
+import type { Node } from '../src/graph/index.js';
 import { intentsBuilder } from '../src/index.js';
 import { en } from '../src/language/en/index.js';
-import { expandPhrase } from '../src/resolver/expandPhrase.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
+import type { PhraseSegment } from '../src/resolver/phraseSyntax.js';
+import { parsePhraseSyntax } from '../src/resolver/phraseSyntax.js';
 import { anyTextValue, dateIntervalValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';
 
 describe('Phrases: Groups of alternatives', function() {
-	describe('expandPhrase', function() {
+	/**
+	 * Create the expected part of a phrase.
+	 *
+	 * @param alternatives -
+	 *   the texts the part can be
+	 * @param optional -
+	 *   if the part can be left out
+	 * @returns
+	 *   the part
+	 */
+	function part(alternatives: string[], optional = false): PhraseSegment {
+		return { alternatives, optional };
+	}
+
+	describe('parsePhraseSyntax', function() {
 		it('Phrase without groups', function() {
-			expect(expandPhrase('show orders')).toEqual([ 'show orders' ]);
+			expect(parsePhraseSyntax('show orders')).toEqual([ part([ 'show orders' ]) ]);
 		});
 
 		it('Group that must match', function() {
-			expect(expandPhrase('orders (from|in) {when}')).toEqual([
-				'orders from {when}',
-				'orders in {when}'
+			expect(parsePhraseSyntax('orders (from|in) {when}')).toEqual([
+				part([ 'orders' ]),
+				part([ 'from', 'in' ]),
+				part([ '{when}' ])
 			]);
 		});
 
 		it('Group that may be left out', function() {
-			expect(expandPhrase('[show|list] orders')).toEqual([
-				'show orders',
-				'list orders',
-				'orders'
+			expect(parsePhraseSyntax('[show|list] orders')).toEqual([
+				part([ 'show', 'list' ], true),
+				part([ 'orders' ])
 			]);
 		});
 
 		it('Several groups', function() {
-			expect(expandPhrase('[show|list] orders (from|in) {when}')).toEqual([
-				'show orders from {when}',
-				'show orders in {when}',
-				'list orders from {when}',
-				'list orders in {when}',
-				'orders from {when}',
-				'orders in {when}'
+			expect(parsePhraseSyntax('[show|list] orders (from|in) {when}')).toEqual([
+				part([ 'show', 'list' ], true),
+				part([ 'orders' ]),
+				part([ 'from', 'in' ]),
+				part([ '{when}' ])
 			]);
 		});
 
 		it('Group within a word', function() {
-			expect(expandPhrase('order[s]')).toEqual([ 'orders', 'order' ]);
+			expect(parsePhraseSyntax('order[s]')).toEqual([ part([ 'orders', 'order' ]) ]);
+		});
+
+		it('Several groups within a word', function() {
+			expect(parsePhraseSyntax('(re|un)do[es]')).toEqual([
+				part([ 'redoes', 'redo', 'undoes', 'undo' ])
+			]);
 		});
 
 		it('Alternative with several words', function() {
-			expect(expandPhrase('orders (for|belonging to) {customer}')).toEqual([
-				'orders for {customer}',
-				'orders belonging to {customer}'
+			expect(parsePhraseSyntax('orders (for|belonging to) {customer}')).toEqual([
+				part([ 'orders' ]),
+				part([ 'for', 'belonging to' ]),
+				part([ '{customer}' ])
 			]);
 		});
 
 		it('Alternative that is a value', function() {
-			expect(expandPhrase('orders (today|{when})')).toEqual([
-				'orders today',
-				'orders {when}'
+			expect(parsePhraseSyntax('orders (today|{when})')).toEqual([
+				part([ 'orders' ]),
+				part([ 'today', '{when}' ])
 			]);
 		});
 
-		it('Alternatives that are the same are expanded once', function() {
-			expect(expandPhrase('[show|show] orders')).toEqual([
-				'show orders',
-				'orders'
+		it('Alternatives that are the same are read once', function() {
+			expect(parsePhraseSyntax('[show|show] orders')).toEqual([
+				part([ 'show' ], true),
+				part([ 'orders' ])
 			]);
 		});
 
 		it('Group at the end that may be left out', function() {
-			expect(expandPhrase('show orders [now]')).toEqual([
-				'show orders now',
-				'show orders'
+			expect(parsePhraseSyntax('show orders [now]')).toEqual([
+				part([ 'show orders' ]),
+				part([ 'now' ], true)
 			]);
 		});
 
 		it('Group that is never closed', function() {
-			expect(() => expandPhrase('[show orders')).toThrow();
+			expect(() => parsePhraseSyntax('[show orders')).toThrow(/never closed/);
 		});
 
 		it('Closing character without a group', function() {
-			expect(() => expandPhrase('show orders)')).toThrow();
+			expect(() => parsePhraseSyntax('show orders)')).toThrow(/no group has been opened/);
 		});
 
 		it('Nested groups', function() {
-			expect(() => expandPhrase('([show|list]) orders')).toThrow();
-		});
-
-		it('Phrase without anything to match', function() {
-			expect(() => expandPhrase('[]')).toThrow();
+			expect(() => parsePhraseSyntax('([show|list]) orders')).toThrow(/nested/);
 		});
 
 		it('Separator outside a group', function() {
-			expect(() => expandPhrase('on | off')).toThrow(/\|/);
+			expect(() => parsePhraseSyntax('on | off')).toThrow(/\|/);
 		});
 
 		it('Empty alternative in a group that must match', function() {
-			expect(() => expandPhrase('a (|b)')).toThrow();
+			expect(() => parsePhraseSyntax('a (|b)')).toThrow(/empty alternative/);
+		});
+	});
+
+	describe('Phrases that are not valid', function() {
+		it('Phrase without anything to match', function() {
+			expect(() => newPhrases()
+				.phrase('[]')
+				.toMatcher(en)
+			).toThrow(/does not contain anything to match/);
+		});
+
+		it('Value that a path has two times', function() {
+			expect(() => newPhrases()
+				.value('a', anyTextValue())
+				.phrase('[{a}] to {a}')
+				.toMatcher(en)
+			).toThrow(/`\{a\}` is used more than once in `\[\{a\}\] to \{a\}`/);
+		});
+
+		it('Value in alternatives of the same group', function() {
+			const matcher = newPhrases()
+				.value('a', anyTextValue())
+				.phrase('orders (for {a}|by {a})')
+				.toMatcher(en);
+
+			return matcher.match('orders by acme')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values).toEqual({ a: 'acme' });
+				});
 		});
 	});
 
@@ -155,6 +202,30 @@ describe('Phrases: Groups of alternatives', function() {
 
 			return matcher.match('w3 end')
 				.then(r => assertNotNull(r));
+		});
+
+		it('Graph grows with the words and not with the ways to write the phrase', function() {
+			const graph = newPhrases()
+				.phrase(optionalWords(12))
+				.build()
+				.toGraph(en);
+
+			const nodes = new Set<Node>();
+			const visit = (list: Node[]) => {
+				for(const node of list) {
+					if(nodes.has(node)) continue;
+					nodes.add(node);
+					visit(node.outgoing);
+				}
+			};
+			visit(graph.nodes);
+
+			/*
+			 * Each `wN` is the two tokens `w` and `N`, then comes `end` and the
+			 * collector. Expanded into its 4096 ways the phrase used more
+			 * than 10000 nodes.
+			 */
+			expect(nodes.size).toEqual((12 * 2) + 2);
 		});
 
 		it('Phrase that can be written in too many ways is reported', function() {

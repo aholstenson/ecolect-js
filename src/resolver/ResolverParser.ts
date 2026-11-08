@@ -3,42 +3,15 @@ import { deepEqual } from 'fast-equals';
 import type {
 	Collectable,
 	GraphBuildable,
-	GraphBuildableArray,
-	Node} from '../graph/index.js';
+	GraphBuildableArray } from '../graph/index.js';
 import { GraphBuilder } from '../graph/index.js';
 import type { Language } from '../language/index.js';
 import type { NodeConvertable, Value } from '../values/base.js';
 import { LanguageSpecificValue } from '../values/base.js';
 
-import { checkVariantCount, expandPhrase } from './expandPhrase.js';
+import type { CompileContext } from './compilePhrase.js';
+import { compilePhrase } from './compilePhrase.js';
 import { ValueNode } from './ValueNode.js';
-
-/**
- * A value referred to by name in a phrase, such as `{when}`. A name is
- * written with the letters and digits of the English alphabet, whatever
- * language the words around it are written in.
- */
-const VALUE = /{([a-zA-Z0-9]+)}/g;
-
-/**
- * A brace left in a phrase after every value has been read. Braces are only
- * used to name a value, so one that is left over belongs to a value that was
- * written wrong.
- */
-const LEFTOVER_BRACE = /{[^{}]*}|[{}]/;
-
-/**
- * Describe the part of a phrase that was meant to be a value, so that the
- * error says which one to correct.
- *
- * @param text -
- *   the text of the phrase that no value was read from
- * @returns
- *   the part that looks like a value, or the whole text if none stands out
- */
-function describeLeftover(text: string): string {
-	return LEFTOVER_BRACE.exec(text)?.[0] ?? text;
-}
 
 /**
  * Extension to the normal parser that handles referring to values by
@@ -93,6 +66,9 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 	 * phrase may describe several ways to say the same thing, in which case
 	 * every way is added.
 	 *
+	 * The phrase is compiled into nodes that share the words around each
+	 * group, see `compilePhrase`.
+	 *
 	 * @param nodes -
 	 *   the phrase, as a single item or an array of items
 	 * @param value -
@@ -101,119 +77,27 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 	 *   self
 	 */
 	public add(nodes: GraphBuildableArray<V>, value: Collectable<V>): this {
-		const items = Array.isArray(nodes) ? nodes : [ nodes ];
+		const items: GraphBuildable<V>[] = Array.isArray(nodes) ? nodes : [ nodes ];
 
-		/*
-		 * Every item may be written in several ways, so the phrases added are
-		 * the combinations of the ways their items can be written.
-		 */
-		let variants: GraphBuildable<V>[][] = [ [] ];
-		for(const item of items) {
-			const expanded = typeof item === 'string'
-				? expandPhrase(item)
-				: [ item ];
-
-			checkVariantCount(variants.length * expanded.length, items.filter(i => typeof i === 'string').join(' '));
-
-			const next: GraphBuildable<V>[][] = [];
-			for(const variant of variants) {
-				for(const alternative of expanded) {
-					next.push([ ...variant, alternative ]);
-				}
-			}
-
-			variants = next;
-		}
-
-		for(const variant of variants) {
-			super.add(variant, value);
-		}
+		compilePhrase(this.compileContext(), items, value);
 
 		return this;
 	}
 
-	protected parse(text: string): Node {
-		let firstNode;
-		let node: Node | undefined;
-		const parse = (from: number, to: number) => {
-			const sub = text.substring(from, to);
-
-			/*
-			 * This text is everything the values were not read from, so a
-			 * brace here is a value that was written wrong. Saying so is
-			 * better than matching the braces as words and never matching
-			 * the phrase.
-			 */
-			if(LEFTOVER_BRACE.test(sub)) {
-				throw new Error(
-					'`' + describeLeftover(sub) + '` in `' + text + '` is not a value,'
-					+ ' a value is named with the letters a-z, A-Z and the digits 0-9,'
-					+ ' as in `{when}`'
-				);
-			}
-
-			for(const token of this.tokenizer(sub)) {
-				const nextNode = this.createTokenNode(token);
-
-				if(node) {
-					node.outgoing.push(nextNode);
-				} else {
-					firstNode = nextNode;
-				}
-				node = nextNode;
-			}
+	/**
+	 * Give the phrase compiler access to this parser.
+	 *
+	 * @returns
+	 *   the context for the compiler
+	 */
+	private compileContext(): CompileContext {
+		return {
+			builder: this,
+			tokenize: text => this.tokenizer(text),
+			createTokenNode: token => this.createTokenNode(token),
+			value: id => this.values.get(id),
+			addRoots: nodes => this.addRoots(nodes)
 		};
-
-		let previousIndex = 0;
-		const seen = new Set<string>();
-
-		/*
-		 * `matchAll` reads the text with a copy of the expression, so a value
-		 * that reads another phrase in `toNode` does not move the place this
-		 * phrase is read from.
-		 */
-		for(const match of text.matchAll(VALUE)) {
-			if(match.index !== 0) {
-				parse(previousIndex, match.index);
-			}
-			previousIndex = match.index + match[0].length;
-
-			const id = match[1];
-			const value = this.values.get(id);
-			if(! value) {
-				throw new Error('No type registered for ' + id);
-			}
-
-			/*
-			 * A phrase gives one value for each name, so a second use of the
-			 * same name would replace the value of the first.
-			 */
-			if(seen.has(id)) {
-				throw new Error(
-					'`{' + id + '}` is used more than once in `' + text + '`,'
-					+ ' give each value in a phrase its own name'
-				);
-			}
-			seen.add(id);
-
-			const nextNode = value.toNode(id);
-
-			if(node) {
-				node.outgoing.push(nextNode);
-			} else {
-				firstNode = nextNode;
-			}
-			node = nextNode;
-		}
-
-		// Parse the remaining text
-		parse(previousIndex, text.length);
-
-		if(! firstNode) {
-			throw new Error('Could not parse data into nodes');
-		}
-
-		return firstNode;
 	}
 
 	public build() {
