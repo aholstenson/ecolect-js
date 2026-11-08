@@ -221,5 +221,36 @@ describe('English', function() {
 			second: 0,
 			millisecond: 0
 		}));
+
+		// Hours and minutes from now move the date when they pass midnight
+		test('in 2 hours', { now: new Date(2026, 10, 8, 23, 30) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 9,
+			hour: 1,
+			minute: 30,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('in 30 minutes', { now: new Date(2026, 11, 31, 23, 45) }, LocalDateTime.from({
+			year: 2027,
+			month: 1,
+			day: 1,
+			hour: 0,
+			minute: 15,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('in 48 hours', { now: new Date(2026, 10, 8, 12, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 10,
+			hour: 12,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
 	});
 });

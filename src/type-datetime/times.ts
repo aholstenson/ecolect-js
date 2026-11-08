@@ -114,7 +114,42 @@ export function toAM(time: DateTimeData): DateTimeData {
 	return { ...time, meridiem: Meridiem.Am };
 }
 
-export function mapTime(r: DateTimeData, options: DateTimeOptions & { reference?: Date }= {}) {
+/**
+ * Options for mapping a time.
+ */
+export type MapTimeOptions = DateTimeOptions & {
+	/**
+	 * The time used to guess AM or PM for a bare hour. Defaults to `now`.
+	 */
+	reference?: Date;
+};
+
+/**
+ * Map parsed time data to a time of day.
+ *
+ * @param r -
+ *   the parsed time data
+ * @param options -
+ *   the options to use
+ * @returns
+ *   the time of day
+ */
+export function mapTime(r: DateTimeData, options: MapTimeOptions = {}) {
+	return LocalTime.fromDate(mapTimeToInstant(r, options));
+}
+
+/**
+ * Map parsed time data to an instant. The instant starts at the current time,
+ * so relative times such as "in 2 hours" can move it to another day.
+ *
+ * @param r -
+ *   the parsed time data
+ * @param options -
+ *   the options to use
+ * @returns
+ *   the instant that the time data gives
+ */
+export function mapTimeToInstant(r: DateTimeData, options: MapTimeOptions = {}): Date {
 	let time = currentTime(options);
 	const now = options.reference ?? options.now ?? time;
 
@@ -194,5 +229,5 @@ export function mapTime(r: DateTimeData, options: DateTimeOptions & { reference?
 	}
 
 	//precision = r.precision || precision || Precision.Normal;
-	return LocalTime.fromDate(time);
+	return time;
 }
