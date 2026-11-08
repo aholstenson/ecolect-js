@@ -34,5 +34,19 @@ describe('Swedish', function() {
 		test('negativt 20', {}, BigDecimal.fromNumber(-20));
 
 		test('1,5e3', {}, BigDecimal.fromNumber(1500));
+
+		test('1e10', {}, BigDecimal.fromNumber(10000000000));
+
+		test('1e-10', {}, BigDecimal.fromNumber(1e-10));
+
+		// A number gets only one exponent
+		test('1e3e3', {}, null);
+
+		test('1e400', {}, null);
+
+		// The fraction is one group of digits
+		test('1,5 2', {}, null);
+
+		test('1,52', {}, BigDecimal.fromNumber(1.52));
 	});
 });

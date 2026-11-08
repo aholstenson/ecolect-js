@@ -3,11 +3,12 @@ import type {
 	NumberData} from '../../type-numbers/index.js';
 import {
 	canFollowNumber,
+	canHaveExponent,
 	combineNumbers,
 	float,
 	isNegative,
 	negative,
-	powerOfTen
+	withExponent
 } from '../../type-numbers/index.js';
 import type { LanguageGraphFactory } from '../index.js';
 
@@ -28,45 +29,6 @@ function isNumber(o: NumberData) {
  */
 function isPositiveNumber(o: NumberData): boolean {
 	return isNumber(o) && ! isNegative(o);
-}
-
-/**
- * The largest exponent, in both directions. A JavaScript number can not hold
- * a number with a larger exponent.
- */
-const MAX_EXPONENT = 308;
-
-/**
- * Get if a number can get an exponent. A number that already has one does
- * not get another one.
- *
- * @param o -
- *   the number to check
- * @returns
- *   `true` if the number has no exponent
- */
-function canHaveExponent(o: NumberData): boolean {
-	return isNumber(o) && ! o.exponent;
-}
-
-/**
- * Give a number an exponent, as in `1e3` or `1e-3`.
- *
- * @param base -
- *   the number before the exponent
- * @param digits -
- *   the digits of the exponent
- * @param sign -
- *   `1` for a positive exponent and `-1` for a negative one
- * @returns
- *   the number, or `null` if the exponent is too large
- */
-function withExponent(base: NumberData, digits: string, sign: 1 | -1): NumberData | null {
-	const exponent = parseInt(digits, 10);
-	if(exponent > MAX_EXPONENT) return null;
-
-	const result = combineNumbers(base, powerOfTen(sign * exponent));
-	return result && { ...result, exponent: true };
 }
 
 export const numberGraph: LanguageGraphFactory<NumberData> = {
