@@ -47,6 +47,8 @@ describe('Swedish', function() {
 
 		test('12 000', {}, BigInteger.fromNumber(12000));
 
+		test('2 tusen 5', {}, BigInteger.fromNumber(2005));
+
 		test('ingenting', {}, null);
 	});
 });

@@ -8,6 +8,7 @@ import {
 
 	canFollowNumber,
 	combineNumbers,
+	hasScaleWord,
 
 	isDigits,
 	isDigitsCompatible,
@@ -38,6 +39,9 @@ export const integerGraph: LanguageGraphFactory<NumberData> = {
 
 			// Literal + literal - to avoid combining things as `ett 000`
 			.add([ GraphBuilder.result(isLiteral), GraphBuilder.result(v => isLiteral(v) && canFollowNumber(v)) ], v => combineNumbers(v[0], v[1]))
+
+			// Scale word + digits, combines 2 tusen 5
+			.add([ GraphBuilder.result(hasScaleWord), GraphBuilder.result(v => isDigits(v) && canFollowNumber(v)) ], v => combineNumbers(v[0], v[1]))
 
 			.build();
 	}

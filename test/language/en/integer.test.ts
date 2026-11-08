@@ -56,5 +56,11 @@ describe('English', function() {
 		test('one hundred five', {}, BigInteger.fromNumber(105));
 
 		test('two thousand three hundred', {}, BigInteger.fromNumber(2300));
+
+		test('2 thousand 5', {}, BigInteger.fromNumber(2005));
+
+		test('one thousand 250', {}, BigInteger.fromNumber(1250));
+
+		test('2 thousand 1 000', {}, null);
 	});
 });

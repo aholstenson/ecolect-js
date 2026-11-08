@@ -35,6 +35,19 @@ export function canFollowNumber(o: NumberData): boolean {
 	return o.combinedBy !== 'add' && o.combinedBy !== 'join';
 }
 
+/**
+ * Get if a number has a scale word, such as `2 thousand`. A smaller number
+ * can be added after such a number, as in `2 thousand 5`.
+ *
+ * @param o -
+ *   the number to check
+ * @returns
+ *   `true` if the number has a scale word
+ */
+export function hasScaleWord(o: NumberData): boolean {
+	return typeof o.largestScale !== 'undefined';
+}
+
 export function literalNumber(value: number, raw: string, suffix=false): NumberData {
 	return {
 		value: value,
