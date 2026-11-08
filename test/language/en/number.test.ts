@@ -41,6 +41,10 @@ describe('English', function() {
 
 		test('minus one million', {}, BigDecimal.fromNumber(-1000000));
 
+		test('minus one hundred five', {}, BigDecimal.fromNumber(-105));
+
+		test('-2 thousand 5', {}, BigDecimal.fromNumber(-2005));
+
 		test('1e3', {}, BigDecimal.fromNumber(1000));
 
 		test('1e-3', {}, BigDecimal.fromNumber(0.001));
