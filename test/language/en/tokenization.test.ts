@@ -1,4 +1,6 @@
+import { en } from '../../../src/language/en/index.js';
 import { tokenizer } from '../../../src/language/en/tokenizer.js';
+import { newPhrases } from '../../../src/resolver/newPhrases.js';
 
 describe('English', function() {
 	describe('Tokenization', function() {
@@ -44,6 +46,22 @@ describe('English', function() {
 			expect(tokens[1].normalized).toEqual('will');
 		});
 
+		it('Contraction with curly apostrophe: What’s', function() {
+			const tokens = tokenizer('What’s');
+			expect(tokens.map(t => t.normalized)).toEqual([ 'what', 'is' ]);
+		});
+
+		it('Contraction with curly apostrophe: Don’t', function() {
+			const tokens = tokenizer('Don’t');
+			expect(tokens.map(t => t.normalized)).toEqual([ 'do', 'not' ]);
+		});
+
+		it('Contraction with curly apostrophe keeps the typed text', function() {
+			const tokens = tokenizer('I’m here');
+			expect(tokens.map(t => t.raw)).toEqual([ 'I', '’m', 'here' ]);
+			expect(tokens.raw()).toEqual('I’m here');
+		});
+
 		it('Simple: `:`', function() {
 			const tokens = tokenizer(':');
 			expect(tokens.length).toEqual(1);
@@ -77,6 +95,17 @@ describe('English', function() {
 			expect(tokens.map(t => t.raw)).toEqual([ 'hello', ',', 'world', '!' ]);
 			expect(tokens[1].punctuation).toBe(true);
 			expect(tokens[3].punctuation).toBe(true);
+		});
+	});
+
+	describe('Phrases', function() {
+		it('Curly apostrophe matches phrase with straight apostrophe', async function() {
+			const resolver = newPhrases()
+				.phrase('don\'t remind me')
+				.toMatcher(en);
+
+			const m = await resolver.match('don’t remind me');
+			expect(m).not.toBeNull();
 		});
 	});
 });

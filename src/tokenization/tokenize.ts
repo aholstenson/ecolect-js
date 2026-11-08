@@ -16,9 +16,10 @@ function isPunctuation(text: string) {
 
 /**
  * Letters, combining marks, connectors such as `_`, the zero width joiners
- * and the apostrophe. A run of these is one word.
+ * and the apostrophe. A run of these is one word. The apostrophe is the
+ * straight `'` or the curly `’` (U+2019) that phones and word processors type.
  */
-const MATCHER_ALPHABETIC = '[\\p{Alphabetic}\\p{M}\\p{Pc}\\p{Join_Control}\']+';
+const MATCHER_ALPHABETIC = '[\\p{Alphabetic}\\p{M}\\p{Pc}\\p{Join_Control}\'\\u2019]+';
 
 const MATCHER_NUMERIC = '\\p{Nd}+';
 
