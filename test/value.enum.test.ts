@@ -150,6 +150,37 @@ describe('Value: Enumeration', function() {
 		});
 	});
 
+	describe('Entries with the same text', function() {
+		it('First entry is used when texts are equal', function() {
+			const resolver = newPhrases()
+				.value('e', enumerationValue([
+					{ value: 'A', text: 'apple' },
+					{ value: 'B', text: 'apple' }
+				]))
+				.phrase('pick {e}')
+				.toMatcher(en);
+
+			return resolver.match('pick apple')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.e).toEqual('A');
+				});
+		});
+
+		it('Entry with the same case is used when texts differ only in case', function() {
+			const resolver = newPhrases()
+				.value('e', enumerationValue([ 'Red', 'red' ]))
+				.phrase('pick {e}')
+				.toMatcher(en);
+
+			return resolver.match('pick Red')
+				.then(r => {
+					assertNotNull(r);
+					expect(r.values.e).toEqual('Red');
+				});
+		});
+	});
+
 	describe('Partial matching', function() {
 		const resolver = newPhrases()
 			.value('company', enumerationValue([ 'Balloons', 'Cookie Co', 'Banana Inc' ]))
