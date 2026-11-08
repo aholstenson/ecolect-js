@@ -36,8 +36,9 @@ export function canFollowNumber(o: NumberData): boolean {
 }
 
 /**
- * Get if a number has a scale word, such as `2 thousand`. A smaller number
- * can be added after such a number, as in `2 thousand 5`.
+ * Get if a number has a scale word, such as `2 thousand`, or is a tens word,
+ * such as `twenty`. A smaller number can be added after such a number, as in
+ * `2 thousand 5` or `twenty 1`.
  *
  * @param o -
  *   the number to check
@@ -69,6 +70,29 @@ export function digitNumber(value: number, raw: string, suffix=false): NumberDat
 		suffix: suffix,
 		integer: value % 1 === 0,
 		...scaleWord(value, suffix)
+	};
+}
+
+/**
+ * Create a number for a tens word, such as `twenty`. A smaller number can be
+ * added after a tens word, so `twenty one` is 21 and not the digits `201`.
+ *
+ * @param value -
+ *   the value of the word, such as `20`
+ * @param raw -
+ *   the digits of the value
+ * @returns
+ *   the number
+ */
+export function tensNumber(value: number, raw: string): NumberData {
+	return {
+		value: value,
+		rawDigits: raw,
+		literal: true,
+
+		suffix: false,
+		integer: true,
+		parts: [ { scale: 10, value: value } ]
 	};
 }
 
@@ -168,7 +192,9 @@ function multiplyNumber(a: NumberData, b: NumberData): NumberData | null {
 }
 
 /**
- * Add a number without a scale word to a number with scale words.
+ * Add a number without a scale word to a number with scale words. The
+ * number to add can be a tens word, as in `two hundred twenty`, and then
+ * its scale is kept, so that a number can be added after it.
  *
  * @param a -
  *   the number read so far
@@ -186,6 +212,8 @@ function addToNumber(a: NumberData, parts: NumberPart[], b: NumberData): NumberD
 		return null;
 	}
 
+	const added = b.parts ?? [ { scale: 1, value: b.value } ];
+
 	const value = a.value + b.value;
 	return {
 		value: value,
@@ -194,7 +222,7 @@ function addToNumber(a: NumberData, parts: NumberPart[], b: NumberData): NumberD
 		literal: a.literal || b.literal,
 		suffix: false,
 		combined: true,
-		parts: [ ...parts, { scale: 1, value: b.value } ]
+		parts: [ ...parts, ...added ]
 	};
 }
 

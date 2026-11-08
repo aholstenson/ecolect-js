@@ -5,6 +5,7 @@ import {
 
 	literalNumber,
 	digitNumber,
+	tensNumber,
 
 	canFollowNumber,
 	combineNumbers,
@@ -61,6 +62,20 @@ export const integerGraph: LanguageGraphFactory<NumberData> = {
 
 			.map(
 				{
+					'twenty': 20,
+					'thirty': 30,
+					'forty': 40,
+					'fifty': 50,
+					'sixty': 60,
+					'seventy': 70,
+					'eighty': 80,
+					'ninety': 90
+				},
+				l => tensNumber(l, String(l))
+			)
+
+			.map(
+				{
 					'dozen': 12,
 
 					'hundred': 100,
@@ -82,6 +97,12 @@ export const integerGraph: LanguageGraphFactory<NumberData> = {
 
 			// Scale word + digits, combines 2 thousand 5
 			.add([ GraphBuilder.result(hasScaleWord), GraphBuilder.result(v => isDigits(v) && canFollowNumber(v)) ], v => combineNumbers(v[0], v[1]))
+
+			// A scale word after `a`, as in `a hundred` or `a dozen`
+			.add([ 'a', GraphBuilder.result(v => v.multiplier === true && canFollowNumber(v)) ], v => ({ ...v[0], combined: true }))
+
+			// `and` before the last part, as in `one hundred and five`
+			.add([ GraphBuilder.result(hasScaleWord), 'and', GraphBuilder.result(v => ! v.multiplier && canFollowNumber(v)) ], v => combineNumbers(v[0], v[1]))
 
 			// Thousands separator
 			.add([ GraphBuilder.result(isDigits), ',', GraphBuilder.result(v => isDigits(v) && canFollowNumber(v)) ], v => combineNumbers(v[0], v[1]))

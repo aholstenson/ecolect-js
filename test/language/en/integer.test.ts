@@ -43,6 +43,26 @@ describe('English', function() {
 
 		test('10,000', {}, BigInteger.fromNumber(10000));
 
+		test('twenty one', {}, BigInteger.fromNumber(21));
+
+		test('a hundred', {}, BigInteger.fromNumber(100));
+
+		test('one hundred and five', {}, BigInteger.fromNumber(105));
+
+		test('ninety nine', {}, BigInteger.fromNumber(99));
+
+		test('two thousand twenty one', {}, BigInteger.fromNumber(2021));
+
+		test('one hundred twenty three thousand', {}, BigInteger.fromNumber(123000));
+
+		test('a dozen', {}, BigInteger.fromNumber(12));
+
+		test('a hundred thousand', {}, BigInteger.fromNumber(100000));
+
+		test('twenty twenty', {}, null);
+
+		test('one and two', {}, null);
+
 		describe('Long input', function() {
 			const matcher = integerValue().matcher(en);
 

@@ -18,5 +18,19 @@ describe('English', function() {
 		test('2 1st', {}, BigInteger.fromNumber(21));
 
 		test('stuff st', {}, null);
+
+		test('twentieth', {}, BigInteger.fromNumber(20));
+
+		test('eighth', {}, BigInteger.fromNumber(8));
+
+		test('twelfth', {}, BigInteger.fromNumber(12));
+
+		test('twenty first', {}, BigInteger.fromNumber(21));
+
+		test('one hundred second', {}, BigInteger.fromNumber(102));
+
+		test('twenty twelfth', {}, null);
+
+		test('one first', {}, null);
 	});
 });
