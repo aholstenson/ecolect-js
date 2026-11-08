@@ -4,7 +4,7 @@ import { BigInteger } from 'numeric-types/integer';
 import { IntentsBuilder } from '../src/IntentsBuilder.js';
 import { en } from '../src/language/en/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
-import { anyTextValue, customValue, dateTimeValue, integerValue, numberValue } from '../src/values/index.js';
+import { anyTextValue, customValue, dateTimeValue, dateValue, integerValue, numberValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';
 
@@ -420,6 +420,45 @@ describe('Intents', function() {
 				.then(r => {
 					assertNotNull(r);
 					expect(r.values.n).toEqual(BigInteger.fromNumber(5));
+				});
+		});
+	});
+
+	describe('Matching time', function() {
+		const now = new Date(2026, 10, 8);
+
+		const intents = new IntentsBuilder(en)
+			.add('note', newPhrases()
+				.value('text', anyTextValue())
+				.phrase('note {text}')
+				.build()
+			)
+			.add('remind', newPhrases()
+				.value('when', dateValue())
+				.value('what', anyTextValue())
+				.phrase('remind me to {what} on {when}')
+				.build()
+			)
+			.build();
+
+		it('Free text with the separator word repeated many times', { timeout: 1000 }, function() {
+			const expression = 'remind me to ' + 'on '.repeat(160) + 'on friday';
+			return intents.match(expression, { now })
+				.then(r => {
+					assertNotNull(r);
+					expect(r.id).toEqual('remind');
+				});
+		});
+
+		it('Free text with many skippable words', { timeout: 1000 }, function() {
+			const expression = 'note ' + 'the '.repeat(200) + 'x';
+			return intents.match(expression, { now })
+				.then(r => {
+					assertNotNull(r);
+					expect(r.id).toEqual('note');
+					if(r.id === 'note') {
+						expect(r.values.text?.endsWith('x')).toBe(true);
+					}
 				});
 		});
 	});

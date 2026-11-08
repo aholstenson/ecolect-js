@@ -260,10 +260,14 @@ export class Encounter {
 	 *   the number of tokens consumed
 	 * @param data -
 	 *   optional data to make available to collectors
+	 * @param skipSkippable -
+	 *   if a word that may be left out, such as `the`, is also skipped at the
+	 *   next index. A free-text value sets this to `false`, as reading more
+	 *   text covers the same match.
 	 * @returns
 	 *   nothing, via a promise if any node returned a promise
 	 */
-	public advance(score: number, consumedTokens: number, data?: any): MaybePromise<void> {
+	public advance(score: number, consumedTokens: number, data?: any, skipSkippable: boolean = true): MaybePromise<void> {
 		const nextIndex = this.currentIndex + (consumedTokens || 0);
 		const nextScore = this.currentScore + (score || 0);
 
@@ -341,26 +345,50 @@ export class Encounter {
 			 * 2) The current graph supports fuzzy matching
 			 */
 			const token = this.token(nextIndex);
-			if(token && this.isSkippable(token) && this.supportsFuzzy) {
-				if(this.options.partial && nextIndex === this.tokens.length - 1) {
-					/*
-					 * The last token of a partial expression is the word that
-					 * is being typed. Stop words such as `for` are usually
-					 * followed by more input, so leaving them out would suggest
-					 * expressions the input has already ruled out. Words the
-					 * graph declares skippable, such as `please`, are filler
-					 * and may be left out, but the expression may not continue
-					 * after them as no more input is going to arrive.
-					 */
-					if(token.skippable) return;
+			if(skipSkippable && token && this.isSkippable(token) && this.supportsFuzzy) {
+				/*
+				 * A node that reads any text also reads the skippable word,
+				 * so skipping the word for it gives the same match again
+				 * with less text. Only the other nodes are evaluated with
+				 * the word skipped.
+				 */
+				const skipNodes = nodes.filter(node => ! node.readsAnyText);
+				if(skipNodes.length === 0) return;
 
-					return this.withoutContinuation(
-						() => this.advance((score || 0), (consumedTokens || 0) + 1, data)
-					);
-				}
-
-				return this.advance((score || 0), (consumedTokens || 0) + 1, data);
+				this.outgoing = skipNodes;
+				return after(skipToken(token), () => {
+					this.outgoing = outgoing;
+				});
 			}
+		};
+
+		/**
+		 * Evaluate the expression with the token at the next index skipped.
+		 *
+		 * @param token -
+		 *   the skippable token
+		 * @returns
+		 *   nothing, via a promise if any node returned a promise
+		 */
+		const skipToken = (token: Token): MaybePromise<void> => {
+			if(this.options.partial && nextIndex === this.tokens.length - 1) {
+				/*
+				 * The last token of a partial expression is the word that
+				 * is being typed. Stop words such as `for` are usually
+				 * followed by more input, so leaving them out would suggest
+				 * expressions the input has already ruled out. Words the
+				 * graph declares skippable, such as `please`, are filler
+				 * and may be left out, but the expression may not continue
+				 * after them as no more input is going to arrive.
+				 */
+				if(token.skippable) return;
+
+				return this.withoutContinuation(
+					() => this.advance((score || 0), (consumedTokens || 0) + 1, data)
+				);
+			}
+
+			return this.advance((score || 0), (consumedTokens || 0) + 1, data);
 		};
 
 		return after(sequence(nodes.length, branchInto), finish);

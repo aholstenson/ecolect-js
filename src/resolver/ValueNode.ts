@@ -24,6 +24,12 @@ export interface ValueNodeOptions<V> {
 	onlySingle?: boolean;
 
 	/**
+	 * If the value matches any text. Words that may be left out, such as
+	 * `the`, are then read as part of the value and not skipped around it.
+	 */
+	anyText?: boolean;
+
+	/**
 	 * The maximum number of hits to match, defaults to 10. If a value
 	 * generates more matches during a partial match the top scoring matches
 	 * will be returned.
@@ -74,6 +80,7 @@ export class ValueNode<V> extends Node {
 
 		this.id = id;
 		this.options = options;
+		this.readsAnyText = options.anyText ?? false;
 	}
 
 	public match(encounter: Encounter): MaybePromise<unknown> {
@@ -132,7 +139,12 @@ export class ValueNode<V> extends Node {
 			 * The rest of the phrase is in the same graph, so its collector
 			 * must also see the values matched before this value.
 			 */
-			return encounter.branchWithOnMatch(onMatch, () => encounter.advance(0, len), false);
+			/*
+			 * A value that reads any text also tries the longer text, so
+			 * skipping a skippable word right after the value would give the
+			 * same match again with less text.
+			 */
+			return encounter.branchWithOnMatch(onMatch, () => encounter.advance(0, len, undefined, ! this.readsAnyText), false);
 		};
 
 		return after(sequence(steps, attempt), () => {

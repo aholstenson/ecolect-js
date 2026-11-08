@@ -6,6 +6,8 @@ import {
 
 	combine,
 	isRelative,
+	isUnqualified,
+	withQualifier,
 	startOf,
 	endOf,
 	isWeek,
@@ -243,9 +245,9 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			}))
 
 			// Extra qualifiers such as in and on
-			.add([ 'in', GraphBuilder.result(isRelative) ], v => v[0])
-			.add([ 'on', GraphBuilder.result() ], v => v[0])
-			.add([ 'on', 'the', GraphBuilder.result() ], v => v[0])
+			.add([ 'in', GraphBuilder.result(v => isRelative(v) && isUnqualified(v)) ], v => withQualifier(v[0]))
+			.add([ 'on', GraphBuilder.result(isUnqualified) ], v => withQualifier(v[0]))
+			.add([ 'on', 'the', GraphBuilder.result(isUnqualified) ], v => withQualifier(v[0]))
 			.add([ dateDuration, 'ago' ], v => reverse(v[0]))
 
 			// Edges, such as start of [date] or end of [date]

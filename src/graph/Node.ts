@@ -8,9 +8,17 @@ export abstract class Node {
 	public outgoing: Node[];
 	public supportsPunctuation: boolean;
 
+	/**
+	 * If this node reads any text, such as a free-text value. A word that
+	 * may be left out is not skipped before such a node, as the node can
+	 * read the word itself.
+	 */
+	public readsAnyText: boolean;
+
 	public constructor() {
 		this.outgoing = [];
 		this.supportsPunctuation = false;
+		this.readsAnyText = false;
 	}
 
 	/**

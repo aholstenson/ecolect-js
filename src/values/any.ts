@@ -6,6 +6,8 @@ import type { NodeConvertable } from './base.js';
 import { ValueMatcher } from './base.js';
 
 const instance: ValueNodeOptions<string> = {
+	anyText: true,
+
 	match(encounter: ValueEncounter<string>) {
 		encounter.match(encounter.text);
 	}

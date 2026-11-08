@@ -7,7 +7,9 @@ import {
 
 	thisYear,
 	nextYear,
-	previousYear
+	previousYear,
+	isUnqualified,
+	withQualifier
 } from '../../type-datetime/index.js';
 import type { LanguageGraphFactory } from '../index.js';
 
@@ -39,7 +41,7 @@ export const yearGraph: LanguageGraphFactory<DateTimeData> = {
 
 			.add(relative, v => v[0])
 
-			.add([ 'in', GraphBuilder.result() ], v => v[0])
+			.add([ 'in', GraphBuilder.result(isUnqualified) ], v => withQualifier(v[0]))
 			.add([ 'of', GraphBuilder.result() ], v => v[0])
 			.add([ relative, 'ago' ], v => reverse(v[0]))
 

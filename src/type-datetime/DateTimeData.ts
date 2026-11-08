@@ -39,6 +39,14 @@ export interface DateTimeData {
 	 */
 	fromPlainNumber?: boolean;
 
+	/**
+	 * If the date was read with a word before it, such as `on` in
+	 * `on friday`. Only one such word is read, so `on on friday` is not a
+	 * date. Without this the words could repeat, and a long run of them
+	 * would be slow to read.
+	 */
+	qualified?: boolean;
+
 	hour?: number;
 	minute?: number;
 	second?: number;

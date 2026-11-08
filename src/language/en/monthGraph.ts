@@ -5,7 +5,9 @@ import {
 	nextMonth,
 	previousMonth,
 	thisMonth,
-	reverse
+	reverse,
+	isUnqualified,
+	withQualifier
 } from '../../type-datetime/index.js';
 import type { OrdinalData } from '../../type-numbers/index.js';
 import { isSpecific } from '../../type-numbers/index.js';
@@ -88,7 +90,7 @@ export const monthGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ ordinalMonth, 'month' ], v => ({ month: v[0].value - 1 }))
 			.add([ ordinalMonth ], v => ({ month: v[0].value - 1, }))
 
-			.add([ 'in', GraphBuilder.result() ], v => v[0])
+			.add([ 'in', GraphBuilder.result(isUnqualified) ], v => withQualifier(v[0]))
 			.add([ 'of', GraphBuilder.result() ], v => v[0])
 			.add([ relative, 'ago' ], v => reverse(v[0]))
 

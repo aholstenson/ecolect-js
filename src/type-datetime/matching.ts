@@ -213,3 +213,30 @@ export function reverse(v: DateTimeData): DateTimeData {
 
 	return result;
 }
+
+/**
+ * Mark a date as read with a word before it, such as `on` in `on friday`.
+ * The given data is left as it is, as it may be shared with other parses of
+ * the same tokens.
+ *
+ * @param v -
+ *   the date
+ * @returns
+ *   copy of the date with the mark
+ */
+export function withQualifier(v: DateTimeData): DateTimeData {
+	return { ...v, qualified: true };
+}
+
+/**
+ * Get if a word such as `on` can be read before a date. This is only the
+ * case if the date does not have such a word already.
+ *
+ * @param v -
+ *   the date
+ * @returns
+ *   `true` if the date has no word such as `on` before it
+ */
+export function isUnqualified(v: DateTimeData): boolean {
+	return v.qualified !== true;
+}
