@@ -1,5 +1,7 @@
+import { en } from '../../src/language/en/index.js';
 import { resolveLocale } from '../../src/language/resolveLocale.js';
-import { DateOrder } from '../../src/type-datetime/index.js';
+import { DateOrder, MonthDayOrder } from '../../src/type-datetime/index.js';
+import { dateValue } from '../../src/values/index.js';
 
 
 describe('Locale', function() {
@@ -22,6 +24,29 @@ describe('Locale', function() {
 
 		it('ja-JP writes the year first', function() {
 			expect(resolveLocale('ja-JP').dateOrder).toEqual(DateOrder.YearMonthDay);
+		});
+
+		it('sv-SE writes a date without a year with the day first', function() {
+			expect(resolveLocale('sv-SE').monthDayOrder).toEqual(MonthDayOrder.DayMonth);
+		});
+
+		it('ja-JP writes a date without a year with the month first', function() {
+			expect(resolveLocale('ja-JP').monthDayOrder).toEqual(MonthDayOrder.MonthDay);
+		});
+
+		it('en-GB writes a date without a year with the day first', function() {
+			expect(resolveLocale('en-GB').monthDayOrder).toEqual(MonthDayOrder.DayMonth);
+		});
+
+		/*
+		 * Swedish writes a full date with the year first, but a short date
+		 * without a year is written with the day first.
+		 */
+		it('sv-SE reads a date without a year with the day first', async function() {
+			const date = await dateValue().matcher(en)
+				.match('1/2', { now: new Date(2026, 10, 8), locale: 'sv-SE' });
+
+			expect(date).toEqual({ year: 2027, month: 2, day: 1 });
 		});
 	});
 

@@ -25,6 +25,7 @@ export function localeMatchOptions(locale: string): MatchOptions {
 	const settings = resolveLocale(locale);
 	const options: MatchOptions = {
 		dateOrder: settings.dateOrder,
+		monthDayOrder: settings.monthDayOrder,
 		weekStartsOn: settings.weekStartsOn,
 		firstWeekContainsDate: settings.firstWeekContainsDate
 	};
@@ -48,8 +49,16 @@ export function localeMatchOptions(locale: string): MatchOptions {
 export function applyLocale<O extends MatchOptions>(languageLocale: string, options: O): O {
 	const defaults = localeMatchOptions(options.locale ?? languageLocale);
 
+	/*
+	 * A date order set directly also decides the order of the month and the
+	 * day, so the locale only decides that order when it decides both.
+	 */
 	if(typeof options.dateOrder === 'undefined') {
 		options.dateOrder = defaults.dateOrder;
+
+		if(typeof options.monthDayOrder === 'undefined') {
+			options.monthDayOrder = defaults.monthDayOrder;
+		}
 	}
 
 	if(typeof options.weekStartsOn === 'undefined') {

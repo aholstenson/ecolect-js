@@ -1,4 +1,4 @@
-import type { DateOrder, DateTimeOptions } from '../type-datetime/index.js';
+import type { DateOrder, DateTimeOptions, MonthDayOrder } from '../type-datetime/index.js';
 
 /**
  * The day weeks start on, as `DateTimeOptions` counts days.
@@ -23,6 +23,12 @@ export interface LocaleSettings {
 	 * The order of the fields in numeric dates such as `1/2/2017`.
 	 */
 	readonly dateOrder: DateOrder;
+
+	/**
+	 * The order of the month and the day in numeric dates without a year,
+	 * such as `1/2`.
+	 */
+	readonly monthDayOrder: MonthDayOrder;
 
 	/**
 	 * The day weeks start on.

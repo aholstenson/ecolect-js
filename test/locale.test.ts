@@ -2,7 +2,7 @@ import { intentsBuilder } from '../src/index.js';
 import { en, english } from '../src/language/en/index.js';
 import type { Language } from '../src/language/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
-import { DateOrder } from '../src/type-datetime/index.js';
+import { DateOrder, MonthDayOrder } from '../src/type-datetime/index.js';
 import { dateValue } from '../src/values/date.js';
 
 const now = new Date(2017, 0, 24);
@@ -58,6 +58,20 @@ describe('Locale', function() {
 				.match('1/2/2017', { now: now, dateOrder: DateOrder.MonthDayYear });
 
 			expect(match).toEqual({ year: 2017, month: 1, day: 2 });
+		});
+
+		it('a date order set directly also decides the order of the month and the day', async function() {
+			const match = await dateValue().matcher(en)
+				.match('1/2', { now: now, locale: 'sv-SE', dateOrder: DateOrder.YearMonthDay });
+
+			expect(match).toEqual({ year: 2017, month: 1, day: 2 });
+		});
+
+		it('an order of the month and the day set directly wins over the locale', async function() {
+			const match = await dateValue().matcher(en)
+				.match('1/2', { now: now, monthDayOrder: MonthDayOrder.DayMonth });
+
+			expect(match).toEqual({ year: 2017, month: 2, day: 1 });
 		});
 
 		it('an invalid locale rejects the match of a value', function() {

@@ -1,6 +1,6 @@
 import { DayOfWeek } from 'datetime-types';
 
-import { DateOrder } from '../type-datetime/index.js';
+import { DateOrder, MonthDayOrder } from '../type-datetime/index.js';
 
 import type { FirstWeekContainsDate, LocaleSettings, WeekStartsOn } from './LocaleSettings.js';
 
@@ -91,6 +91,7 @@ function readLocale(locale: string): LocaleSettings {
 
 	return {
 		dateOrder: readDateOrder(tag),
+		monthDayOrder: readMonthDayOrder(tag),
 		weekStartsOn: readWeekStartsOn(parsed),
 		firstWeekContainsDate: readFirstWeekContainsDate(parsed),
 		...readSeparators(tag)
@@ -123,6 +124,28 @@ function readDateOrder(locale: string): DateOrder {
 	}
 
 	return DateOrder.MonthDayYear;
+}
+
+/**
+ * Read the order of the month and the day in a numeric date without a year,
+ * by formatting a date with only these fields. This differs from the order
+ * of a full date in some locales, such as `sv-SE`.
+ *
+ * @param locale -
+ *   the locale to read
+ * @returns
+ *   the order of the month and the day
+ */
+function readMonthDayOrder(locale: string): MonthDayOrder {
+	const fields = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'numeric' })
+		.formatToParts(REFERENCE_DATE)
+		.map(part => part.type);
+
+	const day = fields.indexOf('day');
+	const month = fields.indexOf('month');
+	return day >= 0 && month >= 0 && day < month
+		? MonthDayOrder.DayMonth
+		: MonthDayOrder.MonthDay;
 }
 
 /**

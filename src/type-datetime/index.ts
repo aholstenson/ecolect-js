@@ -1,6 +1,7 @@
 export * from './DateOrder.js';
 export * from './DateTimeData.js';
 export * from './DateTimeOptions.js';
+export * from './MonthDayOrder.js';
 export * from './IntervalEdge.js';
 export * from './IntervalData.js';
 export * from './Precision.js';

@@ -35,6 +35,7 @@ import type { DateTimeOptions } from './DateTimeOptions.js';
 import { IntervalEdge } from './IntervalEdge.js';
 import { toStart, toEnd } from './intervals.js';
 import { combine, isRelative } from './matching.js';
+import { MonthDayOrder } from './MonthDayOrder.js';
 import { Period } from './Period.js';
 import { TimeRelationship } from './TimeRelationship.js';
 import { toDateFnsDay, toWeekOptions } from './weekOptions.js';
@@ -133,7 +134,8 @@ export function expandYear(year: number, options: DateTimeOptions = {}): number 
 }
 
 /**
- * Check if the month is written before the day in the given options.
+ * Check if the month is written before the day in the given options. The
+ * order comes from `monthDayOrder`, or from `dateOrder` if it is not set.
  *
  * @param options -
  *   options with the date order
@@ -141,12 +143,16 @@ export function expandYear(year: number, options: DateTimeOptions = {}): number 
  *   `true` if the month comes before the day
  */
 function isMonthBeforeDay(options: DateTimeOptions): boolean {
+	if(typeof options.monthDayOrder !== 'undefined') {
+		return options.monthDayOrder === MonthDayOrder.MonthDay;
+	}
+
 	return options.dateOrder !== DateOrder.DayMonthYear;
 }
 
 /**
  * Describe a numeric month and day such as `4/12`. The order of the fields
- * is taken from `dateOrder` in the options. If the field read as the month
+ * is taken from `monthDayOrder` or `dateOrder` in the options. If the field read as the month
  * cannot be a month but the other one can, the fields are swapped, so `13/2`
  * is February 13th in every order.
  *

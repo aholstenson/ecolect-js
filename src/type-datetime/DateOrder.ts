@@ -18,8 +18,9 @@ export enum DateOrder {
 
 	/**
 	 * Year, month and then day. Used in East Asia and in ISO 8601, so
-	 * `17/1/2` is January 2nd 2017. A date with the year last reads month
-	 * before day.
+	 * `17/1/2` is January 2nd 2017. A date without a year, or with the year
+	 * last, reads the month before the day, unless `monthDayOrder` says
+	 * otherwise.
 	 */
 	YearMonthDay = 'year-month-day'
 }

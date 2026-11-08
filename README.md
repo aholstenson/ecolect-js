@@ -336,7 +336,7 @@ directly with `resolveLocale` if you need them yourself:
 ```javascript
 import { resolveLocale } from 'ecolect/language';
 
-// { dateOrder: 'day-month-year', weekStartsOn: 1, firstWeekContainsDate: 4, ... }
+// { dateOrder: 'day-month-year', monthDayOrder: 'day-month', weekStartsOn: 1, ... }
 const settings = resolveLocale('en-GB');
 ```
 
@@ -358,11 +358,18 @@ Option                  | Default             | Description
 `now`                   | `new Date()`        | Date to use as a base for times and dates parsed
 `locale`                | Locale of the language | The locale to read the expression as, such as `en-GB`
 `dateOrder`             | From the locale     | The order of the fields in a numeric date such as `1/2/2017`
+`monthDayOrder`         | From the locale     | The order of the month and the day in a numeric date without a year, such as `1/2`
 `weekStartsOn`          | From the locale     | The day the week starts on
 `firstWeekContainsDate` | From the locale     | The day of January which is always in the first week of the year
 
 An option set directly wins over the locale, so `dateOrder` given together
 with a locale is used as it is.
+
+The order of the month and the day is the same as in `dateOrder` for most
+locales, but not for all. `sv-SE` writes `2017-01-02` with the year first, but
+`2/1` with the day first. When `dateOrder` is set directly and
+`monthDayOrder` is not, the order of the month and the day comes from
+`dateOrder`.
 
 ### A note about weeks
 

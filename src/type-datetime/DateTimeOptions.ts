@@ -1,6 +1,7 @@
 import type { DayOfWeek } from 'datetime-types';
 
 import type { DateOrder } from './DateOrder.js';
+import type { MonthDayOrder } from './MonthDayOrder.js';
 
 /**
  * Options that can be used with date and times.
@@ -48,4 +49,12 @@ export interface DateTimeOptions {
 	 * day.
 	 */
 	dateOrder?: DateOrder;
+
+	/**
+	 * The order of the month and the day in numeric dates without a year,
+	 * such as `1/2`, and in dates with the year last, such as `1/2/2017`.
+	 * Without a value the order comes from `dateOrder`: day first for
+	 * `DateOrder.DayMonthYear` and month first for the other orders.
+	 */
+	monthDayOrder?: MonthDayOrder;
 }
