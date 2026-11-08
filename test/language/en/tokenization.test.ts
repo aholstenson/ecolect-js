@@ -90,6 +90,23 @@ describe('English', function() {
 			expect(tokens[1].raw).toEqual('hello');
 		});
 
+		it('Quotes keep their raw text and offsets', function() {
+			const input = 'say "hello" now';
+			const tokens = tokenizer(input);
+			for(let i = 0; i < tokens.length; i++) {
+				expect(input.slice(tokens[i].start, tokens[i].stop)).toEqual(tokens[i].raw);
+				if(i > 0) {
+					expect(tokens[i - 1].stop).toBeLessThanOrEqual(tokens[i].start);
+				}
+			}
+		});
+
+		it('Curly double quotes are read as straight double quotes', function() {
+			const tokens = tokenizer('say \u201Chello\u201D');
+			expect(tokens.map(t => t.raw)).toEqual([ 'say', '\u201C', 'hello', '\u201D' ]);
+			expect(tokens.map(t => t.normalized)).toEqual([ 'say', '"', 'hello', '"' ]);
+		});
+
 		it('Punctuation is split from words', function() {
 			const tokens = tokenizer('hello, world!');
 			expect(tokens.map(t => t.raw)).toEqual([ 'hello', ',', 'world', '!' ]);

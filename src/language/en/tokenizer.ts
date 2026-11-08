@@ -23,7 +23,7 @@ export const tokenizer: Tokenizer = (value: string) => {
 		const result = [];
 		for(let i = 0; i < tokens.length; i++) {
 			const word = tokens[i];
-			const normalized = normalize(word, tokens[i + 1]);
+			const normalized = DOUBLE_QUOTES.has(raw[i]) ? '"' : normalize(word, tokens[i + 1]);
 
 			result[i] = {
 				raw: raw[i],
@@ -45,12 +45,23 @@ export const tokenizer: Tokenizer = (value: string) => {
 const APOSTROPHES = /[\u2019\u02BC]/g;
 
 /**
- * Get the text of each token as it was typed. The tokens are made from text
- * with the apostrophes replaced. When the tokens together are that text, each
- * token gets the same part of the typed text, so that free text keeps the
- * apostrophes the user typed. Rules that change the text, such as for
- * quotes, give tokens that are not part of the text, and these tokens are
- * used as they are.
+ * Double quotes that are read as the straight double quote `"`, so that a
+ * phrase with `"` matches the curly quotes that phones type.
+ */
+const DOUBLE_QUOTES = new Set([ '"', '\u201C', '\u201D' ]);
+
+/**
+ * Tokens that the rules make from a double quote `"`.
+ */
+const QUOTE_TOKENS = new Set([ '``', '\'\'' ]);
+
+/**
+ * Get the text of each token as it was typed, so that free text keeps what
+ * the user typed and each token has the length of its part of the input.
+ * The tokens are made from text with the apostrophes replaced, and the rules
+ * change a double quote `"` into ` `` ` or `''`. Each token gets the part of
+ * the typed text that it was made from. If the tokens can not be matched to
+ * the typed text, the tokens are used as they are.
  *
  * @param typed -
  *   the text as it was typed
@@ -62,16 +73,21 @@ const APOSTROPHES = /[\u2019\u02BC]/g;
  *   the typed text of each token
  */
 function typedText(typed: string, text: string, tokens: string[]): string[] {
-	if(typed === text || tokens.join('') !== text) {
-		return tokens;
+	const result: string[] = [];
+	let index = 0;
+	for(const token of tokens) {
+		if(QUOTE_TOKENS.has(token) && text[index] === '"') {
+			result.push('"');
+			index += 1;
+		} else if(text.startsWith(token, index)) {
+			result.push(typed.substring(index, index + token.length));
+			index += token.length;
+		} else {
+			return tokens;
+		}
 	}
 
-	let index = 0;
-	return tokens.map(token => {
-		const raw = typed.substring(index, index + token.length);
-		index += token.length;
-		return raw;
-	});
+	return index === text.length ? result : tokens;
 }
 
 function normalize(word: string, next?: string) {

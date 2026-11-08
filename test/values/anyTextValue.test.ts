@@ -22,6 +22,12 @@ describe('Value: anyTextValue', function() {
 			expect(m.values.value).toBe('https://example.com');
 		});
 
+		it('Prefixed: text with double quotes', async function() {
+			const m = await resolver.match('prefix he said "stop" now');
+			assertNotNull(m);
+			expect(m.values.value).toBe('he said "stop" now');
+		});
+
 		it.skip('Prefixed: URL 2', async function() {
 			const m = await resolver.match('prefix https://www.example.com/path?queryParam=value');
 			assertNotNull(m);
