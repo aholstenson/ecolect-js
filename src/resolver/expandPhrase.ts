@@ -12,6 +12,30 @@ const GROUP_END: Record<string, string> = {
 const NESTED_GROUP = /[([\])]/;
 
 /**
+ * The highest number of ways a phrase can be written. Each group multiplies
+ * the number of ways, so 12 groups that may be left out give 4096 ways.
+ * Matchers for more ways are slow to build.
+ */
+export const MAX_PHRASE_VARIANTS = 4096;
+
+/**
+ * Throw an error if a phrase can be written in too many ways.
+ *
+ * @param count -
+ *   the number of ways the phrase can be written
+ * @param text -
+ *   the phrase, for the error message
+ */
+export function checkVariantCount(count: number, text: string): void {
+	if(count > MAX_PHRASE_VARIANTS) {
+		throw new Error(
+			'Phrase can be written in more than ' + MAX_PHRASE_VARIANTS + ' ways,'
+			+ ' split it into several phrases or use fewer groups, in phrase: ' + text
+		);
+	}
+}
+
+/**
  * Expand a phrase into every way it can be written. Phrases may contain
  * groups of alternatives, either as `(a|b)` for a group that must match or
  * as `[a|b]` for a group that may also be left out:
@@ -29,6 +53,9 @@ const NESTED_GROUP = /[([\])]/;
  *   the phrase to expand
  * @returns
  *   every phrase the given text can be written as, without duplicates
+ * @throws
+ *   if a group is not closed, groups are nested, or the phrase can be written
+ *   in more than `MAX_PHRASE_VARIANTS` ways
  */
 export function expandPhrase(text: string): string[] {
 	let variants: string[] = [ '' ];
@@ -63,6 +90,8 @@ export function expandPhrase(text: string): string[] {
 			// The group may be left out, so it also expands into nothing
 			alternatives.push('');
 		}
+
+		checkVariantCount(variants.length * alternatives.length, text);
 
 		const literal = text.substring(literalStart, i);
 		const expanded: string[] = [];

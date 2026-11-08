@@ -124,6 +124,49 @@ describe('Phrases: Groups of alternatives', function() {
 		});
 	});
 
+	describe('Many groups that may be left out', function() {
+		/**
+		 * Create a phrase with the given number of words that may be left out.
+		 *
+		 * @param count -
+		 *   the number of groups
+		 * @returns
+		 *   the phrase
+		 */
+		function optionalWords(count: number) {
+			return Array.from({ length: count }, (_, i) => '[w' + i + ']').join(' ') + ' end';
+		}
+
+		it('Matcher is built in reasonable time', function() {
+			const start = performance.now();
+			const matcher = newPhrases()
+				.phrase(optionalWords(12))
+				.toMatcher(en);
+
+			expect(performance.now() - start).toBeLessThan(1000);
+
+			return matcher.match('w3 end')
+				.then(r => assertNotNull(r));
+		});
+
+		it('Phrase that can be written in too many ways is reported', function() {
+			const start = performance.now();
+			expect(() => newPhrases()
+				.phrase(optionalWords(16))
+				.toMatcher(en)
+			).toThrow(/split it into several phrases/);
+
+			expect(performance.now() - start).toBeLessThan(1000);
+		});
+
+		it('Parts that together can be written in too many ways are reported', function() {
+			expect(() => newPhrases()
+				.phrase(optionalWords(8), optionalWords(8))
+				.toMatcher(en)
+			).toThrow(/split it into several phrases/);
+		});
+	});
+
 	describe('Group that must match', function() {
 		const matcher = newPhrases()
 			.phrase('orders (open|closed)')

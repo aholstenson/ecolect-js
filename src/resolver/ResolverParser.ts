@@ -10,7 +10,7 @@ import type { Language } from '../language/index.js';
 import type { NodeConvertable, Value } from '../values/base.js';
 import { LanguageSpecificValue } from '../values/base.js';
 
-import { expandPhrase } from './expandPhrase.js';
+import { checkVariantCount, expandPhrase } from './expandPhrase.js';
 import { ValueNode } from './ValueNode.js';
 
 /**
@@ -112,6 +112,8 @@ export class ResolverParser<V> extends GraphBuilder<V> {
 			const expanded = typeof item === 'string'
 				? expandPhrase(item)
 				: [ item ];
+
+			checkVariantCount(variants.length * expanded.length, items.filter(i => typeof i === 'string').join(' '));
 
 			const next: GraphBuildable<V>[][] = [];
 			for(const variant of variants) {
