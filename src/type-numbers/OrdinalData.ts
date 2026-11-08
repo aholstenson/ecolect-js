@@ -1,4 +1,4 @@
-import { OrdinalPrecision } from './OrdinalPrecision.js';
+import type { OrdinalPrecision } from './OrdinalPrecision.js';
 
 /**
  * Data that describes an ordinal.

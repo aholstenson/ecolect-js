@@ -1,7 +1,7 @@
 import { mapDateInterval } from '../../src/type-datetime/date-intervals.js';
 import { mapDateTime } from '../../src/type-datetime/date-times.js';
 import { mapDate } from '../../src/type-datetime/dates.js';
-import { DateTimeData } from '../../src/type-datetime/DateTimeData.js';
+import type { DateTimeData } from '../../src/type-datetime/DateTimeData.js';
 import { IntervalEdge } from '../../src/type-datetime/IntervalEdge.js';
 import { Meridiem } from '../../src/type-datetime/Meridiem.js';
 import { TimeRelationship } from '../../src/type-datetime/TimeRelationship.js';

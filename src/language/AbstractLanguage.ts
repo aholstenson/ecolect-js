@@ -1,10 +1,10 @@
-import { Graph, GraphBuilder } from '../graph/index.js';
-import { TokenComparer, Tokenizer } from '../tokenization/index.js';
+import type { Graph, GraphBuilder } from '../graph/index.js';
+import type { TokenComparer, Tokenizer } from '../tokenization/index.js';
 
-import { KnownGraphs, KnownGraphsDataTypes } from './KnownGraphs.js';
-import { Language } from './Language.js';
-import { LanguageGraphFactory } from './LanguageGraphFactory.js';
-import { Vocabulary } from './Vocabulary.js';
+import type { KnownGraphs, KnownGraphsDataTypes } from './KnownGraphs.js';
+import type { Language } from './Language.js';
+import type { LanguageGraphFactory } from './LanguageGraphFactory.js';
+import type { Vocabulary } from './Vocabulary.js';
 import { createVocabularyTokenizer } from './vocabularyTokenizer.js';
 
 /**

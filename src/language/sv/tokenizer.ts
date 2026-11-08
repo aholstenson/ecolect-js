@@ -1,4 +1,5 @@
-import { Tokenizer, tokenize } from '../../tokenization/index.js';
+import type { Tokenizer } from '../../tokenization/index.js';
+import { tokenize } from '../../tokenization/index.js';
 
 import { swedishStemmer } from './algorithms/swedishStemmer.js';
 

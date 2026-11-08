@@ -1,5 +1,5 @@
-import { Match } from './Match.js';
-import { MaybePromise } from './maybePromise.js';
+import type { Match } from './Match.js';
+import type { MaybePromise } from './maybePromise.js';
 
 /**
  * Handler for matches found. May return a promise if the match needs

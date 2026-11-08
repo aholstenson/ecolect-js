@@ -18,7 +18,7 @@ import {
 	endOfSecond
 } from 'date-fns';
 
-import { DateTimeOptions } from './DateTimeOptions.js';
+import type { DateTimeOptions } from './DateTimeOptions.js';
 import { Period } from './Period.js';
 import { toWeekOptions } from './weekOptions.js';
 

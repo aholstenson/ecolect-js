@@ -1,5 +1,5 @@
 import { ExpressionPartType } from '../src/resolver/expression/ExpressionPartType.js';
-import { TextPart } from '../src/resolver/expression/TextPart.js';
+import type { TextPart } from '../src/resolver/expression/TextPart.js';
 import { Phrase } from '../src/resolver/Phrase.js';
 
 describe('Phrase', function() {

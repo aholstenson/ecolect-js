@@ -1,13 +1,15 @@
 import { GraphBuilder } from '../../graph/index.js';
+import type {
+	DateTimeData} from '../../type-datetime/index.js';
 import {
-	DateTimeData,
 
 	thisWeek,
 	nextWeek,
 	previousWeek
 } from '../../type-datetime/index.js';
-import { isSpecific, OrdinalData } from '../../type-numbers/index.js';
-import { LanguageGraphFactory } from '../index.js';
+import type { OrdinalData } from '../../type-numbers/index.js';
+import { isSpecific } from '../../type-numbers/index.js';
+import type { LanguageGraphFactory } from '../index.js';
 
 import { ordinalGraph } from './ordinalGraph.js';
 

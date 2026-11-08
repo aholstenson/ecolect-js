@@ -1,10 +1,10 @@
-import { Language } from '../language/index.js';
-import { MatchOptions } from '../matching/index.js';
+import type { Language } from '../language/index.js';
+import type { MatchOptions } from '../matching/index.js';
 
-import { GenerateOptions } from './GenerateOptions.js';
+import type { GenerateOptions } from './GenerateOptions.js';
 import { joinTemplate } from './join.js';
-import { Template } from './Template.js';
-import { RenderContext, ValueRenderer } from './ValueRenderer.js';
+import type { Template } from './Template.js';
+import type { RenderContext, ValueRenderer } from './ValueRenderer.js';
 import { definedKeys, valuesEqual } from './valuesEqual.js';
 
 /**

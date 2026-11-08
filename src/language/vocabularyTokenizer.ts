@@ -1,6 +1,6 @@
-import { Token, Tokenizer } from '../tokenization/index.js';
+import type { Token, Tokenizer } from '../tokenization/index.js';
 
-import { Vocabulary } from './Vocabulary.js';
+import type { Vocabulary } from './Vocabulary.js';
 
 /**
  * The parts of a token that a synonym takes over from the word it is a

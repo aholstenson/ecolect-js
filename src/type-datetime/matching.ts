@@ -1,6 +1,7 @@
 import { clone } from './clone.js';
-import { DateTimeData } from './DateTimeData.js';
-import { IntervalData, isIntervalData } from './IntervalData.js';
+import type { DateTimeData } from './DateTimeData.js';
+import type { IntervalData } from './IntervalData.js';
+import { isIntervalData } from './IntervalData.js';
 import { IntervalEdge } from './IntervalEdge.js';
 import { asTime, isPlainNumberTime } from './times.js';
 

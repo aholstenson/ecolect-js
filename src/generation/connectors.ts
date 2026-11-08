@@ -1,5 +1,6 @@
-import { CollectorNode, Graph, Node, TokenNode } from '../graph/index.js';
-import { Token } from '../tokenization/index.js';
+import type { Graph, Node } from '../graph/index.js';
+import { CollectorNode, TokenNode } from '../graph/index.js';
+import type { Token } from '../tokenization/index.js';
 
 import { joinTokens } from './join.js';
 

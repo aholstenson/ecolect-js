@@ -1,13 +1,14 @@
 import { GraphBuilder } from '../../graph/index.js';
+import type {
+	DateTimeData} from '../../type-datetime/index.js';
 import {
-	DateTimeData,
 
 	thisQuarter,
 	nextQuarter,
 	previousQuarter
 } from '../../type-datetime/index.js';
-import { OrdinalData } from '../../type-numbers/index.js';
-import { LanguageGraphFactory } from '../index.js';
+import type { OrdinalData } from '../../type-numbers/index.js';
+import type { LanguageGraphFactory } from '../index.js';
 
 import { ordinalGraph } from './ordinalGraph.js';
 

@@ -1,11 +1,12 @@
 import { GraphBuilder } from '../../graph/index.js';
+import type {
+	DateTimeData} from '../../type-datetime/index.js';
 import {
 	asTime,
 	combineDateAndTime,
-	DateTimeData,
 	isRelative
 } from '../../type-datetime/index.js';
-import { LanguageGraphFactory } from '../index.js';
+import type { LanguageGraphFactory } from '../index.js';
 
 import { dateGraph } from './dateGraph.js';
 import { timeGraph } from './timeGraph.js';

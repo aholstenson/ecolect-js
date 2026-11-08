@@ -24,12 +24,13 @@ import {
 	startOfWeek,
 	startOfMonth
 } from 'date-fns';
-import { LocalDate, DayOfWeek } from 'datetime-types';
+import type { DayOfWeek } from 'datetime-types';
+import { LocalDate } from 'datetime-types';
 
 import { currentTime } from './currentTime.js';
 import { DateOrder } from './DateOrder.js';
-import { DateTimeData } from './DateTimeData.js';
-import { DateTimeOptions } from './DateTimeOptions.js';
+import type { DateTimeData } from './DateTimeData.js';
+import type { DateTimeOptions } from './DateTimeOptions.js';
 import { IntervalEdge } from './IntervalEdge.js';
 import { toStart, toEnd } from './intervals.js';
 import { combine, isRelative } from './matching.js';

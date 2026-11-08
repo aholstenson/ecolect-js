@@ -1,7 +1,8 @@
 import { format } from 'date-fns';
 
-import { Graph, GraphMatcher } from '../../src/graph/index.js';
-import { Language, LanguageGraphFactory } from '../../src/language/index.js';
+import type { Graph } from '../../src/graph/index.js';
+import { GraphMatcher } from '../../src/graph/index.js';
+import type { Language, LanguageGraphFactory } from '../../src/language/index.js';
 
 function formatDate(d?: Date) {
 	if(! d) return 'current time';

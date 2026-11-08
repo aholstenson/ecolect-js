@@ -1,10 +1,11 @@
-import { CollectorNode, Graph, Node, TokenNode } from '../graph/index.js';
+import type { Graph, Node } from '../graph/index.js';
+import { CollectorNode, TokenNode } from '../graph/index.js';
 import { ValueNode } from '../resolver/ValueNode.js';
 import { ValueParserNode } from '../resolver/ValueParserNode.js';
 import { ValueStatic } from '../resolver/ValueStatic.js';
-import { Token } from '../tokenization/index.js';
+import type { Token } from '../tokenization/index.js';
 
-import { Template, TemplatePart } from './Template.js';
+import type { Template, TemplatePart } from './Template.js';
 
 /**
  * The longest path that is followed while reading templates out of a graph.

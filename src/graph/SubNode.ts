@@ -1,18 +1,19 @@
 import { deepEqual } from 'fast-equals';
 
-import { Graph } from './Graph.js';
-import { GraphOptions } from './GraphOptions.js';
-import {
+import type { Graph } from './Graph.js';
+import type { GraphOptions } from './GraphOptions.js';
+import type {
 	Encounter,
 	Match,
 	MaybePromise,
+	SubGraphVariant} from './matching/index.js';
+import {
 	NO_SKIPPABLE_TOKENS,
-	SubGraphVariant,
 	after,
 	sequence
 } from './matching/index.js';
 import { Node } from './Node.js';
-import { Predicate } from './Predicate.js';
+import type { Predicate } from './Predicate.js';
 
 /*
  * Small penalty applied when a SubNode matches. This helps the algorithm

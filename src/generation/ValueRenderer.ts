@@ -1,5 +1,5 @@
-import { Language } from '../language/index.js';
-import { MatchOptions } from '../matching/index.js';
+import type { Language } from '../language/index.js';
+import type { MatchOptions } from '../matching/index.js';
 
 /**
  * What a renderer knows about the text it is writing.

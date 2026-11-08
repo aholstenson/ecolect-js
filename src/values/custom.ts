@@ -1,8 +1,10 @@
-import { RenderContext, renderer } from '../generation/ValueRenderer.js';
-import { ValueEncounter } from '../resolver/ValueEncounter.js';
-import { ValueNodeOptions } from '../resolver/ValueNode.js';
+import type { RenderContext } from '../generation/ValueRenderer.js';
+import { renderer } from '../generation/ValueRenderer.js';
+import type { ValueEncounter } from '../resolver/ValueEncounter.js';
+import type { ValueNodeOptions } from '../resolver/ValueNode.js';
 
-import { ValueMatcher, NodeConvertable } from './base.js';
+import type { NodeConvertable } from './base.js';
+import { ValueMatcher } from './base.js';
 
 /**
  * Options for a custom value.

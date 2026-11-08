@@ -1,5 +1,5 @@
-import { Encounter } from './matching/Encounter.js';
-import { MaybePromise } from './matching/maybePromise.js';
+import type { Encounter } from './matching/Encounter.js';
+import type { MaybePromise } from './matching/maybePromise.js';
 
 /**
  * The base class for nodes.

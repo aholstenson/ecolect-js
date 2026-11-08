@@ -5,8 +5,8 @@ import {
 
 import { currentTime } from './currentTime.js';
 import { mapDateInterval } from './date-intervals.js';
-import { DateTimeData } from './DateTimeData.js';
-import { DateTimeOptions } from './DateTimeOptions.js';
+import type { DateTimeData } from './DateTimeData.js';
+import type { DateTimeOptions } from './DateTimeOptions.js';
 
 export function thisQuarter(r: any, options: DateTimeOptions): DateTimeData {
 	const time = currentTime(options);

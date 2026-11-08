@@ -5,8 +5,8 @@ import {
 import { Year } from 'datetime-types';
 
 import { currentTime } from './currentTime.js';
-import { DateTimeData } from './DateTimeData.js';
-import { DateTimeOptions } from './DateTimeOptions.js';
+import type { DateTimeData } from './DateTimeData.js';
+import type { DateTimeOptions } from './DateTimeOptions.js';
 
 export function thisYear(r: any, options: DateTimeOptions): DateTimeData {
 	return {

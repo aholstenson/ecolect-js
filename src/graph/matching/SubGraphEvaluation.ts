@@ -1,4 +1,4 @@
-import { Node } from '../Node.js';
+import type { Node } from '../Node.js';
 
 /**
  * A way a sub-graph can match starting at a certain token. Sub-graphs can

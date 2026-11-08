@@ -1,6 +1,6 @@
-import { MatchOptions } from '../matching/index.js';
+import type { MatchOptions } from '../matching/index.js';
 
-import { Casing } from './join.js';
+import type { Casing } from './join.js';
 
 /**
  * Options that can be used when generating a text.

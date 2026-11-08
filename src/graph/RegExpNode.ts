@@ -1,4 +1,4 @@
-import { Encounter } from './matching/Encounter.js';
+import type { Encounter } from './matching/Encounter.js';
 import { Node } from './Node.js';
 
 /**

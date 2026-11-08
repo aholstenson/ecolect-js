@@ -1,4 +1,5 @@
-import { renderer, ValueRenderer } from '../ValueRenderer.js';
+import type { ValueRenderer } from '../ValueRenderer.js';
+import { renderer } from '../ValueRenderer.js';
 
 /**
  * Write free text as itself.

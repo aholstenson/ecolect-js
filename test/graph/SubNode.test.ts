@@ -1,9 +1,10 @@
 
-import { GraphOptions } from '../../src/graph/GraphOptions.js';
-import { Node } from '../../src/graph/Node.js';
+import type { GraphOptions } from '../../src/graph/GraphOptions.js';
+import type { Node } from '../../src/graph/Node.js';
 import { SubNode } from '../../src/graph/SubNode.js';
 import { TokenNode } from '../../src/graph/TokenNode.js';
-import { whitespaceTokenizer, TokenComparer } from '../../src/tokenization/index.js';
+import type { TokenComparer } from '../../src/tokenization/index.js';
+import { whitespaceTokenizer } from '../../src/tokenization/index.js';
 
 const comparer: TokenComparer = {
 	compare: (a, b) => a.normalized === b.normalized ? 1 : 0,

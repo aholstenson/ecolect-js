@@ -1,4 +1,4 @@
-import { DateOrder, DateTimeOptions } from '../type-datetime/index.js';
+import type { DateOrder, DateTimeOptions } from '../type-datetime/index.js';
 
 /**
  * The day weeks start on, as `DateTimeOptions` counts days.

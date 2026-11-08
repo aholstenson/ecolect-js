@@ -1,5 +1,5 @@
-import { MatchAllOptions } from './MatchAllOptions.js';
-import { MatchOptions } from './MatchOptions.js';
+import type { MatchAllOptions } from './MatchAllOptions.js';
+import type { MatchOptions } from './MatchOptions.js';
 
 /**
  * Matcher that can match expressions against a graph.

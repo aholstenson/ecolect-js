@@ -1,6 +1,6 @@
-import { GraphBuildable } from '../graph/index.js';
-import { Language } from '../language/index.js';
-import { Value } from '../values/base.js';
+import type { GraphBuildable } from '../graph/index.js';
+import type { Language } from '../language/index.js';
+import type { Value } from '../values/base.js';
 
 import { Phrases } from './Phrases.js';
 

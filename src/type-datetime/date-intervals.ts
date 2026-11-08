@@ -3,10 +3,10 @@ import { DateInterval } from 'datetime-types';
 
 import { currentTime } from './currentTime.js';
 import { mapDate, today } from './dates.js';
-import { DateTimeData } from './DateTimeData.js';
-import { DateTimeOptions } from './DateTimeOptions.js';
+import type { DateTimeData } from './DateTimeData.js';
+import type { DateTimeOptions } from './DateTimeOptions.js';
 import { mapDuration } from './durations.js';
-import { IntervalData } from './IntervalData.js';
+import type { IntervalData } from './IntervalData.js';
 import { IntervalEdge } from './IntervalEdge.js';
 import { toStart } from './intervals.js';
 import { adjusted, reverse } from './matching.js';

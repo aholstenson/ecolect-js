@@ -1,13 +1,16 @@
 import { deepEqual } from 'fast-equals';
 
-import { IntentGenerator, IntentsGenerator, renderersFor } from './generation/Generator.js';
+import type { IntentGenerator } from './generation/Generator.js';
+import { IntentsGenerator, renderersFor } from './generation/Generator.js';
 import { templatesFrom } from './generation/templates.js';
 import { TemplateGenerator } from './generation/TemplateGenerator.js';
-import { Graph, GraphBuilder, GraphMatcher } from './graph/index.js';
-import { Language } from './language/index.js';
-import { localeAwareMatcher, Matcher } from './matching/index.js';
+import type { Graph } from './graph/index.js';
+import { GraphBuilder, GraphMatcher } from './graph/index.js';
+import type { Language } from './language/index.js';
+import type { Matcher } from './matching/index.js';
+import { localeAwareMatcher } from './matching/index.js';
 import { Phrase } from './resolver/Phrase.js';
-import { Phrases } from './resolver/Phrases.js';
+import type { Phrases } from './resolver/Phrases.js';
 
 /**
  * Check if two intents are the same suggestion. Intents that have the same

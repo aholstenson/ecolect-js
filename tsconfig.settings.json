@@ -7,7 +7,7 @@
 		"moduleResolution": "NodeNext",
 
 		"strict": true,
-		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
 
 		/*
 		 * No source maps or declaration maps are emitted. They are only useful

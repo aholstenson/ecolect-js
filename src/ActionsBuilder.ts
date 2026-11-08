@@ -1,10 +1,11 @@
 import { deepEqual } from 'fast-equals';
 
 import { GraphBuilder, GraphMatcher } from './graph/index.js';
-import { Language } from './language/index.js';
-import { localeAwareMatcher, Matcher } from './matching/index.js';
+import type { Language } from './language/index.js';
+import type { Matcher } from './matching/index.js';
+import { localeAwareMatcher } from './matching/index.js';
 import { Phrase } from './resolver/Phrase.js';
-import { Phrases } from './resolver/Phrases.js';
+import type { Phrases } from './resolver/Phrases.js';
 
 export type ActionInvoker<Context, ReturnType, Values extends object> = (item: Phrase<Values>, context: Context) => ReturnType;
 

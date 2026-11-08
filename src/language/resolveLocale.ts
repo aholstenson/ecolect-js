@@ -2,7 +2,7 @@ import { DayOfWeek } from 'datetime-types';
 
 import { DateOrder } from '../type-datetime/index.js';
 
-import { FirstWeekContainsDate, LocaleSettings, WeekStartsOn } from './LocaleSettings.js';
+import type { FirstWeekContainsDate, LocaleSettings, WeekStartsOn } from './LocaleSettings.js';
 
 /**
  * The regions where the first week of the year is the first one with at

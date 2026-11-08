@@ -1,10 +1,11 @@
 import type { Intent } from '../IntentsBuilder.js';
-import { Language } from '../language/index.js';
-import { rendererFor, Value } from '../values/base.js';
+import type { Language } from '../language/index.js';
+import type { Value } from '../values/base.js';
+import { rendererFor } from '../values/base.js';
 
-import { GenerateOptions } from './GenerateOptions.js';
-import { TemplateGenerator } from './TemplateGenerator.js';
-import { ValueRenderer } from './ValueRenderer.js';
+import type { GenerateOptions } from './GenerateOptions.js';
+import type { TemplateGenerator } from './TemplateGenerator.js';
+import type { ValueRenderer } from './ValueRenderer.js';
 
 /**
  * Writes the text that a set of values would be matched from. This is the

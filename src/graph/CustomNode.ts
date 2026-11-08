@@ -1,6 +1,6 @@
-import { Token } from '../tokenization/index.js';
+import type { Token } from '../tokenization/index.js';
 
-import { Encounter } from './matching/Encounter.js';
+import type { Encounter } from './matching/Encounter.js';
 import { after } from './matching/maybePromise.js';
 import { Node } from './Node.js';
 

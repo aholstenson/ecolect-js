@@ -1,7 +1,7 @@
-import { Day, FirstWeekContainsDate, WeekOptions } from 'date-fns';
-import { DayOfWeek } from 'datetime-types';
+import type { Day, FirstWeekContainsDate, WeekOptions } from 'date-fns';
+import type { DayOfWeek } from 'datetime-types';
 
-import { DateTimeOptions } from './DateTimeOptions.js';
+import type { DateTimeOptions } from './DateTimeOptions.js';
 
 /**
  * The subset of `date-fns` options that control how weeks are numbered.

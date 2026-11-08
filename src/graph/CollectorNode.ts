@@ -1,4 +1,4 @@
-import { Encounter, EncounterOptions } from './matching/index.js';
+import type { Encounter } from './matching/index.js';
 import { Node } from './Node.js';
 
 /**

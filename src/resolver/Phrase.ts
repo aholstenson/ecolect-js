@@ -1,8 +1,8 @@
 import rfdc from 'rfdc';
 
-import { Encounter } from '../graph/index.js';
+import type { Encounter } from '../graph/index.js';
 
-import { ExpressionPart } from './expression/ExpressionPart.js';
+import type { ExpressionPart } from './expression/ExpressionPart.js';
 import { describe, refresh } from './expressions.js';
 
 const clone = rfdc();

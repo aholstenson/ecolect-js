@@ -1,6 +1,6 @@
-import { Graph } from '../graph/index.js';
+import type { Graph } from '../graph/index.js';
 
-import { Language } from './Language.js';
+import type { Language } from './Language.js';
 
 /**
  * Factory that creates a graph tied to a certain language.

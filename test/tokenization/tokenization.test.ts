@@ -1,4 +1,5 @@
-import { tokenize, TokenizerInput, TokenData, Tokens } from '../../src/tokenization/index.js';
+import type { TokenizerInput, TokenData, Tokens } from '../../src/tokenization/index.js';
+import { tokenize } from '../../src/tokenization/index.js';
 
 function checkTokens(tokens: Tokens, raw: string[]) {
 	expect(tokens.length).toEqual(raw.length);

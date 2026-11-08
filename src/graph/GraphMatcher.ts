@@ -1,6 +1,6 @@
-import { Graph } from './Graph.js';
+import type { Graph } from './Graph.js';
 import { Encounter } from './matching/Encounter.js';
-import { Match } from './matching/Match.js';
+import type { Match } from './matching/Match.js';
 
 export interface GraphMatcherOptions<RawData, V> {
 	/**

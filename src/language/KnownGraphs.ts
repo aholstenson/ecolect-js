@@ -1,5 +1,5 @@
-import { DateTimeData } from '../type-datetime/index.js';
-import { NumberData, OrdinalData } from '../type-numbers/index.js';
+import type { DateTimeData } from '../type-datetime/index.js';
+import type { NumberData, OrdinalData } from '../type-numbers/index.js';
 
 /**
  * Graphs that are known to be available for a language. This enum used when

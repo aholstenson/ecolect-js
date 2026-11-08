@@ -1,4 +1,4 @@
-import { DateTimeOptions } from '../type-datetime/index.js';
+import type { DateTimeOptions } from '../type-datetime/index.js';
 
 /**
  * Options that can be used during matching.

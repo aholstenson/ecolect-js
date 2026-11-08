@@ -1,4 +1,4 @@
-import { Token } from './Token.js';
+import type { Token } from './Token.js';
 
 export interface Tokens extends Array<Token> {
 	/**

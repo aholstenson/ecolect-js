@@ -1,6 +1,6 @@
 import { en } from '../src/language/en/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
-import { ValueEncounter } from '../src/resolver/ValueEncounter.js';
+import type { ValueEncounter } from '../src/resolver/ValueEncounter.js';
 import { customValue } from '../src/values/index.js';
 
 import { assertNotNull } from './assertions.js';

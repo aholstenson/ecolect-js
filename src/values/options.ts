@@ -1,9 +1,9 @@
 import { GraphBuilder } from '../graph/index.js';
-import { ExpressionPart } from '../resolver/expression/ExpressionPart.js';
-import { Phrases } from '../resolver/Phrases.js';
+import type { ExpressionPart } from '../resolver/expression/ExpressionPart.js';
+import type { Phrases } from '../resolver/Phrases.js';
 import { PhrasesBuilder } from '../resolver/PhrasesBuilder.js';
 
-import { LanguageSpecificValue, ParsingValue, Value } from './base.js';
+import { LanguageSpecificValue, ParsingValue } from './base.js';
 
 
 export interface OptionBuilderOptions {

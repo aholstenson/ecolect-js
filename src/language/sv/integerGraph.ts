@@ -1,6 +1,7 @@
 import { GraphBuilder } from '../../graph/index.js';
+import type {
+	NumberData} from '../../type-numbers/index.js';
 import {
-	NumberData,
 
 	literalNumber,
 	digitNumber,
@@ -11,7 +12,7 @@ import {
 	isDigitsCompatible,
 	isLiteral,
 } from '../../type-numbers/index.js';
-import { LanguageGraphFactory } from '../index.js';
+import type { LanguageGraphFactory } from '../index.js';
 
 import { CARDINAL_WORDS, MULTIPLIER_WORDS } from './numberWords.js';
 

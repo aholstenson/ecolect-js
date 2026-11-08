@@ -1,7 +1,8 @@
 import { deepEqual } from 'fast-equals';
 
-import { Node, SubNode, Graph, Encounter } from '../graph/index.js';
-import { MatchOptions } from '../matching/index.js';
+import type { Graph, Encounter } from '../graph/index.js';
+import { Node, SubNode } from '../graph/index.js';
+import type { MatchOptions } from '../matching/index.js';
 
 export interface ValueParserOptions<V, O> {
 	/**

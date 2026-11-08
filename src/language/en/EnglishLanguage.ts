@@ -1,4 +1,4 @@
-import { Language } from '../index.js';
+import type { Language } from '../index.js';
 
 import { booleanGraph } from './booleanGraph.js';
 import { dateDurationGraph } from './dateDurationGraph.js';

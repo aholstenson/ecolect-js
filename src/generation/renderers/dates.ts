@@ -1,10 +1,13 @@
-import { DateInterval, LocalDate, LocalDateTime, LocalTime } from 'datetime-types';
+import type { DateInterval, LocalDate, LocalDateTime, LocalTime } from 'datetime-types';
 
-import { KnownGraphs, Language } from '../../language/index.js';
-import { DateTimeData, IntervalData, mapDateInterval } from '../../type-datetime/index.js';
+import type { Language } from '../../language/index.js';
+import { KnownGraphs } from '../../language/index.js';
+import type { DateTimeData, IntervalData } from '../../type-datetime/index.js';
+import { mapDateInterval } from '../../type-datetime/index.js';
 import { connectorsFrom, prefixesFrom } from '../connectors.js';
 import { invertGraph, textsFor } from '../invertGraph.js';
-import { RenderContext, renderer, ValueRenderer } from '../ValueRenderer.js';
+import type { RenderContext, ValueRenderer } from '../ValueRenderer.js';
+import { renderer } from '../ValueRenderer.js';
 
 /**
  * Write a date as `2010-02-22`, which every language reads the same way.

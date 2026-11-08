@@ -1,6 +1,6 @@
-import { Token } from '../tokenization/index.js';
+import type { Token } from '../tokenization/index.js';
 
-import { Template } from './Template.js';
+import type { Template } from './Template.js';
 
 /**
  * How the words of a generated text are written.

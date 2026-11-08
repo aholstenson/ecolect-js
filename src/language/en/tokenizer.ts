@@ -1,4 +1,5 @@
-import { Tokenizer, tokenize } from '../../tokenization/index.js';
+import type { Tokenizer } from '../../tokenization/index.js';
+import { tokenize } from '../../tokenization/index.js';
 
 import { porterStemmer } from './algorithms/porterStemmer.js';
 import { treebankTokenizer } from './algorithms/treebankTokenizer.js';

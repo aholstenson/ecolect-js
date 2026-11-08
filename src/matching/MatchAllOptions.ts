@@ -1,4 +1,4 @@
-import { MatchOptions } from './MatchOptions.js';
+import type { MatchOptions } from './MatchOptions.js';
 
 /**
  * Options that can be used when matching an expression against everything

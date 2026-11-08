@@ -1,8 +1,8 @@
 import { LocalDateTime } from 'datetime-types';
 
 import { mapDate } from './dates.js';
-import { DateTimeData } from './DateTimeData.js';
-import { DateTimeOptions } from './DateTimeOptions.js';
+import type { DateTimeData } from './DateTimeData.js';
+import type { DateTimeOptions } from './DateTimeOptions.js';
 import { mapTime } from './times.js';
 
 export function mapDateTime(r: DateTimeData, options: DateTimeOptions) {

@@ -1,6 +1,7 @@
 import { deepEqual } from 'fast-equals';
 
-import { Node, Encounter } from '../graph/index.js';
+import type { Encounter } from '../graph/index.js';
+import { Node } from '../graph/index.js';
 
 /**
  * Node that represents a value that isn't extracted from text, but instead

@@ -1,12 +1,13 @@
-import { Tokens, Token } from '../../tokenization/index.js';
-import { Node } from '../Node.js';
+import type { Tokens, Token } from '../../tokenization/index.js';
+import type { Node } from '../Node.js';
 
-import { EncounterOptions } from './EncounterOptions.js';
+import type { EncounterOptions } from './EncounterOptions.js';
 import { Match } from './Match.js';
-import { MatchHandler } from './MatchHandler.js';
+import type { MatchHandler } from './MatchHandler.js';
 import { MatchSet } from './MatchSet.js';
-import { MaybePromise, after, isThenable, sequence, toPromise } from './maybePromise.js';
-import { SubGraphEvaluation } from './SubGraphEvaluation.js';
+import type { MaybePromise } from './maybePromise.js';
+import { after, isThenable, sequence, toPromise } from './maybePromise.js';
+import type { SubGraphEvaluation } from './SubGraphEvaluation.js';
 
 /**
  * Set used when a graph does not declare any extra skippable tokens.

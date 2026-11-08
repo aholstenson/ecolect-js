@@ -1,8 +1,9 @@
-import { Language, resolveLocale } from '../language/index.js';
+import type { Language } from '../language/index.js';
+import { resolveLocale } from '../language/index.js';
 
-import { MatchAllOptions } from './MatchAllOptions.js';
-import { Matcher } from './Matcher.js';
-import { MatchOptions } from './MatchOptions.js';
+import type { MatchAllOptions } from './MatchAllOptions.js';
+import type { Matcher } from './Matcher.js';
+import type { MatchOptions } from './MatchOptions.js';
 
 const cache = new Map<string, MatchOptions>();
 

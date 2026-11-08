@@ -1,8 +1,10 @@
 import { KnownGraphs } from '../../language/index.js';
-import { DateTimeData, Duration, mapDuration } from '../../type-datetime/index.js';
+import type { DateTimeData, Duration } from '../../type-datetime/index.js';
+import { mapDuration } from '../../type-datetime/index.js';
 import { invertGraph } from '../invertGraph.js';
 import { patternsFrom } from '../patterns.js';
-import { renderer, ValueRenderer } from '../ValueRenderer.js';
+import type { ValueRenderer } from '../ValueRenderer.js';
+import { renderer } from '../ValueRenderer.js';
 
 /**
  * The graphs that read a length of time.

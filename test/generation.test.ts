@@ -5,10 +5,12 @@ import { BigInteger } from 'numeric-types/integer';
 import { renderer, templatesFrom, TemplateGenerator, textsFor } from '../src/generation/index.js';
 import { intentsBuilder } from '../src/index.js';
 import { en } from '../src/language/en/index.js';
-import { KnownGraphs, Language } from '../src/language/index.js';
+import type { Language } from '../src/language/index.js';
+import { KnownGraphs } from '../src/language/index.js';
 import { sv } from '../src/language/sv/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
-import { DateTimeData, MutableDuration } from '../src/type-datetime/index.js';
+import type { DateTimeData } from '../src/type-datetime/index.js';
+import { MutableDuration } from '../src/type-datetime/index.js';
 import {
 	anyTextValue,
 	booleanValue,

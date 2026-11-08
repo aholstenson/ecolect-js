@@ -1,7 +1,8 @@
 import { GraphBuilder } from '../../graph/index.js';
-import {
+import type {
 	DateTimeData,
-	IntervalData,
+	IntervalData} from '../../type-datetime/index.js';
+import {
 
 	between,
 	until,
@@ -23,7 +24,7 @@ import {
 	inTheFuture,
 	anyTime
 } from '../../type-datetime/index.js';
-import { LanguageGraphFactory } from '../index.js';
+import type { LanguageGraphFactory } from '../index.js';
 
 import { dateGraph } from './dateGraph.js';
 import { dateTimeDurationGraph } from './dateTimeDurationGraph.js';

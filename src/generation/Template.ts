@@ -1,4 +1,4 @@
-import { Token } from '../tokenization/index.js';
+import type { Token } from '../tokenization/index.js';
 
 /**
  * Part of a template that is text taken from the phrase it was read from.

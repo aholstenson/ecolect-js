@@ -1,12 +1,14 @@
-import { Tokenizer, TokenComparer } from '../tokenization/index.js';
+import type { Tokenizer, TokenComparer } from '../tokenization/index.js';
 
-import { CollectorNode, Collectable } from './CollectorNode.js';
-import { CustomNode, TokenValidator } from './CustomNode.js';
-import { Graph } from './Graph.js';
-import { GraphOptions } from './GraphOptions.js';
-import { MatchIsEqual } from './matching/index.js';
+import type { Collectable } from './CollectorNode.js';
+import { CollectorNode } from './CollectorNode.js';
+import type { TokenValidator } from './CustomNode.js';
+import { CustomNode } from './CustomNode.js';
+import type { Graph } from './Graph.js';
+import type { GraphOptions } from './GraphOptions.js';
+import type { MatchIsEqual } from './matching/index.js';
 import { Node } from './Node.js';
-import { Predicate } from './Predicate.js';
+import type { Predicate } from './Predicate.js';
 import { RegExpNode } from './RegExpNode.js';
 import { SubNode } from './SubNode.js';
 import { TokenNode } from './TokenNode.js';

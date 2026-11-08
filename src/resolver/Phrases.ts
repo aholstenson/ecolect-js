@@ -1,17 +1,20 @@
-import { Generator, PhraseGenerator, renderersFor } from '../generation/Generator.js';
+import type { Generator } from '../generation/Generator.js';
+import { PhraseGenerator, renderersFor } from '../generation/Generator.js';
 import { templatesFrom } from '../generation/templates.js';
 import { TemplateGenerator } from '../generation/TemplateGenerator.js';
-import {
+import type {
 	Match as GraphMatch,
 	Graph,
-	GraphMatcher,
 	Encounter,
 	GraphBuildable
 } from '../graph/index.js';
-import { Language } from '../language/index.js';
+import {
+	GraphMatcher
+} from '../graph/index.js';
+import type { Language } from '../language/index.js';
 import { localeAwareMatcher } from '../matching/localeOptions.js';
-import { Matcher } from '../matching/Matcher.js';
-import { Value } from '../values/base.js';
+import type { Matcher } from '../matching/Matcher.js';
+import type { Value } from '../values/base.js';
 
 import { Phrase } from './Phrase.js';
 import { ResolverParser } from './ResolverParser.js';

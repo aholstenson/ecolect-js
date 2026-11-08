@@ -1,4 +1,4 @@
-import { MatchHandler } from './MatchHandler.js';
+import type { MatchHandler } from './MatchHandler.js';
 
 /**
  * Function that creates the equality check used to find duplicate matches.

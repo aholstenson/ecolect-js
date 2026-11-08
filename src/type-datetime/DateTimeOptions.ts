@@ -1,6 +1,6 @@
-import { DayOfWeek } from 'datetime-types';
+import type { DayOfWeek } from 'datetime-types';
 
-import { DateOrder } from './DateOrder.js';
+import type { DateOrder } from './DateOrder.js';
 
 /**
  * Options that can be used with date and times.

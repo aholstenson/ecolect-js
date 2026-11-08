@@ -1,15 +1,17 @@
 import { deepEqual } from 'fast-equals';
 
-import {
+import type {
 	Collectable,
 	GraphBuildable,
 	GraphBuildableArray,
+	Node} from '../graph/index.js';
+import {
 	GraphBuilder,
-	Node,
 	TokenNode
 } from '../graph/index.js';
-import { Language } from '../language/index.js';
-import { LanguageSpecificValue, NodeConvertable, Value } from '../values/base.js';
+import type { Language } from '../language/index.js';
+import type { NodeConvertable, Value } from '../values/base.js';
+import { LanguageSpecificValue } from '../values/base.js';
 
 import { expandPhrase } from './expandPhrase.js';
 import { ValueNode } from './ValueNode.js';

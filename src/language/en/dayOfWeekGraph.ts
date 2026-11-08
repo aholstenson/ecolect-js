@@ -1,7 +1,7 @@
 import { DayOfWeek } from 'datetime-types';
 
 import { GraphBuilder } from '../../graph/index.js';
-import { LanguageGraphFactory } from '../index.js';
+import type { LanguageGraphFactory } from '../index.js';
 
 export const dayOfWeekGraph: LanguageGraphFactory<DayOfWeek> = {
 	id: 'day-of-week',

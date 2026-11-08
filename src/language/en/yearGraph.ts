@@ -1,6 +1,7 @@
 import { GraphBuilder } from '../../graph/index.js';
+import type {
+	DateTimeData} from '../../type-datetime/index.js';
 import {
-	DateTimeData,
 
 	reverse,
 
@@ -8,7 +9,7 @@ import {
 	nextYear,
 	previousYear
 } from '../../type-datetime/index.js';
-import { LanguageGraphFactory } from '../index.js';
+import type { LanguageGraphFactory } from '../index.js';
 
 import { integerGraph } from './integerGraph.js';
 

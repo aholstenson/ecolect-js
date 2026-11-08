@@ -1,10 +1,11 @@
-import { TokenNode, SubNode, Encounter } from '../graph/index.js';
+import type { Encounter } from '../graph/index.js';
+import { TokenNode, SubNode } from '../graph/index.js';
 
-import { ExpressionPart } from './expression/ExpressionPart.js';
+import type { ExpressionPart } from './expression/ExpressionPart.js';
 import { ExpressionPartType } from './expression/ExpressionPartType.js';
-import { TextPart } from './expression/TextPart.js';
-import { ValuePart } from './expression/ValuePart.js';
-import { Phrase } from './Phrase.js';
+import type { TextPart } from './expression/TextPart.js';
+import type { ValuePart } from './expression/ValuePart.js';
+import type { Phrase } from './Phrase.js';
 import { ValueNode } from './ValueNode.js';
 import { ValueParserNode } from './ValueParserNode.js';
 

@@ -1,5 +1,6 @@
-import { Graph, GraphBuilder } from '../../graph/index.js';
-import { Language } from '../index.js';
+import type { Graph } from '../../graph/index.js';
+import { GraphBuilder } from '../../graph/index.js';
+import type { Language } from '../index.js';
 
 export function createRepeating<V>(language: Language, graph: Graph<V>): GraphBuilder<V[]> {
 	const builder: GraphBuilder<V[]> = new GraphBuilder<V[]>(language)

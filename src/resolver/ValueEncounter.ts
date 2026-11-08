@@ -1,4 +1,4 @@
-import { Tokens } from '../tokenization/index.js';
+import type { Tokens } from '../tokenization/index.js';
 
 /**
  * Encounter used matching a custom value.

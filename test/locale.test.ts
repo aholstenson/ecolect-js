@@ -1,5 +1,5 @@
 import { en, english } from '../src/language/en/index.js';
-import { Language } from '../src/language/index.js';
+import type { Language } from '../src/language/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
 import { DateOrder } from '../src/type-datetime/index.js';
 import { dateValue } from '../src/values/date.js';

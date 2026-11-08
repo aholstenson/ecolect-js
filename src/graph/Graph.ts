@@ -1,7 +1,7 @@
-import { Tokenizer } from '../tokenization/index.js';
+import type { Tokenizer } from '../tokenization/index.js';
 
-import { GraphOptions } from './GraphOptions.js';
-import { Node } from './Node.js';
+import type { GraphOptions } from './GraphOptions.js';
+import type { Node } from './Node.js';
 
 /**
  * Graph that has been built via GraphBuilder. Graphs are a collection of

@@ -1,4 +1,4 @@
-import { TokenComparer } from '../../tokenization/index.js';
+import type { TokenComparer } from '../../tokenization/index.js';
 import { similarityTokenComparer } from '../algorithms/similarityTokenComparer.js';
 
 /**

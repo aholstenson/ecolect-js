@@ -1,6 +1,8 @@
 
-import { GraphBuilder, GraphTokens } from '../../src/graph/GraphBuilder.js';
-import { GraphMatcher, GraphMatcherOptions } from '../../src/graph/GraphMatcher.js';
+import type { GraphTokens } from '../../src/graph/GraphBuilder.js';
+import { GraphBuilder } from '../../src/graph/GraphBuilder.js';
+import type { GraphMatcherOptions } from '../../src/graph/GraphMatcher.js';
+import { GraphMatcher } from '../../src/graph/GraphMatcher.js';
 import { whitespaceTokenizer } from '../../src/tokenization/index.js';
 
 const options: GraphMatcherOptions<any, any> = {

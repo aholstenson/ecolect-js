@@ -1,5 +1,5 @@
-import { ExpressionPart } from './ExpressionPart.js';
-import { ExpressionPartType } from './ExpressionPartType.js';
+import type { ExpressionPart } from './ExpressionPart.js';
+import type { ExpressionPartType } from './ExpressionPartType.js';
 
 /**
  * Part within an expression that represents text.

@@ -1,13 +1,14 @@
 import { GraphBuilder } from '../../graph/index.js';
+import type {
+	NumberData} from '../../type-numbers/index.js';
 import {
-	NumberData,
 	combineNumbers,
 	digitNumber,
 	float,
 	isNegative,
 	negative
 } from '../../type-numbers/index.js';
-import { LanguageGraphFactory } from '../index.js';
+import type { LanguageGraphFactory } from '../index.js';
 
 import { integerGraph } from './integerGraph.js';
 

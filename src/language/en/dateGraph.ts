@@ -1,7 +1,8 @@
 import { GraphBuilder } from '../../graph/index.js';
-import {
+import type {
 	DateTimeData,
-	DateTimeOptions,
+	DateTimeOptions} from '../../type-datetime/index.js';
+import {
 
 	combine,
 	isRelative,
@@ -29,8 +30,8 @@ import {
 	thisWeek,
 	thisYear
 } from '../../type-datetime/index.js';
-import { OrdinalData } from '../../type-numbers/index.js';
-import { LanguageGraphFactory } from '../index.js';
+import type { OrdinalData } from '../../type-numbers/index.js';
+import type { LanguageGraphFactory } from '../index.js';
 
 import { dateDurationGraph } from './dateDurationGraph.js';
 import { dayOfWeekGraph } from './dayOfWeekGraph.js';

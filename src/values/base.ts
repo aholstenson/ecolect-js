@@ -1,8 +1,11 @@
 import type { ValueRenderer } from '../generation/ValueRenderer.js';
-import { Encounter, Graph, GraphMatcher, Node } from '../graph/index.js';
-import { Language } from '../language/index.js';
-import { localeAwareMatcher, Matcher, MatchOptions } from '../matching/index.js';
-import { ValueNode, ValueNodeOptions } from '../resolver/ValueNode.js';
+import type { Graph, Node } from '../graph/index.js';
+import { Encounter, GraphMatcher } from '../graph/index.js';
+import type { Language } from '../language/index.js';
+import type { Matcher, MatchOptions } from '../matching/index.js';
+import { localeAwareMatcher } from '../matching/index.js';
+import type { ValueNodeOptions } from '../resolver/ValueNode.js';
+import { ValueNode } from '../resolver/ValueNode.js';
 import { ValueParserNode } from '../resolver/ValueParserNode.js';
 
 /**

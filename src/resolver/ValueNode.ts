@@ -1,9 +1,10 @@
 import { deepEqual } from 'fast-equals';
 
-import { Encounter, Match, MaybePromise, Node, after, sequence } from '../graph/index.js';
+import type { Encounter, Match, MaybePromise } from '../graph/index.js';
+import { Node, after, sequence } from '../graph/index.js';
 import { Tokens } from '../tokenization/index.js';
 
-import { ValueEncounter } from './ValueEncounter.js';
+import type { ValueEncounter } from './ValueEncounter.js';
 
 /**
  * Options for a ValueNode.

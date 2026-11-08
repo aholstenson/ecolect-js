@@ -13,8 +13,8 @@ import {
 import { LocalTime } from 'datetime-types';
 
 import { currentTime } from './currentTime.js';
-import { DateTimeData } from './DateTimeData.js';
-import { DateTimeOptions } from './DateTimeOptions.js';
+import type { DateTimeData } from './DateTimeData.js';
+import type { DateTimeOptions } from './DateTimeOptions.js';
 import { Meridiem } from './Meridiem.js';
 import { Period } from './Period.js';
 import { TimeRelationship } from './TimeRelationship.js';

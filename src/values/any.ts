@@ -1,8 +1,9 @@
 import { textRenderer } from '../generation/renderers/text.js';
-import { ValueEncounter } from '../resolver/ValueEncounter.js';
-import { ValueNodeOptions } from '../resolver/ValueNode.js';
+import type { ValueEncounter } from '../resolver/ValueEncounter.js';
+import type { ValueNodeOptions } from '../resolver/ValueNode.js';
 
-import { ValueMatcher, NodeConvertable } from './base.js';
+import type { NodeConvertable } from './base.js';
+import { ValueMatcher } from './base.js';
 
 const instance: ValueNodeOptions<string> = {
 	match(encounter: ValueEncounter<string>) {

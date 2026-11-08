@@ -1,10 +1,11 @@
-import { BigDecimal } from 'numeric-types/decimal';
-import { BigInteger } from 'numeric-types/integer';
+import type { BigDecimal } from 'numeric-types/decimal';
+import type { BigInteger } from 'numeric-types/integer';
 
 import { KnownGraphs } from '../../language/index.js';
-import { OrdinalData } from '../../type-numbers/index.js';
+import type { OrdinalData } from '../../type-numbers/index.js';
 import { textsFor } from '../invertGraph.js';
-import { renderer, ValueRenderer } from '../ValueRenderer.js';
+import type { ValueRenderer } from '../ValueRenderer.js';
+import { renderer } from '../ValueRenderer.js';
 
 /**
  * Write whole numbers as digits, such as `20`.

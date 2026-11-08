@@ -5,8 +5,8 @@ import {
 	emoji,
 	emojiModifier
 } from './matchers.js';
-import { Token } from './Token.js';
-import { TokenData } from './TokenData.js';
+import type { Token } from './Token.js';
+import type { TokenData } from './TokenData.js';
 import { Tokens } from './Tokens.js';
 
 const MATCHER_PUNCTUATION = new RegExp('^(' + punctuation + ')+$');

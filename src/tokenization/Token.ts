@@ -1,4 +1,4 @@
-import { TokenData } from './TokenData.js';
+import type { TokenData } from './TokenData.js';
 
 export interface Token extends TokenData {
 	/**

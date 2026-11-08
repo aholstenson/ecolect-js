@@ -1,13 +1,15 @@
 import { GraphBuilder } from '../../graph/index.js';
+import type {
+	DateTimeData} from '../../type-datetime/index.js';
 import {
-	DateTimeData,
 	nextMonth,
 	previousMonth,
 	thisMonth,
 	reverse
 } from '../../type-datetime/index.js';
-import { isSpecific, OrdinalData } from '../../type-numbers/index.js';
-import { LanguageGraphFactory } from '../index.js';
+import type { OrdinalData } from '../../type-numbers/index.js';
+import { isSpecific } from '../../type-numbers/index.js';
+import type { LanguageGraphFactory } from '../index.js';
 
 import { integerGraph } from './integerGraph.js';
 import { ordinalGraph } from './ordinalGraph.js';
