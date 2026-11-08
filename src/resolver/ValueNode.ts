@@ -243,6 +243,13 @@ class ValueEncounterImpl<V> implements ValueEncounter<V> {
 	 * @param score
 	 */
 	public match(value: V, score=1) {
+		/*
+		 * The score is added to the score of the phrase, so a score outside
+		 * of 0 to 1, or one that is not a number, would break the order of
+		 * the matches.
+		 */
+		score = Number.isFinite(score) ? Math.min(1, Math.max(0, score)) : 0;
+
 		this.matches.push({ value, score });
 	}
 }

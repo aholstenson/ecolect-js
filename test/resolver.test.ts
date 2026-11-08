@@ -678,6 +678,44 @@ describe('Resolver', function() {
 			});
 		});
 
+		describe('Score that is not a number', function() {
+			const resolver = new PhrasesBuilder()
+				.value('p', customValue<string>(encounter => {
+					if(encounter.text === 'x') {
+						encounter.match('X', NaN);
+					}
+				}))
+				.phrase('call {p}')
+				.phrase('call x')
+				.toMatcher(en);
+
+			it('Match has a score that is a number', function() {
+				const single = new PhrasesBuilder()
+					.value('v', customValue<string>(encounter => {
+						encounter.match('v', NaN);
+					}))
+					.phrase('get {v}')
+					.toMatcher(en);
+
+				return single.match('get a')
+					.then(r => {
+						assertNotNull(r);
+						expect(Number.isFinite(r.score)).toBe(true);
+					});
+			});
+
+			it('Match all has scores that are numbers, in descending order', function() {
+				return resolver.matchAll('call x')
+					.then(r => {
+						const scores = r.map(m => m.score);
+
+						expect(scores.length).toEqual(2);
+						expect(scores.every(score => Number.isFinite(score))).toBe(true);
+						expect([ ...scores ].sort((a, b) => b - a)).toEqual(scores);
+					});
+			});
+		});
+
 		describe('Single enumeration-like, greedy', function() {
 			const values = [
 				'one',

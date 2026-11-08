@@ -29,7 +29,9 @@ export interface ValueEncounter<V> {
 	 * @param value
 	 *   value matched
 	 * @param score
-	 *   optional score of the match, should be in the range 0..1
+	 *   optional score of the match, in the range 0..1. A score outside of
+	 *   the range is moved to the nearest end, and a score that is not a
+	 *   finite number, such as `NaN`, is read as 0. Defaults to 1
 	 */
 	match(value: V, score?: number): void;
 }
