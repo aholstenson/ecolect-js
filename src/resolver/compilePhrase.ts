@@ -224,9 +224,11 @@ export function compilePhrase<V>(context: CompileContext, items: GraphBuildable<
 			: compileItem(context, item);
 
 		/*
-		 * The collector gets the data of one node for each item that does
-		 * not start with a word. This is the depth that the longest way to
-		 * write the phrase gives when it is expanded.
+		 * The depth of the collector is the number of items that can start
+		 * with a node that is not a word, such as a value. Every path of
+		 * the phrase ends in the same collector, so a path that starts an
+		 * item with a word gets the same depth. Phrases read their values
+		 * from `encounter.data()` and do not use the depth.
 		 */
 		if(part.first.some(node => ! (node instanceof TokenNode))) {
 			depth++;
@@ -310,7 +312,7 @@ function compileText(context: CompileContext, text: string): Fragment {
 	let result = empty();
 	for(const segment of parsePhraseSyntax(text)) {
 		const part = alternation(segment.alternatives.map(alternative => compileLiteral(context, alternative, text)));
-		if(segment.optional) {
+		if(segment.optional && ! part.nullable) {
 			// Leaving the part out is one more way to write it
 			part.nullable = true;
 			part.ways++;
