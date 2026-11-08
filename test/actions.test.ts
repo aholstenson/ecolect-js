@@ -156,4 +156,30 @@ describe('Actions', function() {
 				});
 		});
 	});
+
+	describe('Identifiers', function() {
+		it('An identifier that is added twice is reported', function() {
+			const builder = actionsBuilder<void, string>(en)
+				.add({
+					id: 'dup',
+					phrases: newPhrases().phrase('alpha').build(),
+					handler: () => 'alpha'
+				});
+
+			expect(() => builder.add({
+				id: 'dup',
+				phrases: newPhrases().phrase('beta').build(),
+				handler: () => 'beta'
+			})).toThrow(/dup/);
+		});
+
+		it('An action without an identifier is reported', function() {
+			const builder = actionsBuilder<void, string>(en);
+
+			expect(() => builder.add({
+				phrases: newPhrases().phrase('alpha').build(),
+				handler: () => 'alpha'
+			} as unknown as Parameters<typeof builder.add>[0])).toThrow();
+		});
+	});
 });

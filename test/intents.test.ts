@@ -488,6 +488,21 @@ describe('Intents', function() {
 		});
 	});
 
+	describe('Identifiers', function() {
+		it('An identifier that is added twice is reported', function() {
+			const builder = new IntentsBuilder(en)
+				.add('dup', newPhrases()
+					.phrase('alpha')
+					.build()
+				);
+
+			expect(() => builder.add('dup', newPhrases()
+				.phrase('beta')
+				.build()
+			)).toThrow(/dup/);
+		});
+	});
+
 	describe('Concurrent matching', function() {
 		const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 

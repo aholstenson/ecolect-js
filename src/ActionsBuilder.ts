@@ -39,6 +39,7 @@ function actionIsEqual(a: Action<any, any, any>, b: Action<any, any, any>): bool
 export class ActionsBuilder<Context=void, ReturnType=void> {
 	private language: Language;
 	private builder: GraphBuilder<Action<any, any, any>>;
+	private ids: Set<string>;
 
 	public constructor(language: Language) {
 		if(! language) {
@@ -46,6 +47,7 @@ export class ActionsBuilder<Context=void, ReturnType=void> {
 		}
 
 		this.language = language;
+		this.ids = new Set();
 
 		this.builder = new GraphBuilder<Action<any, any, any>>(language)
 			.allowPartial()
@@ -53,6 +55,15 @@ export class ActionsBuilder<Context=void, ReturnType=void> {
 	}
 
 	public add<V extends object>(def: ActionDef<Context, ReturnType, V>) {
+		if(typeof def.id !== 'string') {
+			throw new Error('Actions require identifiers that are strings');
+		}
+
+		if(this.ids.has(def.id)) {
+			throw new Error('Action `' + def.id + '` has already been added, every action needs its own identifier');
+		}
+
+		this.ids.add(def.id);
 		this.builder.add(
 			def.phrases.toGraph(this.language),
 			v => new Action(def.id, def.handler, v[0])

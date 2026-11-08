@@ -55,6 +55,10 @@ export class IntentsBuilder<Intents extends Intent<any, any> = never> {
 			throw new Error('Intents require identifiers that are strings');
 		}
 
+		if(this.intents.some(intent => intent.id === id)) {
+			throw new Error('Intent `' + id + '` has already been added, every intent needs its own identifier');
+		}
+
 		const graph = phrases.toGraph(this.language);
 		this.intents.push({ id: id, phrases: phrases, graph: graph });
 
