@@ -9,6 +9,14 @@ import { newPhrases } from '../src/resolver/newPhrases.js';
 import { integerValue } from '../src/values/integer.js';
 import { numberValue } from '../src/values/number.js';
 
+/*
+ * The separators of a locale come from `Intl`, and its data can differ
+ * between JavaScript engines. Some versions of WebKit write `en-ZA` numbers
+ * with a `.` as the decimal separator, so the tests of `en-ZA` run only when
+ * the engine writes `12 345,6` for it.
+ */
+const zaWritesCommaAndSpace = new Intl.NumberFormat('en-ZA').format(12345.6).replace(/\s/gu, ' ') === '12 345,6';
+
 describe('Locale', function() {
 	describe('Numbers', function() {
 		it('en reads a point as the decimal separator', async function() {
@@ -21,14 +29,14 @@ describe('Locale', function() {
 			expect(await numberValue().matcher(en).match('1,000.25')).toEqual(BigDecimal.parse('1000.25'));
 		});
 
-		it('en-ZA reads a comma as the decimal separator', async function() {
+		it.runIf(zaWritesCommaAndSpace)('en-ZA reads a comma as the decimal separator', async function() {
 			const language = english('en-ZA');
 			expect(await numberValue().matcher(language).match('1,5')).toEqual(BigDecimal.parse('1.5'));
 			expect(await numberValue().matcher(language).match('1,000')).toEqual(BigDecimal.parse('1.000'));
 			expect(await numberValue().matcher(language).match('1.5', { numberSeparators: 'strict' })).toBeNull();
 		});
 
-		it('en-ZA groups digits with a space', async function() {
+		it.runIf(zaWritesCommaAndSpace)('en-ZA groups digits with a space', async function() {
 			const language = english('en-ZA');
 			expect(await numberValue().matcher(language).match('1 000,5')).toEqual(BigDecimal.parse('1000.5'));
 			expect(await integerValue().matcher(language).match('1,000')).toBeNull();
@@ -56,7 +64,7 @@ describe('Locale', function() {
 		});
 
 		it('The locale in the options of a match decides the separators', async function() {
-			expect(await numberValue().matcher(en).match('1,5', { locale: 'en-ZA' })).toEqual(BigDecimal.parse('1.5'));
+			expect(await numberValue().matcher(en).match('1,5', { locale: 'en-DE' })).toEqual(BigDecimal.parse('1.5'));
 			expect(await numberValue().matcher(sv).match('1.5', { locale: 'en-US' })).toEqual(BigDecimal.parse('1.5'));
 		});
 
@@ -67,16 +75,16 @@ describe('Locale', function() {
 		});
 
 		it('A number within a phrase is read with the locale', async function() {
-			const matcher = intentsBuilder(english('en-ZA'))
-				.add('pay', newPhrases().value('amount', numberValue()).phrase('pay {amount} rand').build())
+			const matcher = intentsBuilder(english('en-DE'))
+				.add('pay', newPhrases().value('amount', numberValue()).phrase('pay {amount} euro').build())
 				.build();
 
-			const match = await matcher.match('pay 1,5 rand');
+			const match = await matcher.match('pay 1,5 euro');
 			expect(match?.values.amount).toEqual(BigDecimal.parse('1.5'));
 		});
 
 		it('A number is written with the decimal separator of the locale', async function() {
-			const generator = intentsBuilder(english('en-ZA'))
+			const generator = intentsBuilder(english('en-DE'))
 				.add('pay', newPhrases().value('amount', numberValue()).phrase('pay {amount}').build())
 				.buildGenerator();
 
