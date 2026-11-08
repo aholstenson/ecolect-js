@@ -722,6 +722,52 @@ describe('English', () => {
 			}
 		});
 
+		// After and before a longer period exclude the whole period
+		test('after december', { now: new Date(2026, 10, 8) }, {
+			start: {
+				year: 2027,
+				month: 1,
+				day: 1
+			},
+			end: null
+		});
+
+		test('before december', { now: new Date(2026, 10, 8) }, {
+			start: null,
+			end: {
+				year: 2026,
+				month: 11,
+				day: 30
+			}
+		});
+
+		test('after 2026', { now: new Date(2026, 10, 8) }, {
+			start: {
+				year: 2027,
+				month: 1,
+				day: 1
+			},
+			end: null
+		});
+
+		test('before 2027', { now: new Date(2026, 10, 8) }, {
+			start: null,
+			end: {
+				year: 2026,
+				month: 12,
+				day: 31
+			}
+		});
+
+		test('after next week', { now: new Date(2026, 10, 8), weekStartsOn: 7 }, {
+			start: {
+				year: 2026,
+				month: 11,
+				day: 22
+			},
+			end: null
+		});
+
 		// A start later in the year than today is in the previous year
 		test('since the 10th', { now: new Date(2026, 10, 8) }, {
 			start: {

@@ -128,12 +128,14 @@ export function between(start: DateTimeData | IntervalData, end?: DateTimeData |
 }
 
 /**
- * Create an interval that matches anything before the given value.
+ * Create an interval that matches anything before the given value. A value
+ * that is a longer period, such as a month, is excluded as a whole, so the
+ * interval ends the day before the period starts.
  */
 export function before(value: DateTimeData): IntervalData {
 	return {
 		start: null,
-		end: adjusted(value, -1)
+		end: adjusted({ ...value, intervalEdge: value.intervalEdge ?? IntervalEdge.Start }, -1)
 	};
 }
 
@@ -149,11 +151,13 @@ export function until(value: DateTimeData): IntervalData {
 }
 
 /**
- * Create an interval that matches anything after the given value.
+ * Create an interval that matches anything after the given value. A value
+ * that is a longer period, such as a month, is excluded as a whole, so the
+ * interval starts the day after the period ends.
  */
 export function after(value: DateTimeData): IntervalData {
 	return {
-		start: adjusted(value, 1),
+		start: adjusted({ ...value, intervalEdge: value.intervalEdge ?? IntervalEdge.End }, 1),
 		end: null
 	};
 }
