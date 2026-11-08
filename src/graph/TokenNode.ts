@@ -44,6 +44,29 @@ export class TokenNode extends Node {
 			&& this.knownTokens.has(token.normalized);
 	}
 
+	/**
+	 * Compare the word of this node with the start of a token of the
+	 * expression. The score is kept in the encounter, so other nodes with
+	 * the same word do not compare it again.
+	 *
+	 * @param encounter -
+	 *   the encounter, at the index of the token
+	 * @param token -
+	 *   the token of the expression
+	 * @returns
+	 *   the score, `0` if the token does not match
+	 */
+	private comparePartial(encounter: Encounter, token: Token): number {
+		const scores = encounter.partialScoresFor(this.comparer);
+		let score = scores.get(this.token.raw);
+		if(score === undefined) {
+			score = this.comparer.comparePartial(this.token, token);
+			scores.set(this.token.raw, score);
+		}
+
+		return score;
+	}
+
 	public match(encounter: Encounter) {
 		const token = encounter.token();
 		if(token) {
@@ -76,7 +99,7 @@ export class TokenNode extends Node {
 				const partialAndLastToken = encounter.isPartial && encounter.isLastToken;
 				const rootPartialAndFuzzy = encounter.isFuzzy && encounter.isPartialInput;
 				const score = (partialAndLastToken || rootPartialAndFuzzy)
-					? this.comparer.comparePartial(this.token, token)
+					? this.comparePartial(encounter, token)
 					: (this.isOtherKnownWord(token) ? 0 : this.comparer.compare(this.token, token));
 
 				if(score > 0) {

@@ -105,6 +105,11 @@ export class Encounter {
 	 */
 	private _evaluations: SubGraphEvaluation[];
 
+	/**
+	 * Scores of partial word comparisons, for each token index.
+	 */
+	private partialScores: (Map<object, Map<string, number>> | undefined)[];
+
 	public constructor(tokens: Tokens, options: EncounterOptions) {
 		this.tokens = tokens;
 
@@ -133,6 +138,35 @@ export class Encounter {
 		this._cacheWithoutContinuation = [];
 		this._evaluations = [];
 		this.errors = [];
+		this.partialScores = [];
+	}
+
+	/**
+	 * Get the scores of partial comparisons of words against the current
+	 * token. In a phrase graph many nodes can test the same word against the
+	 * same token, and a partial comparison is slow, so each score is kept
+	 * for the encounter.
+	 *
+	 * @param comparer -
+	 *   the comparer of the nodes, nodes with the same comparer and word get
+	 *   the same score
+	 * @returns
+	 *   map from the word of a node to its score
+	 */
+	public partialScoresFor(comparer: object): Map<string, number> {
+		let byComparer = this.partialScores[this.currentIndex];
+		if(! byComparer) {
+			byComparer = new Map();
+			this.partialScores[this.currentIndex] = byComparer;
+		}
+
+		let scores = byComparer.get(comparer);
+		if(! scores) {
+			scores = new Map();
+			byComparer.set(comparer, scores);
+		}
+
+		return scores;
 	}
 
 	/**
