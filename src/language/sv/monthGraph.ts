@@ -12,6 +12,7 @@ import { isSpecific } from '../../type-numbers/index.js';
 import type { LanguageGraphFactory } from '../index.js';
 
 import { integerGraph } from './integerGraph.js';
+import { MONTH_NAMES } from './monthNames.js';
 import { ordinalGraph } from './ordinalGraph.js';
 
 export const monthGraph: LanguageGraphFactory<DateTimeData> = {
@@ -36,46 +37,7 @@ export const monthGraph: LanguageGraphFactory<DateTimeData> = {
 			.skipPunctuation()
 
 			// Named months
-			.map(
-				{
-					'jan': 0,
-					'januari': 0,
-
-					'feb': 1,
-					'februari': 1,
-
-					'mar': 2,
-					'mars': 2,
-
-					'apr': 3,
-					'april': 3,
-
-					'maj': 4,
-
-					'jun': 5,
-					'juni': 5,
-
-					'jul': 6,
-					'juli': 6,
-
-					'aug': 7,
-					'augusti': 7,
-
-					'sep': 8,
-					'sept': 8,
-					'september': 8,
-
-					'okt': 9,
-					'oktober': 9,
-
-					'nov': 10,
-					'november': 10,
-
-					'dec': 11,
-					'december': 11
-				},
-				l => ({ month: l })
-			)
+			.map(MONTH_NAMES, l => ({ month: l }))
 
 			// Dynamic months
 			.add('denna månad', thisMonth)

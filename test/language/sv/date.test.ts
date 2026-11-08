@@ -101,6 +101,40 @@ describe('Swedish', function() {
 			});
 
 			test('32 januari', now, null);
+
+			// A two digit year after a dash or an apostrophe
+			test('5 jan -26', now, { year: 2026, month: 1, day: 5 });
+
+			test('5 jan \'26', now, { year: 2026, month: 1, day: 5 });
+
+			test('5 januari -99', now, { year: 1999, month: 1, day: 5 });
+		});
+
+		describe('Named month relative to now', function() {
+			const november = { now: new Date(2026, 10, 8) };
+
+			test('nästa mars', november, { year: 2027, month: 3, day: 1 });
+
+			test('kommande mars', november, { year: 2027, month: 3, day: 1 });
+
+			test('nästa november', november, { year: 2027, month: 11, day: 1 });
+
+			test('nästa mars 5', november, { year: 2027, month: 3, day: 5 });
+
+			test('5 nästa mars', november, { year: 2027, month: 3, day: 5 });
+
+			test('förra mars', november, { year: 2026, month: 3, day: 1 });
+
+			test('föregående mars', november, { year: 2026, month: 3, day: 1 });
+
+			test('förra november', november, { year: 2025, month: 11, day: 1 });
+
+			test('förra feb 29', november, { year: 2024, month: 2, day: 29 });
+
+			test('denna mars', november, { year: 2026, month: 3, day: 1 });
+
+			// A month written as a number is not a month after förra
+			test('förra 2', november, null);
 		});
 
 		describe('Numeric dates', function() {

@@ -30,12 +30,14 @@ import {
 	thisWeek,
 	thisYear
 } from '../../type-datetime/index.js';
+import { TimeRelationship } from '../../type-datetime/TimeRelationship.js';
 import type { OrdinalData } from '../../type-numbers/index.js';
 import type { LanguageGraphFactory } from '../index.js';
 
 import { dateDurationGraph } from './dateDurationGraph.js';
 import { dayOfWeekGraph } from './dayOfWeekGraph.js';
 import { monthGraph } from './monthGraph.js';
+import { MONTH_NAMES } from './monthNames.js';
 import { ordinalGraph } from './ordinalGraph.js';
 import { quarterGraph } from './quarterGraph.js';
 import { weekGraph } from './weekGraph.js';
@@ -63,6 +65,33 @@ const END_OF = [
 	'sista dagen i'
 ];
 
+/**
+ * Set how a date relates to the current time, such as in the future for
+ * `nästa mars`.
+ *
+ * @param date -
+ *   the date
+ * @param relation -
+ *   how the date relates to the current time
+ * @returns
+ *   copy of the date with the relation set
+ */
+function withRelation(date: DateTimeData, relation: TimeRelationship): DateTimeData {
+	return combine(date, { relationToCurrent: relation });
+}
+
+/**
+ * The words before a month name that mean the next such month, the previous
+ * such month and the month in the current year.
+ */
+const MONTH_RELATIONS: [ string, TimeRelationship ][] = [
+	[ 'nästa', TimeRelationship.Future ],
+	[ 'kommande', TimeRelationship.Future ],
+	[ 'förra', TimeRelationship.Past ],
+	[ 'föregående', TimeRelationship.Past ],
+	[ 'denna', TimeRelationship.CurrentPeriod ]
+];
+
 export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'date',
 
@@ -76,6 +105,17 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 		const dateDuration = language.graph(dateDurationGraph);
 
 		const day = GraphBuilder.result(ordinal, (v: OrdinalData) => v.value >= 1 && v.value <= 31);
+
+		/*
+		 * Months by name only. A month written as a number, such as `3:e`,
+		 * is not used after `nästa` and `förra`, as `förra 2` is not a month.
+		 */
+		const namedMonth = new GraphBuilder<DateTimeData>(language)
+			.name('namedMonth')
+			.map(MONTH_NAMES, l => ({ month: l }))
+			.build();
+
+		const twoDigitYear = /^[0-9]{2}$/;
 
 		// A field in a numeric date, one or two digits or a four digit year
 		const numericField = /^([0-9]{1,2}|[0-9]{4})$/;
@@ -155,6 +195,13 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			// With day: 12 jan 2018, 1 februari 2018
 			// Without day: jan 2018, denna månad 2018
 			.add([ GraphBuilder.result(hasMonth), year ], v => combine(v[0], v[1]))
+
+			/*
+			 * Day and month followed by a two digit year, such as 5 jan -26
+			 * or 5 jan '26.
+			 */
+			.add([ day, month, '-', twoDigitYear ], (v, e) => withYear(withDay(v[1], v[0].value), parseInt(v[2], 10), e))
+			.add([ day, month, '\'', twoDigitYear ], (v, e) => withYear(withDay(v[1], v[0].value), parseInt(v[2], 10), e))
 
 			.add([ month, 'i', /^[0-9]{1,2}$/ ], (v, e) => withYear(v[0], parseInt(v[1], 10), e))
 			.add([ month, 'av', /^[0-9]{1,2}$/ ], (v, e) => withYear(v[0], parseInt(v[1], 10), e))
@@ -276,6 +323,17 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ 'på', GraphBuilder.result() ], v => v[0])
 			.add([ 'den', GraphBuilder.result() ], v => v[0])
 			.add([ dateDuration, 'sedan' ], v => reverse(v[0]));
+
+		/*
+		 * A named month relative to the current one. `nästa mars` and `förra
+		 * mars` are never the current month, `denna mars` is the month in the
+		 * current year.
+		 */
+		for(const [ word, relation ] of MONTH_RELATIONS) {
+			builder.add([ word, namedMonth ], v => withRelation(v[0], relation));
+			builder.add([ word, namedMonth, day ], v => withRelation(withDay(v[0], v[1].value), relation));
+			builder.add([ day, word, namedMonth ], v => withRelation(withDay(v[1], v[0].value), relation));
+		}
 
 		// Edges, such as början av [date] or slutet av [date]
 		for(const prefix of START_OF) {
