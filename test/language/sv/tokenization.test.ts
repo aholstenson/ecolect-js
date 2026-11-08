@@ -69,6 +69,29 @@ describe('Swedish', function() {
 			expect(performance.now() - start).toBeLessThan(1000);
 		});
 
+		it('Single quotes are split from words', function() {
+			const tokens = tokenizer('\'Änglar\' ‘jazz’');
+			expect(tokens.map(t => t.raw)).toEqual([ '\'', 'Änglar', '\'', '‘', 'jazz', '’' ]);
+			expect(tokens.map(t => t.normalized)).toEqual([ '\'', 'änglar', '\'', '\'', 'jazz', '\'' ]);
+			expect(tokens[0].punctuation).toBe(true);
+		});
+
+		it('The apostrophe of a possessive is split from the name', function() {
+			const tokens = tokenizer('Lars\' bil');
+			expect(tokens.map(t => t.raw)).toEqual([ 'Lars', '\'', 'bil' ]);
+			expect(tokens.map(t => [ t.start, t.stop ])).toEqual([ [ 0, 4 ], [ 4, 5 ], [ 6, 9 ] ]);
+		});
+
+		it('An apostrophe within a word is kept', function() {
+			const tokens = tokenizer('McDonald\'s');
+			expect(tokens.map(t => t.raw)).toEqual([ 'McDonald\'s' ]);
+		});
+
+		it('A compound number word in quotes is split', function() {
+			const tokens = tokenizer('\'tvåhundra\'');
+			expect(tokens.map(t => t.raw)).toEqual([ '\'', 'två', 'hundra', '\'' ]);
+		});
+
 		it('Abbreviations keep their period as a token', function() {
 			const tokens = tokenizer('kl. 15');
 			expect(tokens.map(t => t.raw)).toEqual([ 'kl', '.', '15' ]);

@@ -14,9 +14,14 @@ const SHORT_WORD_LENGTH = 4;
 /**
  * Tokenizer for Swedish. Swedish writes compounds as a single word and has
  * no contractions to split, so the words the shared tokenizer finds are kept
- * as they are and only normalized and stemmed. The exception is a compound
- * number word, such as `tvåhundratjugotre`, which is split into the words it
- * is made of.
+ * as they are and only normalized and stemmed. There are two exceptions:
+ *
+ * - A compound number word, such as `tvåhundratjugotre`, is split into the
+ *   words it is made of.
+ * - An apostrophe at the start or the end of a word is a token of its own.
+ *   This is a single quote, as in `'Änglar'`, or the possessive of a name
+ *   that ends in `s`, as in `Lars'`. An apostrophe within a word, as in
+ *   `McDonald's`, is kept.
  *
  * @param value -
  *   the text to tokenize
@@ -25,27 +30,79 @@ const SHORT_WORD_LENGTH = 4;
  */
 export const tokenizer: Tokenizer = (value: string) => {
 	return tokenize(value, input => {
-		const word = input.raw;
-		const normalized = normalize(word);
-
-		const parts = splitNumberWord(normalized);
-		if(parts && normalized.length === word.length) {
-			/*
-			 * A compound number word becomes one token for each of its
-			 * words. The text of each token is the part of the word as it
-			 * was typed.
-			 */
-			let offset = 0;
-			return parts.map(part => {
-				const raw = word.substring(offset, offset + part.length);
-				offset += part.length;
-				return createToken(raw, part.word);
-			});
+		const match = QUOTED.exec(input.raw);
+		if(! match || match[2] === '') {
+			// Only apostrophes, such as a quote on its own
+			return [ ...input.raw ].map(createQuoteToken);
 		}
 
-		return [ createToken(word, normalized) ];
+		const [ , before, word, after ] = match;
+		return [
+			...[ ...before ].map(createQuoteToken),
+			...wordTokens(word),
+			...[ ...after ].map(createQuoteToken)
+		];
 	});
 };
+
+/**
+ * The apostrophes that can be typed as a single quote. Each one is a single
+ * UTF-16 code unit.
+ */
+const APOSTROPHES = '\'‘’ʼ';
+
+/**
+ * A word with the apostrophes at its start and its end in groups of their
+ * own.
+ */
+const QUOTED = new RegExp('^([' + APOSTROPHES + ']*)(.*?)([' + APOSTROPHES + ']*)$', 'su');
+
+/**
+ * Create the tokens for a word without apostrophes at its start or end.
+ *
+ * @param word -
+ *   the word as it was typed
+ * @returns
+ *   the tokens of the word
+ */
+function wordTokens(word: string) {
+	const normalized = normalize(word);
+
+	const parts = splitNumberWord(normalized);
+	if(parts && normalized.length === word.length) {
+		/*
+		 * A compound number word becomes one token for each of its words.
+		 * The text of each token is the part of the word as it was typed.
+		 */
+		let offset = 0;
+		return parts.map(part => {
+			const raw = word.substring(offset, offset + part.length);
+			offset += part.length;
+			return createToken(raw, part.word);
+		});
+	}
+
+	return [ createToken(word, normalized) ];
+}
+
+/**
+ * Create the token for an apostrophe. Every kind of apostrophe is read as
+ * the straight apostrophe `'`.
+ *
+ * @param raw -
+ *   the apostrophe as it was typed
+ * @returns
+ *   the token
+ */
+function createQuoteToken(raw: string) {
+	return {
+		raw: raw,
+		normalized: '\'',
+		short: true,
+		stemmed: '\'',
+		skippable: false
+	};
+}
 
 /**
  * Create the token for a word.

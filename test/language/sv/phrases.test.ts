@@ -3,7 +3,7 @@ import { LocalDate } from 'datetime-types';
 import { intentsBuilder } from '../../../src/index.js';
 import { sv } from '../../../src/language/sv/index.js';
 import { newPhrases } from '../../../src/resolver/newPhrases.js';
-import { dateIntervalValue, dateValue, integerValue } from '../../../src/values/index.js';
+import { anyTextValue, dateIntervalValue, dateValue, integerValue } from '../../../src/values/index.js';
 import { assertNotNull } from '../../assertions.js';
 
 const options = { now: new Date(2020, 0, 1) };
@@ -93,6 +93,35 @@ describe('Swedish', function() {
 
 		it('till can not be left out', async function() {
 			expect(await matcher.match('flytta mötet fredag', options)).toBeNull();
+		});
+	});
+
+	describe('Single quotes', function() {
+		const matcher = intentsBuilder(sv)
+			.add('play', newPhrases().value('song', anyTextValue()).phrase('Spela {song}').build())
+			.build();
+
+		const carMatcher = newPhrases()
+			.phrase('Visa Lars bil')
+			.toMatcher(sv);
+
+		it('Free text in single quotes is read without the quotes', async function() {
+			const match = await matcher.match('spela \'Änglar\'', options);
+			expect(match?.values.song).toEqual('Änglar');
+		});
+
+		it('Free text in curly single quotes is read without the quotes', async function() {
+			const match = await matcher.match('spela ‘Änglar’', options);
+			expect(match?.values.song).toEqual('Änglar');
+		});
+
+		it('A possessive with an apostrophe matches the phrase without it', async function() {
+			assertNotNull(await carMatcher.match('visa Lars\' bil', options));
+		});
+
+		it('Free text keeps an apostrophe within it as typed', async function() {
+			const match = await matcher.match('spela Lars\' låt', options);
+			expect(match?.values.song).toEqual('Lars\' låt');
 		});
 	});
 
