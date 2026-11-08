@@ -37,33 +37,108 @@ const EMOJI_PART = '\\p{Extended_Pictographic}' + EMOJI_SUFFIX;
 const MATCHER_EMOJI = '\\p{Regional_Indicator}{2}|' + EMOJI_PART + '(?:\\u200D' + EMOJI_PART + ')*';
 
 const MATCHER = new RegExp('(' + MATCHER_ALPHABETIC + '|' + MATCHER_NUMERIC + '|' + MATCHER_EMOJI + '|.)', 'gu');
-function tokenizeSingle(index: number, text: string, tokenizer: PartialTokenizer, result: Tokens) {
+
+/**
+ * A character and the combining marks that follow it, or combining marks
+ * without a character before them. NFC changes the text mostly inside such a
+ * part. Scripts such as Hangul also join parts.
+ */
+const NORMALIZATION_PART = /\P{M}\p{M}*|\p{M}+/gu;
+
+/**
+ * Get the offset in the original text of each offset in the NFC text, so that
+ * tokens refer to the text as the caller gave it.
+ *
+ * The text is split into groups that NFC changes one at a time. A group is a
+ * part from `NORMALIZATION_PART`, or several parts if NFC joins them. An
+ * offset at the start of a group is exact. An offset inside a group that NFC
+ * changed is moved to the same place in the group, but never past its end.
+ *
+ * @param original -
+ *   the text as given
+ * @param normalized -
+ *   the text in NFC
+ * @returns
+ *   the offset in the original text for each offset in the NFC text, or
+ *   `null` if the two texts are the same
+ */
+function originalOffsets(original: string, normalized: string): number[] | null {
+	if(original === normalized) return null;
+
+	const offsets: number[] = [];
+	const groups: string[] = [];
+
+	let groupStart = 0;
+	let group = '';
+	let groupNormalized = '';
+	const endGroup = () => {
+		for(let i = 0; i < groupNormalized.length; i++) {
+			offsets.push(groupStart + Math.min(i, group.length));
+		}
+
+		groups.push(groupNormalized);
+	};
+
+	for(const match of original.matchAll(NORMALIZATION_PART)) {
+		const part = match[0];
+		const partNormalized = part.normalize();
+		const joined = (group + part).normalize();
+
+		if(group && joined === groupNormalized + partNormalized) {
+			endGroup();
+			groupStart = match.index;
+			group = part;
+			groupNormalized = partNormalized;
+		} else {
+			group += part;
+			groupNormalized = joined;
+		}
+	}
+
+	endGroup();
+	offsets.push(original.length);
+
+	if(groups.join('') !== normalized) {
+		// Use the NFC offsets, but keep them inside the original text
+		return Array.from(
+			{ length: normalized.length + 1 },
+			(_, i) => i === normalized.length ? original.length : Math.min(i, original.length)
+		);
+	}
+
+	return offsets;
+}
+
+function tokenizeSingle(index: number, original: string, tokenizer: PartialTokenizer, result: Tokens) {
+	// Normalize to NFC, so that the same text gives the same tokens
+	const text = original.normalize();
+	const offsets = originalOffsets(original, text);
+	const toOriginal = (offset: number) => index + (offsets ? offsets[offset] : offset);
+
 	MATCHER.lastIndex = 0;
 	let match;
 	while((match = MATCHER.exec(text))) {
-		const offset = match.index;
 		const raw = match[0];
-
-		let offsetStart = index + offset;
+		let offset = match.index;
 
 		const tokens = tokenizer({
-			start: offsetStart,
-			stop: offsetStart + raw.length,
+			start: toOriginal(offset),
+			stop: toOriginal(offset + raw.length),
 			raw: raw
 		});
 
 		for(let i=0; i<tokens.length; i++) {
 			const t = tokens[i] as Token;
 			if(typeof t.start === 'undefined') {
-				t.start = offsetStart;
-				t.stop = offsetStart + t.raw.length;
+				t.start = toOriginal(offset);
+				t.stop = toOriginal(Math.min(offset + t.raw.length, text.length));
 			}
 
 			if(isPunctuation(t.raw)) {
 				t.punctuation = true;
 			}
 
-			offsetStart = t.stop;
+			offset += t.raw.length;
 			result.push(t);
 		}
 	}
@@ -73,14 +148,11 @@ function tokenizeSingle(index: number, text: string, tokenizer: PartialTokenizer
  * Tokenize the input on white space and special characters. This should be
  * useful for many languages, but is probably not the right strategy for every
  * language in use.
+ *
+ * The text of each token is in NFC, but the start and stop of each token are
+ * offsets in the text as it was given.
  */
 export function tokenize(text: string, tokenizer: PartialTokenizer) {
-
-	// First step is to normalize the input to NFC if we can
-	if(text.normalize) {
-		text = text.normalize();
-	}
-
 	const result = Tokens.empty();
 
 	const NON_SPACE = /\S+/gu;
@@ -94,7 +166,6 @@ export function tokenize(text: string, tokenizer: PartialTokenizer) {
 
 	return result;
 }
-
 
 /**
  * Input as given to a tokenizer.
