@@ -721,5 +721,60 @@ describe('English', () => {
 				day: 15
 			}
 		});
+
+		// A range where the end is earlier in the year continues into the next year
+		test('december 20 to january 5', { now: new Date(2026, 10, 8) }, {
+			start: {
+				year: 2026,
+				month: 12,
+				day: 20
+			},
+			end: {
+				year: 2027,
+				month: 1,
+				day: 5
+			}
+		});
+
+		test('december to february', { now: new Date(2026, 10, 8) }, {
+			start: {
+				year: 2026,
+				month: 12,
+				day: 1
+			},
+			end: {
+				year: 2027,
+				month: 2,
+				day: 28
+			}
+		});
+
+		test('december 20 to january 5 2027', { now: new Date(2026, 10, 8) }, {
+			start: {
+				year: 2026,
+				month: 12,
+				day: 20
+			},
+			end: {
+				year: 2027,
+				month: 1,
+				day: 5
+			}
+		});
+
+		test('jan 30 - 2nd', { now: new Date(2026, 10, 8) }, {
+			start: {
+				year: 2026,
+				month: 1,
+				day: 30
+			},
+			end: {
+				year: 2026,
+				month: 2,
+				day: 2
+			}
+		});
+
+		test('march 5 2027 to march 3 2026', { now: new Date(2026, 10, 8) }, null);
 	});
 });

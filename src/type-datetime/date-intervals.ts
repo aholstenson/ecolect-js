@@ -1,5 +1,5 @@
 import { addDays } from 'date-fns';
-import { DateInterval } from 'datetime-types';
+import { DateInterval, type LocalDate } from 'datetime-types';
 
 import { currentTime } from './currentTime.js';
 import { mapDate, today } from './dates.js';
@@ -292,30 +292,42 @@ function withPeriodsFromEnd(start: DateTimeData, end: DateTimeData): DateTimeDat
 	return result;
 }
 
-export function mapDateInterval(r: IntervalData, options: DateTimeOptions): DateInterval {
+/**
+ * Map the data of an interval to a date interval.
+ *
+ * An end that leaves out the year, such as in `December 20 to January 5`, is
+ * moved forward when it would otherwise be before the start. A start that
+ * takes its year from the end, such as in `December 20 to January 5 2027`, is
+ * moved back a year for the same reason.
+ *
+ * @param r -
+ *   the data describing the interval
+ * @param options -
+ *   options with the current time
+ * @returns
+ *   the interval, or `null` if the start is after the end
+ */
+export function mapDateInterval(r: IntervalData, options: DateTimeOptions): DateInterval | null {
 	let start = null;
 	let end = null;
 
 	if(r.end) {
 		if(r.start) {
-			const startData = withPeriodsFromEnd(r.start, r.end);
+			let startData = withPeriodsFromEnd(r.start, r.end);
 
 			start = mapDate(applyRelationAndEdge(startData, IntervalEdge.Start), options);
 			if(! start) throw new Error();
 
-			/*
-			 * The end is read as if the current time was the start, so that
-			 * an end that leaves out fields the start gives, such as the
-			 * `15th` in `January 12th - 15th`, lands after the start. A
-			 * single date describing both edges is read from the current
-			 * time instead, as reading it twice would apply an offset such
-			 * as `3 days ago` to itself.
-			 */
-			const endOptions = r.start === r.end
-				? options
-				: { ...options, now: start.toDateAtMidnight() };
+			end = mapEnd(r, start, options);
 
-			end = mapDate(applyRelationAndEdge(r.end, IntervalEdge.End), endOptions);
+			if(end && start.compare(end) > 0 && typeof r.start.year === 'undefined' && typeof startData.year !== 'undefined') {
+				// The start took its year from the end, use the year before
+				startData = { ...startData, year: startData.year - 1 };
+				start = mapDate(applyRelationAndEdge(startData, IntervalEdge.Start), options);
+				if(! start) throw new Error();
+
+				end = mapEnd(r, start, options);
+			}
 		} else {
 			end = mapDate(applyRelationAndEdge(r.end, IntervalEdge.End), options);
 		}
@@ -329,5 +341,46 @@ export function mapDateInterval(r: IntervalData, options: DateTimeOptions): Date
 		}
 	}
 
+	if(start && end && start.compare(end) > 0) {
+		// The interval is reversed, such as `March 5 2027 to March 3 2026`
+		return null;
+	}
+
 	return DateInterval.between(start, end);
+}
+
+/**
+ * Map the end of an interval that has both a start and an end.
+ *
+ * The end is read as if the current time was the start, so that an end that
+ * leaves out fields the start gives, such as the `15th` in
+ * `January 12th - 15th`, lands after the start. When the end does not say how
+ * it relates to the current time and still lands before the start, such as
+ * `January 5` in `December 20 to January 5`, the next matching date is used.
+ *
+ * A single date describing both edges is read from the current time instead,
+ * as reading it twice would apply an offset such as `3 days ago` to itself.
+ *
+ * @param r -
+ *   the data describing the interval
+ * @param start -
+ *   the mapped start of the interval
+ * @param options -
+ *   options with the current time
+ * @returns
+ *   the end of the interval, or `null` if it is not a valid date
+ */
+function mapEnd(r: IntervalData, start: LocalDate, options: DateTimeOptions): LocalDate | null {
+	const data = r.end as DateTimeData;
+	if(r.start === r.end) {
+		return mapDate(applyRelationAndEdge(data, IntervalEdge.End), options);
+	}
+
+	const endOptions = { ...options, now: start.toDateAtMidnight() };
+	const end = mapDate(applyRelationAndEdge(data, IntervalEdge.End), endOptions);
+	if(! end || start.compare(end) <= 0 || typeof data.relationToCurrent !== 'undefined') {
+		return end;
+	}
+
+	return mapDate(applyRelationAndEdge({ ...data, relationToCurrent: TimeRelationship.Auto }, IntervalEdge.End), endOptions);
 }
