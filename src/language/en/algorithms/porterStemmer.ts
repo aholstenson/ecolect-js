@@ -90,6 +90,13 @@ const STEP4 = /^(.+?)(s|t)(ion)$/;
 const STEP51 = /^(.+?)e$/;
 const STEP52 = new RegExp('^' + CC + V + '[^aeiouwxy]$');
 
+/**
+ * The longest word that is stemmed. English words are shorter than this. The
+ * regular expressions of the stemmer take quadratic time on long text, so a
+ * longer word, such as a pasted string of characters, is returned as it is.
+ */
+const MAX_LENGTH = 64;
+
 function chop(value: string): string {
 	return value.slice(0, -1);
 }
@@ -111,8 +118,8 @@ function match(regex: RegExp, value: string): RegExpExecArray | null {
 export function porterStemmer(word: string): string {
 	word = word.toLowerCase();
 
-	// If the word is too short, we return it unscathed
-	if(word.length < 3) return word;
+	// If the word is too short or too long, we return it unscathed
+	if(word.length < 3 || word.length > MAX_LENGTH) return word;
 
 	let m: RegExpExecArray | null;
 

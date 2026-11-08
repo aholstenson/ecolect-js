@@ -1,3 +1,4 @@
+import { porterStemmer } from '../../../src/language/en/algorithms/porterStemmer.js';
 import { en } from '../../../src/language/en/index.js';
 import { tokenizer } from '../../../src/language/en/tokenizer.js';
 import { newPhrases } from '../../../src/resolver/newPhrases.js';
@@ -112,6 +113,21 @@ describe('English', function() {
 			expect(tokens.map(t => t.raw)).toEqual([ 'hello', ',', 'world', '!' ]);
 			expect(tokens[1].punctuation).toBe(true);
 			expect(tokens[3].punctuation).toBe(true);
+		});
+	});
+
+	describe('Long words', function() {
+		it('Tokenizing a long word is fast', function() {
+			const start = performance.now();
+			const tokens = tokenizer('a'.repeat(50000));
+			expect(tokens.length).toEqual(1);
+			expect(performance.now() - start).toBeLessThan(100);
+		});
+
+		it('Stemming a long word is fast', function() {
+			const start = performance.now();
+			porterStemmer('a'.repeat(50000) + 'b');
+			expect(performance.now() - start).toBeLessThan(100);
 		});
 	});
 

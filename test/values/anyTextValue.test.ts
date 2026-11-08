@@ -28,6 +28,15 @@ describe('Value: anyTextValue', function() {
 			expect(m.values.value).toBe('he said "stop" now');
 		});
 
+		it('Prefixed: long word is matched fast', async function() {
+			const word = 'a'.repeat(50000) + 'b';
+			const start = performance.now();
+			const m = await resolver.match('prefix ' + word);
+			assertNotNull(m);
+			expect(m.values.value).toBe(word);
+			expect(performance.now() - start).toBeLessThan(100);
+		});
+
 		it.skip('Prefixed: URL 2', async function() {
 			const m = await resolver.match('prefix https://www.example.com/path?queryParam=value');
 			assertNotNull(m);
