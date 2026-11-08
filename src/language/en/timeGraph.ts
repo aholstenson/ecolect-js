@@ -113,6 +113,14 @@ export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ integer, ':', integer ], (v, options, encounter) => endsWithLongNumber(encounter)
 				? null
 				: time12h(v[0].value, v[1].value))
+
+			/*
+			 * HH.MM, such as 12.30 and 9.15, which British English writes.
+			 * The minutes must have two digits, so that 1.5 is not 01:05.
+			 */
+			.add([ /^[0-9]{1,2}$/, '.', /^[0-9]{2}$/ ], v => {
+				return time12h(parseInt(v[0], 10), parseInt(v[1], 10));
+			})
 			.add(/^[0-9]{3,4}$/, v => {
 				const t = v[0];
 				const h = t.length === 3 ? t.substring(0, 1) : t.substring(0, 2);

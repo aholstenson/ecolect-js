@@ -131,6 +131,38 @@ describe('English', function() {
 			});
 		});
 
+		describe('With a point', function() {
+			test('12.30', { now: new Date(2010, 0, 1, 10, 0) }, {
+				hour: 12,
+				minute: 30,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('9.15', { now: new Date(2010, 0, 1, 8, 0) }, {
+				hour: 9,
+				minute: 15,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('3.30 pm', { now: new Date(2010, 0, 1, 10, 0) }, {
+				hour: 15,
+				minute: 30,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('19.45', { now: new Date(2010, 0, 1, 10, 0) }, {
+				hour: 19,
+				minute: 45,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('10.75', { now: new Date(2010, 0, 1, 10, 0) }, null);
+		});
+
 		describe('Invalid', function() {
 			test('25', {}, null);
 

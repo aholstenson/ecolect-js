@@ -75,6 +75,16 @@ describe('English', function() {
 			millisecond: 0
 		}));
 
+		test('january 12 at 12.30', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2010,
+			month: 1,
+			day: 12,
+			hour: 12,
+			minute: 30,
+			second: 0,
+			millisecond: 0
+		}));
+
 		test('jan 12th', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
 			year: 2010,
 			month: 1,
