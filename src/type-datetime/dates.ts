@@ -10,6 +10,7 @@ import {
 
 	setWeek,
 	getWeek,
+	getWeekYear,
 	startOfWeekYear,
 
 	setQuarter,
@@ -325,9 +326,76 @@ const WEEK: Adjustment = {
 	get: (date, options = {}) => getWeek(date, toWeekOptions(options)),
 	set: (date, v, options = {}) => setWeek(date, v, toWeekOptions(options)),
 
-	adjuster: (date, v) => addYears(date, v),
+	/*
+	 * Weeks are numbered within a week-numbering year, which can start in
+	 * the previous calendar year or end in the next one. Moving the calendar
+	 * year can skip a week-numbering year, so this moves to the start of the
+	 * next week-numbering year. The week is set after this. July is always
+	 * inside the week-numbering year of the same number.
+	 */
+	adjuster: (date, v, options = {}) => {
+		const weekOptions = toWeekOptions(options);
+		const weekYear = getWeekYear(date, weekOptions) + v;
+		return startOfWeekYear(new Date(weekYear, 6, 1), weekOptions);
+	},
 	parentData: r => typeof r.year !== 'undefined'
 };
+
+/**
+ * Get the start of a week in a week-numbering year. A week-numbering year
+ * can start in late December or early January. July is always inside the
+ * year, so the first week is found from there and the week counted from it.
+ *
+ * @param year -
+ *   the week-numbering year
+ * @param week -
+ *   the week number
+ * @param options -
+ *   options with the week numbering settings
+ * @returns
+ *   the start of the week. For a week that the year does not have, this is
+ *   a week in the next year.
+ */
+function weekInWeekYear(year: number, week: number, options: DateTimeOptions): Date {
+	const weekOptions = toWeekOptions(options);
+	return addWeeks(startOfWeekYear(new Date(year, 6, 1), weekOptions), week - 1);
+}
+
+/**
+ * Find a week in the current year. Early in January the current date can be
+ * in the last week of the previous week-numbering year, and late in December
+ * in the first week of the next one. Then both that year and the calendar
+ * year are the current year, and the week nearest to the current date is
+ * used. On January 3rd in the last week of the previous week-numbering year,
+ * `week 2` is the next week and not a week a year back.
+ *
+ * @param time -
+ *   the current date
+ * @param week -
+ *   the week number
+ * @param options -
+ *   options with the week numbering settings
+ * @returns
+ *   the start of the week, or a date in another week if no current year has
+ *   the week
+ */
+function nearestWeekInCurrentYear(time: Date, week: number, options: DateTimeOptions): Date {
+	const weekOptions = toWeekOptions(options);
+	const years = new Set([ getWeekYear(time, weekOptions), time.getFullYear() ]);
+
+	let result: Date | null = null;
+	for(const year of years) {
+		const candidate = weekInWeekYear(year, week, options);
+		if(getWeek(candidate, weekOptions) !== week) continue;
+
+		const distance = Math.abs(candidate.getTime() - time.getTime());
+		if(! result || distance < Math.abs(result.getTime() - time.getTime())) {
+			result = candidate;
+		}
+	}
+
+	return result ?? weekInWeekYear(getWeekYear(time, weekOptions), week, options);
+}
 
 const MONTH: Adjustment = {
 	getField: o => o.month || 0,
@@ -541,14 +609,10 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 		period = Period.Week;
 
 		if(typeof r.year !== 'undefined') {
-			/*
-			 * Week of a specific year. Weeks are numbered within a week
-			 * numbering year, which may start in late December or early
-			 * January. July is always inside the year, so the first week is
-			 * found from there and the requested week counted from it.
-			 */
-			const weekOptions = toWeekOptions(options);
-			time = addWeeks(startOfWeekYear(new Date(r.year, 6, 1), weekOptions), r.week - 1);
+			// Week of a specific year
+			time = weekInWeekYear(r.year, r.week, options);
+		} else if(relationToCurrent === TimeRelationship.CurrentPeriod) {
+			time = nearestWeekInCurrentYear(time, r.week, options);
 		} else {
 			time = adjust(r, relationToCurrent, options, time, WEEK);
 		}

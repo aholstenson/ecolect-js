@@ -93,5 +93,60 @@ describe('English', function() {
 				day: 31
 			}
 		});
+
+		// January 3rd 2027 is still in the last week of 2026
+		test('week 2', { now: new Date(2027, 0, 3), ...iso }, {
+			start: {
+				year: 2027,
+				month: 1,
+				day: 11
+			},
+			end: {
+				year: 2027,
+				month: 1,
+				day: 17
+			}
+		});
+
+		test('week 10', { now: new Date(2027, 0, 3), ...iso }, {
+			start: {
+				year: 2027,
+				month: 3,
+				day: 8
+			},
+			end: {
+				year: 2027,
+				month: 3,
+				day: 14
+			}
+		});
+
+		// The current week on January 3rd 2027 is week 53 of 2026
+		test('week 53', { now: new Date(2027, 0, 3), ...iso }, {
+			start: {
+				year: 2026,
+				month: 12,
+				day: 28
+			},
+			end: {
+				year: 2027,
+				month: 1,
+				day: 3
+			}
+		});
+
+		// December 30th 2025 is in the first week of 2026
+		test('week 2', { now: new Date(2025, 11, 30), ...iso }, {
+			start: {
+				year: 2026,
+				month: 1,
+				day: 5
+			},
+			end: {
+				year: 2026,
+				month: 1,
+				day: 11
+			}
+		});
 	});
 });

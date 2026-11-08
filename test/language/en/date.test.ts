@@ -216,6 +216,19 @@ describe('English', function() {
 				month: 2,
 				day: 2
 			});
+
+			// January 3rd 2027 is still in the last week of 2026
+			test('week 2', { now: new Date(2027, 0, 3), weekStartsOn: 1, firstWeekContainsDate: 4 }, {
+				year: 2027,
+				month: 1,
+				day: 11
+			});
+
+			test('week 10', { now: new Date(2027, 0, 3), weekStartsOn: 1, firstWeekContainsDate: 4 }, {
+				year: 2027,
+				month: 3,
+				day: 8
+			});
 		});
 
 		describe('Quarters', function() {
