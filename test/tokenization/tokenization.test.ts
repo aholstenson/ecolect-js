@@ -66,6 +66,21 @@ describe('Utils: Tokenization', function() {
 		expect(tokens[1].stop).toEqual(5);
 	});
 
+	it('Tokenizer that tokenizes inside its callback', function() {
+		let calls = 0;
+		const tokens = tokenize('ab cd', t => {
+			calls++;
+			if(calls > 100) {
+				throw new Error('Tokenizer called too many times');
+			}
+
+			tokenize(t.raw, testTokenizer);
+			return testTokenizer(t);
+		});
+
+		checkTokens(tokens, [ 'ab', 'cd' ]);
+	});
+
 	describe('Spliting', function() {
 		it('Parenthesies', function() {
 			const tokens = tokenize('(abc)', testTokenizer);

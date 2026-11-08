@@ -115,9 +115,12 @@ function tokenizeSingle(index: number, original: string, tokenizer: PartialToken
 	const offsets = originalOffsets(original, text);
 	const toOriginal = (offset: number) => index + (offsets ? offsets[offset] : offset);
 
-	MATCHER.lastIndex = 0;
-	let match;
-	while((match = MATCHER.exec(text))) {
+	/*
+	 * `matchAll` reads the text with a copy of the expression, so a tokenizer
+	 * that calls `tokenize` itself does not move the place this text is read
+	 * from.
+	 */
+	for(const match of text.matchAll(MATCHER)) {
 		const raw = match[0];
 		let offset = match.index;
 
