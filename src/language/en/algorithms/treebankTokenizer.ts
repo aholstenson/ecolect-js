@@ -39,6 +39,11 @@ type Rule = [ RegExp, string ];
 
 const STARTING_QUOTES: Rule[] = [
 	[ /^"/g, '``' ],
+	/*
+	 * A single quote before a word, as in `'jazz'`. Contractions that start
+	 * with an apostrophe, such as `'tis`, `'em` and `rock 'n roll`, keep it.
+	 */
+	[ /^'(?!(?:s|m|d|ll|re|ve|t|tis|twas|em|n|cause)\b)(?=[^\s'])/gi, '\' ' ],
 	[ /(``)/g, ' $1 ' ],
 	[ /([ ([{<])"/g, '$1 `` ' ]
 ];

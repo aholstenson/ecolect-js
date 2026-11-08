@@ -112,6 +112,22 @@ describe('English', function() {
 			expect(tokens.map(t => t.normalized)).toEqual([ 'say', '"', 'hello', '"' ]);
 		});
 
+		it('Single quotes are split from words', function() {
+			const tokens = tokenizer('\'jazz\'');
+			expect(tokens.map(t => t.raw)).toEqual([ '\'', 'jazz', '\'' ]);
+		});
+
+		it('Contraction that starts with an apostrophe is kept', function() {
+			const tokens = tokenizer('rock \'n roll');
+			expect(tokens.map(t => t.raw)).toEqual([ 'rock', '\'n', 'roll' ]);
+		});
+
+		it('Possessive can be skipped', function() {
+			const tokens = tokenizer('John\'s car');
+			expect(tokens.map(t => t.raw)).toEqual([ 'John', '\'s', 'car' ]);
+			expect(tokens[1].skippable).toBe(true);
+		});
+
 		it('Punctuation is split from words', function() {
 			const tokens = tokenizer('hello, world!');
 			expect(tokens.map(t => t.raw)).toEqual([ 'hello', ',', 'world', '!' ]);
@@ -156,6 +172,33 @@ describe('English', function() {
 			const m = await matcher.match('due tomorrow\u200B', { now: new Date(2026, 10, 8) });
 			assertNotNull(m);
 			expect(m.values.when).toEqual(LocalDate.of(2026, 11, 9));
+		});
+
+		it('Word in single quotes matches the word', async function() {
+			const resolver = newPhrases()
+				.phrase('play jazz')
+				.toMatcher(en);
+
+			const m = await resolver.match('play \'jazz\'');
+			expect(m).not.toBeNull();
+		});
+
+		it('Possessive matches phrase without it', async function() {
+			const resolver = newPhrases()
+				.phrase('show John orders')
+				.toMatcher(en);
+
+			const m = await resolver.match('show John\'s orders');
+			expect(m).not.toBeNull();
+		});
+
+		it('Contraction with is still matches the phrase written out', async function() {
+			const resolver = newPhrases()
+				.phrase('what is the time')
+				.toMatcher(en);
+
+			const m = await resolver.match('what\'s the time');
+			expect(m).not.toBeNull();
 		});
 
 		it('Curly apostrophe matches phrase with straight apostrophe', async function() {

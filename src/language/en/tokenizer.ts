@@ -30,7 +30,7 @@ export const tokenizer: Tokenizer = (value: string) => {
 				normalized: normalized,
 				short: word.length <= 4,
 				stemmed: NOT_STEMMED.has(normalized) ? normalized : porterStemmer(normalized),
-				skippable: SKIPPABLE.has(normalized)
+				skippable: SKIPPABLE.has(normalized) || word.toLowerCase() === '\'s'
 			};
 		}
 		return result;
@@ -129,6 +129,9 @@ const NOT_STEMMED = new Set([
 
 /**
  * Normalized tokens that can be skipped if they are missing in the input.
+ * The token `'s` can also be skipped. It is read as `is`, as in `what's`,
+ * but it can also be a possessive, as in `John's`, which a phrase often
+ * leaves out.
  */
 const SKIPPABLE = new Set([
 	'in', 'at', 'for', 'a', 'an', 'the', 'by', 'to'
