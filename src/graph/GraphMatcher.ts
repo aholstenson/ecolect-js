@@ -53,6 +53,10 @@ export class GraphMatcher<G, V> {
 		}, this.options, options);
 
 		const tokens = this.graph.tokenizer(expression);
+
+		// An expression without words can only be the start of a match
+		if(tokens.length === 0) return null;
+
 		const encounter = new Encounter(tokens, resolvedOptions);
 		encounter.outgoing = this.graph.nodes;
 
@@ -94,6 +98,10 @@ export class GraphMatcher<G, V> {
 		}, this.options, matchOptions);
 
 		const tokens = this.graph.tokenizer(expression);
+
+		// An expression without words can only be the start of a match
+		if(tokens.length === 0) return [];
+
 		const encounter = new Encounter(tokens, resolvedOptions);
 		encounter.outgoing = this.graph.nodes;
 

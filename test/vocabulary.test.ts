@@ -1,5 +1,6 @@
 import { LocalDate } from 'datetime-types';
 
+import { IntentsBuilder } from '../src/IntentsBuilder.js';
 import { en } from '../src/language/en/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
 import { dateValue } from '../src/values/index.js';
@@ -83,6 +84,31 @@ describe('Language: Vocabulary', function() {
 		it('Several skippable words', function() {
 			return resolver.match('please show all customers')
 				.then(r => expect(r).not.toBeNull());
+		});
+	});
+
+	describe('Phrase of only skippable words', function() {
+		const intents = new IntentsBuilder(en)
+			.add('the', newPhrases()
+				.phrase('the')
+				.build()
+			)
+			.add('orders', newPhrases()
+				.phrase('show orders')
+				.build()
+			)
+			.build();
+
+		it('Empty input does not match', async function() {
+			const m = await intents.match('');
+			expect(m).toBeNull();
+		});
+
+		it('Empty input gives only finite scores', async function() {
+			const results = await intents.matchAll('');
+			for(const r of results) {
+				expect(Number.isFinite(r.score)).toBe(true);
+			}
 		});
 	});
 

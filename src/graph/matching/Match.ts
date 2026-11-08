@@ -58,8 +58,9 @@ function scorePartial(scoreData: ScoreData) {
 }
 
 /**
- * Normal
+ * Perform normal scoring, which is the score for each token of the
+ * expression. An expression without tokens scores 0.
  */
 function scoreNormal(scoreData: ScoreData) {
-	return scoreData.score / scoreData.tokens;
+	return scoreData.tokens > 0 ? scoreData.score / scoreData.tokens : 0;
 }
