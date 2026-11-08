@@ -81,6 +81,25 @@ describe('Phrases: Skippable words', function() {
 			return withValue.matchPartial('show orders please')
 				.then(r => expect(r.map(m => m.values.color)).toEqual([ 'red', 'blue' ]));
 		});
+
+		it('Value is found when a phrase that skips the last word is tried first', function() {
+			/*
+			 * `show` and `shows` are different words, so the phrases do not
+			 * share a path. The first phrase reads `{color}` with the last word
+			 * skipped, where the expression can not continue and no color is
+			 * found. The second phrase reads `{color}` at the same index, where
+			 * the expression can continue, and must find both colors.
+			 */
+			const withValue = newPhrases()
+				.value('color', enumerationValue([ 'red', 'blue' ]))
+				.skippable('please')
+				.phrase('show orders {color}')
+				.phrase('shows orders please {color}')
+				.toMatcher(en);
+
+			return withValue.matchPartial('show orders please')
+				.then(r => expect(r.map(m => m.values.color)).toEqual([ 'red', 'blue' ]));
+		});
 	});
 
 	describe('Without skippable words', function() {

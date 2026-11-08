@@ -78,7 +78,18 @@ export class Encounter {
 	public readonly options: EncounterOptions;
 
 	public outgoing: Node[];
+
+	/**
+	 * Caches for each token index, used while the expression may continue
+	 * after the input ends.
+	 */
 	private _cache: Map<any, any>[];
+
+	/**
+	 * Caches for each token index, used while the expression may not
+	 * continue after the input ends.
+	 */
+	private _cacheWithoutContinuation: Map<any, any>[];
 
 	/**
 	 * Errors from values that could not be matched, such as a remote lookup
@@ -119,6 +130,7 @@ export class Encounter {
 
 		this.outgoing = [];
 		this._cache = [];
+		this._cacheWithoutContinuation = [];
 		this._evaluations = [];
 		this.errors = [];
 	}
@@ -535,14 +547,25 @@ export class Encounter {
 	 * a graph. This is used by sub-nodes to cache their results based on the
 	 * start index.
 	 *
-	 * @param index
+	 * A sub-graph can find different results at the same index when the
+	 * expression may continue after the input ends and when it may not, for
+	 * example when the last word of a partial expression is skipped. Each of
+	 * the two states has its own caches, so a result found in one state is
+	 * never used in the other.
+	 *
+	 * @param index -
+	 *   the token index, defaults to the current index
+	 * @returns
+	 *   the cache for the index and the current continuation state
 	 */
 	public cache(index=this.currentIndex): Map<any, any> {
-		let map = this._cache[index];
+		const caches = this.allowContinuation ? this._cache : this._cacheWithoutContinuation;
+
+		let map = caches[index];
 		if(map) return map;
 
 		map = new Map();
-		this._cache[index] = map;
+		caches[index] = map;
 		return map;
 	}
 
