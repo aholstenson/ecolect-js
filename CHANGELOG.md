@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.9.0](https://github.com/aholstenson/ecolect-js/compare/v0.8.0...v0.9.0) (2026-11-12)
+
+
+### Features
+
+* Add runtimeLocale to read the locale of the user ([3b1fa30](https://github.com/aholstenson/ecolect-js/commit/3b1fa30997f3c130da8cd3bc3e895c0a0a42fce9))
+* Let a language set the week start and other settings ([9c4318f](https://github.com/aholstenson/ecolect-js/commit/9c4318fc510a36b94dc58e0af5422a6eb026bfe0))
+* Make a language from plain settings with a region ([722245a](https://github.com/aholstenson/ecolect-js/commit/722245a2f67fd6436a1422f42073744403bf072f))
+* Match Swedish typed without å, ä and ö ([96e55f8](https://github.com/aholstenson/ecolect-js/commit/96e55f8d3dab297b0cc8f2a87bbea110e3b205d0))
+* Read "next weekend" as the coming one, add weekParts ([741c460](https://github.com/aholstenson/ecolect-js/commit/741c460dd394fad7d0d2d770c1da5b26cffc4133))
+* Read "week after next" and "nästnästa vecka" ([941d253](https://github.com/aholstenson/ecolect-js/commit/941d253bc6ee3695dea1fb9d4679a454d350b962))
+* Read 24.00 and 24,00 in locales that write the other ([c92ef15](https://github.com/aholstenson/ecolect-js/commit/c92ef15d79dc1eb8073d410a38a57891d0d6ac46))
+* Read a week of a month such as "2nd week of jan" ([53087af](https://github.com/aholstenson/ecolect-js/commit/53087af36575951e2b33be71d513a0c02be6942e))
+* Read decimal and group separators from the locale ([22acfc9](https://github.com/aholstenson/ecolect-js/commit/22acfc97273ee6a6ffed312f3a6b7ec67d9f2b58))
+* Read English times written as 12.30 ([e2152a1](https://github.com/aholstenson/ecolect-js/commit/e2152a1e09914d2fdf525e02c0c5b81998049090))
+* Read parts of the day such as "after lunch" and "eod" ([8dadff6](https://github.com/aholstenson/ecolect-js/commit/8dadff6a825d6ddce7c5a28e53ac7dd501680754))
+* Read Swedish "ettusen" and ordinals such as "tvåhundrafemte" ([5297036](https://github.com/aholstenson/ecolect-js/commit/52970367c0e042ac70abd7807905bee1b1fd6ff1))
+* Read Swedish "nästa mars", "förra mars" and "5 jan -26" ([161d316](https://github.com/aholstenson/ecolect-js/commit/161d316c6681b081b65a1b08ff4bd35f000c4b93))
+* Read Swedish compound numbers such as "tvåhundratjugotre" ([af121ed](https://github.com/aholstenson/ecolect-js/commit/af121ed1c7cebe4a06349d7cba0fca483f28603d))
+* Read weekends and parts of a period like "mid january" ([d85dbc6](https://github.com/aholstenson/ecolect-js/commit/d85dbc655b7a8e91cbb3e9c8bd053fedd4b9e69c))
+
+
+### Bug Fixes
+
+* Count "two weeks before end of month" from the last day ([591e770](https://github.com/aholstenson/ecolect-js/commit/591e770c97f68a14d58b1253f1e03fac3fa56bbd))
+* Match Swedish words in single quotes or with a possessive ([a4b017e](https://github.com/aholstenson/ecolect-js/commit/a4b017e18c2842060c5d46e5dbb0650e78f7ec6d))
+* Read "1e10" and stop reading "1,5 2" as 1.52 in Swedish ([a5729d1](https://github.com/aholstenson/ecolect-js/commit/a5729d1df19fb64e106dd32c699c1b9028ceee6c))
+* Read "Thursday, Nov 12 2026" as a date without a time ([4ce15ed](https://github.com/aholstenson/ecolect-js/commit/4ce15edb4a941bdf862d4acd262ef63ab047af59))
+* Read Swedish "tjugo ett" as 21 instead of 201 ([303ca37](https://github.com/aholstenson/ecolect-js/commit/303ca3760be2beac20613a2f0ed3bc7022d9225f))
+* Start weeks on the day of the region when Intl has no week data ([58e744c](https://github.com/aholstenson/ecolect-js/commit/58e744ce68d925f63cf4eb6fe6fe514fee6c8561))
+* Stop matching Swedish phrases with "på" or "till" left out ([c2a6edb](https://github.com/aholstenson/ecolect-js/commit/c2a6edb150e59a8f36b88cc4b69d622cc5ec0cea))
+* **sv:** Read "för två år sedan" as two years ago ([32dd810](https://github.com/aholstenson/ecolect-js/commit/32dd81066daaae94ea285646765ac251c3fe942e))
+* **sv:** Read "om en kvart" as 15 minutes, not a quarter ([a4a00fe](https://github.com/aholstenson/ecolect-js/commit/a4a00fe3ee92857055deeb460c37c470f400b341))
+
 ## [0.8.0](https://github.com/aholstenson/ecolect-js/compare/v0.7.0-beta.6...v0.8.0) (2026-11-08)
 
 
