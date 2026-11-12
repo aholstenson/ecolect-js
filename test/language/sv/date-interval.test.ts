@@ -26,6 +26,43 @@ describe('Swedish', () => {
 			end: { year: 2027, month: 6, day: 30 }
 		});
 
+		// A weekend is a Saturday and a Sunday
+		test('i helgen', { now: new Date(2026, 10, 12), ...iso }, {
+			start: { year: 2026, month: 11, day: 14 },
+			end: { year: 2026, month: 11, day: 15 }
+		});
+
+		test('nästa helg', { now: new Date(2026, 10, 12), ...iso }, {
+			start: { year: 2026, month: 11, day: 21 },
+			end: { year: 2026, month: 11, day: 22 }
+		});
+
+		test('förra helgen', { now: new Date(2026, 10, 12), ...iso }, {
+			start: { year: 2026, month: 11, day: 7 },
+			end: { year: 2026, month: 11, day: 8 }
+		});
+
+		// A month has three parts, split by days
+		test('mitten av januari', { now: new Date(2026, 10, 12), ...iso }, {
+			start: { year: 2027, month: 1, day: 11 },
+			end: { year: 2027, month: 1, day: 21 }
+		});
+
+		test('sent i juni', { now: new Date(2026, 10, 12), ...iso }, {
+			start: { year: 2027, month: 6, day: 21 },
+			end: { year: 2027, month: 6, day: 30 }
+		});
+
+		test('tidigt nästa vecka', { now: new Date(2026, 10, 12), ...iso }, {
+			start: { year: 2026, month: 11, day: 16 },
+			end: { year: 2026, month: 11, day: 17 }
+		});
+
+		test('tidigt 2027', { now: new Date(2026, 10, 12), ...iso }, {
+			start: { year: 2027, month: 1, day: 1 },
+			end: { year: 2027, month: 4, day: 30 }
+		});
+
 		test('2018', {}, {
 			start: { year: 2018, month: 1, day: 1 },
 			end: { year: 2018, month: 12, day: 31 }

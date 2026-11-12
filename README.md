@@ -560,8 +560,8 @@ Capture a date representing a single day.
 
 Language         | Examples
 -----------------|-------------
-English          | `today`, `in 2 days`, `january 12th`, `2010-02-22`, `02/22/2010`, `first friday in 2020`, `thursday, november 12`, `2nd week of jan`
-Swedish          | `idag`, `om 2 dagar`, `12 januari`, `2010-02-22`, `första fredagen 2020`, `torsdag 12 november`, `andra veckan i januari`
+English          | `today`, `in 2 days`, `january 12th`, `2010-02-22`, `02/22/2010`, `first friday in 2020`, `thursday, november 12`, `2nd week of jan`, `the friday after next`, `this weekend`, `mid january`
+Swedish          | `idag`, `om 2 dagar`, `12 januari`, `2010-02-22`, `första fredagen 2020`, `torsdag 12 november`, `andra veckan i januari`, `nästnästa fredag`, `i helgen`, `mitten av januari`
 
 #### Returned value
 
@@ -617,8 +617,8 @@ Capture an interval between two dates.
 
 Language         | Examples
 -----------------|-------------
-English          | `today`, `this month`, `February to March`, `2018-01-01 to 2018-04-05`, `January 15th - 18th`, `2nd week of jan`
-Swedish          | `idag`, `denna månad`, `februari till mars`, `2018-01-01 till 2018-04-05`, `de senaste 7 dagarna`, `andra veckan i januari`
+English          | `today`, `this month`, `February to March`, `2018-01-01 to 2018-04-05`, `January 15th - 18th`, `2nd week of jan`, `next weekend`, `early next week`, `late 2027`, `week after next`
+Swedish          | `idag`, `denna månad`, `februari till mars`, `2018-01-01 till 2018-04-05`, `de senaste 7 dagarna`, `andra veckan i januari`, `nästa helg`, `tidigt nästa vecka`, `sent 2027`, `nästnästa vecka`
 
 A week of a month, such as `2nd week of jan` or `sista veckan i juni`, is a
 calendar week. The first week is the one with the first day of the month in
@@ -626,6 +626,19 @@ it, and the last week is the one with the last day in it. Only the days of the
 week that are in the month are part of the interval, so with weeks that start
 on Monday `first week of january 2027` is January 1st to 3rd. As a date it is
 the first of those days.
+
+A weekend is a Saturday and the Sunday after it. `this weekend` is the
+current weekend on a Saturday or a Sunday, and the next one on other days.
+`next weekend` is the weekend after `this weekend`, and `last weekend` is the
+one before it. As a date a weekend is its Saturday.
+
+`early`, `mid` and `late` pick one of three parts of a period. A year has
+parts of four months, so `early 2027` is January to April. A quarter has parts
+of one month. A month and a week are split by days. The early and the late
+part have a third of the days, rounded down, and the middle part has the rest.
+So `mid january` is January 11th to 21st, and `early next week` is the first
+two days of that week. As a date the middle part is its middle day, and the
+other parts are their first day.
 
 #### Returned value
 

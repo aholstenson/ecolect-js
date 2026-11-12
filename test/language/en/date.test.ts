@@ -1378,6 +1378,90 @@ describe('English', function() {
 			test('2nd week', thursday, { year: 2027, month: 1, day: 3 });
 		});
 
+		describe('Weekends', function() {
+			// A Thursday
+			const thursday = { now: new Date(2026, 10, 12) };
+
+			// A weekend is its Saturday as a single day
+			test('this weekend', thursday, { year: 2026, month: 11, day: 14 });
+
+			test('weekend', thursday, { year: 2026, month: 11, day: 14 });
+
+			test('the weekend', thursday, { year: 2026, month: 11, day: 14 });
+
+			test('on the weekend', thursday, { year: 2026, month: 11, day: 14 });
+
+			test('next weekend', thursday, { year: 2026, month: 11, day: 21 });
+
+			test('weekend after next', thursday, { year: 2026, month: 11, day: 28 });
+
+			test('last weekend', thursday, { year: 2026, month: 11, day: 7 });
+
+			// On a Saturday or a Sunday the weekend is the current one
+			test('this weekend', { now: new Date(2026, 10, 14) }, { year: 2026, month: 11, day: 14 });
+
+			test('this weekend', { now: new Date(2026, 10, 15) }, { year: 2026, month: 11, day: 14 });
+
+			test('last weekend', { now: new Date(2026, 10, 15) }, { year: 2026, month: 11, day: 7 });
+
+			test('next weekend', { now: new Date(2026, 10, 15) }, { year: 2026, month: 11, day: 21 });
+		});
+
+		describe('Parts of a period', function() {
+			// A Thursday
+			const thursday = { now: new Date(2026, 10, 12) };
+
+			// The middle part is its middle day, the other parts are their first day
+			test('mid january', thursday, { year: 2027, month: 1, day: 16 });
+
+			test('mid-march', thursday, { year: 2027, month: 3, day: 16 });
+
+			test('middle of the month', thursday, { year: 2026, month: 11, day: 15 });
+
+			test('mid month', thursday, { year: 2026, month: 11, day: 15 });
+
+			test('mid february 2027', thursday, { year: 2027, month: 2, day: 14 });
+
+			test('early january', thursday, { year: 2027, month: 1, day: 1 });
+
+			test('early in january', thursday, { year: 2027, month: 1, day: 1 });
+
+			test('late june', thursday, { year: 2027, month: 6, day: 21 });
+
+			test('late next month', thursday, { year: 2026, month: 12, day: 22 });
+
+			test('late this month', thursday, { year: 2026, month: 11, day: 21 });
+
+			test('early next week', thursday, { year: 2026, month: 11, day: 15 });
+
+			test('the middle of next week', thursday, { year: 2026, month: 11, day: 18 });
+
+			test('early 2027', thursday, { year: 2027, month: 1, day: 1 });
+
+			test('mid 2027', thursday, { year: 2027, month: 7, day: 1 });
+
+			test('late 2027', thursday, { year: 2027, month: 9, day: 1 });
+
+			test('late in the year', thursday, { year: 2026, month: 9, day: 1 });
+
+			// A day has no parts
+			test('early tomorrow', thursday, null);
+
+			test('mid friday', thursday, null);
+		});
+
+		describe('Day of week after next', function() {
+			// A Thursday
+			const thursday = { now: new Date(2026, 10, 12) };
+
+			// A week after the next such day
+			test('friday after next', thursday, { year: 2026, month: 11, day: 20 });
+
+			test('the friday after next', thursday, { year: 2026, month: 11, day: 20 });
+
+			test('monday after next', thursday, { year: 2026, month: 11, day: 23 });
+		});
+
 		describe('Edges of periods', function() {
 			// The edge is kept when another date is counted from it
 			test('two weeks before end of month', { now: tuesday }, {

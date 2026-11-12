@@ -2,6 +2,7 @@ import type { DayOfWeek } from 'datetime-types';
 
 import type { IntervalEdge } from './IntervalEdge.js';
 import type { Meridiem } from './Meridiem.js';
+import type { PeriodPart } from './periodParts.js';
 import type { Precision } from './Precision.js';
 import type { TimeRelationship } from './TimeRelationship.js';
 
@@ -24,6 +25,20 @@ export interface DateTimeData {
 	 * end, so -1 is the week with the last day of the month in it.
 	 */
 	weekOfMonth?: number;
+
+	/**
+	 * A weekend, counted in weeks from the current weekend. On a Saturday
+	 * or a Sunday the current weekend is the one those days are in, on other
+	 * days it is the next one. So 0 is this weekend, 1 is the weekend after
+	 * it and -1 is the weekend before it.
+	 */
+	weekend?: number;
+
+	/**
+	 * The part of the period that is asked for, such as the middle of a
+	 * month for `mid january`.
+	 */
+	periodPart?: PeriodPart;
 
 	/**
 	 * Day of week requested.

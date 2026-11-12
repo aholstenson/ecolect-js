@@ -81,6 +81,7 @@ function hasDate(r: DateTimeData): boolean {
 		|| typeof r.month !== 'undefined'
 		|| typeof r.day !== 'undefined'
 		|| typeof r.dayOfWeek !== 'undefined'
+		|| typeof r.weekend !== 'undefined'
 		|| typeof r.relativeYears !== 'undefined'
 		|| typeof r.relativeQuarters !== 'undefined'
 		|| typeof r.relativeWeeks !== 'undefined'

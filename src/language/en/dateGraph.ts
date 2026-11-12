@@ -14,6 +14,11 @@ import {
 	isMonth,
 	hasMonth,
 	hasMonthAndDay,
+	isPeriodWithParts,
+	withPeriodPart,
+	PeriodPart,
+	weekend,
+	dayOfWeekAfterNext,
 	isMonthWithoutWeek,
 	withWeekOfMonth,
 	LAST_WEEK_OF_MONTH,
@@ -127,6 +132,31 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ 'this', dayOfWeek ], v => nextDayOfWeek(v[0]))
 			.add([ 'next', dayOfWeek ], v => nextDayOfWeek(v[0]))
 			.add([ 'on', dayOfWeek ], v => nextDayOfWeek(v[0]))
+
+			// The Friday after next, a week after the next Friday
+			.add([ dayOfWeek, 'after next' ], v => dayOfWeekAfterNext(v[0]))
+			.add([ 'the', dayOfWeek, 'after next' ], v => dayOfWeekAfterNext(v[0]))
+
+			// Weekends, counted from the current or the next weekend
+			.add('weekend', () => weekend(0))
+			.add('the weekend', () => weekend(0))
+			.add('this weekend', () => weekend(0))
+			.add('next weekend', () => weekend(1))
+			.add('weekend after next', () => weekend(2))
+			.add('the weekend after next', () => weekend(2))
+			.add('last weekend', () => weekend(-1))
+			.add('previous weekend', () => weekend(-1))
+
+			/*
+			 * Parts of a period, such as early january, mid next week or
+			 * late 2027.
+			 */
+			.add([ 'early', GraphBuilder.result(isPeriodWithParts) ], v => withPeriodPart(v[0], PeriodPart.Early))
+			.add([ 'mid', GraphBuilder.result(isPeriodWithParts) ], v => withPeriodPart(v[0], PeriodPart.Mid))
+			.add([ 'mid', '-', GraphBuilder.result(isPeriodWithParts) ], v => withPeriodPart(v[0], PeriodPart.Mid))
+			.add([ 'middle of', GraphBuilder.result(isPeriodWithParts) ], v => withPeriodPart(v[0], PeriodPart.Mid))
+			.add([ 'the middle of', GraphBuilder.result(isPeriodWithParts) ], v => withPeriodPart(v[0], PeriodPart.Mid))
+			.add([ 'late', GraphBuilder.result(isPeriodWithParts) ], v => withPeriodPart(v[0], PeriodPart.Late))
 
 			// Last Monday or Previous Tuesday
 			.add([ 'last', dayOfWeek ], v => previousDayOfWeek(v[0]))
@@ -338,12 +368,21 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			[ 'year', thisYear ]
 		];
 
+		// The parts of the current period, such as mid month or late in the year
+		for(const [ name, current ] of currentPeriods) {
+			builder
+				.add('early in the ' + name, (v, e) => withPeriodPart(current(v, e), PeriodPart.Early))
+				.add('mid ' + name, (v, e) => withPeriodPart(current(v, e), PeriodPart.Mid))
+				.add('late in the ' + name, (v, e) => withPeriodPart(current(v, e), PeriodPart.Late));
+		}
+
 		for(const [ name, current ] of currentPeriods) {
 			for(const noun of [ name, 'the ' + name ]) {
 				builder
 					.add('start of ' + noun, (v, e) => startOf(current(v, e)))
 					.add('beginning of ' + noun, (v, e) => startOf(current(v, e)))
 					.add('first day of ' + noun, (v, e) => startOf(current(v, e)))
+					.add('middle of ' + noun, (v, e) => withPeriodPart(current(v, e), PeriodPart.Mid))
 					.add('end of ' + noun, (v, e) => endOf(current(v, e)))
 					.add('last day of ' + noun, (v, e) => endOf(current(v, e)));
 			}

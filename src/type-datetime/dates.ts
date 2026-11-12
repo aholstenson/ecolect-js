@@ -24,7 +24,8 @@ import {
 	startOfQuarter,
 	startOfWeek,
 	startOfMonth,
-	lastDayOfMonth
+	lastDayOfMonth,
+	differenceInCalendarDays
 } from 'date-fns';
 import type { DayOfWeek } from 'datetime-types';
 import { LocalDate } from 'datetime-types';
@@ -38,6 +39,7 @@ import { toStart, toEnd } from './intervals.js';
 import { combine, isRelative } from './matching.js';
 import { MonthDayOrder } from './MonthDayOrder.js';
 import { Period } from './Period.js';
+import { partOfPeriod, PeriodPart } from './periodParts.js';
 import { TimeRelationship } from './TimeRelationship.js';
 import { toDateFnsDay, toWeekOptions } from './weekOptions.js';
 
@@ -250,6 +252,32 @@ export function nextDayOfWeek(day: DayOfWeek): DateTimeData {
  */
 export function previousDayOfWeek(day: DayOfWeek): DateTimeData {
 	return { dayOfWeek: day, relationToCurrent: TimeRelationship.Past };
+}
+
+/**
+ * Describe the occurrence of a day of week that is a week after the next
+ * one, as in `the friday after next`.
+ *
+ * @param day -
+ *   the day of week
+ * @returns
+ *   data describing the day
+ */
+export function dayOfWeekAfterNext(day: DayOfWeek): DateTimeData {
+	return { dayOfWeek: day, intervalAdjustment: 7 };
+}
+
+/**
+ * Describe a weekend, counted in weeks from the current weekend.
+ *
+ * @param weeks -
+ *   0 for this weekend, 1 for the weekend after it and -1 for the weekend
+ *   before it
+ * @returns
+ *   data describing the weekend
+ */
+export function weekend(weeks: number): DateTimeData {
+	return { weekend: weeks };
 }
 
 /**
@@ -731,7 +759,37 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 		period = Period.Day;
 	}
 
-	if(r.intervalEdge === IntervalEdge.End) {
+	if(typeof r.weekend !== 'undefined') {
+		/*
+		 * A weekend is a Saturday and the Sunday after it. As a single day
+		 * it is the Saturday, and the end of it is the Sunday.
+		 */
+		const day = getDay(time);
+		time = addDays(time, (day === 0 ? -1 : 6 - day) + r.weekend * 7);
+		if(r.intervalEdge === IntervalEdge.End) {
+			time = addDays(time, 1);
+		}
+
+		period = Period.Day;
+	}
+
+	if(typeof r.periodPart !== 'undefined') {
+		/*
+		 * A part of the period, such as the middle of a month. As a single
+		 * day the middle part is its middle day, and the other parts are
+		 * their first day.
+		 */
+		const part = partOfPeriod(time, period, r.periodPart, options);
+		if(! part) return null;
+
+		if(r.intervalEdge === IntervalEdge.End) {
+			time = part.end;
+		} else if(r.intervalEdge === IntervalEdge.Start || r.periodPart !== PeriodPart.Mid) {
+			time = part.start;
+		} else {
+			time = addDays(part.start, Math.floor(differenceInCalendarDays(part.end, part.start) / 2));
+		}
+	} else if(r.intervalEdge === IntervalEdge.End) {
 		// If the end of the period has been requested
 		time = toEnd(time, period, options);
 	} else if(r.intervalEdge === IntervalEdge.Start) {

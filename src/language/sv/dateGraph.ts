@@ -12,6 +12,11 @@ import {
 	isMonth,
 	hasMonth,
 	hasMonthAndDay,
+	isPeriodWithParts,
+	withPeriodPart,
+	PeriodPart,
+	weekend,
+	dayOfWeekAfterNext,
 	isMonthWithoutWeek,
 	withWeekOfMonth,
 	LAST_WEEK_OF_MONTH,
@@ -161,6 +166,30 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ 'nästa', dayOfWeek ], v => nextDayOfWeek(v[0]))
 			.add([ 'kommande', dayOfWeek ], v => nextDayOfWeek(v[0]))
 			.add([ 'på', dayOfWeek ], v => nextDayOfWeek(v[0]))
+
+			// Nästnästa fredag, a week after the next Friday
+			.add([ 'nästnästa', dayOfWeek ], v => dayOfWeekAfterNext(v[0]))
+
+			// Weekends, counted from the current or the next weekend
+			.add('helgen', () => weekend(0))
+			.add('i helgen', () => weekend(0))
+			.add('denna helg', () => weekend(0))
+			.add('den här helgen', () => weekend(0))
+			.add('veckoslutet', () => weekend(0))
+			.add('nästa helg', () => weekend(1))
+			.add('nästnästa helg', () => weekend(2))
+			.add('förra helgen', () => weekend(-1))
+			.add('föregående helg', () => weekend(-1))
+
+			/*
+			 * Parts of a period, such as mitten av januari, tidigt nästa
+			 * vecka or sent 2027.
+			 */
+			.add([ 'tidigt', GraphBuilder.result(isPeriodWithParts) ], v => withPeriodPart(v[0], PeriodPart.Early))
+			.add([ 'mitten av', GraphBuilder.result(isPeriodWithParts) ], v => withPeriodPart(v[0], PeriodPart.Mid))
+			.add([ 'i mitten av', GraphBuilder.result(isPeriodWithParts) ], v => withPeriodPart(v[0], PeriodPart.Mid))
+			.add([ 'mitten på', GraphBuilder.result(isPeriodWithParts) ], v => withPeriodPart(v[0], PeriodPart.Mid))
+			.add([ 'sent', GraphBuilder.result(isPeriodWithParts) ], v => withPeriodPart(v[0], PeriodPart.Late))
 
 			// Förra måndagen or föregående tisdag
 			.add([ 'förra', dayOfWeek ], v => previousDayOfWeek(v[0]))
@@ -377,6 +406,16 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			[ 'kvartalet', thisQuarter ],
 			[ 'året', thisYear ]
 		];
+
+		// The parts of the current period, such as mitten av månaden
+		for(const [ noun, current ] of currentPeriods) {
+			builder
+				.add('tidigt i ' + noun, (v, e) => withPeriodPart(current(v, e), PeriodPart.Early))
+				.add('mitten av ' + noun, (v, e) => withPeriodPart(current(v, e), PeriodPart.Mid))
+				.add('i mitten av ' + noun, (v, e) => withPeriodPart(current(v, e), PeriodPart.Mid))
+				.add('mitten på ' + noun, (v, e) => withPeriodPart(current(v, e), PeriodPart.Mid))
+				.add('sent i ' + noun, (v, e) => withPeriodPart(current(v, e), PeriodPart.Late));
+		}
 
 		for(const [ noun, current ] of currentPeriods) {
 			for(const prefix of START_OF) {

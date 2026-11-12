@@ -33,6 +33,86 @@ describe('English', () => {
 			end: { year: 2026, month: 11, day: 30 }
 		});
 
+		// A weekend is a Saturday and a Sunday
+		test('this weekend', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2026, month: 11, day: 14 },
+			end: { year: 2026, month: 11, day: 15 }
+		});
+
+		test('next weekend', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2026, month: 11, day: 21 },
+			end: { year: 2026, month: 11, day: 22 }
+		});
+
+		test('last weekend', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2026, month: 11, day: 7 },
+			end: { year: 2026, month: 11, day: 8 }
+		});
+
+		test('since last weekend', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2026, month: 11, day: 7 },
+			end: { year: 2026, month: 11, day: 12 }
+		});
+
+		// A month has three parts, split by days
+		test('early january', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2027, month: 1, day: 1 },
+			end: { year: 2027, month: 1, day: 10 }
+		});
+
+		test('mid january', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2027, month: 1, day: 11 },
+			end: { year: 2027, month: 1, day: 21 }
+		});
+
+		test('late january', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2027, month: 1, day: 22 },
+			end: { year: 2027, month: 1, day: 31 }
+		});
+
+		test('mid february 2027', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2027, month: 2, day: 10 },
+			end: { year: 2027, month: 2, day: 19 }
+		});
+
+		// A week has parts of two, three and two days
+		test('early next week', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2026, month: 11, day: 15 },
+			end: { year: 2026, month: 11, day: 16 }
+		});
+
+		test('late next week', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2026, month: 11, day: 20 },
+			end: { year: 2026, month: 11, day: 21 }
+		});
+
+		// A year has parts of four months and a quarter has parts of one month
+		test('early 2027', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2027, month: 1, day: 1 },
+			end: { year: 2027, month: 4, day: 30 }
+		});
+
+		test('mid 2027', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2027, month: 5, day: 1 },
+			end: { year: 2027, month: 8, day: 31 }
+		});
+
+		test('late 2027', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2027, month: 9, day: 1 },
+			end: { year: 2027, month: 12, day: 31 }
+		});
+
+		test('mid q2 2027', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2027, month: 5, day: 1 },
+			end: { year: 2027, month: 5, day: 31 }
+		});
+
+		// Parts of two periods give one interval, read in the current year
+		test('early january to mid march', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2026, month: 1, day: 1 },
+			end: { year: 2026, month: 3, day: 21 }
+		});
+
 		test('2018', {}, {
 			start: {
 				year: 2018,

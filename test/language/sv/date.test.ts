@@ -143,6 +143,62 @@ describe('Swedish', function() {
 			test('sista veckan i månaden', thursday, { year: 2026, month: 11, day: 30 });
 		});
 
+		describe('Weekends', function() {
+			// A Thursday
+			const thursday = { now: new Date(2026, 10, 12), weekStartsOn: 1, firstWeekContainsDate: 4 };
+
+			// A weekend is its Saturday as a single day
+			test('i helgen', thursday, { year: 2026, month: 11, day: 14 });
+
+			test('helgen', thursday, { year: 2026, month: 11, day: 14 });
+
+			test('veckoslutet', thursday, { year: 2026, month: 11, day: 14 });
+
+			test('nästa helg', thursday, { year: 2026, month: 11, day: 21 });
+
+			test('nästnästa helg', thursday, { year: 2026, month: 11, day: 28 });
+
+			test('förra helgen', thursday, { year: 2026, month: 11, day: 7 });
+
+			// On a Saturday or a Sunday the weekend is the current one
+			test('i helgen', { ...thursday, now: new Date(2026, 10, 15) }, { year: 2026, month: 11, day: 14 });
+		});
+
+		describe('Parts of a period', function() {
+			// A Thursday
+			const thursday = { now: new Date(2026, 10, 12), weekStartsOn: 1, firstWeekContainsDate: 4 };
+
+			// The middle part is its middle day, the other parts are their first day
+			test('mitten av januari', thursday, { year: 2027, month: 1, day: 16 });
+
+			test('i mitten av månaden', thursday, { year: 2026, month: 11, day: 15 });
+
+			test('mitten på veckan', thursday, { year: 2026, month: 11, day: 12 });
+
+			test('tidigt i januari', thursday, { year: 2027, month: 1, day: 1 });
+
+			test('sent i juni', thursday, { year: 2027, month: 6, day: 21 });
+
+			test('sent nästa månad', thursday, { year: 2026, month: 12, day: 22 });
+
+			test('tidigt nästa vecka', thursday, { year: 2026, month: 11, day: 16 });
+
+			test('mitten av nästa vecka', thursday, { year: 2026, month: 11, day: 19 });
+
+			test('tidigt 2027', thursday, { year: 2027, month: 1, day: 1 });
+
+			test('sent i år', thursday, { year: 2026, month: 9, day: 1 });
+		});
+
+		describe('Day of week after next', function() {
+			// A Thursday
+			const thursday = { now: new Date(2026, 10, 12), weekStartsOn: 1, firstWeekContainsDate: 4 };
+
+			test('nästnästa fredag', thursday, { year: 2026, month: 11, day: 20 });
+
+			test('nästnästa måndag', thursday, { year: 2026, month: 11, day: 23 });
+		});
+
 		describe('Named month relative to now', function() {
 			const november = { now: new Date(2026, 10, 8) };
 
