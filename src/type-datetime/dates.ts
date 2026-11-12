@@ -281,6 +281,21 @@ export function weekend(weeks: number): DateTimeData {
 }
 
 /**
+ * Describe the next weekend, which follows the rule of the next day of
+ * week: it is the next one that starts, not counting the current one. On a
+ * Saturday or a Sunday this is the weekend of the next week, on other days
+ * it is the same weekend as `weekend(0)`.
+ *
+ * @param weeks -
+ *   weeks to add, 0 for the next weekend and 1 for the weekend after next
+ * @returns
+ *   data describing the weekend
+ */
+export function nextWeekend(weeks = 0): DateTimeData {
+	return { weekend: weeks, relationToCurrent: TimeRelationship.Future };
+}
+
+/**
  * Ordinal used with `dayOfWeek` to describe the last occurrence of a day of
  * week within the described period, such as the last Friday of a month.
  */
@@ -765,7 +780,11 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 		 * it is the Saturday, and the end of it is the Sunday.
 		 */
 		const day = getDay(time);
-		time = addDays(time, (day === 0 ? -1 : 6 - day) + r.weekend * 7);
+		const inWeekend = day === 0 || day === 6;
+
+		// The next weekend is never the one that the current day is in
+		const weeks = r.weekend + (inWeekend && relationToCurrent === TimeRelationship.Future ? 1 : 0);
+		time = addDays(time, (day === 0 ? -1 : 6 - day) + weeks * 7);
 		if(r.intervalEdge === IntervalEdge.End) {
 			time = addDays(time, 1);
 		}

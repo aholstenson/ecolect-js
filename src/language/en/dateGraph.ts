@@ -18,6 +18,7 @@ import {
 	withPeriodPart,
 	PeriodPart,
 	weekend,
+	nextWeekend,
 	dayOfWeekAfterNext,
 	isMonthWithoutWeek,
 	withWeekOfMonth,
@@ -137,13 +138,16 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ dayOfWeek, 'after next' ], v => dayOfWeekAfterNext(v[0]))
 			.add([ 'the', dayOfWeek, 'after next' ], v => dayOfWeekAfterNext(v[0]))
 
-			// Weekends, counted from the current or the next weekend
+			/*
+			 * Weekends. The next weekend follows the rule of the next Friday,
+			 * so it is the first weekend that starts after the current day.
+			 */
 			.add('weekend', () => weekend(0))
 			.add('the weekend', () => weekend(0))
 			.add('this weekend', () => weekend(0))
-			.add('next weekend', () => weekend(1))
-			.add('weekend after next', () => weekend(2))
-			.add('the weekend after next', () => weekend(2))
+			.add('next weekend', () => nextWeekend())
+			.add('weekend after next', () => nextWeekend(1))
+			.add('the weekend after next', () => nextWeekend(1))
 			.add('last weekend', () => weekend(-1))
 			.add('previous weekend', () => weekend(-1))
 

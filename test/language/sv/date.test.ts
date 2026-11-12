@@ -1,6 +1,6 @@
 import { dateGraph } from '../../../src/language/sv/dateGraph.js';
 import { SwedishLanguage } from '../../../src/language/sv/SwedishLanguage.js';
-import { mapDate } from '../../../src/type-datetime/index.js';
+import { mapDate, WeekParts } from '../../../src/type-datetime/index.js';
 import { testRunner } from '../helpers.js';
 
 const test = testRunner(new SwedishLanguage(), dateGraph, mapDate);
@@ -154,14 +154,16 @@ describe('Swedish', function() {
 
 			test('veckoslutet', thursday, { year: 2026, month: 11, day: 14 });
 
-			test('nästa helg', thursday, { year: 2026, month: 11, day: 21 });
+			test('nästa helg', thursday, { year: 2026, month: 11, day: 14 });
 
-			test('nästnästa helg', thursday, { year: 2026, month: 11, day: 28 });
+			test('nästnästa helg', thursday, { year: 2026, month: 11, day: 21 });
 
 			test('förra helgen', thursday, { year: 2026, month: 11, day: 7 });
 
 			// On a Saturday or a Sunday the weekend is the current one
 			test('i helgen', { ...thursday, now: new Date(2026, 10, 15) }, { year: 2026, month: 11, day: 14 });
+
+			test('nästa helg', { ...thursday, now: new Date(2026, 10, 15) }, { year: 2026, month: 11, day: 21 });
 		});
 
 		describe('Parts of a period', function() {
@@ -173,7 +175,7 @@ describe('Swedish', function() {
 
 			test('i mitten av månaden', thursday, { year: 2026, month: 11, day: 15 });
 
-			test('mitten på veckan', thursday, { year: 2026, month: 11, day: 12 });
+			test('mitten på veckan', thursday, { year: 2026, month: 11, day: 11 });
 
 			test('tidigt i januari', thursday, { year: 2027, month: 1, day: 1 });
 
@@ -183,7 +185,12 @@ describe('Swedish', function() {
 
 			test('tidigt nästa vecka', thursday, { year: 2026, month: 11, day: 16 });
 
-			test('mitten av nästa vecka', thursday, { year: 2026, month: 11, day: 19 });
+			test('mitten av nästa vecka', thursday, { year: 2026, month: 11, day: 18 });
+
+			test('sent nästa vecka', thursday, { year: 2026, month: 11, day: 19 });
+
+			// The parts of a week can be in all seven days
+			test('sent nästa vecka', { ...thursday, weekParts: WeekParts.FullWeek }, { year: 2026, month: 11, day: 21 });
 
 			test('tidigt 2027', thursday, { year: 2027, month: 1, day: 1 });
 

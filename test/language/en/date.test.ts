@@ -2,7 +2,7 @@
 import { dateGraph } from '../../../src/language/en/dateGraph.js';
 import { EnglishLanguage } from '../../../src/language/en/EnglishLanguage.js';
 import { en } from '../../../src/language/en/index.js';
-import { DateOrder, mapDate } from '../../../src/type-datetime/index.js';
+import { DateOrder, mapDate, WeekParts } from '../../../src/type-datetime/index.js';
 import { dateValue } from '../../../src/values/index.js';
 
 import { testRunner } from './helpers.js';
@@ -1382,7 +1382,7 @@ describe('English', function() {
 			// A Thursday
 			const thursday = { now: new Date(2026, 10, 12) };
 
-			// A weekend is its Saturday as a single day
+			// A weekend is its Saturday as a single day. The next weekend is the first one that starts after the current day
 			test('this weekend', thursday, { year: 2026, month: 11, day: 14 });
 
 			test('weekend', thursday, { year: 2026, month: 11, day: 14 });
@@ -1391,9 +1391,9 @@ describe('English', function() {
 
 			test('on the weekend', thursday, { year: 2026, month: 11, day: 14 });
 
-			test('next weekend', thursday, { year: 2026, month: 11, day: 21 });
+			test('next weekend', thursday, { year: 2026, month: 11, day: 14 });
 
-			test('weekend after next', thursday, { year: 2026, month: 11, day: 28 });
+			test('weekend after next', thursday, { year: 2026, month: 11, day: 21 });
 
 			test('last weekend', thursday, { year: 2026, month: 11, day: 7 });
 
@@ -1405,6 +1405,10 @@ describe('English', function() {
 			test('last weekend', { now: new Date(2026, 10, 15) }, { year: 2026, month: 11, day: 7 });
 
 			test('next weekend', { now: new Date(2026, 10, 15) }, { year: 2026, month: 11, day: 21 });
+
+			test('next weekend', { now: new Date(2026, 10, 14) }, { year: 2026, month: 11, day: 21 });
+
+			test('weekend after next', { now: new Date(2026, 10, 15) }, { year: 2026, month: 11, day: 28 });
 		});
 
 		describe('Parts of a period', function() {
@@ -1432,7 +1436,14 @@ describe('English', function() {
 
 			test('late this month', thursday, { year: 2026, month: 11, day: 21 });
 
-			test('early next week', thursday, { year: 2026, month: 11, day: 15 });
+			test('early next week', thursday, { year: 2026, month: 11, day: 16 });
+
+			test('late next week', thursday, { year: 2026, month: 11, day: 19 });
+
+			// The parts of a week can be in all seven days
+			test('early next week', { ...thursday, weekParts: WeekParts.FullWeek }, { year: 2026, month: 11, day: 15 });
+
+			test('late next week', { ...thursday, weekParts: WeekParts.FullWeek }, { year: 2026, month: 11, day: 20 });
 
 			test('the middle of next week', thursday, { year: 2026, month: 11, day: 18 });
 

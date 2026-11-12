@@ -2,7 +2,7 @@
 import { dateIntervalGraph } from '../../../src/language/en/dateIntervalGraph.js';
 import { EnglishLanguage } from '../../../src/language/en/EnglishLanguage.js';
 import { en } from '../../../src/language/en/index.js';
-import { mapDateInterval } from '../../../src/type-datetime/index.js';
+import { mapDateInterval, WeekParts } from '../../../src/type-datetime/index.js';
 import { dateIntervalValue, dateValue } from '../../../src/values/index.js';
 
 import { testRunner } from './helpers.js';
@@ -40,8 +40,8 @@ describe('English', () => {
 		});
 
 		test('next weekend', { now: new Date(2026, 10, 12) }, {
-			start: { year: 2026, month: 11, day: 21 },
-			end: { year: 2026, month: 11, day: 22 }
+			start: { year: 2026, month: 11, day: 14 },
+			end: { year: 2026, month: 11, day: 15 }
 		});
 
 		test('last weekend', { now: new Date(2026, 10, 12) }, {
@@ -75,13 +75,29 @@ describe('English', () => {
 			end: { year: 2027, month: 2, day: 19 }
 		});
 
-		// A week has parts of two, three and two days
+		// The parts of a week are in the work days
 		test('early next week', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2026, month: 11, day: 16 },
+			end: { year: 2026, month: 11, day: 17 }
+		});
+
+		test('mid next week', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2026, month: 11, day: 18 },
+			end: { year: 2026, month: 11, day: 18 }
+		});
+
+		test('late next week', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2026, month: 11, day: 19 },
+			end: { year: 2026, month: 11, day: 20 }
+		});
+
+		// With all seven days a week has parts of two, three and two days
+		test('early next week', { now: new Date(2026, 10, 12), weekParts: WeekParts.FullWeek }, {
 			start: { year: 2026, month: 11, day: 15 },
 			end: { year: 2026, month: 11, day: 16 }
 		});
 
-		test('late next week', { now: new Date(2026, 10, 12) }, {
+		test('late next week', { now: new Date(2026, 10, 12), weekParts: WeekParts.FullWeek }, {
 			start: { year: 2026, month: 11, day: 20 },
 			end: { year: 2026, month: 11, day: 21 }
 		});

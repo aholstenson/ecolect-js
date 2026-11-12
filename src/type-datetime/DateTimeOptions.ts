@@ -3,6 +3,7 @@ import type { DayOfWeek } from 'datetime-types';
 import type { DateOrder } from './DateOrder.js';
 import type { DayPartHours } from './dayParts.js';
 import type { MonthDayOrder } from './MonthDayOrder.js';
+import type { WeekParts } from './periodParts.js';
 
 /**
  * Options that can be used with date and times.
@@ -65,4 +66,11 @@ export interface DateTimeOptions {
 	 * default hour.
 	 */
 	dayParts?: Partial<DayPartHours>;
+
+	/**
+	 * The days that the parts of a week are taken from, as in
+	 * `early next week` and `late next week`. Defaults to the work days,
+	 * Monday to Friday, so that `late next week` is Thursday and Friday.
+	 */
+	weekParts?: WeekParts;
 }

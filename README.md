@@ -417,6 +417,7 @@ Option                  | Default             | Description
 `weekStartsOn`          | From the locale     | The day the week starts on
 `firstWeekContainsDate` | From the locale     | The day of January which is always in the first week of the year
 `dayParts`              | See below           | The hours of the named parts of the day, such as `{ morning: 8, endOfDay: 18 }`
+`weekParts`             | `work-week`         | The days that `early`, `mid` and `late` pick from in a week: `work-week` or `full-week`
 `decimalSeparator`      | From the locale     | The character that separates the fraction of a number, `.` or `,`, or a list of them. The first one is used to write numbers
 `groupSeparator`        | From the locale     | The character that groups the digits of a number, `,` or `.`, or a list of them. A space can always group digits
 `numberSeparators`      | `auto`              | How to read the one of `.` and `,` that the locale does not use for fractions: `strict`, `auto` or `lenient`
@@ -629,16 +630,24 @@ the first of those days.
 
 A weekend is a Saturday and the Sunday after it. `this weekend` is the
 current weekend on a Saturday or a Sunday, and the next one on other days.
-`next weekend` is the weekend after `this weekend`, and `last weekend` is the
-one before it. As a date a weekend is its Saturday.
+`next weekend` follows the rule of `next friday`: it is the first weekend that
+starts after the current day. On a weekday this is the same weekend as
+`this weekend`, and on a Saturday or a Sunday it is the weekend of the next
+week. `last weekend` is the weekend before `this weekend`. As a date a weekend
+is its Saturday.
 
 `early`, `mid` and `late` pick one of three parts of a period. A year has
 parts of four months, so `early 2027` is January to April. A quarter has parts
-of one month. A month and a week are split by days. The early and the late
-part have a third of the days, rounded down, and the middle part has the rest.
-So `mid january` is January 11th to 21st, and `early next week` is the first
-two days of that week. As a date the middle part is its middle day, and the
-other parts are their first day.
+of one month. A month is split by days. The early and the late part have a
+third of the days, rounded down, and the middle part has the rest. So
+`mid january` is January 11th to 21st. As a date the middle part is its middle
+day, and the other parts are their first day.
+
+The parts of a week are in the work days, so `early next week` is Monday and
+Tuesday, `mid next week` is Wednesday and `late next week` is Thursday and
+Friday. Set `weekParts` to `full-week` to use all seven days. The early part
+is then the first two days of the week, the middle part is the next three
+days and the late part is the last two days.
 
 #### Returned value
 

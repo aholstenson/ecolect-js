@@ -16,6 +16,7 @@ import {
 	withPeriodPart,
 	PeriodPart,
 	weekend,
+	nextWeekend,
 	dayOfWeekAfterNext,
 	isMonthWithoutWeek,
 	withWeekOfMonth,
@@ -170,14 +171,18 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			// Nästnästa fredag, a week after the next Friday
 			.add([ 'nästnästa', dayOfWeek ], v => dayOfWeekAfterNext(v[0]))
 
-			// Weekends, counted from the current or the next weekend
+			/*
+			 * Weekends. Nästa helg follows the rule of nästa fredag, so it is
+			 * the first weekend that starts after the current day.
+			 */
 			.add('helgen', () => weekend(0))
 			.add('i helgen', () => weekend(0))
 			.add('denna helg', () => weekend(0))
 			.add('den här helgen', () => weekend(0))
 			.add('veckoslutet', () => weekend(0))
-			.add('nästa helg', () => weekend(1))
-			.add('nästnästa helg', () => weekend(2))
+			.add('nästa helg', () => nextWeekend())
+			.add('kommande helg', () => nextWeekend())
+			.add('nästnästa helg', () => nextWeekend(1))
 			.add('förra helgen', () => weekend(-1))
 			.add('föregående helg', () => weekend(-1))
 

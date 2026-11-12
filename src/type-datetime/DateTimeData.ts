@@ -30,7 +30,8 @@ export interface DateTimeData {
 	 * A weekend, counted in weeks from the current weekend. On a Saturday
 	 * or a Sunday the current weekend is the one those days are in, on other
 	 * days it is the next one. So 0 is this weekend, 1 is the weekend after
-	 * it and -1 is the weekend before it.
+	 * it and -1 is the weekend before it. With a relation to the future the
+	 * current weekend is not counted, as for `next weekend`.
 	 */
 	weekend?: number;
 

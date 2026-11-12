@@ -33,8 +33,8 @@ describe('Swedish', () => {
 		});
 
 		test('nästa helg', { now: new Date(2026, 10, 12), ...iso }, {
-			start: { year: 2026, month: 11, day: 21 },
-			end: { year: 2026, month: 11, day: 22 }
+			start: { year: 2026, month: 11, day: 14 },
+			end: { year: 2026, month: 11, day: 15 }
 		});
 
 		test('förra helgen', { now: new Date(2026, 10, 12), ...iso }, {

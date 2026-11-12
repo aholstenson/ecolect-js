@@ -1,4 +1,4 @@
-import { addDays, addMonths, differenceInCalendarDays, startOfDay } from 'date-fns';
+import { addDays, addMonths, differenceInCalendarDays, getDay, startOfDay } from 'date-fns';
 
 import type { DateTimeData } from './DateTimeData.js';
 import type { DateTimeOptions } from './DateTimeOptions.js';
@@ -15,6 +15,25 @@ export enum PeriodPart {
 	Mid = 'mid',
 
 	Late = 'late'
+}
+
+/**
+ * The days that the parts of a week are taken from.
+ */
+export enum WeekParts {
+	/**
+	 * The parts are in the work days, Monday to Friday. The early part is
+	 * Monday and Tuesday, the middle part is Wednesday and the late part is
+	 * Thursday and Friday.
+	 */
+	WorkWeek = 'work-week',
+
+	/**
+	 * The parts are in all seven days. The early part is the first two days
+	 * of the week, the middle part is the next three days and the late part
+	 * is the last two days.
+	 */
+	FullWeek = 'full-week'
 }
 
 /**
@@ -61,10 +80,13 @@ export function withPeriodPart(v: DateTimeData, part: PeriodPart): DateTimeData 
  * Get the first and the last day of a part of a period.
  *
  * A year has parts of four months and a quarter has parts of one month. A
- * month and a week are split by days. The early and the late part have a
- * third of the days, rounded down, and the middle part has the rest. So a
- * month of 31 days is the 1st to the 10th, the 11th to the 21st and the 22nd
- * to the 31st.
+ * month is split by days. The early and the late part have a third of the
+ * days, rounded down, and the middle part has the rest. So a month of 31
+ * days is the 1st to the 10th, the 11th to the 21st and the 22nd to the
+ * 31st.
+ *
+ * A week is split as the `weekParts` option says. Without the option the
+ * parts are in the work days, Monday to Friday.
  *
  * @param time -
  *   a time in the period
@@ -92,6 +114,20 @@ export function partOfPeriod(
 		const months = period === Period.Year ? 4 : 1;
 		midStart = addMonths(start, months);
 		lateStart = addMonths(start, months * 2);
+	} else if(period === Period.Week && options.weekParts !== WeekParts.FullWeek) {
+		// Monday and Tuesday, Wednesday, Thursday and Friday
+		const monday = addDays(start, (8 - getDay(start)) % 7);
+		midStart = addDays(monday, 2);
+		lateStart = addDays(monday, 3);
+
+		switch(part) {
+			case PeriodPart.Early:
+				return { start: monday, end: addDays(monday, 1) };
+			case PeriodPart.Mid:
+				return { start: midStart, end: midStart };
+			default:
+				return { start: lateStart, end: addDays(monday, 4) };
+		}
 	} else if(period === Period.Month || period === Period.Week) {
 		const days = differenceInCalendarDays(end, start) + 1;
 		const third = Math.floor(days / 3);
