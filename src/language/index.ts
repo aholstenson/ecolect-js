@@ -5,5 +5,6 @@ export * from './LanguageOptions.js';
 export * from './AbstractLanguage.js';
 export * from './LocaleSettings.js';
 export * from './resolveLocale.js';
+export * from './runtimeLocale.js';
 export * from './Vocabulary.js';
 export * from './vocabularyTokenizer.js';

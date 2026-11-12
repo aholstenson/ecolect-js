@@ -347,7 +347,28 @@ const settings = resolveLocale('en-GB');
 ```
 
 English reads expressions as `en-US` when no locale is given, and Swedish reads
-them as `sv-SE`.
+them as `sv-SE`. The locale of the user is not read on its own, so that a
+match gives the same result on every machine.
+
+To follow the settings of the user, such as the day that weeks start on, get
+the locale from the JavaScript runtime with `runtimeLocale`:
+
+```javascript
+import { runtimeLocale } from 'ecolect/language';
+import { english } from 'ecolect/language/en';
+
+const matcher = dateValue().matcher(english(runtimeLocale('en')));
+```
+
+`runtimeLocale` reads the default locale of `Intl` first and then the
+languages of the browser. It returns the first one in the given language.
+When none is in the language, it uses the region of the first locale, so an
+app in English for a user with `sv-SE` is read as `en-SE`. A locale with a
+Unicode extension keeps it, so `en-US-u-fw-mon` starts weeks on Monday.
+
+A web view can report less than the operating system knows. When the runtime
+only reports `en-US` for a user with another region, read the setting in the
+native part of the app and set `weekStartsOn`, or the locale, directly.
 
 The locale also decides how numbers are written. `en-US` reads `1,000.5`,
 while `en-ZA` reads `1 000,5` and `en-DE` reads `1.000,5`. A space can group
