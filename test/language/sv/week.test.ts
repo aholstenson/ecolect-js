@@ -35,6 +35,16 @@ describe('Swedish', function() {
 			end: { year: 2018, month: 1, day: 7 }
 		});
 
+		test('nästnästa vecka', { now: new Date(2018, 0, 10), ...iso }, {
+			start: { year: 2018, month: 1, day: 22 },
+			end: { year: 2018, month: 1, day: 28 }
+		});
+
+		test('veckan efter nästa', { now: new Date(2018, 0, 10), ...iso }, {
+			start: { year: 2018, month: 1, day: 22 },
+			end: { year: 2018, month: 1, day: 28 }
+		});
+
 		test('nästa vecka', { now: new Date(2018, 0, 10), ...iso }, {
 			start: { year: 2018, month: 1, day: 15 },
 			end: { year: 2018, month: 1, day: 21 }

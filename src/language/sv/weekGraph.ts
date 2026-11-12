@@ -5,6 +5,7 @@ import {
 
 	thisWeek,
 	nextWeek,
+	weekAfterNext,
 	previousWeek
 } from '../../type-datetime/index.js';
 import type { OrdinalData } from '../../type-numbers/index.js';
@@ -35,6 +36,8 @@ export const weekGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ 'den här veckan' ], thisWeek)
 			.add([ 'innevarande vecka' ], thisWeek)
 			.add([ 'nästa vecka' ], nextWeek)
+			.add([ 'nästnästa vecka' ], weekAfterNext)
+			.add([ 'veckan efter nästa' ], weekAfterNext)
 			.add([ 'kommande vecka' ], nextWeek)
 			.add([ 'förra veckan' ], previousWeek)
 			.add([ 'föregående vecka' ], previousWeek)

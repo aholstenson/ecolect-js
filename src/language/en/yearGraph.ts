@@ -7,6 +7,7 @@ import {
 
 	thisYear,
 	nextYear,
+	yearAfterNext,
 	previousYear,
 	isUnqualified,
 	withQualifier
@@ -36,6 +37,8 @@ export const yearGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ 'the year', /^[0-9]{4}$/ ], v => ({ year: parseInt(v[0], 10) }))
 			.add('this year', thisYear)
 			.add('next year', nextYear)
+			.add('year after next', yearAfterNext)
+			.add('the year after next', yearAfterNext)
 			.add('last year', previousYear)
 			.add('previous year', previousYear)
 

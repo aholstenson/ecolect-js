@@ -25,6 +25,10 @@ describe('English', function() {
 			year: new Date().getFullYear() - 1,
 		});
 
+		test('year after next', { now: new Date(2010, 0, 1) }, {
+			year: 2012,
+		});
+
 		test('in 4 years', { now: new Date(2010, 0, 1) }, {
 			year: 2014,
 		});

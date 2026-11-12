@@ -7,6 +7,7 @@ import {
 
 	thisYear,
 	nextYear,
+	yearAfterNext,
 	previousYear
 } from '../../type-datetime/index.js';
 import type { LanguageGraphFactory } from '../index.js';
@@ -37,6 +38,8 @@ export const yearGraph: LanguageGraphFactory<DateTimeData> = {
 			.add('det här året', thisYear)
 			.add('innevarande år', thisYear)
 			.add('nästa år', nextYear)
+			.add('nästnästa år', yearAfterNext)
+			.add('året efter nästa', yearAfterNext)
 			.add('kommande år', nextYear)
 			.add('förra året', previousYear)
 			.add('föregående år', previousYear)

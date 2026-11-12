@@ -42,6 +42,20 @@ export function nextWeek(r: any, options: DateTimeOptions): DateTimeData {
 	return weekOf(addWeeks(currentTime(options), 1), options);
 }
 
+/**
+ * Describe the week after the next week.
+ *
+ * @param r -
+ *   not used
+ * @param options -
+ *   options with the current time and the week settings
+ * @returns
+ *   data with the week and its week numbering year
+ */
+export function weekAfterNext(r: any, options: DateTimeOptions): DateTimeData {
+	return weekOf(addWeeks(currentTime(options), 2), options);
+}
+
 export function previousWeek(r: any, options: DateTimeOptions): DateTimeData {
 	return weekOf(addWeeks(currentTime(options), -1), options);
 }

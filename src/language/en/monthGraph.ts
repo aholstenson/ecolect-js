@@ -3,6 +3,7 @@ import type {
 	DateTimeData} from '../../type-datetime/index.js';
 import {
 	nextMonth,
+	monthAfterNext,
 	previousMonth,
 	thisMonth,
 	reverse,
@@ -45,6 +46,8 @@ export const monthGraph: LanguageGraphFactory<DateTimeData> = {
 			.add('previous month', previousMonth)
 			.add('last month', previousMonth)
 			.add('next month', nextMonth)
+			.add('month after next', monthAfterNext)
+			.add('the month after next', monthAfterNext)
 
 			.add([ relative ], v => v[0])
 

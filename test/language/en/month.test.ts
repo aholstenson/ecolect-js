@@ -124,6 +124,10 @@ describe('English', function() {
 			month: 6
 		});
 
+		test('month after next', { now: new Date(2010, 0, 1) }, {
+			month: 3
+		});
+
 		test('next month', { now: new Date(2010, 0, 1) }, {
 			month: 2
 		});

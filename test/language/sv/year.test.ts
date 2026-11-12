@@ -31,6 +31,10 @@ describe('Swedish', function() {
 			year: new Date().getFullYear() + 1,
 		});
 
+		test('nästnästa år', { now: new Date(2010, 0, 1) }, {
+			year: 2012,
+		});
+
 		test('om 4 år', { now: new Date(2010, 0, 1) }, {
 			year: 2014,
 		});

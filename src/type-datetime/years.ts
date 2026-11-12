@@ -20,6 +20,22 @@ export function nextYear(r: any, options: DateTimeOptions): DateTimeData {
 	};
 }
 
+/**
+ * Describe the year after the next year.
+ *
+ * @param r -
+ *   not used
+ * @param options -
+ *   options with the current time
+ * @returns
+ *   data with the year
+ */
+export function yearAfterNext(r: any, options: DateTimeOptions): DateTimeData {
+	return {
+		year: currentTime(options).getFullYear() + 2
+	};
+}
+
 export function previousYear(r: any, options: DateTimeOptions): DateTimeData {
 	return {
 		year: currentTime(options).getFullYear() - 1

@@ -23,6 +23,24 @@ export function nextMonth(r: any, options: DateTimeOptions): DateTimeData {
 	};
 }
 
+/**
+ * Describe the month after the next month.
+ *
+ * @param r -
+ *   not used
+ * @param options -
+ *   options with the current time
+ * @returns
+ *   data with the year and the month
+ */
+export function monthAfterNext(r: any, options: DateTimeOptions): DateTimeData {
+	const time = addMonths(currentTime(options), 2);
+	return {
+		year: time.getFullYear(),
+		month: time.getMonth()
+	};
+}
+
 export function previousMonth(r: any, options: DateTimeOptions): DateTimeData {
 	const time = addMonths(currentTime(options), -1);
 	return {

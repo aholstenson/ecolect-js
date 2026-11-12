@@ -55,6 +55,16 @@ describe('English', function() {
 			}
 		});
 
+		test('week after next', { now: new Date(2018, 0, 3), ...iso }, {
+			start: { year: 2018, month: 1, day: 15 },
+			end: { year: 2018, month: 1, day: 21 }
+		});
+
+		test('the week after next', { now: new Date(2018, 0, 3), ...iso }, {
+			start: { year: 2018, month: 1, day: 15 },
+			end: { year: 2018, month: 1, day: 21 }
+		});
+
 		test('next week', { now: new Date(2018, 0, 3), ...iso }, {
 			start: {
 				year: 2018,

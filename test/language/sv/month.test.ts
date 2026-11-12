@@ -41,6 +41,8 @@ describe('Swedish', function() {
 
 		test('nästa månad', { now: new Date(2010, 2, 15) }, { month: 4 });
 
+		test('nästnästa månad', { now: new Date(2010, 2, 15) }, { month: 5 });
+
 		test('om 2 månader', { now: new Date(2010, 2, 15) }, { month: 5 });
 
 		test('3 månader sedan', { now: new Date(2010, 5, 15) }, { month: 3 });
