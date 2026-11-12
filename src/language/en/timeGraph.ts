@@ -1,7 +1,9 @@
 import type { Encounter } from '../../graph/index.js';
 import { GraphBuilder } from '../../graph/index.js';
 import type {
-	DateTimeData} from '../../type-datetime/index.js';
+	DateTimeData,
+	DateTimeOptions,
+	DayPart} from '../../type-datetime/index.js';
 import {
 
 	combine,
@@ -17,6 +19,12 @@ import {
 
 	asTime,
 	plainNumberTime,
+
+	dayPart,
+	dayPartOnDay,
+	hasOpenHour,
+	inDayPart,
+	toNight,
 
 	Precision
 } from '../../type-datetime/index.js';
@@ -55,6 +63,59 @@ function endsWithLongNumber(encounter: Encounter): boolean {
 	return typeof token !== 'undefined' && /^[0-9]{3,}$/.test(token.raw);
 }
 
+/**
+ * The words for the named parts of the day.
+ */
+const DAY_PARTS: Record<string, DayPart> = {
+	'morning': 'morning',
+	'in the morning': 'morning',
+
+	'lunch': 'lunch',
+	'lunchtime': 'lunch',
+	'lunch time': 'lunch',
+
+	'afternoon': 'afternoon',
+	'in the afternoon': 'afternoon',
+
+	'evening': 'evening',
+	'in the evening': 'evening',
+
+	'night': 'night',
+	'at night': 'night',
+
+	'start of day': 'startOfDay',
+	'start of the day': 'startOfDay',
+	'start of business': 'startOfDay',
+	'first thing': 'startOfDay',
+
+	'end of day': 'endOfDay',
+	'end of the day': 'endOfDay',
+	'eod': 'endOfDay',
+	'end of business': 'endOfDay',
+	'close of business': 'endOfDay',
+	'cob': 'endOfDay'
+};
+
+/**
+ * The words for parts of the current day.
+ */
+const DAY_PARTS_TODAY: Record<string, DayPart> = {
+	'this morning': 'morning',
+	'this afternoon': 'afternoon',
+	'this evening': 'evening',
+	'tonight': 'evening'
+};
+
+/**
+ * The words for parts of the day that can have an hour after them.
+ */
+const DAY_PARTS_BEFORE_HOUR: Record<string, DayPart> = {
+	'morning': 'morning',
+	'afternoon': 'afternoon',
+	'evening': 'evening',
+	'night': 'night'
+};
+
 export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'time',
 
@@ -73,10 +134,39 @@ export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 
 			.build();
 
-		return new GraphBuilder<DateTimeData>(language)
+		const builder = new GraphBuilder<DateTimeData>(language)
 			.name('time')
 
-			.skipPunctuation()
+			.skipPunctuation();
+
+		// Named parts of the day, such as morning and lunch
+		for(const [ words, part ] of Object.entries(DAY_PARTS)) {
+			builder.add(words, (v, options: DateTimeOptions) => dayPart(part, options));
+		}
+
+		/*
+		 * Parts of the current day, which stay on that day when they have
+		 * passed. An hour next to the part is in that part of the day, such as
+		 * tonight at 8.
+		 */
+		for(const [ words, part ] of Object.entries(DAY_PARTS_TODAY)) {
+			builder
+				.add(words, (v, options: DateTimeOptions) => dayPartOnDay(part, 0, options))
+				.add([ words, GraphBuilder.result(hasOpenHour) ], v => ({ ...inDayPart(v[0], part), relativeDays: 0 }))
+				.add([ GraphBuilder.result(hasOpenHour), words ], v => ({ ...inDayPart(v[0], part), relativeDays: 0 }));
+		}
+
+		// An hour after a part of the day, such as night at 11
+		for(const [ words, part ] of Object.entries(DAY_PARTS_BEFORE_HOUR)) {
+			builder.add([ words, GraphBuilder.result(hasOpenHour) ], v => inDayPart(v[0], part));
+		}
+
+		return builder
+			.add('last night', (v, options: DateTimeOptions) => dayPartOnDay('night', -1, options))
+
+			// An hour before or after lunch
+			.add('after lunch', (v, options: DateTimeOptions) => dayPart('lunch', options, 1))
+			.add('before lunch', (v, options: DateTimeOptions) => dayPart('lunch', options, -1))
 
 			// Approximate times
 			.add([ GraphBuilder.result(), 'ish' ], v => withPrecision(v[0], Precision.Approximate))
@@ -101,6 +191,12 @@ export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 				},
 				v => time24h(v)
 			)
+
+			// An hour in a part of the day, such as 9 in the morning
+			.add([ GraphBuilder.result(hasHour), 'in the morning' ], v => toAM(v[0]))
+			.add([ GraphBuilder.result(hasPmHour), 'in the afternoon' ], v => toPM(v[0]))
+			.add([ GraphBuilder.result(hasPmHour), 'in the evening' ], v => toPM(v[0]))
+			.add([ GraphBuilder.result(hasHour), 'at night' ], v => toNight(v[0]))
 
 			// HH, such as 4, 14
 			.add(/^[0-9]{1,2}$/, v => plainNumberTime(time12h(parseInt(v[0], 10))))

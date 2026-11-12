@@ -1,6 +1,7 @@
 import type { DayOfWeek } from 'datetime-types';
 
 import type { DateOrder } from './DateOrder.js';
+import type { DayPartHours } from './dayParts.js';
 import type { MonthDayOrder } from './MonthDayOrder.js';
 
 /**
@@ -57,4 +58,11 @@ export interface DateTimeOptions {
 	 * `DateOrder.DayMonthYear` and month first for the other orders.
 	 */
 	monthDayOrder?: MonthDayOrder;
+
+	/**
+	 * The hours of the named parts of the day, such as `morning`, `lunch`
+	 * and `end of day`, on a 24-hour clock. A part that is not set uses its
+	 * default hour.
+	 */
+	dayParts?: Partial<DayPartHours>;
 }

@@ -455,6 +455,149 @@ describe('English', function() {
 			millisecond: 0
 		}));
 
+		// Parts of the day
+		test('after lunch', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 13,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('tomorrow morning', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 13,
+			hour: 9,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('tomorrow after lunch', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 13,
+			hour: 13,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('friday evening', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 13,
+			hour: 19,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('monday night', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 16,
+			hour: 22,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('yesterday afternoon', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 11,
+			hour: 15,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('end of day', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 17,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('eod friday', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 13,
+			hour: 17,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('first thing tomorrow', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 13,
+			hour: 9,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('tomorrow night at 11', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 13,
+			hour: 23,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		// A part of the day that has passed is on the next day
+		test('morning', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 13,
+			hour: 9,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		// A part of the current day stays on that day
+		test('this morning', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 9,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('tonight at 8', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 20,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('last night', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 11,
+			hour: 22,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
 		test('in 9999999999 hours', { now: new Date(2026, 10, 8, 0, 0) }, null);
 	});
 

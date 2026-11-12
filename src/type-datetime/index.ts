@@ -15,6 +15,7 @@ export * from './date-times.js';
 export * from './dates.js';
 
 export * from './times.js';
+export * from './dayParts.js';
 
 export * from './weeks.js';
 export * from './months.js';

@@ -175,6 +175,119 @@ describe('Swedish', function() {
 			millisecond: 0
 		}));
 
+		// Parts of the day
+		test('efter lunch', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 13,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('imorgon bitti', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 13,
+			hour: 9,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('i morgon eftermiddag', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 13,
+			hour: 15,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('på fredag kväll', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 13,
+			hour: 19,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('igår kväll', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 11,
+			hour: 19,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('i måndags kväll', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 9,
+			hour: 19,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('slutet av dagen', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 17,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('imorgon kväll kl 8', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 13,
+			hour: 20,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		// A part of the current day stays on that day
+		test('i morse', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 9,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('ikväll kl 8', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 20,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		// `imorgon` is the next day and not the morning
+		test('imorgon', { now: new Date(2026, 10, 12, 10, 0) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 13,
+			hour: 10,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
 		test('om 2 dagar och 2 timmar', now, LocalDateTime.from({
 			year: 2010,
 			month: 1,

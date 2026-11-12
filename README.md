@@ -416,6 +416,7 @@ Option                  | Default             | Description
 `monthDayOrder`         | From the locale     | The order of the month and the day in a numeric date without a year, such as `1/2`
 `weekStartsOn`          | From the locale     | The day the week starts on
 `firstWeekContainsDate` | From the locale     | The day of January which is always in the first week of the year
+`dayParts`              | See below           | The hours of the named parts of the day, such as `{ morning: 8, endOfDay: 18 }`
 `decimalSeparator`      | From the locale     | The character that separates the fraction of a number, `.` or `,`, or a list of them. The first one is used to write numbers
 `groupSeparator`        | From the locale     | The character that groups the digits of a number, `,` or `.`, or a list of them. A space can always group digits
 `numberSeparators`      | `auto`              | How to read the one of `.` and `,` that the locale does not use for fractions: `strict`, `auto` or `lenient`
@@ -432,6 +433,38 @@ locales, but not for all. `sv-SE` writes `2017-01-02` with the year first, but
 `2/1` with the day first. When `dateOrder` is set directly and
 `monthDayOrder` is not, the order of the month and the day comes from
 `dateOrder`.
+
+### Parts of the day
+
+A time can be a named part of the day, such as `morning`, `after lunch` or
+`end of day`. Each part is read as one hour on a 24-hour clock. Set `dayParts`
+to change the hours, a part that is not set keeps its default.
+
+Part         | Default | Examples
+-------------|---------|-------------
+`morning`    | `9`     | `morning`, `tomorrow morning`, `i morse`, `imorgon bitti`
+`lunch`      | `12`    | `lunch`, `at lunch`, `vid lunch`
+`afternoon`  | `15`    | `afternoon`, `friday afternoon`, `i eftermiddag`
+`evening`    | `19`    | `evening`, `tonight`, `ikväll`
+`night`      | `22`    | `night`, `last night`, `inatt`
+`startOfDay` | `9`     | `start of day`, `first thing`, `början av dagen`
+`endOfDay`   | `17`    | `end of day`, `eod`, `close of business`, `slutet av dagen`
+
+`after lunch` is one hour after `lunch` and `before lunch` is one hour before
+it. An hour next to a part of the day is read in that part, so `tonight at 8`
+is 20:00 and `9 in the morning` is 09:00.
+
+A part of the day that has passed is read on the next day, so `morning` at
+10:00 is 09:00 on the next day. A part of the current day, such as
+`this morning`, `tonight` or `i morse`, stays on the current day.
+
+```javascript
+const matcher = dateTimeValue().matcher(en);
+
+await matcher.match('tomorrow after lunch', {
+  dayParts: { lunch: 11 }
+});
+```
 
 ### A note about weeks
 
@@ -546,8 +579,8 @@ Capture a time of day.
 
 Language         | Examples
 -----------------|-------------
-English          | `09:00`, `12.30`, `3 pm`, `at 3:30 am`, `noon`, `quarter to twelve`, `in 2 hours`, `in 45 minutes`
-Swedish          | `09:00`, `14.30`, `kl 15`, `midnatt`, `kvart i tolv`, `halv tolv`, `om 2 timmar`
+English          | `09:00`, `12.30`, `3 pm`, `at 3:30 am`, `noon`, `quarter to twelve`, `in 2 hours`, `in 45 minutes`, `morning`, `after lunch`, `end of day`, `9 in the evening`
+Swedish          | `09:00`, `14.30`, `kl 15`, `midnatt`, `kvart i tolv`, `halv tolv`, `om 2 timmar`, `om en kvart`, `morgon`, `efter lunch`, `slutet av dagen`, `9 på kvällen`
 
 #### Returned value
 
@@ -565,8 +598,8 @@ Capture both a date and a time.
 
 Language         | Examples
 -----------------|-------------
-English          | `3pm on Jan 12th`, `in 2 days and 2 hours`, `14:00`
-Swedish          | `kl 15 den 12 januari`, `om 2 dagar och 2 timmar`, `14:00`
+English          | `3pm on Jan 12th`, `in 2 days and 2 hours`, `14:00`, `tomorrow morning`, `friday after lunch`, `tonight at 8`
+Swedish          | `kl 15 den 12 januari`, `om 2 dagar och 2 timmar`, `14:00`, `imorgon bitti`, `fredag efter lunch`, `ikväll kl 8`
 
 #### Returned value
 

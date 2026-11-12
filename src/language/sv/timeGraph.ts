@@ -1,6 +1,8 @@
 import { GraphBuilder } from '../../graph/index.js';
 import type {
-	DateTimeData} from '../../type-datetime/index.js';
+	DateTimeData,
+	DateTimeOptions,
+	DayPart} from '../../type-datetime/index.js';
 import {
 
 	combine,
@@ -16,6 +18,12 @@ import {
 
 	asTime,
 	plainNumberTime,
+
+	dayPart,
+	dayPartOnDay,
+	hasOpenHour,
+	inDayPart,
+	toNight,
 
 	Precision
 } from '../../type-datetime/index.js';
@@ -40,6 +48,72 @@ function adjustMinutes(time: DateTimeData, minutes: number) {
 	});
 }
 
+/**
+ * The words for the named parts of the day.
+ */
+const DAY_PARTS: Record<string, DayPart> = {
+	'morgon': 'morning',
+	'morgonen': 'morning',
+	'på morgonen': 'morning',
+	'bitti': 'morning',
+	'förmiddag': 'morning',
+	'förmiddagen': 'morning',
+	'på förmiddagen': 'morning',
+
+	'lunch': 'lunch',
+	'lunchen': 'lunch',
+	'lunchtid': 'lunch',
+
+	'eftermiddag': 'afternoon',
+	'eftermiddagen': 'afternoon',
+	'på eftermiddagen': 'afternoon',
+
+	'kväll': 'evening',
+	'kvällen': 'evening',
+	'på kvällen': 'evening',
+
+	'natt': 'night',
+	'natten': 'night',
+	'på natten': 'night',
+
+	'början av dagen': 'startOfDay',
+	'dagens början': 'startOfDay',
+	'arbetsdagens början': 'startOfDay',
+
+	'slutet av dagen': 'endOfDay',
+	'dagens slut': 'endOfDay',
+	'arbetsdagens slut': 'endOfDay',
+	'slutet av arbetsdagen': 'endOfDay'
+};
+
+/**
+ * The words for parts of the current day. `i morse` and `i förmiddags` are
+ * the morning that has passed.
+ */
+const DAY_PARTS_TODAY: Record<string, DayPart> = {
+	'i morse': 'morning',
+	'i förmiddags': 'morning',
+	'i förmiddag': 'morning',
+	'i eftermiddag': 'afternoon',
+	'i eftermiddags': 'afternoon',
+	'ikväll': 'evening',
+	'i kväll': 'evening',
+	'inatt': 'night',
+	'i natt': 'night'
+};
+
+/**
+ * The words for parts of the day that can have an hour after them.
+ */
+const DAY_PARTS_BEFORE_HOUR: Record<string, DayPart> = {
+	'morgon': 'morning',
+	'bitti': 'morning',
+	'förmiddag': 'morning',
+	'eftermiddag': 'afternoon',
+	'kväll': 'evening',
+	'natt': 'night'
+};
+
 export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 	id: 'time',
 
@@ -59,10 +133,48 @@ export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 
 			.build();
 
-		return new GraphBuilder<DateTimeData>(language)
+		const builder = new GraphBuilder<DateTimeData>(language)
 			.name('time')
 
-			.skipPunctuation()
+			.skipPunctuation();
+
+		// Named parts of the day, such as morgon and lunch
+		for(const [ words, part ] of Object.entries(DAY_PARTS)) {
+			builder.add(words, (v, options: DateTimeOptions) => dayPart(part, options));
+		}
+
+		/*
+		 * Parts of the current day, which stay on that day when they have
+		 * passed. An hour next to the part is in that part of the day, such as
+		 * ikväll kl 8.
+		 */
+		for(const [ words, part ] of Object.entries(DAY_PARTS_TODAY)) {
+			builder
+				.add(words, (v, options: DateTimeOptions) => dayPartOnDay(part, 0, options))
+				.add([ words, GraphBuilder.result(hasOpenHour) ], v => ({ ...inDayPart(v[0], part), relativeDays: 0 }))
+				.add([ GraphBuilder.result(hasOpenHour), words ], v => ({ ...inDayPart(v[0], part), relativeDays: 0 }));
+		}
+
+		// An hour after a part of the day, such as kväll kl 8
+		for(const [ words, part ] of Object.entries(DAY_PARTS_BEFORE_HOUR)) {
+			builder.add([ words, GraphBuilder.result(hasOpenHour) ], v => inDayPart(v[0], part));
+		}
+
+		return builder
+			// An hour before or after lunch
+			.add('efter lunch', (v, options: DateTimeOptions) => dayPart('lunch', options, 1))
+			.add('efter lunchen', (v, options: DateTimeOptions) => dayPart('lunch', options, 1))
+			.add('före lunch', (v, options: DateTimeOptions) => dayPart('lunch', options, -1))
+			.add('före lunchen', (v, options: DateTimeOptions) => dayPart('lunch', options, -1))
+			.add('innan lunch', (v, options: DateTimeOptions) => dayPart('lunch', options, -1))
+			.add('innan lunchen', (v, options: DateTimeOptions) => dayPart('lunch', options, -1))
+
+			// An hour in a part of the day, such as 9 på morgonen
+			.add([ GraphBuilder.result(hasHour), 'på morgonen' ], v => toAM(v[0]))
+			.add([ GraphBuilder.result(hasHour), 'på förmiddagen' ], v => toAM(v[0]))
+			.add([ GraphBuilder.result(hasPmHour), 'på eftermiddagen' ], v => toPM(v[0]))
+			.add([ GraphBuilder.result(hasPmHour), 'på kvällen' ], v => toPM(v[0]))
+			.add([ GraphBuilder.result(hasHour), 'på natten' ], v => toNight(v[0]))
 
 			// Approximate times
 			.add([ 'cirka', GraphBuilder.result() ], v => withPrecision(v[0], Precision.Approximate))

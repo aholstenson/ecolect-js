@@ -415,5 +415,221 @@ describe('English', function() {
 				millisecond: 0
 			});
 		});
+
+		describe('Parts of the day', function() {
+			const morning = { now: new Date(2010, 0, 1, 10, 0) };
+
+			test('morning', morning, {
+				hour: 9,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('in the morning', morning, {
+				hour: 9,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('lunch', morning, {
+				hour: 12,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('at lunch', morning, {
+				hour: 12,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('after lunch', morning, {
+				hour: 13,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('before lunch', morning, {
+				hour: 11,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('afternoon', morning, {
+				hour: 15,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('evening', morning, {
+				hour: 19,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('tonight', morning, {
+				hour: 19,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('night', morning, {
+				hour: 22,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('last night', morning, {
+				hour: 22,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('start of day', morning, {
+				hour: 9,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('first thing', morning, {
+				hour: 9,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('end of day', morning, {
+				hour: 17,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('end of the day', morning, {
+				hour: 17,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('eod', morning, {
+				hour: 17,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('close of business', morning, {
+				hour: 17,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('cob', morning, {
+				hour: 17,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			// An hour next to a part of the day is in that part
+			test('9 in the morning', morning, {
+				hour: 9,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('9 in the evening', morning, {
+				hour: 21,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('3 in the afternoon', morning, {
+				hour: 15,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('11 at night', morning, {
+				hour: 23,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('2 at night', morning, {
+				hour: 2,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('tonight at 8', morning, {
+				hour: 20,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('8 tonight', morning, {
+				hour: 20,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('7:30 this morning', morning, {
+				hour: 7,
+				minute: 30,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('evening at 8', morning, {
+				hour: 20,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			// The hours come from the dayParts option
+			test('morning', { ...morning, dayParts: { morning: 7 } }, {
+				hour: 7,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('end of day', { ...morning, dayParts: { endOfDay: 18 } }, {
+				hour: 18,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('after lunch', { ...morning, dayParts: { lunch: 11 } }, {
+				hour: 12,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+		});
 	});
 });

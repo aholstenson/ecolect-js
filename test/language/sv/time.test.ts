@@ -118,5 +118,198 @@ describe('Swedish', function() {
 			second: 0,
 			millisecond: 0
 		});
+
+		describe('Parts of the day', function() {
+			test('morgon', morning, {
+				hour: 9,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('på morgonen', morning, {
+				hour: 9,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('i morse', morning, {
+				hour: 9,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('förmiddag', morning, {
+				hour: 9,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('lunch', morning, {
+				hour: 12,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('vid lunch', morning, {
+				hour: 12,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('efter lunch', morning, {
+				hour: 13,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('före lunch', morning, {
+				hour: 11,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('eftermiddag', morning, {
+				hour: 15,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('i eftermiddag', morning, {
+				hour: 15,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('kväll', morning, {
+				hour: 19,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('ikväll', morning, {
+				hour: 19,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('i kväll', morning, {
+				hour: 19,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('natt', morning, {
+				hour: 22,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('inatt', morning, {
+				hour: 22,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('i natt', morning, {
+				hour: 22,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('början av dagen', morning, {
+				hour: 9,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('slutet av dagen', morning, {
+				hour: 17,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('dagens slut', morning, {
+				hour: 17,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('arbetsdagens slut', morning, {
+				hour: 17,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			// An hour next to a part of the day is in that part
+			test('9 på morgonen', morning, {
+				hour: 9,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('9 på kvällen', morning, {
+				hour: 21,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('2 på natten', morning, {
+				hour: 2,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('ikväll kl 8', morning, {
+				hour: 20,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('halv åtta ikväll', morning, {
+				hour: 19,
+				minute: 30,
+				second: 0,
+				millisecond: 0
+			});
+
+			// The hours come from the dayParts option
+			test('morgon', { ...morning, dayParts: { morning: 7 } }, {
+				hour: 7,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+
+			test('slutet av dagen', { ...morning, dayParts: { endOfDay: 18 } }, {
+				hour: 18,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+		});
 	});
 });

@@ -48,8 +48,9 @@ function canFold(graphToken: Token, inputToken: Token): boolean {
 /**
  * Pairs of words that are spelled almost the same, or have the same stem,
  * but mean different things. `kvart` is 15 minutes and `kvartal` is a quarter
- * of a year, `julas` is the last Christmas and `jul` is short for July, and
- * `för` (for) is not `före` (before).
+ * of a year, `julas` is the last Christmas and `jul` is short for July,
+ * `för` (for) is not `före` (before), and `morgon` is the morning and
+ * `imorgon` is the next day.
  */
 const DIFFERENT_WORDS = new Set([
 	'kvart kvartal',
@@ -57,7 +58,9 @@ const DIFFERENT_WORDS = new Set([
 	'kvarts kvartal',
 	'kvarts kvartalet',
 	'jul julas',
-	'för före'
+	'för före',
+	'morgon imorgon',
+	'morgonen imorgon'
 ]);
 
 /**
