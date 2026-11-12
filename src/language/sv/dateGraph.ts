@@ -331,7 +331,8 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ 'i', GraphBuilder.result(isRelative) ], v => v[0])
 			.add([ 'på', GraphBuilder.result() ], v => v[0])
 			.add([ 'den', GraphBuilder.result() ], v => v[0])
-			.add([ dateDuration, 'sedan' ], v => reverse(v[0]));
+			.add([ dateDuration, 'sedan' ], v => reverse(v[0]))
+			.add([ 'för', dateDuration, 'sedan' ], v => reverse(v[0]));
 
 		/*
 		 * A named month relative to the current one. `nästa mars` and `förra

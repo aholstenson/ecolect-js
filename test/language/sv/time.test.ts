@@ -111,5 +111,12 @@ describe('Swedish', function() {
 			second: 0,
 			millisecond: 0
 		});
+
+		test('för 2 timmar sedan', morning, {
+			hour: 8,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		});
 	});
 });

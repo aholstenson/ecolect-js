@@ -178,6 +178,18 @@ describe('Swedish', function() {
 				day: 22
 			});
 
+			test('för 2 dagar sedan', now, {
+				year: 2017,
+				month: 1,
+				day: 22
+			});
+
+			test('för två år sedan', now, {
+				year: 2015,
+				month: 1,
+				day: 24
+			});
+
 			test('om en vecka', now, {
 				year: 2017,
 				month: 1,

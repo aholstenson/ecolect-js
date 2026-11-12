@@ -139,6 +139,7 @@ export const timeGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ 'om', timeDuration ], v => v[0])
 			.add([ timeDuration ], v => v[0])
 			.add([ timeDuration, 'sedan' ], v => reverse(v[0]))
+			.add([ 'för', timeDuration, 'sedan' ], v => reverse(v[0]))
 			.add([ 'klockan', GraphBuilder.result() ], v => asTime(v[0]))
 			.add([ 'kl', GraphBuilder.result() ], v => asTime(v[0]))
 			.add([ 'kl.', GraphBuilder.result() ], v => asTime(v[0]))
