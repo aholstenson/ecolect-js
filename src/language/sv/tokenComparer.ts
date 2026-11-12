@@ -46,15 +46,50 @@ function canFold(graphToken: Token, inputToken: Token): boolean {
 }
 
 /**
+ * Pairs of words that are spelled almost the same, or have the same stem,
+ * but mean different things. `kvart` is 15 minutes and `kvartal` is a quarter
+ * of a year, `julas` is the last Christmas and `jul` is short for July, and
+ * `för` (for) is not `före` (before).
+ */
+const DIFFERENT_WORDS = new Set([
+	'kvart kvartal',
+	'kvart kvartalet',
+	'kvarts kvartal',
+	'kvarts kvartalet',
+	'jul julas',
+	'för före'
+]);
+
+/**
+ * Get if two words are in the list of words that mean different things.
+ *
+ * @param a -
+ *   the first word
+ * @param b -
+ *   the second word
+ * @returns
+ *   `true` if the words never match each other
+ */
+function areDifferentWords(a: Token, b: Token): boolean {
+	return DIFFERENT_WORDS.has(a.normalized + ' ' + b.normalized)
+		|| DIFFERENT_WORDS.has(b.normalized + ' ' + a.normalized);
+}
+
+/**
  * Token comparer for Swedish. Swedish words are compared on their exact
  * spelling, their Snowball stem and how similar they are spelled, none of
  * which needs anything Swedish specific.
  *
  * A word typed without `å`, `ä` and `ö`, such as `pa` for `på`, also matches,
  * but with a lower score than the word with the letters.
+ *
+ * A small list of words that are spelled almost the same but mean different
+ * things, such as `kvart` and `kvartal`, never match each other.
  */
 export const tokenComparer: TokenComparer = {
 	compare(a, b) {
+		if(areDifferentWords(a, b)) return 0;
+
 		const score = similarityTokenComparer.compare(a, b);
 		if(score > 0 || ! canFold(a, b)) return score;
 

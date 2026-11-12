@@ -18,5 +18,12 @@ describe('Swedish', function() {
 		test('4 minuter och 10 sekunder', {}, { minutes: 4, seconds: 10 });
 
 		test('500 ms', {}, { milliseconds: 500 });
+
+		// A `kvart` is 15 minutes
+		test('en kvart', {}, { minutes: 15 });
+
+		test('tre kvart', {}, { minutes: 45 });
+
+		test('en timme och en kvart', {}, { hours: 1, minutes: 15 });
 	});
 });

@@ -154,6 +154,27 @@ describe('Swedish', function() {
 			millisecond: 0
 		}));
 
+		// A `kvart` is 15 minutes and not a quarter of a year
+		test('om en kvart', now, LocalDateTime.from({
+			year: 2010,
+			month: 1,
+			day: 1,
+			hour: 13,
+			minute: 45,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('för en kvart sedan', now, LocalDateTime.from({
+			year: 2010,
+			month: 1,
+			day: 1,
+			hour: 13,
+			minute: 15,
+			second: 0,
+			millisecond: 0
+		}));
+
 		test('om 2 dagar och 2 timmar', now, LocalDateTime.from({
 			year: 2010,
 			month: 1,

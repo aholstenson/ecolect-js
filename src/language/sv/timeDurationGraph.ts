@@ -23,6 +23,8 @@ function addTimeUnits(language: Language, builder: GraphBuilder<DateTimeData>): 
 	const integer = language.graph(integerGraph);
 
 	return builder
+		// `en kvart` is 15 minutes and `tre kvart` is 45 minutes
+		.add([ integer, 'kvart' ], v => ({ relativeMinutes: v[0].value * 15 }))
 		.add([ integer, 'timmar' ], v => ({ relativeHours: v[0].value }))
 		.add([ integer, 'timme' ], v => ({ relativeHours: v[0].value }))
 		.add([ integer, 'tim' ], v => ({ relativeHours: v[0].value }))

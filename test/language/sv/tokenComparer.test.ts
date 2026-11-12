@@ -63,5 +63,33 @@ describe('Swedish', function() {
 				expect(match).toEqual(BigInteger.fromNumber(222));
 			});
 		});
+
+		describe('Words that are spelled almost the same', function() {
+			it('kvart does not match kvartal', function() {
+				expect(tokenComparer.compare(token('kvartal'), token('kvart'))).toEqual(0);
+				expect(tokenComparer.compare(token('kvart'), token('kvartal'))).toEqual(0);
+			});
+
+			it('julas does not match jul', function() {
+				expect(tokenComparer.compare(token('jul'), token('julas'))).toEqual(0);
+			});
+
+			it('för does not match före', function() {
+				expect(tokenComparer.compare(token('före'), token('för'))).toEqual(0);
+			});
+
+			it('om en kvart is not a date', async function() {
+				expect(await dateValue().matcher(sv).match('om en kvart', now)).toBeNull();
+			});
+
+			it('i julas is not July', async function() {
+				expect(await dateValue().matcher(sv).match('i julas', now)).toBeNull();
+			});
+
+			it('om ett kvartal is a date', async function() {
+				const match = await dateValue().matcher(sv).match('om ett kvartal', now);
+				expect(match).toEqual({ year: 2017, month: 4, day: 24 });
+			});
+		});
 	});
 });
