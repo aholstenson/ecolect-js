@@ -1346,6 +1346,38 @@ describe('English', function() {
 			});
 		});
 
+		describe('Weeks of a month', function() {
+			const thursday = { now: new Date(2026, 10, 12) };
+
+			// Weeks start on Sunday here, and January 1st 2027 is a Friday
+			test('2nd week of jan', thursday, { year: 2027, month: 1, day: 3 });
+
+			test('second week of january', thursday, { year: 2027, month: 1, day: 3 });
+
+			test('the 2nd week of jan', thursday, { year: 2027, month: 1, day: 3 });
+
+			// The first week starts on the first day of the month
+			test('first week of january', thursday, { year: 2027, month: 1, day: 1 });
+
+			test('first week of march 2027', thursday, { year: 2027, month: 3, day: 1 });
+
+			test('last week of june', thursday, { year: 2027, month: 6, day: 27 });
+
+			test('2nd week of next month', thursday, { year: 2026, month: 12, day: 6 });
+
+			test('2nd week of the month', thursday, { year: 2026, month: 11, day: 8 });
+
+			test('last week of the month', thursday, { year: 2026, month: 11, day: 29 });
+
+			test('end of last week of june', thursday, { year: 2027, month: 6, day: 30 });
+
+			// February 2027 has five calendar weeks
+			test('6th week of february 2027', thursday, null);
+
+			// A week without a month is a week of the year
+			test('2nd week', thursday, { year: 2027, month: 1, day: 3 });
+		});
+
 		describe('Edges of periods', function() {
 			// The edge is kept when another date is counted from it
 			test('two weeks before end of month', { now: tuesday }, {

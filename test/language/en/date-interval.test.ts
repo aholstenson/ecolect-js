@@ -12,6 +12,27 @@ const test = testRunner(new EnglishLanguage(), dateIntervalGraph, mapDateInterva
 describe('English', () => {
 	describe('Date Interval', () => {
 
+		// A week of a month only has the days that are in the month
+		test('2nd week of jan', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2027, month: 1, day: 3 },
+			end: { year: 2027, month: 1, day: 9 }
+		});
+
+		test('first week of january', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2027, month: 1, day: 1 },
+			end: { year: 2027, month: 1, day: 2 }
+		});
+
+		test('last week of june', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2027, month: 6, day: 27 },
+			end: { year: 2027, month: 6, day: 30 }
+		});
+
+		test('last week of the month', { now: new Date(2026, 10, 12) }, {
+			start: { year: 2026, month: 11, day: 29 },
+			end: { year: 2026, month: 11, day: 30 }
+		});
+
 		test('2018', {}, {
 			start: {
 				year: 2018,

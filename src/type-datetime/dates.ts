@@ -23,7 +23,8 @@ import {
 	startOfYear,
 	startOfQuarter,
 	startOfWeek,
-	startOfMonth
+	startOfMonth,
+	lastDayOfMonth
 } from 'date-fns';
 import type { DayOfWeek } from 'datetime-types';
 import { LocalDate } from 'datetime-types';
@@ -302,6 +303,7 @@ function isValid(r: DateTimeData): boolean {
 	if(typeof r.day !== 'undefined' && (r.day < 1 || r.day > 31)) return false;
 	if(typeof r.quarter !== 'undefined' && (r.quarter < 1 || r.quarter > 4)) return false;
 	if(typeof r.week !== 'undefined' && (r.week < 1 || r.week > 53)) return false;
+	if(typeof r.weekOfMonth !== 'undefined' && (r.weekOfMonth === 0 || r.weekOfMonth > 6)) return false;
 
 	return true;
 }
@@ -644,6 +646,31 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 		time = startOfMonth(time);
 	}
 
+	/*
+	 * Resolve a week counted within the month, such as the second week of
+	 * January. The weeks are calendar weeks, so the first week is the one
+	 * with the first day of the month in it and the last week is the one
+	 * with the last day in it. The days of such a week that are in another
+	 * month are not part of it.
+	 */
+	let monthOfWeek: { start: Date; end: Date } | undefined;
+	if(typeof r.weekOfMonth !== 'undefined' && period === Period.Month) {
+		const weekOptions = toWeekOptions(options);
+		monthOfWeek = { start: startOfMonth(time), end: lastDayOfMonth(time) };
+
+		time = r.weekOfMonth < 0
+			? addWeeks(startOfWeek(monthOfWeek.end, weekOptions), r.weekOfMonth + 1)
+			: addWeeks(startOfWeek(monthOfWeek.start, weekOptions), r.weekOfMonth - 1);
+
+		if(time.getTime() > monthOfWeek.end.getTime()
+			|| addDays(time, 6).getTime() < monthOfWeek.start.getTime()) {
+			// The month does not have that many weeks
+			return null;
+		}
+
+		period = Period.Week;
+	}
+
 	// Resolve the day
 	if(typeof r.relativeDays !== 'undefined') {
 		// Relative day
@@ -710,6 +737,15 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 	} else if(r.intervalEdge === IntervalEdge.Start) {
 		// If the start of the period has been requested
 		time = toStart(time, period, options);
+	}
+
+	if(monthOfWeek && typeof r.dayOfWeek === 'undefined') {
+		// Keep the week within its month
+		if(time.getTime() < monthOfWeek.start.getTime()) {
+			time = monthOfWeek.start;
+		} else if(time.getTime() > monthOfWeek.end.getTime()) {
+			time = monthOfWeek.end;
+		}
 	}
 
 	if(r.intervalAdjustment) {

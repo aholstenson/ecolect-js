@@ -10,6 +10,22 @@ const iso = { weekStartsOn: 1, firstWeekContainsDate: 4 };
 
 describe('Swedish', () => {
 	describe('Date Interval', () => {
+		// A week of a month only has the days that are in the month
+		test('andra veckan i januari', { now: new Date(2026, 10, 12), ...iso }, {
+			start: { year: 2027, month: 1, day: 4 },
+			end: { year: 2027, month: 1, day: 10 }
+		});
+
+		test('första veckan i januari', { now: new Date(2026, 10, 12), ...iso }, {
+			start: { year: 2027, month: 1, day: 1 },
+			end: { year: 2027, month: 1, day: 3 }
+		});
+
+		test('sista veckan i juni', { now: new Date(2026, 10, 12), ...iso }, {
+			start: { year: 2027, month: 6, day: 28 },
+			end: { year: 2027, month: 6, day: 30 }
+		});
+
 		test('2018', {}, {
 			start: { year: 2018, month: 1, day: 1 },
 			end: { year: 2018, month: 12, day: 31 }

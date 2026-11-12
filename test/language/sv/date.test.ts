@@ -124,6 +124,25 @@ describe('Swedish', function() {
 			});
 		});
 
+		describe('Weeks of a month', function() {
+			const thursday = { now: new Date(2026, 10, 12), weekStartsOn: 1, firstWeekContainsDate: 4 };
+
+			// Weeks start on Monday here, and January 1st 2027 is a Friday
+			test('andra veckan i januari', thursday, { year: 2027, month: 1, day: 4 });
+
+			test('2:a veckan i januari', thursday, { year: 2027, month: 1, day: 4 });
+
+			test('första veckan i januari', thursday, { year: 2027, month: 1, day: 1 });
+
+			test('första veckan i mars 2027', thursday, { year: 2027, month: 3, day: 1 });
+
+			test('sista veckan i juni', thursday, { year: 2027, month: 6, day: 28 });
+
+			test('andra veckan i nästa månad', thursday, { year: 2026, month: 12, day: 7 });
+
+			test('sista veckan i månaden', thursday, { year: 2026, month: 11, day: 30 });
+		});
+
 		describe('Named month relative to now', function() {
 			const november = { now: new Date(2026, 10, 8) };
 

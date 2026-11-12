@@ -12,6 +12,9 @@ import {
 	isMonth,
 	hasMonth,
 	hasMonthAndDay,
+	isMonthWithoutWeek,
+	withWeekOfMonth,
+	LAST_WEEK_OF_MONTH,
 	reverse,
 
 	today,
@@ -253,6 +256,15 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 			.add([ year, week ], v => combine(v[0], {
 				week: v[1].week
 			}))
+
+			/*
+			 * A week counted in a month, such as andra veckan i januari or
+			 * sista veckan i juni. The weeks are calendar weeks.
+			 */
+			.add([ ordinal, 'veckan', GraphBuilder.result(isMonthWithoutWeek) ], v => withWeekOfMonth(v[1], v[0].value))
+			.add([ 'sista veckan', GraphBuilder.result(isMonthWithoutWeek) ], v => withWeekOfMonth(v[0], LAST_WEEK_OF_MONTH))
+			.add([ ordinal, 'veckan i månaden' ], (v, e) => withWeekOfMonth(thisMonth(v, e), v[0].value))
+			.add('sista veckan i månaden', (v, e) => withWeekOfMonth(thisMonth(v, e), LAST_WEEK_OF_MONTH))
 
 			// nth day of week in month
 			.add([ ordinal, dayOfWeek, GraphBuilder.result(isMonth) ], v => combine(v[2], {

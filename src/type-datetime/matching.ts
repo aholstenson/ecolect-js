@@ -155,6 +155,41 @@ function isYearOnly(date: DateTimeData): boolean {
 }
 
 /**
+ * The week of a month that is the last one, as in the last week of June.
+ */
+export const LAST_WEEK_OF_MONTH = -1;
+
+/**
+ * Get if a date is a month that a week can be counted in, such as `january`
+ * or `next month`.
+ *
+ * @param v -
+ *   the date to check
+ * @returns
+ *   `true` if the date is a month with no week counted in it
+ */
+export function isMonthWithoutWeek(v: DateTimeData): boolean {
+	return isMonth(v) && typeof v.weekOfMonth === 'undefined' && typeof v.intervalEdge === 'undefined';
+}
+
+/**
+ * Pick a week of a month, counted from 1 for the calendar week with the
+ * first day of the month in it.
+ *
+ * @param month -
+ *   the month
+ * @param week -
+ *   the week in the month, or `LAST_WEEK_OF_MONTH`
+ * @returns
+ *   the week of the month, or `null` if a month never has that many weeks
+ */
+export function withWeekOfMonth(month: DateTimeData, week: number): DateTimeData | null {
+	if(week !== LAST_WEEK_OF_MONTH && (week < 1 || week > 6)) return null;
+
+	return combine(month, { weekOfMonth: week });
+}
+
+/**
  * Get if a date names a day in a month, such as `november 12`.
  *
  * @param v -

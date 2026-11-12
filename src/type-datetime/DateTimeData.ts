@@ -19,6 +19,13 @@ export interface DateTimeData {
 	day?: number;
 
 	/**
+	 * The week within the month, counted from 1 for the calendar week with
+	 * the first day of the month in it. A negative number counts from the
+	 * end, so -1 is the week with the last day of the month in it.
+	 */
+	weekOfMonth?: number;
+
+	/**
 	 * Day of week requested.
 	 */
 	dayOfWeek?: DayOfWeek;
