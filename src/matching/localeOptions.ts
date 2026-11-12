@@ -39,9 +39,23 @@ export function localeMatchOptions(locale: string): MatchOptions {
 }
 
 /**
+ * The options of a language that are settings of the user. A match that does
+ * not set one of these uses the one of the language.
+ */
+const USER_SETTINGS = [
+	'weekStartsOn',
+	'firstWeekContainsDate',
+	'dateOrder',
+	'monthDayOrder',
+	'dayParts',
+	'weekParts'
+] as const;
+
+/**
  * Fill in the conventions that the options of a match leave out. A locale set
  * in the options decides them, and the locale of the language decides them
- * when the options name none. Options set directly are left as they are.
+ * when the options name none. Options set directly are left as they are, and
+ * the date and time settings of the language win over both locales.
  *
  * The separators of numbers are always set as lists. The options of the
  * language decide `numberSeparators` and `ambiguousSeparator` when the
@@ -62,6 +76,16 @@ export function applyLocale<O extends MatchOptions>(
 	options: O,
 	languageOptions: LanguageOptions = {}
 ): O {
+	/*
+	 * The date and time settings of the language are settings of the user,
+	 * so they are used as if the match set them and win over the locale.
+	 */
+	for(const key of USER_SETTINGS) {
+		if(typeof options[key] === 'undefined' && typeof languageOptions[key] !== 'undefined') {
+			(options as MatchOptions)[key] = languageOptions[key] as never;
+		}
+	}
+
 	const defaults = localeMatchOptions(options.locale ?? languageLocale);
 
 	/*

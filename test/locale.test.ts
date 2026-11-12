@@ -1,10 +1,13 @@
+import { DayOfWeek } from 'datetime-types';
+
 import { intentsBuilder } from '../src/index.js';
 import { en, english } from '../src/language/en/index.js';
 import type { Language } from '../src/language/index.js';
 import { localeMatchOptions } from '../src/matching/index.js';
 import { newPhrases } from '../src/resolver/newPhrases.js';
-import { DateOrder, MonthDayOrder } from '../src/type-datetime/index.js';
+import { DateOrder, MonthDayOrder, WeekParts } from '../src/type-datetime/index.js';
 import { dateValue } from '../src/values/date.js';
+import { dateIntervalValue, dateTimeValue } from '../src/values/index.js';
 
 const now = new Date(2017, 0, 24);
 
@@ -65,6 +68,86 @@ describe('Locale', function() {
 					options.dateOrder = original;
 				}
 			}
+		});
+	});
+
+	describe('Settings of the user in the options of a language', function() {
+		// A Thursday at 10:00
+		const thursday = new Date(2026, 10, 12, 10, 0);
+
+		it('weekStartsOn wins over the locale of the language', async function() {
+			const language = english('en-US', { weekStartsOn: DayOfWeek.MONDAY });
+			const match = await dateIntervalValue().matcher(language).match('next week', { now: thursday });
+
+			expect(match?.start?.toString()).toEqual('2026-11-16');
+			expect(match?.end?.toString()).toEqual('2026-11-22');
+		});
+
+		it('weekStartsOn wins over the locale of a match', async function() {
+			const language = english('en-GB', { weekStartsOn: DayOfWeek.SUNDAY });
+			const match = await dateIntervalValue().matcher(language)
+				.match('next week', { now: thursday, locale: 'sv-SE' });
+
+			expect(match?.start?.toString()).toEqual('2026-11-15');
+		});
+
+		it('weekStartsOn of a match wins over the one of the language', async function() {
+			const language = english('en-US', { weekStartsOn: DayOfWeek.MONDAY });
+			const match = await dateIntervalValue().matcher(language)
+				.match('next week', { now: thursday, weekStartsOn: DayOfWeek.SUNDAY });
+
+			expect(match?.start?.toString()).toEqual('2026-11-15');
+		});
+
+		it('firstWeekContainsDate decides the number of a week', async function() {
+			const language = english('en-US', { weekStartsOn: DayOfWeek.MONDAY, firstWeekContainsDate: 4 });
+			const match = await dateIntervalValue().matcher(language).match('week 1 2027', { now: thursday });
+
+			// January 1st 2027 is a Friday, so the ISO week 1 starts on January 4th
+			expect(match?.start?.toString()).toEqual('2027-01-04');
+		});
+
+		it('dateOrder wins over the locale', async function() {
+			const language = english('en-US', { dateOrder: DateOrder.DayMonthYear });
+			const match = await dateValue().matcher(language).match('1/2/2017', { now: thursday });
+
+			expect(match).toEqual({ year: 2017, month: 2, day: 1 });
+		});
+
+		it('dayParts sets the hours of the parts of the day', async function() {
+			const language = english('en-US', { dayParts: { endOfDay: 18 } });
+			const match = await dateTimeValue().matcher(language).match('end of day', { now: thursday });
+
+			expect(match?.toString()).toEqual('2026-11-12T18:00:00');
+		});
+
+		it('weekParts sets the days of the parts of a week', async function() {
+			const language = english('en-US', { weekParts: WeekParts.FullWeek });
+			const match = await dateIntervalValue().matcher(language).match('late next week', { now: thursday });
+
+			expect(match?.start?.toString()).toEqual('2026-11-20');
+		});
+
+		it('A language with settings keeps them with a vocabulary', async function() {
+			const language = english('en-US', { weekStartsOn: DayOfWeek.MONDAY }).withVocabulary({});
+			const match = await dateIntervalValue().matcher(language).match('next week', { now: thursday });
+
+			expect(match?.start?.toString()).toEqual('2026-11-16');
+		});
+
+		it('A value within a phrase uses the settings', async function() {
+			const matcher = intentsBuilder(english('en-US', { weekStartsOn: DayOfWeek.MONDAY }))
+				.add('show', newPhrases().value('when', dateIntervalValue()).phrase('show {when}').build())
+				.build();
+
+			const match = await matcher.match('show next week', { now: thursday });
+			expect(match?.values.when?.start?.toString()).toEqual('2026-11-16');
+		});
+
+		it('A weekStartsOn that is not a day rejects the match', async function() {
+			const language = english('en-US', { weekStartsOn: 9 as DayOfWeek });
+			await expect(dateIntervalValue().matcher(language).match('next week', { now: thursday }))
+				.rejects.toThrow('weekStartsOn');
 		});
 	});
 

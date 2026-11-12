@@ -366,9 +366,24 @@ When none is in the language, it uses the region of the first locale, so an
 app in English for a user with `sv-SE` is read as `en-SE`. A locale with a
 Unicode extension keeps it, so `en-US-u-fw-mon` starts weeks on Monday.
 
-A web view can report less than the operating system knows. When the runtime
-only reports `en-US` for a user with another region, read the setting in the
-native part of the app and set `weekStartsOn`, or the locale, directly.
+A web view can report less than the operating system knows. The web view of
+macOS reports `en-US` for a user with English as the language and Sweden as
+the region, so the first day of the week of the user is not seen. Read the
+settings in the native part of the app and give them to the language:
+
+```javascript
+import { DayOfWeek } from 'datetime-types';
+
+const language = english('en-SE', {
+  weekStartsOn: DayOfWeek.MONDAY,
+  firstWeekContainsDate: 4
+});
+```
+
+These settings of the user can be given to a language: `weekStartsOn`,
+`firstWeekContainsDate`, `dateOrder`, `monthDayOrder`, `dayParts` and
+`weekParts`. They are used for every match that does not set them, and they
+win over the locale, also when a match sets a locale of its own.
 
 The locale also decides how numbers are written. `en-US` reads `1,000.5`,
 while `en-ZA` reads `1 000,5` and `en-DE` reads `1.000,5`. A space can group
