@@ -2,6 +2,7 @@ import type { Day, FirstWeekContainsDate, WeekOptions } from 'date-fns';
 import type { DayOfWeek } from 'datetime-types';
 
 import type { DateTimeOptions } from './DateTimeOptions.js';
+import { toDayOfWeek } from './weekdays.js';
 
 /**
  * The subset of `date-fns` options that control how weeks are numbered.
@@ -37,8 +38,11 @@ export function toDateFnsDay(day: DayOfWeek): Day {
  *   options that can be given to the week functions in `date-fns`
  */
 export function toWeekOptions(options: DateTimeOptions): WeekNumberingOptions {
+	// The day can be a name, such as `monday`
+	const weekStartsOn = toDayOfWeek(options.weekStartsOn);
+
 	return {
-		weekStartsOn: typeof options.weekStartsOn === 'undefined' ? undefined : toDateFnsDay(options.weekStartsOn),
+		weekStartsOn: typeof weekStartsOn === 'undefined' ? undefined : toDateFnsDay(weekStartsOn),
 		firstWeekContainsDate: options.firstWeekContainsDate as FirstWeekContainsDate | undefined
 	};
 }

@@ -144,9 +144,12 @@ describe('Locale', function() {
 			expect(match?.values.when?.start?.toString()).toEqual('2026-11-16');
 		});
 
-		it('A weekStartsOn that is not a day rejects the match', async function() {
-			const language = english('en-US', { weekStartsOn: 9 as DayOfWeek });
-			await expect(dateIntervalValue().matcher(language).match('next week', { now: thursday }))
+		it('A weekStartsOn that is not a day is an error when the language is made', function() {
+			expect(() => english('en-US', { weekStartsOn: 9 as DayOfWeek })).toThrow('weekStartsOn');
+		});
+
+		it('A weekStartsOn of a match that is not a day rejects the match', async function() {
+			await expect(dateIntervalValue().matcher(en).match('next week', { now: thursday, weekStartsOn: 9 as DayOfWeek }))
 				.rejects.toThrow('weekStartsOn');
 		});
 	});

@@ -1,4 +1,6 @@
-import { DateOrder, MonthDayOrder } from '../type-datetime/index.js';
+import type { DayOfWeek } from 'datetime-types';
+
+import { DateOrder, DEFAULT_WEEKEND, MonthDayOrder, toWeekend } from '../type-datetime/index.js';
 
 import type { FirstWeekContainsDate, LocaleSettings, WeekStartsOn } from './LocaleSettings.js';
 import { weekStartsOnInRegion } from './regionWeekData.js';
@@ -35,8 +37,8 @@ const REFERENCE_NUMBER = 12345.6;
  * type definitions of the ES2022 library this project targets.
  */
 interface LocaleWithWeekInfo {
-	getWeekInfo?: () => { firstDay: number };
-	weekInfo?: { firstDay: number };
+	getWeekInfo?: () => { firstDay: number; weekend?: number[] };
+	weekInfo?: { firstDay: number; weekend?: number[] };
 }
 
 const cache = new Map<string, LocaleSettings>();
@@ -94,6 +96,7 @@ function readLocale(locale: string): LocaleSettings {
 		monthDayOrder: readMonthDayOrder(tag),
 		weekStartsOn: readWeekStartsOn(parsed),
 		firstWeekContainsDate: readFirstWeekContainsDate(parsed),
+		weekend: Object.freeze(readWeekend(parsed)),
 		...readSeparators(tag)
 	};
 }
@@ -165,6 +168,24 @@ function readWeekStartsOn(locale: Intl.Locale): WeekStartsOn {
 		: withWeekInfo.weekInfo;
 
 	return (weekInfo?.firstDay ?? weekStartsOnInRegion(locale)) as WeekStartsOn;
+}
+
+/**
+ * Read the days of the weekend. When `Intl` has no week data, the weekend is
+ * Saturday and Sunday.
+ *
+ * @param locale -
+ *   the locale to read
+ * @returns
+ *   the days of the weekend
+ */
+function readWeekend(locale: Intl.Locale): DayOfWeek[] {
+	const withWeekInfo = locale as Intl.Locale & LocaleWithWeekInfo;
+	const weekInfo = withWeekInfo.getWeekInfo
+		? withWeekInfo.getWeekInfo()
+		: withWeekInfo.weekInfo;
+
+	return toWeekend(weekInfo?.weekend) ?? [ ...DEFAULT_WEEKEND ];
 }
 
 /**

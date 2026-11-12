@@ -1,9 +1,8 @@
-import type { DayOfWeek } from 'datetime-types';
-
 import type { DateOrder } from './DateOrder.js';
 import type { DayPartHours } from './dayParts.js';
 import type { MonthDayOrder } from './MonthDayOrder.js';
 import type { WeekParts } from './periodParts.js';
+import type { DaySetting } from './weekdays.js';
 
 /**
  * Options that can be used with date and times.
@@ -35,9 +34,17 @@ export interface DateTimeOptions {
 	now?: Date;
 
 	/**
-	 * The day weeks start on.
+	 * The day weeks start on, as a `DayOfWeek` or as a name such as
+	 * `monday`.
 	 */
-	weekStartsOn?: DayOfWeek;
+	weekStartsOn?: DaySetting;
+
+	/**
+	 * The days of the weekend, as `DayOfWeek` values or as names such as
+	 * `saturday`. Defaults to Saturday and Sunday. `this weekend` is these
+	 * days, and the work days are the other days of the week.
+	 */
+	weekend?: readonly DaySetting[];
 
 	/**
 	 * The day of January that is always in the first week of the year.
@@ -61,9 +68,9 @@ export interface DateTimeOptions {
 	monthDayOrder?: MonthDayOrder;
 
 	/**
-	 * The hours of the named parts of the day, such as `morning`, `lunch`
-	 * and `end of day`, on a 24-hour clock. A part that is not set uses its
-	 * default hour.
+	 * The times of the named parts of the day, such as `morning`, `lunch`
+	 * and `end of day`, on a 24-hour clock. A time is a full hour, such as
+	 * `9`, or text such as `11:30`. A part that is not set uses its default.
 	 */
 	dayParts?: Partial<DayPartHours>;
 

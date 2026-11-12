@@ -350,40 +350,92 @@ English reads expressions as `en-US` when no locale is given, and Swedish reads
 them as `sv-SE`. The locale of the user is not read on its own, so that a
 match gives the same result on every machine.
 
-To follow the settings of the user, such as the day that weeks start on, get
-the locale from the JavaScript runtime with `runtimeLocale`:
+### Settings of a language
+
+A language can also be made from settings, which are plain data. They can be
+stored as JSON, in the browser or on a server, and given back as they are:
 
 ```javascript
-import { runtimeLocale } from 'ecolect/language';
 import { english } from 'ecolect/language/en';
 
-const matcher = dateValue().matcher(english(runtimeLocale('en')));
-```
-
-`runtimeLocale` reads the default locale of `Intl` first and then the
-languages of the browser. It returns the first one in the given language.
-When none is in the language, it uses the region of the first locale, so an
-app in English for a user with `sv-SE` is read as `en-SE`. A locale with a
-Unicode extension keeps it, so `en-US-u-fw-mon` starts weeks on Monday.
-
-A web view can report less than the operating system knows. The web view of
-macOS reports `en-US` for a user with English as the language and Sweden as
-the region, so the first day of the week of the user is not seen. Read the
-settings in the native part of the app and give them to the language:
-
-```javascript
-import { DayOfWeek } from 'datetime-types';
-
-const language = english('en-SE', {
-  weekStartsOn: DayOfWeek.MONDAY,
-  firstWeekContainsDate: 4
+const language = english({
+  locale: 'auto',
+  region: 'SE',
+  weekStartsOn: 'monday'
 });
 ```
 
-These settings of the user can be given to a language: `weekStartsOn`,
-`firstWeekContainsDate`, `dateOrder`, `monthDayOrder`, `dayParts` and
-`weekParts`. They are used for every match that does not set them, and they
-win over the locale, also when a match sets a locale of its own.
+Setting                 | Description
+------------------------|-------------
+`locale`                | A BCP 47 language tag such as `en-GB`, or `auto` to read the locale from the JavaScript runtime
+`region`                | The region of the user, such as `SE`. It replaces the region of the locale, so `en-US` with `SE` is `en-SE`
+`regionFromTimeZone`    | With `locale: 'auto'`, read the region from the time zone: `true`, `false` or `auto`. `auto` is the default and does it in WebKit only
+`weekStartsOn`          | The day weeks start on, as a name such as `monday` or as a `DayOfWeek`
+`weekNumbering`         | `iso` or `first-day`, as names for a `firstWeekContainsDate` of `4` and `1`
+`firstWeekContainsDate` | The day of January which is always in the first week of the year
+`weekend`               | The days of the weekend, such as `[ 'friday', 'saturday' ]`
+`dateOrder`             | The order of the fields in a numeric date
+`monthDayOrder`         | The order of the month and the day in a numeric date without a year
+`dayParts`              | The times of the named parts of the day, such as `{ lunch: '11:30' }`
+`weekParts`             | `work-week` or `full-week`
+`numberSeparators`      | `strict`, `auto` or `lenient`
+`ambiguousSeparator`    | `group` or `decimal`
+
+A setting is used for every match that does not set it. It wins over the
+locale, also when a match sets a locale of its own. The parts of `dayParts`
+are merged, so a match only replaces the parts it names. A setting with a
+value that is not valid is an error when the language is made.
+
+The same settings can be given after a locale, as in
+`english('en-GB', { weekStartsOn: 'sunday' })`.
+
+#### The locale of the user
+
+`locale: 'auto'` reads the default locale of `Intl` first and then the
+languages of the browser. It uses the first one in the language. When none is
+in the language, it uses the region of the first locale, so an app in English
+for a user with `sv-SE` is read as `en-SE`.
+
+A browser can report less than the operating system knows. WebKit, which is
+Safari and the web views of macOS and iOS, reports `en-US` for a user with
+English as the language and Sweden as the region. So in WebKit the region is
+read from the time zone, and `Europe/Stockholm` gives `en-SE`. This is a
+guess, as a person on a trip is in the time zone of another region. Set
+`regionFromTimeZone` to `false` to turn it off, or to `true` to do it in every
+browser. A time zone that more than one region uses gives no region.
+
+Let the user set the region when the guess is wrong. A `region` always wins:
+
+```javascript
+const language = english({ locale: 'auto', region: 'SE' });
+```
+
+`runtimeLocale`, `regionOfTimeZone` and `withRegion` from `ecolect/language`
+do these steps on their own.
+
+#### Showing the settings
+
+`language.settings` has every setting with its value, and where each value
+comes from, so that an app can show them to the user:
+
+```javascript
+const settings = english({ locale: 'auto', weekStartsOn: 'monday' }).settings;
+
+settings.locale;               // 'en-SE'
+settings.weekStartsOn;         // 'monday'
+settings.weekend;              // [ 'saturday', 'sunday' ]
+settings.sources.weekStartsOn; // 'option'
+settings.sources.weekend;      // 'locale'
+settings.sources.region;       // 'timeZone', in WebKit in Sweden
+```
+
+A source is `option` for a setting that was given, `locale` for a convention
+of the locale, `runtime` for a locale read from the runtime, `timeZone` for a
+region read from the time zone and `default` for a default of the library.
+
+The object is plain data and can be given back to `english`. Only the
+settings with the source `option` are then used, so the other ones are read
+again from the locale.
 
 The locale also decides how numbers are written. `en-US` reads `1,000.5`,
 while `en-ZA` reads `1 000,5` and `en-DE` reads `1.000,5`. A space can group
@@ -450,10 +502,11 @@ Option                  | Default             | Description
 `locale`                | Locale of the language | The locale to read the expression as, such as `en-GB`
 `dateOrder`             | From the locale     | The order of the fields in a numeric date such as `1/2/2017`
 `monthDayOrder`         | From the locale     | The order of the month and the day in a numeric date without a year, such as `1/2`
-`weekStartsOn`          | From the locale     | The day the week starts on
+`weekStartsOn`          | From the locale     | The day the week starts on, as a name such as `monday` or as a `DayOfWeek`
 `firstWeekContainsDate` | From the locale     | The day of January which is always in the first week of the year
-`dayParts`              | See below           | The hours of the named parts of the day, such as `{ morning: 8, endOfDay: 18 }`
+`dayParts`              | See below           | The times of the named parts of the day, such as `{ morning: 8, lunch: '11:30' }`
 `weekParts`             | `work-week`         | The days that `early`, `mid` and `late` pick from in a week: `work-week` or `full-week`
+`weekend`               | From the locale     | The days of the weekend, as names such as `saturday` or as `DayOfWeek` values
 `decimalSeparator`      | From the locale     | The character that separates the fraction of a number, `.` or `,`, or a list of them. The first one is used to write numbers
 `groupSeparator`        | From the locale     | The character that groups the digits of a number, `,` or `.`, or a list of them. A space can always group digits
 `numberSeparators`      | `auto`              | How to read the one of `.` and `,` that the locale does not use for fractions: `strict`, `auto` or `lenient`
@@ -474,8 +527,9 @@ locales, but not for all. `sv-SE` writes `2017-01-02` with the year first, but
 ### Parts of the day
 
 A time can be a named part of the day, such as `morning`, `after lunch` or
-`end of day`. Each part is read as one hour on a 24-hour clock. Set `dayParts`
-to change the hours, a part that is not set keeps its default.
+`end of day`. Each part is read as one time on a 24-hour clock. Set `dayParts`
+to change the times, as a full hour such as `8` or as text such as `11:30`. A
+part that is not set keeps its default.
 
 Part         | Default | Examples
 -------------|---------|-------------
@@ -664,13 +718,14 @@ week that are in the month are part of the interval, so with weeks that start
 on Monday `first week of january 2027` is January 1st to 3rd. As a date it is
 the first of those days.
 
-A weekend is a Saturday and the Sunday after it. `this weekend` is the
-current weekend on a Saturday or a Sunday, and the next one on other days.
+A weekend is the days that the `weekend` setting names. They come from the
+region, and are Saturday and Sunday in most regions. `this weekend` is the
+current weekend on a day of the weekend, and the next one on other days.
 `next weekend` follows the rule of `next friday`: it is the first weekend that
 starts after the current day. On a weekday this is the same weekend as
-`this weekend`, and on a Saturday or a Sunday it is the weekend of the next
+`this weekend`, and on a day of the weekend it is the weekend of the next
 week. `last weekend` is the weekend before `this weekend`. As a date a weekend
-is its Saturday.
+is its first day.
 
 `early`, `mid` and `late` pick one of three parts of a period. A year has
 parts of four months, so `early 2027` is January to April. A quarter has parts
@@ -679,7 +734,8 @@ third of the days, rounded down, and the middle part has the rest. So
 `mid january` is January 11th to 21st. As a date the middle part is its middle
 day, and the other parts are their first day.
 
-The parts of a week are in the work days, so `early next week` is Monday and
+The parts of a week are in the work days, which are the days outside of the
+weekend. With a weekend of Saturday and Sunday `early next week` is Monday and
 Tuesday, `mid next week` is Wednesday and `late next week` is Thursday and
 Friday. Set `weekParts` to `full-week` to use all seven days. The early part
 is then the first two days of the week, the middle part is the next three

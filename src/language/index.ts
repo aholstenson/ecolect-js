@@ -2,6 +2,7 @@ export * from './KnownGraphs.js';
 export * from './Language.js';
 export * from './LanguageGraphFactory.js';
 export * from './LanguageOptions.js';
+export * from './LanguageSettings.js';
 export * from './AbstractLanguage.js';
 export * from './LocaleSettings.js';
 export * from './resolveLocale.js';

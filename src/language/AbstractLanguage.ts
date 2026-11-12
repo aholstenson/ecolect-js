@@ -5,6 +5,13 @@ import type { KnownGraphs, KnownGraphsDataTypes } from './KnownGraphs.js';
 import type { Language } from './Language.js';
 import type { LanguageGraphFactory } from './LanguageGraphFactory.js';
 import type { LanguageOptions } from './LanguageOptions.js';
+import type { LocaleOrigins, NormalizedLanguageOptions, ResolvedLanguageSettings } from './LanguageSettings.js';
+import {
+	hasLocaleSettings,
+	normalizeLanguageOptions,
+	resolveLanguageLocale,
+	resolveLanguageSettings
+} from './LanguageSettings.js';
 import type { Vocabulary } from './Vocabulary.js';
 import { createVocabularyTokenizer } from './vocabularyTokenizer.js';
 
@@ -25,20 +32,34 @@ export abstract class AbstractLanguage implements Language {
 	public readonly tokenizer: Tokenizer;
 	public readonly tokenComparer: TokenComparer;
 	public readonly locale: string;
-	public readonly options: LanguageOptions;
+	public readonly options: NormalizedLanguageOptions;
+
+	/**
+	 * Where the locale and the region of this language come from.
+	 */
+	private readonly origins: LocaleOrigins;
+
+	private cachedSettings?: ResolvedLanguageSettings;
 
 	public constructor(
 		tokenizer: Tokenizer,
 		tokenComparer: TokenComparer,
 		repeatingFactory: RepeatingFactory,
 		locale: string,
-		options: LanguageOptions = {}
+		options: LanguageOptions = {},
+		origins: LocaleOrigins = { locale: 'default', region: 'locale' }
 	) {
 		this.tokenizer = tokenizer;
 		this.tokenComparer = tokenComparer;
 		this.repeatingFactory = repeatingFactory;
 		this.locale = locale;
-		this.options = Object.freeze({ ...options });
+		this.options = normalizeLanguageOptions(options);
+		this.origins = origins;
+	}
+
+	public get settings(): ResolvedLanguageSettings {
+		this.cachedSettings ??= resolveLanguageSettings(this.id, this.locale, this.options, this.origins);
+		return this.cachedSettings;
 	}
 
 	/**
@@ -88,7 +109,8 @@ export abstract class AbstractLanguage implements Language {
 			createVocabularyTokenizer(this.tokenizer, vocabulary),
 			this.tokenComparer,
 			this.repeatingFactory,
-			this.options
+			this.options,
+			this.origins
 		);
 
 		/*
@@ -107,13 +129,38 @@ export abstract class AbstractLanguage implements Language {
 			return this;
 		}
 
+		return this.derive({ ...options, locale }, options ?? this.options);
+	}
+
+	public withSettings(settings: LanguageOptions): Language {
+		return this.derive(settings, settings);
+	}
+
+	/**
+	 * Create a language that shares the graphs of this one, with another
+	 * locale and other options.
+	 *
+	 * @param localeSettings -
+	 *   the settings that say which locale to use
+	 * @param options -
+	 *   the options the new language gives to each match
+	 * @returns
+	 *   the new language
+	 */
+	private derive(localeSettings: LanguageOptions, options: LanguageOptions): Language {
+		const current = { locale: this.locale, origins: this.origins };
+		const resolved = hasLocaleSettings(localeSettings)
+			? resolveLanguageLocale(this.id, current, localeSettings)
+			: current;
+
 		const derived = new DerivedLanguage(
 			this.id,
-			locale,
+			resolved.locale,
 			this.tokenizer,
 			this.tokenComparer,
 			this.repeatingFactory,
-			options ?? this.options
+			options,
+			resolved.origins
 		);
 
 		/*
@@ -142,9 +189,10 @@ class DerivedLanguage extends AbstractLanguage {
 		tokenizer: Tokenizer,
 		tokenComparer: TokenComparer,
 		repeatingFactory: RepeatingFactory,
-		options: LanguageOptions
+		options: LanguageOptions,
+		origins: LocaleOrigins
 	) {
-		super(tokenizer, tokenComparer, repeatingFactory, locale, options);
+		super(tokenizer, tokenComparer, repeatingFactory, locale, options, origins);
 
 		this.id = id;
 	}

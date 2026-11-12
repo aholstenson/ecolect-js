@@ -4,43 +4,72 @@ import { Meridiem } from './Meridiem.js';
 import { time24h, toAM, toPM } from './times.js';
 
 /**
- * The hour of each named part of the day, on a 24-hour clock.
+ * The time of a part of the day on a 24-hour clock. It is a full hour as a
+ * number, such as `9`, or a time as text, such as `11:30`.
+ */
+export type DayPartTime = number | string;
+
+/**
+ * Read the time of a part of the day.
+ *
+ * @param value -
+ *   a full hour as a number, or a time such as `11:30`
+ * @returns
+ *   the hour and the minute, or `null` if the value is not a time
+ */
+export function parseDayPartTime(value: unknown): { hour: number; minute: number } | null {
+	if(typeof value === 'number') {
+		return Number.isInteger(value) && value >= 0 && value <= 23 ? { hour: value, minute: 0 } : null;
+	}
+
+	if(typeof value !== 'string') return null;
+
+	const match = /^([0-9]{1,2})(?::([0-9]{2}))?$/.exec(value.trim());
+	if(! match) return null;
+
+	const hour = parseInt(match[1], 10);
+	const minute = parseInt(match[2] ?? '0', 10);
+	return hour <= 23 && minute <= 59 ? { hour, minute } : null;
+}
+
+/**
+ * The time of each named part of the day, on a 24-hour clock.
  */
 export interface DayPartHours {
 	/**
 	 * The hour of `morning`. Defaults to 9.
 	 */
-	morning: number;
+	morning: DayPartTime;
 
 	/**
 	 * The hour of `lunch`. Defaults to 12.
 	 */
-	lunch: number;
+	lunch: DayPartTime;
 
 	/**
 	 * The hour of `afternoon`. Defaults to 15.
 	 */
-	afternoon: number;
+	afternoon: DayPartTime;
 
 	/**
 	 * The hour of `evening` and `tonight`. Defaults to 19.
 	 */
-	evening: number;
+	evening: DayPartTime;
 
 	/**
 	 * The hour of `night`. Defaults to 22.
 	 */
-	night: number;
+	night: DayPartTime;
 
 	/**
 	 * The hour the work day starts, as in `start of day`. Defaults to 9.
 	 */
-	startOfDay: number;
+	startOfDay: DayPartTime;
 
 	/**
 	 * The hour the work day ends, as in `end of day`. Defaults to 17.
 	 */
-	endOfDay: number;
+	endOfDay: DayPartTime;
 }
 
 /**
@@ -77,10 +106,11 @@ export const DEFAULT_DAY_PART_HOURS: Readonly<DayPartHours> = {
  *   the time, or `null` if the hour is not on a clock
  */
 export function dayPart(part: DayPart, options: DateTimeOptions = {}, offsetHours = 0): DateTimeData | null {
-	const hour = options.dayParts?.[part] ?? DEFAULT_DAY_PART_HOURS[part];
-	if(! Number.isInteger(hour)) return null;
+	const time = parseDayPartTime(options.dayParts?.[part] ?? DEFAULT_DAY_PART_HOURS[part]);
+	if(! time) return null;
 
-	return time24h(hour + offsetHours);
+	// A full hour has no minute, so that `half past lunch` reads as 12:30
+	return time24h(time.hour + offsetHours, time.minute === 0 ? undefined : time.minute);
 }
 
 /**

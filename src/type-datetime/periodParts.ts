@@ -4,6 +4,7 @@ import type { DateTimeData } from './DateTimeData.js';
 import type { DateTimeOptions } from './DateTimeOptions.js';
 import { toEnd, toStart } from './intervals.js';
 import { Period } from './Period.js';
+import { weekendSpan } from './weekdays.js';
 
 /**
  * A part of a period, such as the `early` of `early january`. A period has
@@ -22,7 +23,8 @@ export enum PeriodPart {
  */
 export enum WeekParts {
 	/**
-	 * The parts are in the work days, Monday to Friday. The early part is
+	 * The parts are in the work days, which are the days that are not in
+	 * the weekend. With a weekend of Saturday and Sunday the early part is
 	 * Monday and Tuesday, the middle part is Wednesday and the late part is
 	 * Thursday and Friday.
 	 */
@@ -86,7 +88,7 @@ export function withPeriodPart(v: DateTimeData, part: PeriodPart): DateTimeData 
  * 31st.
  *
  * A week is split as the `weekParts` option says. Without the option the
- * parts are in the work days, Monday to Friday.
+ * parts are in the work days, which the `weekend` option decides.
  *
  * @param time -
  *   a time in the period
@@ -115,18 +117,32 @@ export function partOfPeriod(
 		midStart = addMonths(start, months);
 		lateStart = addMonths(start, months * 2);
 	} else if(period === Period.Week && options.weekParts !== WeekParts.FullWeek) {
-		// Monday and Tuesday, Wednesday, Thursday and Friday
-		const monday = addDays(start, (8 - getDay(start)) % 7);
-		midStart = addDays(monday, 2);
-		lateStart = addDays(monday, 3);
+		/*
+		 * The work days are the days that are not in the weekend, and they
+		 * start on the day after it. The early and the late part have two
+		 * days each, and the middle part has the days between them.
+		 */
+		const span = weekendSpan(options.weekend);
+		const workDays = 7 - span.days;
+		const firstWorkDay = (span.start + span.days - 1) % 7 + 1;
+		const first = addDays(start, (firstWorkDay - (getDay(start) || 7) + 7) % 7);
+		if(workDays < 5) {
+			// Too few work days for parts of two days
+			const third = Math.max(1, Math.floor(workDays / 3));
+			midStart = addDays(first, Math.min(third, workDays - 1));
+			lateStart = addDays(first, Math.max(workDays - third, 0));
+		} else {
+			midStart = addDays(first, 2);
+			lateStart = addDays(first, workDays - 2);
+		}
 
 		switch(part) {
 			case PeriodPart.Early:
-				return { start: monday, end: addDays(monday, 1) };
+				return { start: first, end: addDays(midStart, -1) };
 			case PeriodPart.Mid:
-				return { start: midStart, end: midStart };
+				return { start: midStart, end: addDays(lateStart, -1) };
 			default:
-				return { start: lateStart, end: addDays(monday, 4) };
+				return { start: lateStart, end: addDays(first, workDays - 1) };
 		}
 	} else if(period === Period.Month || period === Period.Week) {
 		const days = differenceInCalendarDays(end, start) + 1;

@@ -41,6 +41,7 @@ import { MonthDayOrder } from './MonthDayOrder.js';
 import { Period } from './Period.js';
 import { partOfPeriod, PeriodPart } from './periodParts.js';
 import { TimeRelationship } from './TimeRelationship.js';
+import { weekendSpan } from './weekdays.js';
 import { toDateFnsDay, toWeekOptions } from './weekOptions.js';
 
 export function today(r: any, options: DateTimeOptions) {
@@ -776,17 +777,20 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 
 	if(typeof r.weekend !== 'undefined') {
 		/*
-		 * A weekend is a Saturday and the Sunday after it. As a single day
-		 * it is the Saturday, and the end of it is the Sunday.
+		 * A weekend is the days that the `weekend` option names, Saturday
+		 * and Sunday without it. As a single day it is its first day, and
+		 * the end of it is its last day.
 		 */
-		const day = getDay(time);
-		const inWeekend = day === 0 || day === 6;
+		const span = weekendSpan(options.weekend);
+		const day = getDay(time) || 7;
+		const daysIn = (day - span.start + 7) % 7;
+		const inWeekend = daysIn < span.days;
 
 		// The next weekend is never the one that the current day is in
 		const weeks = r.weekend + (inWeekend && relationToCurrent === TimeRelationship.Future ? 1 : 0);
-		time = addDays(time, (day === 0 ? -1 : 6 - day) + weeks * 7);
+		time = addDays(time, (inWeekend ? -daysIn : (span.start - day + 7) % 7) + weeks * 7);
 		if(r.intervalEdge === IntervalEdge.End) {
-			time = addDays(time, 1);
+			time = addDays(time, span.days - 1);
 		}
 
 		period = Period.Day;

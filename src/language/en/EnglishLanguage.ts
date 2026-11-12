@@ -59,14 +59,24 @@ export const en = new EnglishLanguage();
  * const match = await matcher.match('1/2/2017');
  * ```
  *
+ * The locale can also be `auto`, to read it from the JavaScript runtime, or
+ * settings as plain data:
+ *
+ * ```javascript
+ * const language = english({ locale: 'auto', region: 'SE', weekStartsOn: 'monday' });
+ * ```
+ *
  * @param locale -
- *   the locale to read expressions as, as a BCP 47 language tag
+ *   the locale to read expressions as, as a BCP 47 language tag, `auto`, or
+ *   the settings of the language
  * @param options -
  *   options used for every match that does not set them, such as
  *   `{ numberSeparators: 'lenient' }`
  * @returns
  *   English read as the given locale
  */
-export function english(locale: string, options?: LanguageOptions): Language {
-	return en.withLocale(locale, options);
+export function english(locale: string | LanguageOptions, options?: LanguageOptions): Language {
+	return typeof locale === 'string'
+		? en.withLocale(locale, options)
+		: en.withSettings(locale);
 }

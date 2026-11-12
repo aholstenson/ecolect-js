@@ -1,9 +1,11 @@
+import type { DayOfWeek } from 'datetime-types';
+
 import type { DateOrder, DateTimeOptions, MonthDayOrder } from '../type-datetime/index.js';
 
 /**
  * The day weeks start on, as `DateTimeOptions` counts days.
  */
-export type WeekStartsOn = NonNullable<DateTimeOptions['weekStartsOn']>;
+export type WeekStartsOn = DayOfWeek;
 
 /**
  * The day of January that is always in the first week of the year, as
@@ -39,6 +41,11 @@ export interface LocaleSettings {
 	 * The day of January that is always in the first week of the year.
 	 */
 	readonly firstWeekContainsDate: FirstWeekContainsDate;
+
+	/**
+	 * The days of the weekend, from 1 for Monday to 7 for Sunday.
+	 */
+	readonly weekend: readonly DayOfWeek[];
 
 	/**
 	 * The character that separates the whole part of a number from its

@@ -4,6 +4,7 @@ import type { TokenComparer, Tokenizer } from '../tokenization/index.js';
 import type { KnownGraphs, KnownGraphsDataTypes } from './KnownGraphs.js';
 import type { LanguageGraphFactory } from './LanguageGraphFactory.js';
 import type { LanguageOptions } from './LanguageOptions.js';
+import type { ResolvedLanguageSettings } from './LanguageSettings.js';
 import type { Vocabulary } from './Vocabulary.js';
 
 /**
@@ -68,10 +69,29 @@ export interface Language {
 	 * shares the graphs of this one. This language is left unchanged.
 	 *
 	 * @param locale -
-	 *   the locale to read expressions as, as a BCP 47 language tag
+	 *   the locale to read expressions as, as a BCP 47 language tag, or
+	 *   `auto` to read the locale from the JavaScript runtime
 	 * @param options -
 	 *   options used for every match that does not set them. Without
 	 *   options the new language keeps the options of this one
 	 */
 	withLocale(locale: string, options?: LanguageOptions): Language;
+
+	/**
+	 * Get a language that reads expressions with the given settings, such
+	 * as `{ locale: 'auto', region: 'SE', weekStartsOn: 'monday' }`. Settings
+	 * that name no locale keep the locale of this language. This language
+	 * is left unchanged.
+	 *
+	 * @param settings -
+	 *   the settings, as plain data
+	 */
+	withSettings(settings: LanguageOptions): Language;
+
+	/**
+	 * The settings this language reads expressions with, as plain data.
+	 * Every setting has a value, and `sources` says where each one comes
+	 * from, so that an app can show them to the user.
+	 */
+	readonly settings: ResolvedLanguageSettings;
 }

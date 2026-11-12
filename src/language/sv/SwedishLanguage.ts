@@ -56,14 +56,24 @@ export const sv = new SwedishLanguage();
  * const matcher = dateValue().matcher(swedish('sv-FI'));
  * ```
  *
+ * The locale can also be `auto`, to read it from the JavaScript runtime, or
+ * settings as plain data:
+ *
+ * ```javascript
+ * const language = swedish({ locale: 'auto', region: 'SE', weekStartsOn: 'monday' });
+ * ```
+ *
  * @param locale -
- *   the locale to read expressions as, as a BCP 47 language tag
+ *   the locale to read expressions as, as a BCP 47 language tag, `auto`, or
+ *   the settings of the language
  * @param options -
  *   options used for every match that does not set them, such as
  *   `{ numberSeparators: 'lenient' }`
  * @returns
  *   Swedish read as the given locale
  */
-export function swedish(locale: string, options?: LanguageOptions): Language {
-	return sv.withLocale(locale, options);
+export function swedish(locale: string | LanguageOptions, options?: LanguageOptions): Language {
+	return typeof locale === 'string'
+		? sv.withLocale(locale, options)
+		: sv.withSettings(locale);
 }

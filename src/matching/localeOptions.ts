@@ -1,5 +1,6 @@
 import type { Language, LanguageOptions } from '../language/index.js';
 import { resolveLocale } from '../language/index.js';
+import { toDayOfWeek, toWeekend } from '../type-datetime/index.js';
 import { resolveNumberSeparators } from '../type-numbers/separators.js';
 
 import type { MatchAllOptions } from './MatchAllOptions.js';
@@ -30,6 +31,7 @@ export function localeMatchOptions(locale: string): MatchOptions {
 		monthDayOrder: settings.monthDayOrder,
 		weekStartsOn: settings.weekStartsOn,
 		firstWeekContainsDate: settings.firstWeekContainsDate,
+		weekend: settings.weekend,
 		decimalSeparator: settings.decimalSeparator,
 		groupSeparator: settings.groupSeparator
 	});
@@ -45,9 +47,9 @@ export function localeMatchOptions(locale: string): MatchOptions {
 const USER_SETTINGS = [
 	'weekStartsOn',
 	'firstWeekContainsDate',
+	'weekend',
 	'dateOrder',
 	'monthDayOrder',
-	'dayParts',
 	'weekParts'
 ] as const;
 
@@ -86,6 +88,17 @@ export function applyLocale<O extends MatchOptions>(
 		}
 	}
 
+	// The parts of the day are merged, so a match only replaces the parts it names
+	if(languageOptions.dayParts) {
+		options.dayParts = { ...languageOptions.dayParts, ...options.dayParts };
+	}
+
+	// A day can be a name, such as `monday`, and is read as a number from here on
+	options.weekStartsOn = toDayOfWeek(options.weekStartsOn) ?? options.weekStartsOn;
+	if(typeof options.weekend !== 'undefined') {
+		options.weekend = toWeekend(options.weekend) ?? options.weekend;
+	}
+
 	const defaults = localeMatchOptions(options.locale ?? languageLocale);
 
 	/*
@@ -106,6 +119,10 @@ export function applyLocale<O extends MatchOptions>(
 
 	if(typeof options.firstWeekContainsDate === 'undefined') {
 		options.firstWeekContainsDate = defaults.firstWeekContainsDate;
+	}
+
+	if(typeof options.weekend === 'undefined') {
+		options.weekend = defaults.weekend;
 	}
 
 	if(typeof options.numberSeparators === 'undefined' && languageOptions.numberSeparators) {
@@ -150,6 +167,10 @@ function checkWeekOptions(options: MatchOptions): void {
 	if(typeof firstWeekContainsDate !== 'undefined'
 		&& ! (Number.isInteger(firstWeekContainsDate) && firstWeekContainsDate >= 1 && firstWeekContainsDate <= 7)) {
 		throw new Error('`firstWeekContainsDate` must be a day of January from 1 to 7, got ' + firstWeekContainsDate);
+	}
+
+	if(typeof options.weekend !== 'undefined' && ! toWeekend(options.weekend)) {
+		throw new Error('`weekend` must be a list of days of the week, such as `saturday` and `sunday`');
 	}
 }
 
