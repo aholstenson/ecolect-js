@@ -563,13 +563,13 @@ export function mapDate(r: DateTimeData, options: DateTimeOptions = {}): LocalDa
 		 * This time is relative to another time, so resolve that time first.
 		 * The relation and edge described here are applied to it via a copy,
 		 * so that the data given to this function is left as it is. A
-		 * relation the other time describes itself, such as the previous
-		 * Monday, is kept.
+		 * relation or edge the other time describes itself, such as the
+		 * previous Monday or the end of the month, is kept.
 		 */
 		const resolvedTime = mapDate({
 			...r.relativeTo,
 			relationToCurrent: r.relativeTo.relationToCurrent ?? relationToCurrent,
-			intervalEdge: r.intervalEdge
+			intervalEdge: r.relativeTo.intervalEdge ?? r.intervalEdge
 		}, options);
 		if(! resolvedTime) return null;
 

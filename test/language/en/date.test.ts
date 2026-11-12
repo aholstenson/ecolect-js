@@ -1347,6 +1347,19 @@ describe('English', function() {
 		});
 
 		describe('Edges of periods', function() {
+			// The edge is kept when another date is counted from it
+			test('two weeks before end of month', { now: tuesday }, {
+				year: 2017,
+				month: 1,
+				day: 17
+			});
+
+			test('3 days after start of month', { now: tuesday }, {
+				year: 2017,
+				month: 1,
+				day: 4
+			});
+
 			test('start of month', { now: tuesday }, {
 				year: 2017,
 				month: 1,
