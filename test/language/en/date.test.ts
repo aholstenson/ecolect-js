@@ -1326,6 +1326,26 @@ describe('English', function() {
 			});
 		});
 
+		describe('Day of week before a day in a month', function() {
+			test('thursday, november 12', { now: tuesday }, {
+				year: 2017,
+				month: 11,
+				day: 12
+			});
+
+			test('thursday 12 november', { now: tuesday }, {
+				year: 2017,
+				month: 11,
+				day: 12
+			});
+
+			test('thu nov 12 2026', { now: tuesday }, {
+				year: 2026,
+				month: 11,
+				day: 12
+			});
+		});
+
 		describe('Edges of periods', function() {
 			test('start of month', { now: tuesday }, {
 				year: 2017,

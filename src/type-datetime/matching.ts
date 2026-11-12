@@ -84,11 +84,88 @@ export function combineDateAndTime(date: DateTimeData, time: DateTimeData): Date
 	/*
 	 * A plain number next to a month belongs to the date, so `january 12` is
 	 * the 12th and not noon on the 1st, and `january 2018` is a month in 2018
-	 * and not 20:18.
+	 * and not 20:18. This is also so after a day of the week, so
+	 * `thursday november 12` is the 12th and not noon on the first Thursday.
 	 */
-	if(isMonth(date) && isPlainNumberTime(time)) return null;
+	if(hasMonthWithoutDay(date) && isPlainNumberTime(time)) return null;
+
+	/*
+	 * A plain number with four digits after a month and a day is the year,
+	 * so `nov 12 2026` is a day in 2026 and not 20:26 on November 12th.
+	 */
+	if(hasMonth(date) && typeof date.year === 'undefined' && isPlainYear(time)) return null;
+
+	/*
+	 * A year on its own does not name a day for the time, so `12.11.2026`
+	 * is a date and not 12:11 in 2026.
+	 */
+	if(isYearOnly(date)) return null;
 
 	return asTime(combine(date, time));
+}
+
+/**
+ * Get if a date names a month but no day of the month, such as `november`
+ * or the first Thursday of November.
+ *
+ * @param date -
+ *   the date to check
+ * @returns
+ *   `true` if the date has a month and no day of the month
+ */
+function hasMonthWithoutDay(date: DateTimeData): boolean {
+	return typeof date.month !== 'undefined'
+		&& typeof date.day === 'undefined'
+		&& typeof date.week === 'undefined';
+}
+
+/**
+ * Get if a time was read from a plain number that can also be a year, such
+ * as `2026`, which is 20:26 as a time.
+ *
+ * @param time -
+ *   the time to check
+ * @returns
+ *   `true` if the time is a plain number with four digits
+ */
+function isPlainYear(time: DateTimeData): boolean {
+	return isPlainNumberTime(time)
+		&& typeof time.hour !== 'undefined'
+		&& typeof time.minute !== 'undefined'
+		&& time.hour >= 10;
+}
+
+/**
+ * Get if a date is a year and nothing more, such as `2026`.
+ *
+ * @param date -
+ *   the date to check
+ * @returns
+ *   `true` if the date only has a year
+ */
+function isYearOnly(date: DateTimeData): boolean {
+	return typeof date.year !== 'undefined'
+		&& typeof date.quarter === 'undefined'
+		&& typeof date.week === 'undefined'
+		&& typeof date.month === 'undefined'
+		&& typeof date.day === 'undefined'
+		&& typeof date.dayOfWeek === 'undefined'
+		&& typeof date.relativeTo === 'undefined'
+		&& ! isRelative(date);
+}
+
+/**
+ * Get if a date names a day in a month, such as `november 12`.
+ *
+ * @param v -
+ *   the date to check
+ * @returns
+ *   `true` if the date has a month and a day of the month
+ */
+export function hasMonthAndDay(v: DateTimeData): boolean {
+	return typeof v.month !== 'undefined'
+		&& typeof v.day !== 'undefined'
+		&& typeof v.dayOfWeek === 'undefined';
 }
 
 /**

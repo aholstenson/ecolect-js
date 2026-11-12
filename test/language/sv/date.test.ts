@@ -110,6 +110,20 @@ describe('Swedish', function() {
 			test('5 januari -99', now, { year: 1999, month: 1, day: 5 });
 		});
 
+		describe('Day of week before a day in a month', function() {
+			test('torsdag 12 november', now, {
+				year: 2017,
+				month: 11,
+				day: 12
+			});
+
+			test('torsdagen den 12 november', now, {
+				year: 2017,
+				month: 11,
+				day: 12
+			});
+		});
+
 		describe('Named month relative to now', function() {
 			const november = { now: new Date(2026, 10, 8) };
 

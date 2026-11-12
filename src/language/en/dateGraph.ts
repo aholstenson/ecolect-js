@@ -13,6 +13,7 @@ import {
 	isWeek,
 	isMonth,
 	hasMonth,
+	hasMonthAndDay,
 	reverse,
 
 	today,
@@ -282,6 +283,13 @@ export const dateGraph: LanguageGraphFactory<DateTimeData> = {
 				dayOfWeek: v[0],
 				dayOfWeekOrdinal: LAST_DAY_OF_WEEK
 			}))
+
+			/*
+			 * A day of the week before a day in a month, such as Thursday,
+			 * November 12. The month and the day give the date, so the day
+			 * of the week is not used.
+			 */
+			.add([ dayOfWeek, GraphBuilder.result(hasMonthAndDay) ], v => v[1])
 
 			// day of week in week X
 			.add([ dayOfWeek, GraphBuilder.result(isWeek) ], v => combine(v[1], {

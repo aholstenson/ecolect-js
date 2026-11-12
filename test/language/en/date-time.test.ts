@@ -361,6 +361,100 @@ describe('English', function() {
 			millisecond: 0
 		}));
 
+		// Four digits after a month and a day are the year and not a time
+		test('nov 12 2026', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 13,
+			minute: 30,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('Nov 12th, 2026', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 13,
+			minute: 30,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('12 nov 2026', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 13,
+			minute: 30,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('11/12/2026', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 13,
+			minute: 30,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('nov 12 2026 15:30', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 15,
+			minute: 30,
+			second: 0,
+			millisecond: 0
+		}));
+
+		// A time needs more than a year to be read with a date
+		test('11.12.2026', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2026,
+			month: 11,
+			day: 12,
+			hour: 13,
+			minute: 30,
+			second: 0,
+			millisecond: 0
+		}));
+
+		// The number after a day of the week and a month is the day
+		test('thursday, november 12', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2010,
+			month: 11,
+			day: 12,
+			hour: 13,
+			minute: 30,
+			second: 0,
+			millisecond: 0
+		}));
+
+		test('thursday november 12 at 3pm', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2010,
+			month: 11,
+			day: 12,
+			hour: 15,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		}));
+
+		// Four digits after a day without a month are a time
+		test('tomorrow 1530', { now: new Date(2010, 0, 1, 13, 30) }, LocalDateTime.from({
+			year: 2010,
+			month: 1,
+			day: 2,
+			hour: 15,
+			minute: 30,
+			second: 0,
+			millisecond: 0
+		}));
+
 		test('in 9999999999 hours', { now: new Date(2026, 10, 8, 0, 0) }, null);
 	});
 
